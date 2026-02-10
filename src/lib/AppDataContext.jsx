@@ -1,0 +1,362 @@
+import React, { createContext, useContext, useMemo, useState, useEffect } from "react";
+import { venuesData as initialVenues } from "@/data/venues";
+import { reviewsData as initialReviews } from "@/data/reviews";
+import { articlesData as initialArticles } from "@/data/articles";
+import { drinksData as initialDrinks } from "@/data/drinks";
+
+const STORAGE_KEYS = {
+  venues: "app_venues",
+  reviews: "app_reviews",
+  articles: "app_articles",
+  drinks: "app_drinks",
+  user: "app_user",
+  ownerMessages: "app_owner_messages",
+  communityEvents: "app_community_events",
+  communityPosts: "app_community_posts",
+};
+
+function load(key, fallback) {
+  try {
+    const raw = localStorage.getItem(key);
+    if (raw) {
+      const data = JSON.parse(raw);
+      if (Array.isArray(data) && data.length > 0) return data;
+    }
+  } catch (_) {}
+  return fallback;
+}
+
+function save(key, data) {
+  try {
+    localStorage.setItem(key, JSON.stringify(data));
+  } catch (_) {}
+}
+
+function generateId() {
+  return Date.now().toString(36) + Math.random().toString(36).slice(2, 9);
+}
+
+const AppDataContext = createContext(null);
+
+export function AppDataProvider({ children }) {
+  const [venues, setVenues] = useState(() => load(STORAGE_KEYS.venues, initialVenues));
+  const [reviews, setReviews] = useState(() => load(STORAGE_KEYS.reviews, initialReviews));
+  const [articles, setArticles] = useState(() => load(STORAGE_KEYS.articles, initialArticles));
+  const [drinks, setDrinks] = useState(() => load(STORAGE_KEYS.drinks, initialDrinks));
+  const [user, setUser] = useState(() => {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEYS.user);
+      if (raw) {
+        const u = JSON.parse(raw);
+        if (u && typeof u === "object" && u.role) return u;
+      }
+    } catch (_) {}
+    return null;
+  });
+  const [ownerMessages, setOwnerMessages] = useState(() => load(STORAGE_KEYS.ownerMessages, []));
+  const [communityEvents, setCommunityEvents] = useState(() => load(STORAGE_KEYS.communityEvents, []));
+  const [communityPosts, setCommunityPosts] = useState(() => load(STORAGE_KEYS.communityPosts, []));
+
+  useEffect(() => {
+    save(STORAGE_KEYS.venues, venues);
+  }, [venues]);
+  useEffect(() => {
+    save(STORAGE_KEYS.reviews, reviews);
+  }, [reviews]);
+  useEffect(() => {
+    save(STORAGE_KEYS.articles, articles);
+  }, [articles]);
+  useEffect(() => {
+    save(STORAGE_KEYS.drinks, drinks);
+  }, [drinks]);
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(user));
+    } catch (_) {}
+  }, [user]);
+  useEffect(() => { save(STORAGE_KEYS.ownerMessages, ownerMessages); }, [ownerMessages]);
+  useEffect(() => { save(STORAGE_KEYS.communityEvents, communityEvents); }, [communityEvents]);
+  useEffect(() => { save(STORAGE_KEYS.communityPosts, communityPosts); }, [communityPosts]);
+
+  const api = useMemo(() => {
+    return {
+      venues,
+      reviews,
+      articles,
+      drinks,
+      user,
+      setUser,
+
+      getVenues: () => venues,
+      getVenueById: (id) => venues.find((v) => v.id === id),
+      addVenue: (data) => {
+        const id = data.id || generateId();
+        const venue = { ...data, id, review_count: 0, overall_rating: null };
+        setVenues((prev) => [...prev, venue]);
+        return venue;
+      },
+      updateVenue: (id, data) => {
+        setVenues((prev) =>
+          prev.map((v) => (v.id === id ? { ...v, ...data } : v))
+        );
+        return { id, ...data };
+      },
+      deleteVenue: (id) => {
+        setVenues((prev) => prev.filter((v) => v.id !== id));
+        setReviews((r) => r.filter((rev) => rev.venue_id !== id));
+      },
+
+      getReviews: () => reviews,
+      getReviewById: (id) => reviews.find((r) => r.id === id),
+      getReviewsByVenueId: (venueId) =>
+        reviews.filter((r) => r.venue_id === venueId).sort((a, b) => new Date(b.created_date) - new Date(a.created_date)),
+      addReview: (data) => {
+        const id = data.id || generateId();
+        const review = {
+          ...data,
+          id,
+          created_date: new Date().toISOString(),
+          author_name: user?.name || "Utente",
+          created_by: user?.email,
+        };
+        setReviews((prev) => [...prev, review]);
+        const venueReviews = [...reviews, review].filter((r) => r.venue_id === data.venue_id);
+        if (venueReviews.length > 0) {
+          const avg = (key) =>
+            venueReviews.reduce((s, r) => s + (r[key] || 0), 0) / venueReviews.length;
+          const avgDrink = avg("drink_quality");
+          const avgStaff = avg("staff_competence");
+          const avgAtmo = avg("atmosphere");
+          const avgVal = avg("value_for_money");
+          const overall = avg("overall_rating");
+          setVenues((prev) =>
+            prev.map((v) =>
+              v.id === data.venue_id
+                ? {
+                    ...v,
+                    review_count: venueReviews.length,
+                    avg_drink_quality: Math.round(avgDrink * 10) / 10,
+                    avg_staff_competence: Math.round(avgStaff * 10) / 10,
+                    avg_atmosphere: Math.round(avgAtmo * 10) / 10,
+                    avg_value: Math.round(avgVal * 10) / 10,
+                    overall_rating: Math.round(overall * 10) / 10,
+                  }
+                : v
+            )
+          );
+        }
+        return review;
+      },
+      updateReview: (id, data) => {
+        setReviews((prev) =>
+          prev.map((r) => (r.id === id ? { ...r, ...data } : r))
+        );
+        return { id, ...data };
+      },
+
+      getArticles: () => articles,
+      getArticleById: (id) => articles.find((a) => a.id === id),
+      addArticle: (data) => {
+        const id = data.id || generateId();
+        const article = {
+          id,
+          title: data.title || "",
+          slug: (data.title || "").toLowerCase().replace(/\s+/g, "-"),
+          excerpt: data.excerpt || "",
+          content: data.content || "",
+          cover_image: data.cover_image || "",
+          category: data.category || "cultura",
+          author_name: user?.name || "Lo Zio del Rum",
+          views: 0,
+          likes: 0,
+          created_date: new Date().toISOString(),
+          published: true,
+        };
+        setArticles((prev) => [...prev, article]);
+        return article;
+      },
+      updateArticle: (id, data) => {
+        setArticles((prev) =>
+          prev.map((a) => (a.id === id ? { ...a, ...data } : a))
+        );
+        return { id, ...data };
+      },
+
+      getDrinks: () => drinks,
+      getDrinkById: (id) => drinks.find((d) => d.id === id),
+      addDrink: (data) => {
+        const id = data.id || generateId();
+        const drink = {
+          id,
+          name: data.name || "",
+          category: (data.category || "other").toLowerCase(),
+          brand: data.brand || "",
+          origin: data.origin || "",
+          description: data.description || "",
+          image: data.image || "",
+          abv: Number(data.abv) || 0,
+          avg_rating: 0,
+        };
+        setDrinks((prev) => [...prev, drink]);
+        return drink;
+      },
+      updateDrink: (id, data) => {
+        setDrinks((prev) =>
+          prev.map((d) => (d.id === id ? { ...d, ...data } : d))
+        );
+        return { id, ...data };
+      },
+
+      // Community: messaggi proprietari (inviti, annunci)
+      ownerMessages,
+      getOwnerMessages: (approvedOnly = true) =>
+        approvedOnly
+          ? ownerMessages.filter((m) => m.approved).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          : [...ownerMessages].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)),
+      getPendingOwnerMessages: () => ownerMessages.filter((m) => !m.approved),
+      addOwnerMessage: (data) => {
+        const id = data.id || generateId();
+        const isAdmin = user?.role === "admin";
+        const msg = {
+          id,
+          title: data.title || "",
+          content: data.content || "",
+          image: data.image || "",
+          author_name: user?.name || "Lo Zio del Rum",
+          createdAt: new Date().toISOString(),
+          approved: isAdmin,
+        };
+        setOwnerMessages((prev) => [...prev, msg]);
+        return msg;
+      },
+      updateOwnerMessage: (id, data) => {
+        setOwnerMessages((prev) =>
+          prev.map((m) => (m.id === id ? { ...m, ...data } : m))
+        );
+        return { id, ...data };
+      },
+      setOwnerMessageApproved: (id, approved) => {
+        setOwnerMessages((prev) =>
+          prev.map((m) => (m.id === id ? { ...m, approved } : m))
+        );
+      },
+      deleteOwnerMessage: (id) => {
+        setOwnerMessages((prev) => prev.filter((m) => m.id !== id));
+      },
+
+      // Community: eventi (calendario)
+      communityEvents,
+      getCommunityEvents: (approvedOnly = true) =>
+        approvedOnly
+          ? communityEvents.filter((e) => e.approved).sort((a, b) => new Date(a.date) - new Date(b.date))
+          : [...communityEvents].sort((a, b) => new Date(a.date) - new Date(b.date)),
+      getPendingCommunityEvents: () => communityEvents.filter((e) => !e.approved),
+      addCommunityEvent: (data) => {
+        const id = data.id || generateId();
+        const isAdmin = user?.role === "admin";
+        const ev = {
+          id,
+          title: data.title || "",
+          description: data.description || "",
+          date: data.date,
+          location: data.location || "",
+          image: data.image || "",
+          author_name: user?.name || "Lo Zio del Rum",
+          createdAt: new Date().toISOString(),
+          approved: isAdmin,
+        };
+        setCommunityEvents((prev) => [...prev, ev]);
+        return ev;
+      },
+      updateCommunityEvent: (id, data) => {
+        setCommunityEvents((prev) =>
+          prev.map((e) => (e.id === id ? { ...e, ...data } : e))
+        );
+        return { id, ...data };
+      },
+      setCommunityEventApproved: (id, approved) => {
+        setCommunityEvents((prev) =>
+          prev.map((e) => (e.id === id ? { ...e, approved } : e))
+        );
+      },
+      deleteCommunityEvent: (id) => {
+        setCommunityEvents((prev) => prev.filter((e) => e.id !== id));
+      },
+
+      // Community: bacheca utenti
+      communityPosts,
+      getCommunityPosts: (approvedOnly = true) =>
+        approvedOnly
+          ? communityPosts.filter((p) => p.approved).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+          : [...communityPosts].sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)),
+      getPendingCommunityPosts: () => communityPosts.filter((p) => !p.approved),
+      addCommunityPost: (data) => {
+        const id = data.id || generateId();
+        const post = {
+          id,
+          content: data.content || "",
+          image: data.image || "",
+          author_name: user?.name || "Utente",
+          createdAt: new Date().toISOString(),
+          approved: false,
+        };
+        setCommunityPosts((prev) => [...prev, post]);
+        return post;
+      },
+      updateCommunityPost: (id, data) => {
+        setCommunityPosts((prev) =>
+          prev.map((p) => (p.id === id ? { ...p, ...data } : p))
+        );
+        return { id, ...data };
+      },
+      setCommunityPostApproved: (id, approved) => {
+        setCommunityPosts((prev) =>
+          prev.map((p) => (p.id === id ? { ...p, approved } : p))
+        );
+      },
+      deleteCommunityPost: (id) => {
+        setCommunityPosts((prev) => prev.filter((p) => p.id !== id));
+      },
+
+      resetToDefaults: () => {
+        setVenues(initialVenues);
+        setReviews(initialReviews);
+        setArticles(initialArticles);
+        setDrinks(initialDrinks);
+      },
+
+      exportData: () => ({
+        venues,
+        reviews,
+        articles,
+        drinks,
+        user,
+        ownerMessages,
+        communityEvents,
+        communityPosts,
+        exportedAt: new Date().toISOString(),
+        version: 1,
+      }),
+      importData: (data) => {
+        if (data.venues && Array.isArray(data.venues)) setVenues(data.venues);
+        if (data.reviews && Array.isArray(data.reviews)) setReviews(data.reviews);
+        if (data.articles && Array.isArray(data.articles)) setArticles(data.articles);
+        if (data.drinks && Array.isArray(data.drinks)) setDrinks(data.drinks);
+        if (data.user && typeof data.user === "object") setUser(data.user);
+        if (data.ownerMessages && Array.isArray(data.ownerMessages)) setOwnerMessages(data.ownerMessages);
+        if (data.communityEvents && Array.isArray(data.communityEvents)) setCommunityEvents(data.communityEvents);
+        if (data.communityPosts && Array.isArray(data.communityPosts)) setCommunityPosts(data.communityPosts);
+      },
+    };
+  }, [venues, reviews, articles, drinks, user, ownerMessages, communityEvents, communityPosts]);
+
+  return (
+    <AppDataContext.Provider value={api}>{children}</AppDataContext.Provider>
+  );
+}
+
+export function useAppData() {
+  const ctx = useContext(AppDataContext);
+  if (!ctx) throw new Error("useAppData must be used inside AppDataProvider");
+  return ctx;
+}
