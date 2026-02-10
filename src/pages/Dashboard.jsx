@@ -14,7 +14,8 @@ import {
   Download,
   Upload,
   BookOpen,
-  Wine
+  Wine,
+  Wine as BartenderIcon
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -30,17 +31,21 @@ import { toast } from "sonner";
 import { useAppData } from "@/lib/AppDataContext";
 
 export default function Dashboard() {
-  const { user, getVenues, getArticles, getDrinks, updateVenue, deleteVenue, exportData, importData } = useAppData();
+  const { user, getVenues, getArticles, getDrinks, getBartenders, getPendingBartenders, getVenueById, updateVenue, deleteVenue, setBartenderStatus, deleteBartender, exportData, importData } = useAppData();
   const allVenues = getVenues();
   const allArticles = getArticles();
   const allDrinks = getDrinks();
   const pendingVenues = allVenues.filter((v) => !v.verified);
+  const pendingBartenders = getPendingBartenders();
+  const approvedBartenders = getBartenders("approved");
   const [selectedVenueId, setSelectedVenueId] = useState("");
   const [selectedArticleId, setSelectedArticleId] = useState("");
   const [selectedDrinkId, setSelectedDrinkId] = useState("");
+  const [selectedBartenderId, setSelectedBartenderId] = useState("");
   const selectedVenue = selectedVenueId ? allVenues.find((v) => v.id === selectedVenueId) : null;
   const selectedArticle = selectedArticleId ? allArticles.find((a) => a.id === selectedArticleId) : null;
   const selectedDrink = selectedDrinkId ? allDrinks.find((d) => d.id === selectedDrinkId) : null;
+  const selectedBartender = selectedBartenderId ? getBartenders().find((b) => b.id === selectedBartenderId) : null;
   const fileInputRef = useRef(null);
 
   const handleExport = () => {
@@ -104,25 +109,6 @@ export default function Dashboard() {
         <div className="mb-8">
           <h1 className="text-3xl md:text-4xl font-bold mb-2">Dashboard Amministratore</h1>
           <p className="text-stone-500">Gestisci i contenuti in attesa di approvazione</p>
-        </div>
-
-        {/* Anteprima dell'app */}
-        <div className="mb-8 rounded-2xl overflow-hidden border-2 border-stone-700 bg-stone-900 shadow-xl">
-          <div className="flex items-center gap-2 px-4 py-3 bg-stone-800 border-b border-stone-700">
-            <div className="flex gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-stone-600" />
-              <span className="w-2.5 h-2.5 rounded-full bg-stone-600" />
-              <span className="w-2.5 h-2.5 rounded-full bg-stone-600" />
-            </div>
-            <span className="text-xs text-stone-500 font-medium ml-2">Anteprima app — Lo Zio del Rum</span>
-          </div>
-          <div className="aspect-video bg-stone-950 relative">
-            <iframe
-              title="Anteprima app Lo Zio del Rum"
-              src="/Explore"
-              className="absolute inset-0 w-full h-full border-0"
-            />
-          </div>
         </div>
 
         {/* Stats */}
@@ -395,6 +381,85 @@ export default function Dashboard() {
                     Modifica
                   </Button>
                 </Link>
+              </motion.div>
+            )}
+          </div>
+        </div>
+
+        {/* Bartender */}
+        <div className="mt-8 bg-stone-900/50 rounded-2xl border border-stone-800/50 p-6">
+          <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+            <BartenderIcon className="w-5 h-5 text-amber-500" />
+            Bartender
+          </h2>
+          {pendingBartenders.length > 0 && (
+            <div className="mb-6">
+              <h3 className="text-sm font-medium text-stone-400 mb-3">In attesa di approvazione</h3>
+              <div className="space-y-3">
+                {pendingBartenders.map((b) => (
+                  <div key={b.id} className="flex flex-wrap items-center gap-4 p-4 rounded-xl bg-stone-800/30 border border-stone-700/50">
+                    {b.photo ? (
+                      <img src={b.photo} alt="" className="w-14 h-14 rounded-xl object-cover" />
+                    ) : (
+                      <div className="w-14 h-14 rounded-xl bg-amber-500/20 flex items-center justify-center">
+                        <BartenderIcon className="w-7 h-7 text-amber-500" />
+                      </div>
+                    )}
+                    <div className="min-w-0 flex-1">
+                      <p className="font-semibold">{b.name} {b.surname}</p>
+                      <p className="text-sm text-stone-500">{b.specialization} · {b.city}</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button size="sm" className="bg-amber-500 hover:bg-amber-600 text-stone-950" onClick={() => { setBartenderStatus(b.id, "approved"); toast.success("Bartender approvato"); }}>
+                        <CheckCircle className="w-4 h-4 mr-1" /> Approva
+                      </Button>
+                      <Button size="sm" variant="outline" className="border-red-500/50 text-red-400" onClick={() => { deleteBartender(b.id); toast.success("Rifiutato"); }}>
+                        <XCircle className="w-4 h-4 mr-1" /> Rifiuta
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+          <div className="flex flex-wrap items-center gap-3 mb-4">
+            <Link to={createPageUrl("AddBartender")}>
+              <Button size="sm" className="bg-amber-500 hover:bg-amber-600 text-stone-950">
+                <Edit3 className="w-4 h-4 mr-1" />
+                Aggiungi bartender
+              </Button>
+            </Link>
+          </div>
+          <div>
+            <label className="text-sm font-medium text-stone-400 mb-2 block">Bartender approvati</label>
+            <Select value={selectedBartenderId} onValueChange={setSelectedBartenderId}>
+              <SelectTrigger className="w-full max-w-md bg-stone-800/50 border-stone-700">
+                <SelectValue placeholder="Seleziona un bartender..." />
+              </SelectTrigger>
+              <SelectContent className="bg-stone-900 border-stone-800 max-h-64">
+                {approvedBartenders.map((b) => (
+                  <SelectItem key={b.id} value={b.id}>
+                    {b.name} {b.surname} — {b.specialization || b.city}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            {selectedBartender && (
+              <motion.div initial={{ opacity: 0, y: 8 }} animate={{ opacity: 1, y: 0 }} className="mt-3 flex flex-wrap items-center gap-4 p-4 rounded-xl bg-stone-800/30 border border-stone-700/50">
+                <div className="min-w-0 flex-1">
+                  <p className="font-semibold">{selectedBartender.name} {selectedBartender.surname}</p>
+                  <p className="text-sm text-stone-500">{selectedBartender.status === "featured" ? "In evidenza" : "Approvato"}</p>
+                </div>
+                <div className="flex gap-2">
+                  <Button size="sm" variant="outline" className="border-stone-600" onClick={() => { setBartenderStatus(selectedBartender.id, selectedBartender.status === "featured" ? "approved" : "featured"); toast.success(selectedBartender.status === "featured" ? "Rimosso da in evidenza" : "Impostato in evidenza"); }}>
+                    {selectedBartender.status === "featured" ? "Rimuovi da in evidenza" : "In evidenza"}
+                  </Button>
+                  <Link to={createPageUrl(`EditBartender?id=${selectedBartender.id}`)}>
+                    <Button size="sm" className="bg-amber-500 hover:bg-amber-600 text-stone-950">
+                      <Edit3 className="w-4 h-4 mr-1" /> Modifica
+                    </Button>
+                  </Link>
+                </div>
               </motion.div>
             )}
           </div>

@@ -13,6 +13,7 @@ const STORAGE_KEYS = {
   ownerMessages: "app_owner_messages",
   communityEvents: "app_community_events",
   communityPosts: "app_community_posts",
+  bartenders: "app_bartenders",
 };
 
 function load(key, fallback) {
@@ -56,6 +57,7 @@ export function AppDataProvider({ children }) {
   const [ownerMessages, setOwnerMessages] = useState(() => load(STORAGE_KEYS.ownerMessages, []));
   const [communityEvents, setCommunityEvents] = useState(() => load(STORAGE_KEYS.communityEvents, []));
   const [communityPosts, setCommunityPosts] = useState(() => load(STORAGE_KEYS.communityPosts, []));
+  const [bartenders, setBartenders] = useState(() => load(STORAGE_KEYS.bartenders, []));
 
   useEffect(() => {
     save(STORAGE_KEYS.venues, venues);
@@ -77,6 +79,7 @@ export function AppDataProvider({ children }) {
   useEffect(() => { save(STORAGE_KEYS.ownerMessages, ownerMessages); }, [ownerMessages]);
   useEffect(() => { save(STORAGE_KEYS.communityEvents, communityEvents); }, [communityEvents]);
   useEffect(() => { save(STORAGE_KEYS.communityPosts, communityPosts); }, [communityPosts]);
+  useEffect(() => { save(STORAGE_KEYS.bartenders, bartenders); }, [bartenders]);
 
   const api = useMemo(() => {
     return {
@@ -318,6 +321,60 @@ export function AppDataProvider({ children }) {
         setCommunityPosts((prev) => prev.filter((p) => p.id !== id));
       },
 
+      // Bartender
+      bartenders,
+      getBartenders: (statusFilter) => {
+        let list = [...bartenders];
+        if (statusFilter === "approved") list = list.filter((b) => b.status === "approved" || b.status === "featured");
+        if (statusFilter === "featured") list = list.filter((b) => b.status === "featured");
+        if (statusFilter === "pending") list = list.filter((b) => b.status === "pending");
+        return list.sort((a, b) => new Date(b.created_at || 0) - new Date(a.created_at || 0));
+      },
+      getBartenderById: (id) => bartenders.find((b) => b.id === id),
+      getPendingBartenders: () => bartenders.filter((b) => b.status === "pending"),
+      addBartender: (data) => {
+        const id = data.id || generateId();
+        const b = {
+          id,
+          name: data.name || "",
+          surname: data.surname || "",
+          photo: data.photo || "",
+          venue_id: data.venue_id || "",
+          city: data.city || "",
+          specialization: data.specialization || "",
+          years_experience: data.years_experience || "",
+          philosophy: data.philosophy || "",
+          distillati_preferiti: data.distillati_preferiti || "",
+          approccio_degustazione: data.approccio_degustazione || "",
+          consiglio_inizio: data.consiglio_inizio || "",
+          signature_drinks: data.signature_drinks || "",
+          percorso_esperienze: data.percorso_esperienze || "",
+          bio: data.bio || "",
+          motivation: data.motivation || "",
+          consent_linee_editoriali: !!data.consent_linee_editoriali,
+          status: data.status || "pending",
+          created_at: new Date().toISOString(),
+          interview_links: Array.isArray(data.interview_links) ? data.interview_links : [],
+          qa_links: Array.isArray(data.qa_links) ? data.qa_links : [],
+        };
+        setBartenders((prev) => [...prev, b]);
+        return b;
+      },
+      updateBartender: (id, data) => {
+        setBartenders((prev) =>
+          prev.map((b) => (b.id === id ? { ...b, ...data } : b))
+        );
+        return { id, ...data };
+      },
+      setBartenderStatus: (id, status) => {
+        setBartenders((prev) =>
+          prev.map((b) => (b.id === id ? { ...b, status } : b))
+        );
+      },
+      deleteBartender: (id) => {
+        setBartenders((prev) => prev.filter((b) => b.id !== id));
+      },
+
       resetToDefaults: () => {
         setVenues(initialVenues);
         setReviews(initialReviews);
@@ -334,6 +391,7 @@ export function AppDataProvider({ children }) {
         ownerMessages,
         communityEvents,
         communityPosts,
+        bartenders,
         exportedAt: new Date().toISOString(),
         version: 1,
       }),
@@ -346,9 +404,10 @@ export function AppDataProvider({ children }) {
         if (data.ownerMessages && Array.isArray(data.ownerMessages)) setOwnerMessages(data.ownerMessages);
         if (data.communityEvents && Array.isArray(data.communityEvents)) setCommunityEvents(data.communityEvents);
         if (data.communityPosts && Array.isArray(data.communityPosts)) setCommunityPosts(data.communityPosts);
+        if (data.bartenders && Array.isArray(data.bartenders)) setBartenders(data.bartenders);
       },
     };
-  }, [venues, reviews, articles, drinks, user, ownerMessages, communityEvents, communityPosts]);
+  }, [venues, reviews, articles, drinks, user, ownerMessages, communityEvents, communityPosts, bartenders]);
 
   return (
     <AppDataContext.Provider value={api}>{children}</AppDataContext.Provider>
