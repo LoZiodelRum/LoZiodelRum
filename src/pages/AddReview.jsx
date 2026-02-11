@@ -223,7 +223,7 @@ export default function AddReview() {
   const isValid = selectedVenue && formData.overall_rating > 0;
 
   return (
-    <div className="min-h-screen px-4 md:px-6 py-8">
+    <div className="min-h-screen px-4 md:px-6 py-8 pb-28 lg:pb-20">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
         <div className="flex items-center gap-4 mb-8">

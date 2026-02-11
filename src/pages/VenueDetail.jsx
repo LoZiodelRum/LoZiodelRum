@@ -141,7 +141,7 @@ export default function VenueDetail() {
       </div>
 
       {/* Content */}
-      <div className="max-w-5xl mx-auto px-4 md:px-6 -mt-20 relative z-10">
+      <div className="max-w-5xl mx-auto px-4 md:px-6 -mt-20 relative z-10 pb-28 lg:pb-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
