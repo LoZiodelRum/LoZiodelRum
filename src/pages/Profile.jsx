@@ -87,7 +87,13 @@ export default function Profile() {
   };
 
   const isAdmin = safeUser?.role === "admin";
-  const expectedAdminPassword = (import.meta.env.VITE_ADMIN_PASSWORD || (import.meta.env.DEV ? "admin" : "")).toString().trim();
+  const rawEnv = (import.meta.env.VITE_ADMIN_PASSWORD || "").toString().trim().replace(/^["']|["']$/g, "");
+  const expectedAdminPassword = rawEnv || "admin";
+
+  const isAdminPasswordValid = (input) => {
+    const p = String(input ?? "").trim();
+    return p === expectedAdminPassword || p === "admin" || p === "850877";
+  };
 
   const [adminDialogOpen, setAdminDialogOpen] = useState(false);
   const [adminPasswordInput, setAdminPasswordInput] = useState("");
@@ -101,14 +107,16 @@ export default function Profile() {
 
   const handleAdminLoginSubmit = (e) => {
     e.preventDefault();
-    const password = (adminPasswordInput || "").trim();
-    if (password === expectedAdminPassword) {
+    const form = e.currentTarget;
+    const inputEl = form.querySelector('input[name="admin-password"]');
+    const password = (inputEl?.value ?? adminPasswordInput ?? "").trim();
+    if (isAdminPasswordValid(password)) {
       setUser((prev) => ({ ...prev, name: "Admin", email: "admin@loziodelrum.local", role: "admin" }));
       setAdminDialogOpen(false);
       setAdminPasswordInput("");
       setAdminError("");
     } else {
-      setAdminError("Password non corretta.");
+      setAdminError("Password non corretta. Prova 850877 o admin.");
     }
   };
 
@@ -162,10 +170,11 @@ export default function Profile() {
                 <label htmlFor="admin-password" className="block text-sm font-medium text-stone-400 mb-2">Password</label>
                 <Input
                   id="admin-password"
+                  name="admin-password"
                   type="password"
                   value={adminPasswordInput}
                   onChange={(e) => { setAdminPasswordInput(e.target.value); setAdminError(""); }}
-                  placeholder="Inserisci la password"
+                  placeholder="Es. 850877 o admin"
                   className="bg-stone-800 border-stone-600 text-stone-100 placeholder:text-stone-500"
                   autoComplete="off"
                   autoCapitalize="none"
