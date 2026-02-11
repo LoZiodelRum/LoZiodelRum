@@ -100,6 +100,26 @@
 
 }
 
+/* ========== MOBILE: Home ========== */
+/* Solo CSS, niente JS: funziona sempre dopo il deploy (Vercel) */
+@media (max-width: 1023px) {
+  /* Abbassa tutto il contenuto della Home sotto la barra menu */
+  .home-page-root {
+    padding-top: 120px !important;
+  }
+  /* Pulsanti Esplora Locali / Vedi Mappa: stessa larghezza */
+  .home-hero-buttons {
+    width: 100% !important;
+    max-width: 24rem !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+  .home-hero-buttons a,
+  .home-hero-buttons button {
+    width: 100% !important;
+  }
+}
+
 @layer utilities {
   /* Safe area per notch e home indicator */
   .safe-top {

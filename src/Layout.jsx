@@ -11,7 +11,7 @@ import {
         X,
         BookOpen
       } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAppData } from "@/lib/AppDataContext";
 import { PenLine } from "lucide-react";
@@ -44,6 +44,53 @@ export default function Layout({ children, currentPageName }) {
   ];
 
   const isActive = (page) => currentPageName === page;
+
+  const [mobileHeaderVisible, setMobileHeaderVisible] = useState(true);
+  const hideAfterTopTimeoutRef = useRef(null);
+  const isMobileViewportRef = useRef(false);
+
+  useEffect(() => {
+    const checkViewport = () => {
+      isMobileViewportRef.current = window.innerWidth < 1024;
+      if (!isMobileViewportRef.current) setMobileHeaderVisible(true);
+    };
+    checkViewport();
+    window.addEventListener("resize", checkViewport);
+
+    const TOP_THRESHOLD = 50;
+    const SHOW_AT_TOP_SECONDS = 3;
+
+    const onScroll = () => {
+      if (!isMobileViewportRef.current) return;
+      const y = window.scrollY ?? document.documentElement.scrollTop;
+      if (y < TOP_THRESHOLD) {
+        if (hideAfterTopTimeoutRef.current) {
+          clearTimeout(hideAfterTopTimeoutRef.current);
+          hideAfterTopTimeoutRef.current = null;
+        }
+        setMobileHeaderVisible(true);
+        hideAfterTopTimeoutRef.current = setTimeout(() => {
+          setMobileHeaderVisible(false);
+          hideAfterTopTimeoutRef.current = null;
+        }, SHOW_AT_TOP_SECONDS * 1000);
+      } else {
+        if (hideAfterTopTimeoutRef.current) {
+          clearTimeout(hideAfterTopTimeoutRef.current);
+          hideAfterTopTimeoutRef.current = null;
+        }
+        setMobileHeaderVisible(false);
+      }
+    };
+
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", checkViewport);
+      if (hideAfterTopTimeoutRef.current) clearTimeout(hideAfterTopTimeoutRef.current);
+    };
+  }, []);
+
+  const showMobileHeader = mobileMenuOpen || mobileHeaderVisible;
 
   return (
     <div className="min-h-screen bg-stone-950 text-stone-100">
@@ -159,8 +206,13 @@ export default function Layout({ children, currentPageName }) {
         </div>
       </header>
 
-      {/* Mobile Header */}
-      <header className="lg:hidden fixed top-0 left-0 right-0 z-50 glass-card border-b border-stone-800/50 safe-top safe-left safe-right">
+      {/* Mobile Header: si nasconde allo scroll, riappare per qualche secondo in cima */}
+      <header
+        className={`lg:hidden fixed left-0 right-0 z-50 glass-card border-b border-stone-800/50 safe-top safe-left safe-right transition-transform duration-300 ease-out ${
+          showMobileHeader ? "translate-y-0" : "-translate-y-full"
+        }`}
+        style={{ top: 0 }}
+      >
         <div className="flex items-center justify-between px-4 min-[480px]:px-6 h-14 min-h-[56px]">
           <Link to={createPageUrl("Home")} className="flex items-center gap-2">
             <img 

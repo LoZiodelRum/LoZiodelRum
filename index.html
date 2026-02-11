@@ -4,9 +4,18 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="https://LoZiodelRum.com/logo_v2.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
-<meta name="theme-color" content="#0c0a09" />
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+    <meta name="theme-color" content="#0c0a09" />
     <link rel="manifest" href="/manifest.json" />
-    <title>LoZiodelRum APP</title>
+    <title>LoZiodelRum APP (build 2025-02)</title>
+    <style>
+      /* Mobile: Home – abbassa contenuto e pulsanti stessa larghezza (sempre caricato) */
+      @media (max-width: 1023px) {
+        .home-page-root { padding-top: 120px !important; }
+        .home-hero-buttons { width: 100% !important; max-width: 24rem !important; margin-left: auto !important; margin-right: auto !important; }
+        .home-hero-buttons a, .home-hero-buttons button { width: 100% !important; box-sizing: border-box !important; }
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>

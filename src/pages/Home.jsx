@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { 
@@ -76,18 +76,9 @@ export default function Home() {
 
   const isAdmin = currentUser?.role === 'admin';
 
-  const [heroTopOffset, setHeroTopOffset] = useState(0);
-  useEffect(() => {
-    const q = window.matchMedia("(max-width: 1023px)");
-    const set = () => setHeroTopOffset(q.matches ? 80 : 0);
-    set();
-    q.addEventListener("change", set);
-    return () => q.removeEventListener("change", set);
-  }, []);
-
   return (
-    <div className="min-h-screen" style={{ paddingTop: heroTopOffset }}>
-      {/* Hero Section: su viewport stretto paddingTop sul root sposta tutto in basso */}
+    <div className="min-h-screen home-page-root">
+      {/* Hero Section: su mobile .home-page-root in index.css abbassa tutto */}
       <section className="relative h-[70vh] lg:h-[80vh] flex items-start lg:items-center justify-center overflow-hidden">
         {/* Background */}
         <div className="absolute inset-0 pointer-events-none">
@@ -150,15 +141,15 @@ export default function Home() {
               Trova cocktail bar, rum bar e locali d'eccellenza nella tua città.
             </p>
 
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-stretch sm:items-center pt-4 w-full sm:w-auto max-w-sm sm:max-w-none mx-auto">
-              <Link to={createPageUrl("Explore")} className="w-full sm:w-auto">
-                <Button size="lg" className="w-full sm:w-auto bg-amber-500 hover:bg-amber-600 text-stone-950 font-semibold px-8 h-14 rounded-xl text-base shadow-lg shadow-amber-500/25">
+            <div className="home-hero-buttons flex flex-col sm:flex-row gap-4 justify-center items-stretch sm:items-center pt-4">
+              <Link to={createPageUrl("Explore")}>
+                <Button size="lg" className="bg-amber-500 hover:bg-amber-600 text-stone-950 font-semibold px-8 h-14 rounded-xl text-base shadow-lg shadow-amber-500/25">
                   Esplora Locali
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
               </Link>
-              <Link to={createPageUrl("Map")} className="w-full sm:w-auto">
-                <Button size="lg" className="w-full sm:w-auto bg-amber-500 hover:bg-amber-600 text-stone-950 font-semibold px-8 h-14 rounded-xl text-base shadow-lg shadow-amber-500/25">
+              <Link to={createPageUrl("Map")}>
+                <Button size="lg" className="bg-amber-500 hover:bg-amber-600 text-stone-950 font-semibold px-8 h-14 rounded-xl text-base shadow-lg shadow-amber-500/25">
                   <MapPin className="w-5 h-5 mr-2" />
                   Vedi Mappa
                 </Button>

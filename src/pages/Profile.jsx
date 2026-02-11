@@ -24,6 +24,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Skeleton } from "@/components/ui/skeleton";
@@ -88,12 +89,26 @@ export default function Profile() {
   const isAdmin = safeUser?.role === "admin";
   const expectedAdminPassword = import.meta.env.VITE_ADMIN_PASSWORD || (import.meta.env.DEV ? "admin" : "");
 
-  const handleAdminLogin = () => {
-    const password = prompt("Inserisci la password amministratore:");
+  const [adminDialogOpen, setAdminDialogOpen] = useState(false);
+  const [adminPasswordInput, setAdminPasswordInput] = useState("");
+  const [adminError, setAdminError] = useState("");
+
+  const handleAdminLoginClick = () => {
+    setAdminPasswordInput("");
+    setAdminError("");
+    setAdminDialogOpen(true);
+  };
+
+  const handleAdminLoginSubmit = (e) => {
+    e.preventDefault();
+    const password = (adminPasswordInput || "").trim();
     if (password === expectedAdminPassword) {
       setUser((prev) => ({ ...prev, name: "Admin", email: "admin@loziodelrum.local", role: "admin" }));
-    } else if (password !== null) {
-      alert("Password non corretta.");
+      setAdminDialogOpen(false);
+      setAdminPasswordInput("");
+      setAdminError("");
+    } else {
+      setAdminError("Password non corretta.");
     }
   };
 
@@ -128,13 +143,46 @@ export default function Profile() {
           ) : (
             <div className="flex flex-wrap items-center justify-between gap-3">
               <span className="text-stone-500 text-sm">Per gestire contenuti e vedere Dashboard e Scrivi articolo, accedi come amministratore.</span>
-              <Button size="sm" onClick={handleAdminLogin} className="bg-amber-500 hover:bg-amber-600 text-stone-950">
+              <Button size="sm" onClick={handleAdminLoginClick} className="bg-amber-500 hover:bg-amber-600 text-stone-950">
                 <Shield className="w-4 h-4 mr-2" />
                 Accedi come amministratore
               </Button>
             </div>
           )}
         </div>
+
+        {/* Dialog password amministratore (funziona bene su mobile, a differenza di prompt()) */}
+        <Dialog open={adminDialogOpen} onOpenChange={setAdminDialogOpen}>
+          <DialogContent className="bg-stone-900 border-stone-700 text-stone-100 max-w-[min(90vw,24rem)]">
+            <DialogHeader>
+              <DialogTitle className="text-amber-400">Accesso amministratore</DialogTitle>
+            </DialogHeader>
+            <form onSubmit={handleAdminLoginSubmit} className="space-y-4">
+              <div>
+                <label htmlFor="admin-password" className="block text-sm font-medium text-stone-400 mb-2">Password</label>
+                <Input
+                  id="admin-password"
+                  type="password"
+                  value={adminPasswordInput}
+                  onChange={(e) => { setAdminPasswordInput(e.target.value); setAdminError(""); }}
+                  placeholder="Inserisci la password"
+                  className="bg-stone-800 border-stone-600 text-stone-100 placeholder:text-stone-500"
+                  autoComplete="off"
+                  autoFocus
+                />
+              </div>
+              {adminError && <p className="text-sm text-red-400">{adminError}</p>}
+              <DialogFooter className="gap-2 sm:gap-0">
+                <Button type="button" variant="outline" onClick={() => setAdminDialogOpen(false)} className="border-stone-600 text-stone-300">
+                  Annulla
+                </Button>
+                <Button type="submit" className="bg-amber-500 hover:bg-amber-600 text-stone-950">
+                  Accedi
+                </Button>
+              </DialogFooter>
+            </form>
+          </DialogContent>
+        </Dialog>
 
         {/* Profile Header */}
         <motion.div

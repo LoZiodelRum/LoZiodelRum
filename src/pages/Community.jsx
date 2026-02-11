@@ -37,7 +37,7 @@ export default function Community() {
       return;
     }
     if (regRole === "admin") {
-      if (regPassword !== ADMIN_PASSWORD) {
+      if ((regPassword || "").trim() !== ADMIN_PASSWORD) {
         setRegError("Password amministratore non corretta.");
         return;
       }
@@ -160,6 +160,7 @@ export default function Community() {
                     onChange={(e) => setRegPassword(e.target.value)}
                     placeholder="Password"
                     className="bg-stone-50 border-stone-300"
+                    autoComplete="off"
                   />
                 </div>
               )}
