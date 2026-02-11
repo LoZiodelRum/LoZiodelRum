@@ -287,13 +287,13 @@ export default function Home() {
       </section>
 
       {/* Categories */}
-      <section className="py-16 px-6">
+      <section className="py-8 md:py-16 px-4 md:px-6">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center justify-between mb-8">
-            <h2 className="text-2xl md:text-3xl font-bold">Esplora per categoria</h2>
+          <div className="flex items-center justify-between mb-4 md:mb-8">
+            <h2 className="text-xl md:text-3xl font-bold">Esplora per categoria</h2>
           </div>
           
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-2 md:gap-4">
             {categories.map((cat, i) => (
               <motion.div
                 key={cat.value}
@@ -303,10 +303,10 @@ export default function Home() {
               >
                 <Link 
                   to={createPageUrl(`Explore?category=${cat.value}`)}
-                  className="group flex flex-col items-center p-6 bg-stone-900/50 rounded-2xl border border-stone-800/50 hover:border-amber-500/30 hover:bg-stone-800/50 transition-all"
+                  className="group flex flex-col items-center p-4 md:p-6 bg-stone-900/50 rounded-xl md:rounded-2xl border border-stone-800/50 hover:border-amber-500/30 hover:bg-stone-800/50 transition-all"
                 >
-                  <span className="text-4xl mb-3">{cat.icon}</span>
-                  <span className="font-medium text-stone-300 group-hover:text-amber-400 transition-colors text-center">
+                  <span className="text-2xl md:text-4xl mb-1.5 md:mb-3">{cat.icon}</span>
+                  <span className="font-medium text-sm md:text-base text-stone-300 group-hover:text-amber-400 transition-colors text-center leading-tight">
                     {cat.name}
                   </span>
                 </Link>
