@@ -38,7 +38,7 @@ export default function DrinkDetail() {
         {/* LAYOUT SPLIT: FOTO SINISTRA, DATI DESTRA */}
         <div className="flex flex-col md:flex-row gap-10 items-start pt-4">
           {/* Box Immagine - Forza la corrispondenza con la key */}
-          <div className="w-full md:w-[380px] aspect-square bg-white rounded-[40px] flex items-center justify-center p-4 shadow-[0_0_50px_rgba(255,255,255,0.05)] shrink-0 overflow-hidden">
+          <div className="w-full md:w-[380px] aspect-square bg-white rounded-xl flex items-center justify-center p-4 shadow-[0_0_50px_rgba(255,255,255,0.05)] shrink-0 overflow-hidden">
             <img 
               key={`detail-img-${drink.id}`} 
               src={drink.image} 
