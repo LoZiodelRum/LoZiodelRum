@@ -87,7 +87,7 @@ export default function Profile() {
   };
 
   const isAdmin = safeUser?.role === "admin";
-  const expectedAdminPassword = import.meta.env.VITE_ADMIN_PASSWORD || (import.meta.env.DEV ? "admin" : "");
+  const expectedAdminPassword = (import.meta.env.VITE_ADMIN_PASSWORD || (import.meta.env.DEV ? "admin" : "")).toString().trim();
 
   const [adminDialogOpen, setAdminDialogOpen] = useState(false);
   const [adminPasswordInput, setAdminPasswordInput] = useState("");
@@ -168,6 +168,10 @@ export default function Profile() {
                   placeholder="Inserisci la password"
                   className="bg-stone-800 border-stone-600 text-stone-100 placeholder:text-stone-500"
                   autoComplete="off"
+                  autoCapitalize="none"
+                  autoCorrect="off"
+                  spellCheck={false}
+                  inputMode="text"
                   autoFocus
                 />
               </div>

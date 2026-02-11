@@ -19,7 +19,7 @@ const ROLES = [
   { id: "user", label: "Utente", icon: User, description: "Partecipa alla community e alla bacheca" },
 ];
 
-const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || (import.meta.env.DEV ? "admin" : "");
+const ADMIN_PASSWORD = (import.meta.env.VITE_ADMIN_PASSWORD || (import.meta.env.DEV ? "admin" : "")).toString().trim();
 
 export default function Community() {
   const { user, setUser } = useAppData();
@@ -37,7 +37,7 @@ export default function Community() {
       return;
     }
     if (regRole === "admin") {
-      if ((regPassword || "").trim() !== ADMIN_PASSWORD) {
+      if ((regPassword || "").trim() !== (ADMIN_PASSWORD || "").trim()) {
         setRegError("Password amministratore non corretta.");
         return;
       }
@@ -161,6 +161,9 @@ export default function Community() {
                     placeholder="Password"
                     className="bg-stone-50 border-stone-300"
                     autoComplete="off"
+                    autoCapitalize="none"
+                    autoCorrect="off"
+                    spellCheck={false}
                   />
                 </div>
               )}
