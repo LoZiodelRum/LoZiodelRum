@@ -246,8 +246,8 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Mobile Bottom Nav */}
       <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 glass-card border-t border-stone-800/50 safe-bottom safe-left safe-right">
-        <div className="flex items-center h-16 min-h-[64px] px-2">
-          <div className="flex items-center justify-around flex-1">
+        <div className="flex items-center justify-center h-16 min-h-[64px] px-2">
+          <div className="flex items-center justify-evenly w-full max-w-lg">
             {mobileNavItems.map((item) => (
               <Link
                 key={item.page}
@@ -263,6 +263,14 @@ export default function Layout({ children, currentPageName }) {
               </Link>
             ))}
             <Link
+              to={createPageUrl("AddReview")}
+              className="flex flex-col items-center gap-1 px-2 py-2 -mt-4"
+            >
+              <div className="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center shadow-lg shadow-amber-500/30">
+                <PlusCircle className="w-6 h-6 text-stone-950" />
+              </div>
+            </Link>
+            <Link
               to={createPageUrl("Profile")}
               className={`flex flex-col items-center gap-1 px-2 py-2 rounded-xl ${
                 isActive("Profile") ? "text-amber-400" : "text-stone-500"
@@ -272,14 +280,6 @@ export default function Layout({ children, currentPageName }) {
               <span className="text-[10px] font-medium">Profilo</span>
             </Link>
           </div>
-          <Link
-            to={createPageUrl("AddReview")}
-            className="flex flex-col items-center gap-1 px-3 py-2"
-          >
-            <div className="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center -mt-4 shadow-lg shadow-amber-500/30">
-              <PlusCircle className="w-6 h-6 text-stone-950" />
-            </div>
-          </Link>
         </div>
       </nav>
     </div>
