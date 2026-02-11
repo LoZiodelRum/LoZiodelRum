@@ -240,7 +240,7 @@ export default function Layout({ children, currentPageName }) {
       </header>
 
       {/* Main Content */}
-      <main className="pt-14 lg:pt-16 pb-24 lg:pb-8 min-h-screen safe-top safe-left safe-right safe-bottom">
+      <main className="pt-14 lg:pt-16 pb-28 lg:pb-12 min-h-screen safe-top safe-left safe-right safe-bottom">
         {children}
       </main>
 
