@@ -112,26 +112,26 @@ export default function Community() {
           </div>
         </section>
 
-        {/* Registrazione con 4 categorie */}
-        <section className="px-4 md:px-6 py-12 bg-stone-100">
-          <div className="max-w-2xl mx-auto">
-            <h2 className="text-2xl font-bold text-stone-800 mb-2 flex items-center gap-2">
-              <UserPlus className="w-7 h-7 text-amber-500" />
+        {/* Registrazione con 4 categorie – testo nero/scuro per leggibilità su sfondo chiaro */}
+        <section className="px-4 md:px-6 py-12 bg-stone-100 text-stone-900">
+          <div className="max-w-2xl mx-auto text-stone-900">
+            <h2 className="text-2xl font-bold text-stone-900 mb-2 flex items-center gap-2">
+              <UserPlus className="w-7 h-7 text-amber-600" />
               Registrati alla community
             </h2>
-            <p className="text-stone-500 text-sm mb-6">Scegli la tua categoria e inserisci il nome. Gli amministratori devono inserire la password.</p>
-            <form onSubmit={handleRegister} className="rounded-2xl border border-stone-200 bg-white p-6 md:p-8 shadow-lg space-y-6">
+            <p className="text-stone-600 text-sm mb-6">Scegli la tua categoria e inserisci il nome. Gli amministratori devono inserire la password.</p>
+            <form onSubmit={handleRegister} className="rounded-2xl border border-stone-200 bg-white p-6 md:p-8 shadow-lg space-y-6 text-stone-900">
               <div>
-                <label className="block text-sm font-medium text-stone-700 mb-2">Nome</label>
+                <label className="block text-sm font-medium text-stone-900 mb-2">Nome</label>
                 <Input
                   value={regName}
                   onChange={(e) => setRegName(e.target.value)}
                   placeholder="Il tuo nome o nome attività"
-                  className="bg-stone-50 border-stone-300"
+                  className="bg-stone-50 border-stone-300 text-stone-900 placeholder:text-stone-500"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-stone-700 mb-3">Categoria</label>
+                <label className="block text-sm font-medium text-stone-900 mb-3">Categoria</label>
                 <div className="grid grid-cols-2 gap-3">
                   {ROLES.map((r) => (
                     <button
@@ -141,25 +141,25 @@ export default function Community() {
                       className={`flex flex-col items-center gap-1 p-4 rounded-xl border-2 text-left transition-all ${
                         regRole === r.id
                           ? "border-amber-500 bg-amber-50 text-stone-900"
-                          : "border-stone-200 bg-stone-50 text-stone-600 hover:border-stone-300"
+                          : "border-stone-200 bg-stone-50 text-stone-800 hover:border-stone-300"
                       }`}
                     >
-                      <r.icon className="w-6 h-6 text-amber-500" />
-                      <span className="font-semibold text-sm">{r.label}</span>
-                      <span className="text-xs text-stone-500 hidden sm:block">{r.description}</span>
+                      <r.icon className="w-6 h-6 text-amber-600" />
+                      <span className="font-semibold text-sm text-stone-900">{r.label}</span>
+                      <span className="text-xs text-stone-600 hidden sm:block">{r.description}</span>
                     </button>
                   ))}
                 </div>
               </div>
               {regRole === "admin" && (
                 <div>
-                  <label className="block text-sm font-medium text-stone-700 mb-2">Password amministratore</label>
+                  <label className="block text-sm font-medium text-stone-900 mb-2">Password amministratore</label>
                   <Input
                     type="password"
                     value={regPassword}
                     onChange={(e) => setRegPassword(e.target.value)}
                     placeholder="Password"
-                    className="bg-stone-50 border-stone-300"
+                    className="bg-stone-50 border-stone-300 text-stone-900 placeholder:text-stone-500"
                     autoComplete="off"
                     autoCapitalize="none"
                     autoCorrect="off"
@@ -172,7 +172,7 @@ export default function Community() {
                 Registrati
               </Button>
             </form>
-            <p className="text-center text-stone-500 text-sm mt-4">
+            <p className="text-center text-stone-600 text-sm mt-4">
               <Link to={createPageUrl("Home")} className="text-amber-600 hover:underline">Torna alla Home</Link>
             </p>
           </div>
