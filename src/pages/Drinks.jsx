@@ -88,50 +88,50 @@ export default function Drinks() {
   const DrinkCard = ({ drink }) => (
     <Link
       to={`/drink/${drink.id}`}
-      className="flex items-center bg-[#1c1c1e] rounded-2xl p-4 border border-white/5 active:scale-[0.98] transition-all h-[130px] hover:border-white/10"
+      className="flex items-center bg-[#1c1c1e] rounded-2xl p-3 border border-white/5 active:scale-[0.98] transition-all h-[100px] hover:border-white/10"
     >
-      <div className="w-24 h-24 bg-[#2c2c2e] rounded-xl flex items-center justify-center p-0.5 shrink-0 overflow-hidden shadow-xl border border-white/5">
+      <div className="w-16 h-16 bg-[#2c2c2e] rounded-xl flex items-center justify-center p-0.5 shrink-0 overflow-hidden shadow-xl border border-white/5">
         <img
           src={drink.image}
           alt={drink.name}
           className="w-full h-full object-cover object-center"
         />
       </div>
-      <div className="ml-5 flex-1 min-w-0">
+      <div className="ml-3 flex-1 min-w-0">
         <h3 className="text-sm font-black text-white leading-tight truncate">
           {drink.name}
         </h3>
-        <p className="text-[13px] text-zinc-500 font-bold truncate mt-0.5">
+        <p className="text-xs text-zinc-500 font-bold truncate mt-0.5">
           {drink.brand}
         </p>
-        <div className="flex items-center gap-2 mt-3">
-          <div className="px-2.5 py-1 bg-black/40 rounded-lg border border-white/10">
-            <span className="text-[10px] font-black text-zinc-400 uppercase tracking-wider">
+        <div className="flex items-center gap-1.5 mt-2">
+          <div className="px-2 py-0.5 bg-black/40 rounded-md border border-white/10">
+            <span className="text-[9px] font-black text-zinc-400 uppercase tracking-wider">
               {drink.origin || "N/A"}
             </span>
           </div>
-          <div className="px-2.5 py-1 bg-black/40 rounded-lg border border-white/10">
-            <span className="text-[10px] font-black text-zinc-400 uppercase tracking-wider">
+          <div className="px-2 py-0.5 bg-black/40 rounded-md border border-white/10">
+            <span className="text-[9px] font-black text-zinc-400 uppercase tracking-wider">
               {drink.abv}%
             </span>
           </div>
         </div>
       </div>
-      <ChevronRight className="text-zinc-800 w-5 h-5 ml-1 shrink-0" />
+      <ChevronRight className="text-zinc-800 w-4 h-4 ml-1 shrink-0" />
     </Link>
   );
 
   return (
     <div className="min-h-screen bg-black text-white font-sans antialiased pb-20">
-      <div className="sticky top-0 z-20 bg-black/95 backdrop-blur-md p-4 pt-6 border-b border-white/5">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-4xl font-black tracking-tighter">Catalogo Drink</h1>
+      <div className="sticky top-0 z-20 bg-black/95 backdrop-blur-md p-4 pt-5 border-b border-white/5">
+        <div className="flex justify-between items-center mb-4">
+          <h1 className="text-3xl font-black tracking-tighter">Catalogo Drink</h1>
           <div className="w-10 h-10 bg-[#1c1c1e] rounded-full flex items-center justify-center border border-white/10 text-[10px] font-bold text-zinc-500">
             GP
           </div>
         </div>
 
-        <div className="relative mb-6">
+        <div className="relative mb-4">
           <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-500 w-5 h-5" />
           <input
             type="text"
@@ -165,22 +165,22 @@ export default function Drinks() {
         </div>
       </div>
 
-      <div className="p-4 pt-8">
+      <div className="p-4 pt-5">
         {activeCategory ? (
           /* Vista “pagina categoria”: lista completa della categoria selezionata */
-          <div className="space-y-8">
+          <div className="space-y-5">
             <div className="flex justify-between items-center px-1">
               <div className="flex items-center gap-3">
-                <h2 className="text-3xl font-black capitalize tracking-tight flex items-center gap-2">
+                <h2 className="text-2xl font-black capitalize tracking-tight flex items-center gap-2">
                   <span>{getCategoryEmoji(activeCategory)}</span>
                   {CATEGORIES_ORDER.find((c) => normCat(c) === activeCategory) || activeCategory}
                 </h2>
-                <span className="bg-[#1c1c1e] text-zinc-500 text-[12px] px-2 py-0.5 rounded-md font-bold border border-white/5">
+                <span className="bg-[#1c1c1e] text-zinc-500 text-[11px] px-2 py-0.5 rounded-md font-bold border border-white/5">
                   {filteredDrinks.length}
                 </span>
               </div>
             </div>
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
               {filteredDrinks.length > 0 ? (
                 filteredDrinks.map((drink) => (
                   <DrinkCard key={drink.id} drink={drink} />
@@ -196,11 +196,11 @@ export default function Drinks() {
           </div>
         ) : (
           /* Vista overview: una sezione per categoria con solo 6 anteprime (2 righe x 3 colonne) */
-          <div className="space-y-8">
-          <p className="text-zinc-500 text-lg font-medium mb-8">
+          <div className="space-y-6">
+          <p className="text-zinc-500 text-base font-medium mb-5">
             Esplora il nostro archivio di cocktail, distillati e vini
           </p>
-          <div className="space-y-10">
+          <div className="space-y-6">
             {CATEGORIES_ORDER.map((cat) => {
               const key = normCat(cat);
               const list = drinksByCategory[key] || [];
@@ -209,23 +209,23 @@ export default function Drinks() {
               if (list.length === 0) return null;
               return (
                 <section key={cat}>
-                  <div className="flex items-center gap-3 mb-4">
-                    <h2 className="text-2xl font-black tracking-tight flex items-center gap-2">
+                  <div className="flex items-center gap-3 mb-3">
+                    <h2 className="text-xl font-black tracking-tight flex items-center gap-2">
                       <span>{getCategoryEmoji(key)}</span>
                       {displayName}
                     </h2>
-                    <span className="bg-[#1c1c1e] text-zinc-500 text-[12px] px-2 py-0.5 rounded-md font-bold border border-white/5">
+                    <span className="bg-[#1c1c1e] text-zinc-500 text-[11px] px-2 py-0.5 rounded-md font-bold border border-white/5">
                       {list.length}
                     </span>
                   </div>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
                     {previews.map((drink) => (
                       <DrinkCard key={drink.id} drink={drink} />
                     ))}
                   </div>
                   <Link
                     to={`/Drinks?cat=${encodeURIComponent(key)}`}
-                    className="inline-flex items-center gap-1 mt-4 text-orange-500 font-bold text-sm hover:underline"
+                    className="inline-flex items-center gap-1 mt-3 text-orange-500 font-bold text-sm hover:underline"
                   >
                     Vedi tutti i {displayName.toLowerCase()} <ChevronRight className="w-4 h-4" />
                   </Link>
