@@ -43,7 +43,7 @@ export default function DrinkDetail() {
               key={`detail-img-${drink.id}`} 
               src={drink.image} 
               alt={drink.name} 
-              className="max-h-full object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.4)]" 
+              className="w-full h-full object-cover object-center drop-shadow-[0_20px_40px_rgba(0,0,0,0.4)]" 
             />
           </div>
 

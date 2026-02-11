@@ -94,7 +94,7 @@ export default function Drinks() {
         <img
           src={drink.image}
           alt={drink.name}
-          className="w-full h-full object-contain"
+          className="w-full h-full object-cover object-center"
         />
       </div>
       <div className="ml-5 flex-1 min-w-0">
