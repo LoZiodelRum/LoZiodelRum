@@ -144,12 +144,12 @@ export default function DrinkDetail() {
       </div>
 
       {/* FOOTER AZIONI */}
-      <div className="fixed bottom-0 left-0 right-0 p-8 bg-gradient-to-t from-black via-black to-transparent flex justify-center items-center gap-4 z-[110]">
-        <button className="bg-orange-500 text-black font-black px-12 py-5 rounded-full text-xl shadow-[0_15px_40px_rgba(249,115,22,0.4)] active:scale-95 transition-all">
+      <div className="fixed bottom-0 left-0 right-0 px-4 py-6 bg-gradient-to-t from-black via-black to-transparent flex justify-center items-center gap-3 z-[110]">
+        <button className="bg-orange-500 text-black font-black px-7 py-3 rounded-full text-base shadow-[0_10px_28px_rgba(249,115,22,0.4)] active:scale-95 transition-all">
           Scrivi una recensione
         </button>
-        <button className="w-16 h-16 bg-orange-500 rounded-full flex items-center justify-center text-black shadow-xl active:scale-95 transition-all">
-          <Plus className="w-10 h-10" strokeWidth={3} />
+        <button className="w-12 h-12 bg-orange-500 rounded-full flex items-center justify-center text-black shadow-lg active:scale-95 transition-all">
+          <Plus className="w-7 h-7" strokeWidth={3} />
         </button>
       </div>
     </div>
