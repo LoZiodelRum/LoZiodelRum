@@ -18,8 +18,10 @@ import {
   Save,
   X,
   Shield,
-  ShieldOff
+  ShieldOff,
+  Fingerprint
 } from "lucide-react";
+import { isWebAuthnAvailable, hasStoredPasskey, registerPasskey, authenticateWithPasskey, clearStoredPasskey } from "@/lib/webauthn-admin";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -98,11 +100,24 @@ export default function Profile() {
   const [adminDialogOpen, setAdminDialogOpen] = useState(false);
   const [adminPasswordInput, setAdminPasswordInput] = useState("");
   const [adminError, setAdminError] = useState("");
+  const [adminPasskeyLoading, setAdminPasskeyLoading] = useState(false);
+  const [showOfferPasskey, setShowOfferPasskey] = useState(false);
+
+  const webauthnAvailable = isWebAuthnAvailable();
+  const hasPasskey = hasStoredPasskey();
 
   const handleAdminLoginClick = () => {
     setAdminPasswordInput("");
     setAdminError("");
     setAdminDialogOpen(true);
+  };
+
+  const doAdminLogin = () => {
+    setUser((prev) => ({ ...prev, name: "Admin", email: "admin@loziodelrum.local", role: "admin" }));
+    setAdminDialogOpen(false);
+    setAdminPasswordInput("");
+    setAdminError("");
+    setShowOfferPasskey(true);
   };
 
   const handleAdminLoginSubmit = (e) => {
@@ -111,12 +126,37 @@ export default function Profile() {
     const inputEl = form.querySelector('input[name="admin-password"]');
     const password = (inputEl?.value ?? adminPasswordInput ?? "").trim();
     if (isAdminPasswordValid(password)) {
-      setUser((prev) => ({ ...prev, name: "Admin", email: "admin@loziodelrum.local", role: "admin" }));
-      setAdminDialogOpen(false);
-      setAdminPasswordInput("");
-      setAdminError("");
+      doAdminLogin();
     } else {
       setAdminError("Password non corretta. Prova 850877 o admin.");
+    }
+  };
+
+  const handleLoginWithPasskey = async () => {
+    if (!webauthnAvailable || !hasPasskey) return;
+    setAdminPasskeyLoading(true);
+    setAdminError("");
+    try {
+      await authenticateWithPasskey();
+      doAdminLogin();
+    } catch (err) {
+      setAdminError(err?.message || "Impronta non riconosciuta. Usa la password.");
+    } finally {
+      setAdminPasskeyLoading(false);
+    }
+  };
+
+  const handleRegisterPasskey = async () => {
+    setAdminPasskeyLoading(true);
+    setAdminError("");
+    try {
+      await registerPasskey();
+      setShowOfferPasskey(false);
+      setAdminError("");
+    } catch (err) {
+      setAdminError(err?.message || "Associazione impronta non riuscita.");
+    } finally {
+      setAdminPasskeyLoading(false);
     }
   };
 
@@ -138,15 +178,35 @@ export default function Profile() {
         {/* Accesso amministratore: solo tu puoi vedere Dashboard e Scrivi articolo */}
         <div className="mb-6 rounded-2xl border border-stone-800/50 bg-stone-900/50 p-4">
           {isAdmin ? (
-            <div className="flex flex-wrap items-center justify-between gap-3">
-              <div className="flex items-center gap-2 text-amber-400">
-                <Shield className="w-5 h-5" />
-                <span className="font-medium">Sei connesso come amministratore. Dashboard e Scrivi articolo sono visibili nel menu.</span>
+            <div className="space-y-3">
+              <div className="flex flex-wrap items-center justify-between gap-3">
+                <div className="flex items-center gap-2 text-amber-400">
+                  <Shield className="w-5 h-5" />
+                  <span className="font-medium">Sei connesso come amministratore. Dashboard e Scrivi articolo sono visibili nel menu.</span>
+                </div>
+                <Button size="sm" onClick={handleAdminLogout} className="bg-amber-500 hover:bg-amber-600 text-stone-950">
+                  <ShieldOff className="w-4 h-4 mr-2" />
+                  Esci da amministratore
+                </Button>
               </div>
-              <Button size="sm" onClick={handleAdminLogout} className="bg-amber-500 hover:bg-amber-600 text-stone-950">
-                <ShieldOff className="w-4 h-4 mr-2" />
-                Esci da amministratore
-              </Button>
+              {showOfferPasskey && webauthnAvailable && !hasPasskey && (
+                <div className="flex flex-wrap items-center gap-2 rounded-xl bg-stone-800/50 p-3 border border-stone-700/50">
+                  <Fingerprint className="w-5 h-5 text-amber-400 shrink-0" />
+                  <span className="text-sm text-stone-300">Per i prossimi accessi puoi usare l&apos;impronta digitale.</span>
+                  <Button size="sm" onClick={handleRegisterPasskey} disabled={adminPasskeyLoading} className="bg-amber-500 hover:bg-amber-600 text-stone-950">
+                    {adminPasskeyLoading ? "..." : "Associa impronta"}
+                  </Button>
+                  <Button size="sm" variant="ghost" onClick={() => setShowOfferPasskey(false)} className="text-stone-500">
+                    Non ora
+                  </Button>
+                </div>
+              )}
+              {hasPasskey && webauthnAvailable && (
+                <p className="text-xs text-stone-500 flex items-center gap-1">
+                  <Fingerprint className="w-3.5 h-3.5" />
+                  Impronta digitale associata per l&apos;accesso rapido.
+                </p>
+              )}
             </div>
           ) : (
             <div className="flex flex-wrap items-center justify-between gap-3">
@@ -165,6 +225,21 @@ export default function Profile() {
             <DialogHeader>
               <DialogTitle className="text-amber-400">Accesso amministratore</DialogTitle>
             </DialogHeader>
+            <div className="space-y-4">
+              {webauthnAvailable && hasPasskey && (
+                <>
+                  <Button
+                    type="button"
+                    onClick={handleLoginWithPasskey}
+                    disabled={adminPasskeyLoading}
+                    className="w-full bg-amber-500 hover:bg-amber-600 text-stone-950 font-medium h-12"
+                  >
+                    <Fingerprint className="w-5 h-5 mr-2" />
+                    {adminPasskeyLoading ? "Verifica in corso..." : "Accedi con impronta digitale"}
+                  </Button>
+                  <p className="text-center text-xs text-stone-500">oppure inserisci la password</p>
+                </>
+              )}
             <form onSubmit={handleAdminLoginSubmit} className="space-y-4">
               <div>
                 <label htmlFor="admin-password" className="block text-sm font-medium text-stone-400 mb-2">Password</label>
@@ -194,6 +269,7 @@ export default function Profile() {
                 </Button>
               </DialogFooter>
             </form>
+            </div>
           </DialogContent>
         </Dialog>
 
