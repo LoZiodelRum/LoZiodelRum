@@ -70,6 +70,10 @@ export default function Drinks() {
       if (!byCat[drinkCat]) byCat[drinkCat] = [];
       byCat[drinkCat].push(d);
     });
+    // Ordine alfabetico per nome in ogni categoria
+    Object.keys(byCat).forEach((key) => {
+      byCat[key].sort((a, b) => (a.name || "").localeCompare(b.name || "", "it"));
+    });
     return byCat;
   }, [searchTerm, drinksList]);
 
