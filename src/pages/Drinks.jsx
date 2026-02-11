@@ -90,7 +90,7 @@ export default function Drinks() {
       to={`/drink/${drink.id}`}
       className="flex items-center bg-[#1c1c1e] rounded-2xl p-4 border border-white/5 active:scale-[0.98] transition-all h-[130px] hover:border-white/10"
     >
-      <div className="w-24 h-24 bg-[#2c2c2e] rounded-xl flex items-center justify-center p-2 shrink-0 overflow-hidden shadow-xl border border-white/5">
+      <div className="w-24 h-24 bg-[#2c2c2e] rounded-xl flex items-center justify-center p-0.5 shrink-0 overflow-hidden shadow-xl border border-white/5">
         <img
           src={drink.image}
           alt={drink.name}
@@ -98,7 +98,7 @@ export default function Drinks() {
         />
       </div>
       <div className="ml-5 flex-1 min-w-0">
-        <h3 className="text-[17px] font-black text-white leading-tight truncate">
+        <h3 className="text-sm font-black text-white leading-tight truncate">
           {drink.name}
         </h3>
         <p className="text-[13px] text-zinc-500 font-bold truncate mt-0.5">
