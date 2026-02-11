@@ -138,8 +138,8 @@ export default function Drinks() {
           />
         </div>
 
-        {/* Pulsanti: Cocktail per primo, poi Rum, Whisky... Ogni pulsante apre la relativa pagina (lista piena). Senza ?cat= si vede l'overview con 6 anteprime per categoria. */}
-        <div className="flex w-full gap-2 overflow-x-auto no-scrollbar pb-1">
+        {/* Pulsanti categorie: su mobile in griglia 3 colonne (3 righe), su desktop una riga orizzontale */}
+        <div className="grid grid-cols-3 md:flex md:flex-row md:flex-wrap gap-2 pb-1">
           {CATEGORIES_ORDER.map((cat) => {
             const key = normCat(cat);
             const isActive = activeCategory === key;
@@ -147,14 +147,14 @@ export default function Drinks() {
               <button
                 key={cat}
                 onClick={() => openCategory(isActive ? null : key)}
-                className={`flex-1 min-w-0 py-3 px-2 rounded-xl text-[11px] font-black uppercase tracking-tight border transition-all whitespace-nowrap flex items-center justify-center gap-1.5 ${
+                className={`py-3 px-2 rounded-xl text-sm md:text-[11px] font-black uppercase tracking-tight border transition-all flex items-center justify-center gap-1.5 min-w-0 md:min-w-[5rem] ${
                   isActive
                     ? "bg-white text-black border-white shadow-[0_0_15px_rgba(255,255,255,0.2)]"
                     : "bg-[#1c1c1e] text-zinc-500 border-white/5 hover:border-white/20 active:bg-[#2c2c2e]"
                 }`}
               >
                 <span className="shrink-0">{getCategoryEmoji(key)}</span>
-                {cat}
+                <span className="truncate">{cat}</span>
               </button>
             );
           })}
