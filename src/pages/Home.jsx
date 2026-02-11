@@ -78,8 +78,15 @@ export default function Home() {
 
   return (
     <div className="min-h-screen home-page-root">
-      {/* Hero Section: su mobile .home-page-root in index.css abbassa tutto */}
-      <section className="relative h-[70vh] lg:h-[80vh] flex items-start lg:items-center justify-center overflow-hidden">
+      <style>{`
+        @media (max-width: 1023px) {
+          .home-page-root { padding-top: 120px !important; }
+          .home-hero-section { margin-top: -11rem !important; padding-top: 11rem !important; box-sizing: border-box !important; min-height: calc(70vh + 11rem) !important; }
+          .home-hero-buttons { width: 100% !important; max-width: 16rem !important; margin-left: auto !important; margin-right: auto !important; }
+          .home-hero-buttons a, .home-hero-buttons button { width: 100% !important; box-sizing: border-box !important; }
+        }
+      `}</style>
+      <section className="home-hero-section relative h-[70vh] lg:h-[80vh] flex items-start lg:items-center justify-center overflow-hidden">
         {/* Background */}
         <div className="absolute inset-0 pointer-events-none">
           <img
@@ -141,7 +148,7 @@ export default function Home() {
               Trova cocktail bar, rum bar e locali d'eccellenza nella tua città.
             </p>
 
-            <div className="home-hero-buttons flex flex-col sm:flex-row gap-4 justify-center items-stretch sm:items-center pt-4">
+            <div className="home-hero-buttons flex flex-col sm:flex-row gap-4 justify-center items-stretch sm:items-center pt-4 max-w-[16rem] sm:max-w-none mx-auto">
               <Link to={createPageUrl("Explore")}>
                 <Button size="lg" className="bg-amber-500 hover:bg-amber-600 text-stone-950 font-semibold px-8 h-14 rounded-xl text-base shadow-lg shadow-amber-500/25">
                   Esplora Locali
