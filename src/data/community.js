@@ -33,6 +33,16 @@ export const initialOwnerMessages = [
     approved: true,
     venue_name: "Milano",
   },
+  {
+    id: "om4",
+    title: "Novità al Drink Kong",
+    content: "Abbiamo ampliato la carta dei rum. Oltre 50 etichette ora disponibili. Venite a scoprirle.",
+    image: "https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=600",
+    author_name: "Drink Kong",
+    createdAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+    approved: true,
+    venue_name: "Roma",
+  },
 ];
 
 export const initialCommunityPosts = [
@@ -58,6 +68,14 @@ export const initialCommunityPosts = [
     image: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=600",
     author_name: "Alessandro",
     createdAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
+    approved: true,
+  },
+  {
+    id: "cp4",
+    content: "Consiglio: iniziate sempre con un sorso d'acqua tra un drink e l'altro. Il palato vi ringrazierà.",
+    image: "",
+    author_name: "Giulia",
+    createdAt: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000).toISOString(),
     approved: true,
   },
 ];
