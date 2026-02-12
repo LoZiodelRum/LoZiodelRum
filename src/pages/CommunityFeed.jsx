@@ -2,6 +2,7 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { useAppData } from "@/lib/AppDataContext";
+import { useIsMobile } from "@/hooks/use-mobile";
 import {
   Store,
   Users,
@@ -23,6 +24,7 @@ import {
 import { Calendar } from "@/components/ui/calendar";
 
 export default function CommunityFeed() {
+  const isMobile = useIsMobile();
   const { user, getOwnerMessages, getCommunityPosts, getCommunityEvents, addCommunityPost, addOwnerMessage, addCommunityEvent } = useAppData();
   const [postOpen, setPostOpen] = useState(false);
   const [postContent, setPostContent] = useState("");
@@ -38,6 +40,8 @@ export default function CommunityFeed() {
 
   const ownerMessages = getOwnerMessages();
   const communityPosts = getCommunityPosts();
+  const ownerMessagesToShow = isMobile ? ownerMessages.slice(0, 4) : ownerMessages;
+  const communityPostsToShow = isMobile ? communityPosts.slice(0, 4) : communityPosts;
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const allFutureEvents = getCommunityEvents().filter((e) => {
@@ -177,8 +181,8 @@ export default function CommunityFeed() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {ownerMessages.length > 0 ? (
-              ownerMessages.map((msg, i) => (
+            {ownerMessagesToShow.length > 0 ? (
+              ownerMessagesToShow.map((msg, i) => (
                 <CommunityPostCard key={msg.id} post={msg} type="owner" index={i} />
               ))
             ) : (
@@ -238,8 +242,8 @@ export default function CommunityFeed() {
           </div>
 
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {communityPosts.length > 0 ? (
-              communityPosts.map((post, i) => (
+            {communityPostsToShow.length > 0 ? (
+              communityPostsToShow.map((post, i) => (
                 <CommunityPostCard key={post.id} post={post} type="user" index={i} />
               ))
             ) : (
@@ -363,8 +367,8 @@ export default function CommunityFeed() {
               />
             </div>
 
-            {/* Eventi – 6 box in 3 colonne × 2 righe, larghezza come calendario */}
-            <div className="grid grid-cols-3 gap-2 md:gap-3 w-full md:[grid-template-columns:repeat(3,minmax(200px,1fr))]">
+            {/* Eventi – mobile: 2 colonne × 3 righe; desktop: 3 colonne × 2 righe */}
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-2 md:gap-3 w-full md:[grid-template-columns:repeat(3,minmax(200px,1fr))]">
               {futureEvents.length > 0 ? (
                 futureEvents.map((event) => (
                   <div
