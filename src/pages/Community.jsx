@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { UserPlus, Shield, Store, Wine, User } from "lucide-react";
+import { UserPlus, Shield, Store, Wine, User, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
@@ -63,9 +63,9 @@ export default function Community() {
   // Non registrato: mostra hero + carta + form registrazione
   if (!user || !user.role) {
     return (
-      <div className="min-h-screen bg-stone-100 pb-28 lg:pb-12">
+      <div className="min-h-screen bg-stone-950 pb-28 lg:pb-12">
         {/* Hero */}
-        <section className="relative w-full min-h-[50vh] flex items-center justify-center px-4 md:px-6 py-16 md:py-24 text-center overflow-hidden border-b border-stone-200">
+        <section className="relative w-full min-h-[50vh] flex items-center justify-center px-4 md:px-6 py-16 md:py-24 text-center overflow-hidden border-b border-stone-800">
           <img src={BG.hero} alt="" className="absolute inset-0 w-full h-full object-cover" aria-hidden />
           <div className="relative z-10 max-w-3xl mx-auto">
             <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight tracking-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)]">
@@ -78,15 +78,16 @@ export default function Community() {
         </section>
 
         {/* Micro-copy */}
-        <section className="w-full px-4 md:px-6 py-8 text-center bg-stone-100">
-          <p className="max-w-2xl mx-auto text-stone-600 text-sm md:text-base italic">
+        <section className="w-full px-4 md:px-6 py-8 text-center bg-stone-950">
+          <p className="max-w-2xl mx-auto text-stone-400 text-sm md:text-base italic">
             Qui non trovi classifiche né promozioni. Trovi storie vere e persone che bevono con attenzione.
           </p>
         </section>
 
         {/* Carta del Bere Consapevole */}
-        <section className="relative w-full px-4 md:px-6 py-10 md:py-14 overflow-hidden">
+        <section className="relative w-full px-4 md:px-6 py-10 md:py-14 pb-12 overflow-hidden">
           <img src={BG.carta} alt="" className="absolute inset-0 w-full h-full object-cover object-center" aria-hidden />
+          <div className="absolute inset-0 bg-stone-950/30" />
           <div className="relative z-10 max-w-3xl mx-auto">
             <h2 className="text-2xl md:text-3xl font-bold text-amber-500 mb-8 text-left">Carta del Bere Consapevole</h2>
             <div className="rounded-2xl border border-stone-200 bg-white/95 backdrop-blur-sm shadow-xl p-6 md:p-8 space-y-4 text-stone-700 leading-relaxed">
@@ -118,26 +119,26 @@ export default function Community() {
           </div>
         </section>
 
-        {/* Registrazione con 4 categorie – testo nero/scuro per leggibilità su sfondo chiaro */}
-        <section className="px-4 md:px-6 py-12 bg-stone-100 text-stone-900">
-          <div className="max-w-2xl mx-auto text-stone-900">
-            <h2 className="text-2xl font-bold text-stone-900 mb-2 flex items-center gap-2">
-              <UserPlus className="w-7 h-7 text-amber-600" />
+        {/* Registrazione con 4 categorie */}
+        <section className="px-4 md:px-6 py-12 pb-16 bg-stone-950 text-stone-100">
+          <div className="max-w-2xl mx-auto">
+            <h2 className="text-2xl font-bold text-stone-100 mb-2 flex items-center gap-2">
+              <UserPlus className="w-7 h-7 text-amber-500" />
               Registrati alla community
             </h2>
-            <p className="text-stone-600 text-sm mb-6">Scegli la tua categoria e inserisci il nome. Gli amministratori devono inserire la password.</p>
-            <form onSubmit={handleRegister} className="rounded-2xl border border-stone-200 bg-white p-6 md:p-8 shadow-lg space-y-6 text-stone-900">
+            <p className="text-stone-400 text-sm mb-6">Scegli la tua categoria e inserisci il nome. Gli amministratori devono inserire la password.</p>
+            <form onSubmit={handleRegister} className="rounded-2xl border border-stone-700 bg-stone-900/80 p-6 md:p-8 shadow-lg space-y-6 text-stone-100">
               <div>
-                <label className="block text-sm font-medium text-stone-900 mb-2">Nome</label>
+                <label className="block text-sm font-medium text-stone-200 mb-2">Nome</label>
                 <Input
                   value={regName}
                   onChange={(e) => setRegName(e.target.value)}
                   placeholder="Il tuo nome o nome attività"
-                  className="bg-stone-50 border-stone-300 text-stone-900 placeholder:text-stone-500"
+                  className="bg-stone-800 border-stone-600 text-stone-100 placeholder:text-stone-500"
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-stone-900 mb-3">Categoria</label>
+                <label className="block text-sm font-medium text-stone-200 mb-3">Categoria</label>
                 <div className="grid grid-cols-2 gap-3">
                   {ROLES.map((r) => (
                     <button
@@ -146,26 +147,26 @@ export default function Community() {
                       onClick={() => setRegRole(r.id)}
                       className={`flex flex-col items-center gap-1 p-4 rounded-xl border-2 text-left transition-all ${
                         regRole === r.id
-                          ? "border-amber-500 bg-amber-50 text-stone-900"
-                          : "border-stone-200 bg-stone-50 text-stone-800 hover:border-stone-300"
+                          ? "border-amber-500 bg-amber-500/20 text-stone-100"
+                          : "border-stone-600 bg-stone-800 text-stone-200 hover:border-stone-500"
                       }`}
                     >
-                      <r.icon className="w-6 h-6 text-amber-600" />
-                      <span className="font-semibold text-sm text-stone-900">{r.label}</span>
-                      <span className="text-xs text-stone-600 hidden sm:block">{r.description}</span>
+                      <r.icon className="w-6 h-6 text-amber-500" />
+                      <span className="font-semibold text-sm text-stone-100">{r.label}</span>
+                      <span className="text-xs text-stone-400 hidden sm:block">{r.description}</span>
                     </button>
                   ))}
                 </div>
               </div>
               {regRole === "admin" && (
                 <div>
-                  <label className="block text-sm font-medium text-stone-900 mb-2">Password amministratore</label>
+                  <label className="block text-sm font-medium text-stone-200 mb-2">Password amministratore</label>
                   <Input
                     type="password"
                     value={regPassword}
                     onChange={(e) => setRegPassword(e.target.value)}
                     placeholder="Password"
-                    className="bg-stone-50 border-stone-300 text-stone-900 placeholder:text-stone-500"
+                    className="bg-stone-800 border-stone-600 text-stone-100 placeholder:text-stone-500"
                     autoComplete="off"
                     autoCapitalize="none"
                     autoCorrect="off"
@@ -178,8 +179,8 @@ export default function Community() {
                 Registrati
               </Button>
             </form>
-            <p className="text-center text-stone-600 text-sm mt-4">
-              <Link to={createPageUrl("Home")} className="text-amber-600 hover:underline">Torna alla Home</Link>
+            <p className="text-center text-stone-400 text-sm mt-4">
+              <Link to={createPageUrl("Home")} className="text-amber-500 hover:text-amber-400 hover:underline">Torna alla Home</Link>
             </p>
           </div>
         </section>
@@ -187,45 +188,65 @@ export default function Community() {
     );
   }
 
+  const roleLabel = user?.role === "admin" ? "Membro Admin" : (ROLES.find((r) => r.id === user?.role)?.label || "Membro");
+
   return (
-    <div className="min-h-screen bg-stone-100 pb-28 lg:pb-12">
-      {/* Hero: Headline + Sottotitolo con foto di sfondo (senza filtro) */}
-      <section className="relative w-full min-h-[50vh] flex items-center justify-center px-4 md:px-6 py-16 md:py-24 text-center overflow-hidden border-b border-stone-200">
+    <div className="min-h-screen bg-stone-950 pt-8 pb-28 lg:pb-12">
+      {/* Box Benvenuto + Hero: unica sezione con una sola foto di sfondo */}
+      <section className="relative w-full min-h-[50vh] md:min-h-[60vh] overflow-hidden">
         <img
           src={BG.hero}
           alt=""
           className="absolute inset-0 w-full h-full object-cover"
           aria-hidden
         />
-        <div className="relative z-10 max-w-3xl mx-auto">
-          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight tracking-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)]">
-            Un luogo per chi sceglie di bere con consapevolezza.
-          </h1>
-          <p className="mt-6 text-lg md:text-xl text-stone-100 leading-relaxed drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
-            Esperienze reali, racconti autentici e luoghi vissuti.
-            <br className="hidden sm:block" />
-            Una community che mette al centro il tempo, il contesto e il rispetto.
-          </p>
+        <div className="absolute inset-0 bg-stone-950/40" />
+        <div className="relative z-10 flex flex-col items-center justify-center px-4 md:px-6 py-10 md:py-14 gap-8 md:gap-10">
+          <div className="w-full max-w-3xl">
+            <div className="rounded-2xl border-2 border-amber-600/60 bg-[#3C2B1F]/95 backdrop-blur-sm p-5 md:p-6 shadow-lg">
+              <h2 className="text-xl md:text-2xl font-bold text-white mb-4 md:mb-5">
+                Benvenuto, {user?.name || "Utente"}!
+              </h2>
+              <p className="text-stone-200 text-sm md:text-base leading-relaxed mb-5 md:mb-6">
+                Hai accesso esclusivo alla nostra community. Qui potrai partecipare a discussioni, condividere esperienze e connetterti con altri appassionati.
+              </p>
+              <div className="flex items-center gap-2 text-stone-200">
+                <Users className="w-5 h-5 text-amber-500 shrink-0" />
+                <span className="text-sm md:text-base">{roleLabel}</span>
+              </div>
+            </div>
+          </div>
+          <div className="max-w-3xl mx-auto text-center">
+            <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white leading-tight tracking-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)]">
+              Un luogo per chi sceglie di bere con consapevolezza.
+            </h1>
+            <p className="mt-4 md:mt-6 text-base md:text-xl text-stone-100 leading-relaxed drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
+              Esperienze reali, racconti autentici e luoghi vissuti.
+              <br className="hidden sm:block" />
+              Una community che mette al centro il tempo, il contesto e il rispetto.
+            </p>
+          </div>
         </div>
       </section>
 
       {/* Micro-copy */}
-      <section className="w-full px-4 md:px-6 py-8 text-center bg-stone-100">
-        <p className="max-w-2xl mx-auto text-stone-600 text-sm md:text-base italic">
+      <section className="w-full px-4 md:px-6 py-8 text-center bg-stone-950">
+        <p className="max-w-2xl mx-auto text-stone-400 text-sm md:text-base italic">
           Qui non trovi classifiche né promozioni.
           <br />
           Trovi storie vere e persone che bevono con attenzione.
         </p>
       </section>
 
-      {/* Carta del Bere Consapevole con sfondo (senza filtro grigio) */}
-      <section className="relative w-full px-4 md:px-6 py-10 md:py-14 overflow-hidden">
+      {/* Carta del Bere Consapevole con sfondo (stessa immagine) */}
+      <section className="relative w-full px-4 md:px-6 py-10 md:py-14 pb-12 overflow-hidden">
         <img
-          src={BG.carta}
+          src={BG.hero}
           alt=""
           className="absolute inset-0 w-full h-full object-cover object-center"
           aria-hidden
         />
+        <div className="absolute inset-0 bg-stone-950/30" />
         <div className="relative z-10 max-w-3xl mx-auto">
           <h2 className="text-2xl md:text-3xl font-bold text-amber-500 mb-8 text-left">
             Carta del Bere Consapevole

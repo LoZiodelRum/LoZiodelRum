@@ -245,7 +245,7 @@ export default function Layout({ children, currentPageName }) {
       </main>
 
       {/* Mobile Bottom Nav */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 glass-card border-t border-stone-800/50 safe-bottom safe-left safe-right">
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-stone-950 border-t border-stone-800 safe-bottom safe-left safe-right">
         <div className="flex items-center justify-center h-16 min-h-[64px] px-2">
           <div className="flex items-center justify-evenly w-full max-w-lg">
             {mobileNavItems.map((item) => (
@@ -255,7 +255,7 @@ export default function Layout({ children, currentPageName }) {
                 className={`flex flex-col items-center gap-1 px-2 py-2 rounded-xl transition-all ${
                   isActive(item.page)
                     ? "text-amber-400"
-                    : "text-stone-500"
+                    : "text-stone-400"
                 }`}
               >
                 <item.icon className="w-5 h-5" />
@@ -273,7 +273,7 @@ export default function Layout({ children, currentPageName }) {
             <Link
               to={createPageUrl("Profile")}
               className={`flex flex-col items-center gap-1 px-2 py-2 rounded-xl ${
-                isActive("Profile") ? "text-amber-400" : "text-stone-500"
+                isActive("Profile") ? "text-amber-400" : "text-stone-400"
               }`}
             >
               <User className="w-5 h-5" />
