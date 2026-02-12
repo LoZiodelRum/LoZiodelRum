@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { UserPlus, Shield, Store, Wine, User, Users } from "lucide-react";
+import { UserPlus, Shield, Store, Wine, User } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
@@ -77,42 +77,38 @@ export default function Community() {
           </div>
         </section>
 
-        {/* Micro-copy */}
-        <section className="w-full px-4 md:px-6 py-8 text-center bg-stone-950">
-          <p className="max-w-2xl mx-auto text-stone-400 text-sm md:text-base italic">
-            Qui non trovi classifiche né promozioni. Trovi storie vere e persone che bevono con attenzione.
-          </p>
-        </section>
-
-        {/* Carta del Bere Consapevole */}
-        <section className="relative w-full px-4 md:px-6 py-10 md:py-14 pb-12 overflow-hidden">
-          <img src={BG.carta} alt="" className="absolute inset-0 w-full h-full object-cover object-center" aria-hidden />
-          <div className="absolute inset-0 bg-stone-950/30" />
-          <div className="relative z-10 max-w-3xl mx-auto">
-            <h2 className="text-2xl md:text-3xl font-bold text-amber-500 mb-8 text-left">Carta del Bere Consapevole</h2>
-            <div className="rounded-2xl border border-stone-200 bg-white/95 backdrop-blur-sm shadow-xl p-6 md:p-8 space-y-4 text-stone-700 leading-relaxed">
+        {/* Carta del Bere Consapevole – fluido, stessa immagine di sfondo */}
+        <section className="relative w-full px-4 md:px-6 py-12 md:py-16 pb-12 overflow-hidden">
+          <img src={BG.hero} alt="" className="absolute inset-0 w-full h-full object-cover object-center" aria-hidden />
+          <div className="absolute inset-0 bg-stone-950/50" />
+          <div className="relative z-10 max-w-3xl mx-auto space-y-8">
+            <p className="text-center text-stone-300/90 text-sm md:text-base italic">
+              Qui non trovi classifiche né promozioni. Trovi storie vere e persone che bevono con attenzione.
+            </p>
+            <h2 className="text-2xl md:text-3xl font-bold text-amber-400 text-center">Carta del Bere Consapevole</h2>
+            <div className="rounded-2xl border border-stone-600/60 bg-stone-900/70 backdrop-blur-md p-6 md:p-8 space-y-4 text-stone-200 leading-relaxed">
               <p>Questa community nasce per restituire valore a un gesto quotidiano: bere. Crediamo che il bere non sia una performance, ma una scelta. Non cerchiamo il consenso, ma il contesto. Non raccogliamo classifiche, ma esperienze.</p>
               <p>Lo Zio del Rum è uno spazio editoriale indipendente dove:</p>
-              <ul className="list-disc list-inside space-y-2 pl-2 text-stone-600">
+              <ul className="list-disc list-inside space-y-2 pl-2 text-stone-300">
                 <li>ogni racconto nasce da un’esperienza reale</li>
                 <li>ogni luogo viene rispettato prima di essere giudicato</li>
                 <li>ogni contributo è basato su attenzione e responsabilità</li>
               </ul>
               <p>Riteniamo che il valore non sia nella quantità, ma nella qualità del tempo dedicato. Per questo:</p>
-              <ul className="list-disc list-inside space-y-2 pl-2 text-stone-600">
+              <ul className="list-disc list-inside space-y-2 pl-2 text-stone-300">
                 <li>non promuoviamo contenuti costruiti</li>
                 <li>non vendiamo visibilità</li>
                 <li>non influenziamo i racconti</li>
                 <li>non inseguiamo le tendenze</li>
               </ul>
               <p>Sosteniamo invece:</p>
-              <ul className="list-disc list-inside space-y-2 pl-2 text-stone-600">
+              <ul className="list-disc list-inside space-y-2 pl-2 text-stone-300">
                 <li>il dialogo tra chi beve e chi crea luoghi</li>
                 <li>la cultura del bere come esperienza consapevole</li>
                 <li>il rispetto reciproco tra community e proprietari</li>
               </ul>
               <p>Questa non è una piattaforma di intrattenimento rapido. È un luogo di osservazione, racconto e confronto.</p>
-              <p className="pt-4 border-t border-stone-200 text-stone-800 font-medium">
+              <p className="pt-4 border-t border-stone-600/60 text-stone-100 font-medium">
                 Entrare significa accettare una responsabilità semplice: bere meno, ma bere meglio. Con attenzione. Con rispetto.
               </p>
             </div>
@@ -188,70 +184,41 @@ export default function Community() {
     );
   }
 
-  const roleLabel = user?.role === "admin" ? "Membro Admin" : (ROLES.find((r) => r.id === user?.role)?.label || "Membro");
-
   return (
     <div className="min-h-screen bg-stone-950 pt-8 pb-28 lg:pb-12">
-      {/* Box Benvenuto + Hero: unica sezione con una sola foto di sfondo */}
-      <section className="relative w-full min-h-[50vh] md:min-h-[60vh] overflow-hidden">
-        <img
-          src={BG.hero}
-          alt=""
-          className="absolute inset-0 w-full h-full object-cover"
-          aria-hidden
-        />
+      {/* Hero */}
+      <section className="relative w-full min-h-[50vh] flex items-center justify-center px-4 md:px-6 py-16 md:py-24 text-center overflow-hidden border-b border-stone-800">
+        <img src={BG.hero} alt="" className="absolute inset-0 w-full h-full object-cover" aria-hidden />
         <div className="absolute inset-0 bg-stone-950/40" />
-        <div className="relative z-10 flex flex-col items-center justify-center px-4 md:px-6 py-10 md:py-14 gap-8 md:gap-10">
-          <div className="w-full max-w-3xl">
-            <div className="rounded-2xl border-2 border-amber-600/60 bg-[#3C2B1F]/95 backdrop-blur-sm p-5 md:p-6 shadow-lg">
-              <h2 className="text-xl md:text-2xl font-bold text-white mb-4 md:mb-5">
-                Benvenuto, {user?.name || "Utente"}!
-              </h2>
-              <p className="text-stone-200 text-sm md:text-base leading-relaxed mb-5 md:mb-6">
-                Hai accesso esclusivo alla nostra community. Qui potrai partecipare a discussioni, condividere esperienze e connetterti con altri appassionati.
-              </p>
-              <div className="flex items-center gap-2 text-stone-200">
-                <Users className="w-5 h-5 text-amber-500 shrink-0" />
-                <span className="text-sm md:text-base">{roleLabel}</span>
-              </div>
-            </div>
-          </div>
-          <div className="max-w-3xl mx-auto text-center">
-            <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold text-white leading-tight tracking-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)]">
-              Un luogo per chi sceglie di bere con consapevolezza.
-            </h1>
-            <p className="mt-4 md:mt-6 text-base md:text-xl text-stone-100 leading-relaxed drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
-              Esperienze reali, racconti autentici e luoghi vissuti.
-              <br className="hidden sm:block" />
-              Una community che mette al centro il tempo, il contesto e il rispetto.
-            </p>
-          </div>
+        <div className="relative z-10 max-w-3xl mx-auto">
+          <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white leading-tight tracking-tight drop-shadow-[0_2px_8px_rgba(0,0,0,0.7)]">
+            Un luogo per chi sceglie di bere con consapevolezza.
+          </h1>
+          <p className="mt-6 text-lg md:text-xl text-stone-100 leading-relaxed drop-shadow-[0_1px_4px_rgba(0,0,0,0.8)]">
+            Esperienze reali, racconti autentici e luoghi vissuti.
+            <br className="hidden sm:block" />
+            Una community che mette al centro il tempo, il contesto e il rispetto.
+          </p>
         </div>
       </section>
 
-      {/* Micro-copy */}
-      <section className="w-full px-4 md:px-6 py-8 text-center bg-stone-950">
-        <p className="max-w-2xl mx-auto text-stone-400 text-sm md:text-base italic">
-          Qui non trovi classifiche né promozioni.
-          <br />
-          Trovi storie vere e persone che bevono con attenzione.
-        </p>
-      </section>
-
-      {/* Carta del Bere Consapevole con sfondo (stessa immagine) */}
-      <section className="relative w-full px-4 md:px-6 py-10 md:py-14 pb-12 overflow-hidden">
+      {/* Carta del Bere Consapevole – fluido, stessa immagine di sfondo */}
+      <section className="relative w-full px-4 md:px-6 py-12 md:py-16 pb-12 overflow-hidden">
         <img
           src={BG.hero}
           alt=""
           className="absolute inset-0 w-full h-full object-cover object-center"
           aria-hidden
         />
-        <div className="absolute inset-0 bg-stone-950/30" />
-        <div className="relative z-10 max-w-3xl mx-auto">
-          <h2 className="text-2xl md:text-3xl font-bold text-amber-500 mb-8 text-left">
+        <div className="absolute inset-0 bg-stone-950/50" />
+        <div className="relative z-10 max-w-3xl mx-auto space-y-8">
+          <p className="text-center text-stone-300/90 text-sm md:text-base italic">
+            Qui non trovi classifiche né promozioni. Trovi storie vere e persone che bevono con attenzione.
+          </p>
+          <h2 className="text-2xl md:text-3xl font-bold text-amber-400 text-center">
             Carta del Bere Consapevole
           </h2>
-          <div className="rounded-2xl border border-stone-200 bg-white/95 backdrop-blur-sm shadow-xl p-6 md:p-8 space-y-4 text-stone-700 leading-relaxed">
+          <div className="rounded-2xl border border-stone-600/60 bg-stone-900/70 backdrop-blur-md p-6 md:p-8 space-y-4 text-stone-200 leading-relaxed">
             <p>
               Questa community nasce per restituire valore a un gesto quotidiano: bere.
               Crediamo che il bere non sia una performance, ma una scelta.
@@ -261,7 +228,7 @@ export default function Community() {
             <p>
               Lo Zio del Rum è uno spazio editoriale indipendente dove:
             </p>
-            <ul className="list-disc list-inside space-y-2 pl-2 text-stone-600">
+            <ul className="list-disc list-inside space-y-2 pl-2 text-stone-300">
               <li>ogni racconto nasce da un’esperienza reale</li>
               <li>ogni luogo viene rispettato prima di essere giudicato</li>
               <li>ogni contributo è basato su attenzione e responsabilità</li>
@@ -270,7 +237,7 @@ export default function Community() {
               Riteniamo che il valore non sia nella quantità, ma nella qualità del tempo dedicato.
               Per questo:
             </p>
-            <ul className="list-disc list-inside space-y-2 pl-2 text-stone-600">
+            <ul className="list-disc list-inside space-y-2 pl-2 text-stone-300">
               <li>non promuoviamo contenuti costruiti</li>
               <li>non vendiamo visibilità</li>
               <li>non influenziamo i racconti</li>
@@ -279,7 +246,7 @@ export default function Community() {
             <p>
               Sosteniamo invece:
             </p>
-            <ul className="list-disc list-inside space-y-2 pl-2 text-stone-600">
+            <ul className="list-disc list-inside space-y-2 pl-2 text-stone-300">
               <li>il dialogo tra chi beve e chi crea luoghi</li>
               <li>la cultura del bere come esperienza consapevole</li>
               <li>il rispetto reciproco tra community e proprietari</li>
@@ -288,7 +255,7 @@ export default function Community() {
               Questa non è una piattaforma di intrattenimento rapido.
               È un luogo di osservazione, racconto e confronto.
             </p>
-            <p className="pt-4 border-t border-stone-200 text-stone-800 font-medium">
+            <p className="pt-4 border-t border-stone-600/60 text-stone-100 font-medium">
               Entrare significa accettare una responsabilità semplice:
               <br />
               bere meno, ma bere meglio.
