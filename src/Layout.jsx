@@ -43,10 +43,13 @@ export default function Layout({ children, currentPageName }) {
     { name: "Community", icon: User, page: "Community" },
   ];
 
-  const isActive = (page) => currentPageName === page;
+  const isActive = (page) =>
+    currentPageName === page || (page === "Community" && currentPageName === "CommunityFeed");
+
+  const isCommunityFeed = currentPageName === "CommunityFeed";
 
   return (
-    <div className="min-h-screen bg-stone-950 text-stone-100">
+    <div className={`min-h-screen text-stone-100 ${isCommunityFeed ? "bg-transparent" : "bg-stone-950"}`}>
       <style>{`
         :root {
           --color-primary: #f59e0b;

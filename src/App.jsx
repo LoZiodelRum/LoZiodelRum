@@ -85,6 +85,16 @@ const AuthenticatedApp = () => {
         } 
       />
 
+      {/* CommunityFeed – bacheca community */}
+      <Route 
+        path="/CommunityFeed" 
+        element={
+          <LayoutWrapper currentPageName="CommunityFeed">
+            {Pages.CommunityFeed && <Pages.CommunityFeed />}
+          </LayoutWrapper>
+        } 
+      />
+
       {/* 404 o redirect URL in minuscolo (es. /magazine -> /Magazine) */}
       <Route path="*" element={<PageNotFoundOrRedirect />} />
     </Routes>

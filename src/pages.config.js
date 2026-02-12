@@ -54,6 +54,7 @@ import AddReview from './pages/AddReview';
 import AddVenue from './pages/AddVenue';
 import ArticleDetail from './pages/ArticleDetail';
 import Community from './pages/Community';
+import CommunityFeed from './pages/CommunityFeed';
 import Dashboard from './pages/Dashboard';
 import DrinkDetail from './pages/DrinkDetail';
 import Drinks from './pages/Drinks';
@@ -80,6 +81,7 @@ export const PAGES = {
     "AddVenue": AddVenue,
     "ArticleDetail": ArticleDetail,
     "Community": Community,
+    "CommunityFeed": CommunityFeed,
     "Dashboard": Dashboard,
     "DrinkDetail": DrinkDetail,
     "Drinks": Drinks,

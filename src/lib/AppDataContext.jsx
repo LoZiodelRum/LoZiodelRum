@@ -3,6 +3,7 @@ import { venuesData as initialVenues } from "@/data/venues";
 import { reviewsData as initialReviews } from "@/data/reviews";
 import { articlesData as initialArticles } from "@/data/articles";
 import { drinksData as initialDrinks } from "@/data/drinks";
+import { initialOwnerMessages, initialCommunityPosts, initialCommunityEvents } from "@/data/community";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
 const STORAGE_KEYS = {
@@ -55,9 +56,16 @@ export function AppDataProvider({ children }) {
     } catch (_) {}
     return null;
   });
-  const [ownerMessages, setOwnerMessages] = useState(() => load(STORAGE_KEYS.ownerMessages, []));
-  const [communityEvents, setCommunityEvents] = useState(() => load(STORAGE_KEYS.communityEvents, []));
-  const [communityPosts, setCommunityPosts] = useState(() => load(STORAGE_KEYS.communityPosts, []));
+  const [ownerMessages, setOwnerMessages] = useState(() => load(STORAGE_KEYS.ownerMessages, initialOwnerMessages));
+  const [communityEvents, setCommunityEvents] = useState(() => {
+    const stored = (load(STORAGE_KEYS.communityEvents, []) || []).filter(
+      (e) => e.title !== "Cocktail Tiki Night"
+    );
+    const storedIds = new Set(stored.map((e) => e.id));
+    const missing = (initialCommunityEvents || []).filter((e) => !storedIds.has(e.id));
+    return [...stored, ...missing];
+  });
+  const [communityPosts, setCommunityPosts] = useState(() => load(STORAGE_KEYS.communityPosts, initialCommunityPosts));
   const [bartenders, setBartenders] = useState(() => load(STORAGE_KEYS.bartenders, []));
   const [cloudVenues, setCloudVenues] = useState([]);
 
@@ -267,6 +275,7 @@ export function AppDataProvider({ children }) {
           content: data.content || "",
           image: data.image || "",
           author_name: user?.name || "Lo Zio del Rum",
+          venue_name: data.venue_name || "",
           createdAt: new Date().toISOString(),
           approved: isAdmin,
         };

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { UserPlus, Shield, Store, Wine, User } from "lucide-react";
+import { UserPlus, Shield, Store, Wine, User, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Link } from "react-router-dom";
@@ -111,6 +111,15 @@ export default function Community() {
               <p className="pt-4 border-t border-stone-600/60 text-stone-100 font-medium">
                 Entrare significa accettare una responsabilità semplice: bere meno, ma bere meglio. Con attenzione. Con rispetto.
               </p>
+              <div className="mt-8 flex justify-center">
+                <Link
+                  to={createPageUrl("CommunityFeed")}
+                  className="inline-flex items-center gap-2 px-6 py-3 bg-amber-500 hover:bg-amber-600 text-stone-950 font-semibold rounded-xl transition-colors"
+                >
+                  Scopri la Bacheca
+                  <ChevronRight className="w-5 h-5" />
+                </Link>
+              </div>
             </div>
           </div>
         </section>
@@ -264,6 +273,15 @@ export default function Community() {
               <br />
               Con rispetto.
             </p>
+            <div className="mt-8 flex justify-center">
+              <Link
+                to={createPageUrl("CommunityFeed")}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-amber-500 hover:bg-amber-600 text-stone-950 font-semibold rounded-xl transition-colors"
+              >
+                Entra nella Community
+                <ChevronRight className="w-5 h-5" />
+              </Link>
+            </div>
           </div>
         </div>
       </section>
