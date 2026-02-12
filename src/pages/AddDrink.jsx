@@ -140,10 +140,10 @@ export default function AddDrink() {
   const isCocktail = formData.category === 'cocktail';
 
   return (
-    <div className="min-h-screen px-4 md:px-6 py-8">
+    <div className="min-h-screen px-4 md:px-6 pt-8 pb-28 lg:pb-12">
       <div className="max-w-2xl mx-auto">
         {/* Header */}
-        <div className="flex items-center gap-4 mb-8">
+        <div className="flex items-center gap-4 mb-8 pt-6">
           <Link 
             to={createPageUrl("Drinks")}
             className="p-2 hover:bg-stone-800 rounded-xl transition-colors"

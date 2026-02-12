@@ -81,10 +81,10 @@ export default function Explore() {
   });
 
   return (
-    <div className="min-h-screen px-4 sm:px-6 md:px-6 py-6 sm:py-8 overflow-x-hidden">
+    <div className="min-h-screen px-4 sm:px-6 md:px-6 pt-8 pb-28 lg:pb-12 overflow-x-hidden">
       <div className="max-w-7xl mx-auto w-full">
         {/* Header */}
-        <div className="mb-8">
+        <div className="mb-8 pt-6">
           <h1 className="text-3xl md:text-4xl font-bold mb-2">Esplora</h1>
           <p className="text-stone-500">
             Scopri locali e drink d'eccellenza

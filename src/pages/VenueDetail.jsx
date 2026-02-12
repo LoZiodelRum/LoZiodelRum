@@ -55,7 +55,7 @@ export default function VenueDetail() {
 
   if (loadingVenue) {
     return (
-      <div className="min-h-screen px-4 md:px-6 py-8">
+      <div className="min-h-screen px-4 md:px-6 pt-8 pb-28 lg:pb-12">
         <div className="max-w-5xl mx-auto">
           <Skeleton className="h-[40vh] w-full rounded-2xl mb-8" />
           <Skeleton className="h-10 w-2/3 mb-4" />

@@ -63,7 +63,7 @@ export default function Community() {
   // Non registrato: mostra hero + carta + form registrazione
   if (!user || !user.role) {
     return (
-      <div className="min-h-screen bg-stone-100">
+      <div className="min-h-screen bg-stone-100 pb-28 lg:pb-12">
         {/* Hero */}
         <section className="relative w-full min-h-[50vh] flex items-center justify-center px-4 md:px-6 py-16 md:py-24 text-center overflow-hidden border-b border-stone-200">
           <img src={BG.hero} alt="" className="absolute inset-0 w-full h-full object-cover" aria-hidden />
@@ -188,7 +188,7 @@ export default function Community() {
   }
 
   return (
-    <div className="min-h-screen bg-stone-100">
+    <div className="min-h-screen bg-stone-100 pb-28 lg:pb-12">
       {/* Hero: Headline + Sottotitolo con foto di sfondo (senza filtro) */}
       <section className="relative w-full min-h-[50vh] flex items-center justify-center px-4 md:px-6 py-16 md:py-24 text-center overflow-hidden border-b border-stone-200">
         <img

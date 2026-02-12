@@ -96,7 +96,7 @@ export default function ArticleDetail() {
       </div>
 
       {/* Contenuto: tag, titolo, intro, autore/date/views, corpo */}
-      <div className="px-4 md:px-6 -mt-24 relative z-10 pb-20">
+      <div className="px-4 md:px-6 -mt-24 relative z-10 pb-28 lg:pb-20">
         <div className="max-w-4xl mx-auto">
           <div className="bg-[#141414] rounded-3xl border border-white/10 p-6 md:p-10 shadow-2xl">
             {/* Tag categoria (es. Cultura) */}

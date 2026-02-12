@@ -122,7 +122,7 @@ export default function Drinks() {
   );
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans antialiased pb-20">
+    <div className="min-h-screen bg-black text-white font-sans antialiased pt-8 pb-28 lg:pb-20">
       <div className="sticky top-0 z-20 bg-black/95 backdrop-blur-md p-4 pt-5 border-b border-white/5">
         <div className="flex justify-between items-center mb-4">
           <h1 className="text-3xl font-black tracking-tighter">Catalogo Drink</h1>

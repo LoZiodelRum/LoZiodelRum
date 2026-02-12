@@ -48,7 +48,7 @@ export default function Magazine() {
   };
 
   return (
-    <div className="min-h-screen bg-black text-white font-sans antialiased pb-20">
+    <div className="min-h-screen bg-black text-white font-sans antialiased pt-8 pb-28 lg:pb-20">
       <div className="max-w-6xl mx-auto px-4 md:px-6 py-8">
         {/* Filtri categoria come in allegato: Tutti in evidenza arancio */}
         <div className="flex gap-2 overflow-x-auto no-scrollbar mb-8 pb-2">
