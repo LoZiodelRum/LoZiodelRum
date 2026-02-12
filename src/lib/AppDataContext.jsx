@@ -6,8 +6,10 @@ import { drinksData as initialDrinks } from "@/data/drinks";
 import { initialOwnerMessages, initialCommunityPosts, initialCommunityEvents } from "@/data/community";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
+const COMMUNITY_POSTS_VERSION = 10;
 const STORAGE_KEYS = {
   venues: "app_venues",
+  communityPostsVersion: "app_community_posts_version",
   reviews: "app_reviews",
   articles: "app_articles",
   drinks: "app_drinks",
@@ -58,9 +60,14 @@ export function AppDataProvider({ children }) {
   });
   const [ownerMessages, setOwnerMessages] = useState(() => {
     const stored = load(STORAGE_KEYS.ownerMessages, []) || [];
-    const storedIds = new Set(stored.map((m) => m.id));
-    const missing = (initialOwnerMessages || []).filter((m) => !storedIds.has(m.id));
-    return stored.length > 0 ? [...stored, ...missing] : (initialOwnerMessages || []);
+    const seedMap = new Map((initialOwnerMessages || []).map((m) => [m.id, m]));
+    const merged = stored.map((m) => {
+      const seed = seedMap.get(m.id);
+      return seed && seed.image ? { ...m, image: seed.image } : m;
+    });
+    const mergedIds = new Set(merged.map((m) => m.id));
+    const missing = (initialOwnerMessages || []).filter((m) => !mergedIds.has(m.id));
+    return stored.length > 0 ? [...merged, ...missing] : (initialOwnerMessages || []);
   });
   const [communityEvents, setCommunityEvents] = useState(() => {
     const stored = (load(STORAGE_KEYS.communityEvents, []) || []).filter(
@@ -71,10 +78,21 @@ export function AppDataProvider({ children }) {
     return [...stored, ...missing];
   });
   const [communityPosts, setCommunityPosts] = useState(() => {
+    const storedVersion = parseInt(localStorage.getItem(STORAGE_KEYS.communityPostsVersion) || "0", 10);
+    if (storedVersion < COMMUNITY_POSTS_VERSION) {
+      localStorage.removeItem(STORAGE_KEYS.communityPosts);
+      localStorage.setItem(STORAGE_KEYS.communityPostsVersion, String(COMMUNITY_POSTS_VERSION));
+      return initialCommunityPosts || [];
+    }
     const stored = load(STORAGE_KEYS.communityPosts, []) || [];
-    const storedIds = new Set(stored.map((p) => p.id));
-    const missing = (initialCommunityPosts || []).filter((p) => !storedIds.has(p.id));
-    return stored.length > 0 ? [...stored, ...missing] : (initialCommunityPosts || []);
+    const seedMap = new Map((initialCommunityPosts || []).map((p) => [p.id, p]));
+    const merged = stored.map((p) => {
+      const seed = seedMap.get(p.id);
+      return seed && seed.image ? { ...p, image: seed.image } : p;
+    });
+    const mergedIds = new Set(merged.map((p) => p.id));
+    const missing = (initialCommunityPosts || []).filter((p) => !mergedIds.has(p.id));
+    return stored.length > 0 ? [...merged, ...missing] : (initialCommunityPosts || []);
   });
   const [bartenders, setBartenders] = useState(() => load(STORAGE_KEYS.bartenders, []));
   const [cloudVenues, setCloudVenues] = useState([]);

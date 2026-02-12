@@ -1,9 +1,17 @@
+import { useState } from "react";
 import { MapPin } from "lucide-react";
 import { motion } from "framer-motion";
 
-const DEFAULT_IMG = "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=400";
+const COMMUNITY_FALLBACKS = [
+  "https://images.unsplash.com/photo-1551024709-8f23befc6f87?w=600",
+  "https://images.unsplash.com/photo-1575023782549-62ca0d244b39?w=600",
+  "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=600",
+  "https://images.unsplash.com/photo-1536935338788-846a998298fe?w=600",
+];
 
 export default function CommunityPostCard({ post, type = "owner", index = 0 }) {
+  const fallback = type === "user" ? COMMUNITY_FALLBACKS[index % 4] : "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=400";
+  const [imgSrc, setImgSrc] = useState(post.image || fallback);
   const title = post.title || (post.content?.slice(0, 50) + (post.content?.length > 50 ? "…" : "")) || "Post";
   const location = post.venue_name || post.location || post.author_name || "";
 
@@ -16,8 +24,9 @@ export default function CommunityPostCard({ post, type = "owner", index = 0 }) {
     >
       <div className="absolute inset-0">
         <img
-          src={post.image || DEFAULT_IMG}
+          src={imgSrc}
           alt=""
+          onError={() => setImgSrc(fallback)}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/40 to-transparent" />
