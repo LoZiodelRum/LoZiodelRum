@@ -40,8 +40,8 @@ export default function CommunityFeed() {
 
   const ownerMessages = getOwnerMessages();
   const communityPosts = getCommunityPosts();
-  const ownerMessagesToShow = isMobile ? ownerMessages.slice(0, 4) : ownerMessages;
-  const communityPostsToShow = isMobile ? communityPosts.slice(0, 4) : communityPosts;
+  const ownerMessagesToShow = isMobile ? ownerMessages.slice(0, 5) : ownerMessages;
+  const communityPostsToShow = isMobile ? communityPosts.slice(0, 5) : communityPosts;
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const allFutureEvents = getCommunityEvents().filter((e) => {
@@ -368,7 +368,9 @@ export default function CommunityFeed() {
             </div>
 
             {/* Eventi – mobile: 2 colonne × 3 righe; desktop: 3 colonne × 2 righe */}
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-2 md:gap-3 w-full lg:[grid-template-columns:repeat(3,minmax(200px,1fr))]">
+            <div
+              className={`grid gap-2 md:gap-3 w-full ${isMobile ? "grid-cols-2" : "grid-cols-3 md:[grid-template-columns:repeat(3,minmax(200px,1fr))]"}`}
+            >
               {futureEvents.length > 0 ? (
                 futureEvents.map((event) => (
                   <div
