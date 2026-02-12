@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
@@ -31,7 +31,7 @@ import { toast } from "sonner";
 import { useAppData } from "@/lib/AppDataContext";
 
 export default function Dashboard() {
-  const { user, getVenues, getArticles, getDrinks, getBartenders, getPendingBartenders, getVenueById, updateVenue, deleteVenue, setBartenderStatus, deleteBartender, exportData, importData } = useAppData();
+  const { user, getVenues, getArticles, getDrinks, getBartenders, getPendingBartenders, getVenueById, updateVenue, deleteVenue, setBartenderStatus, deleteBartender, exportData, importData, isSupabaseConfigured, getPendingVenuesFromCloud, approveVenueCloud, rejectVenueCloud } = useAppData();
   const allVenues = getVenues();
   const allArticles = getArticles();
   const allDrinks = getDrinks();
@@ -42,11 +42,26 @@ export default function Dashboard() {
   const [selectedArticleId, setSelectedArticleId] = useState("");
   const [selectedDrinkId, setSelectedDrinkId] = useState("");
   const [selectedBartenderId, setSelectedBartenderId] = useState("");
+  const [cloudPendingVenues, setCloudPendingVenues] = useState([]);
+  const [loadingCloudPending, setLoadingCloudPending] = useState(false);
   const selectedVenue = selectedVenueId ? allVenues.find((v) => v.id === selectedVenueId) : null;
   const selectedArticle = selectedArticleId ? allArticles.find((a) => a.id === selectedArticleId) : null;
   const selectedDrink = selectedDrinkId ? allDrinks.find((d) => d.id === selectedDrinkId) : null;
   const selectedBartender = selectedBartenderId ? getBartenders().find((b) => b.id === selectedBartenderId) : null;
   const fileInputRef = useRef(null);
+
+  const loadCloudPending = () => {
+    if (!isSupabaseConfigured()) return;
+    setLoadingCloudPending(true);
+    getPendingVenuesFromCloud().then((list) => {
+      setCloudPendingVenues(list);
+      setLoadingCloudPending(false);
+    }).catch(() => setLoadingCloudPending(false));
+  };
+
+  useEffect(() => {
+    loadCloudPending();
+  }, []);
 
   const handleExport = () => {
     const data = exportData();
@@ -111,6 +126,22 @@ export default function Dashboard() {
           <p className="text-stone-500">Gestisci i contenuti in attesa di approvazione</p>
         </div>
 
+        {/* Avviso: Supabase non configurato */}
+        {!isSupabaseConfigured() && (
+          <div className="mb-8 p-5 rounded-2xl bg-amber-500/10 border border-amber-500/30">
+            <h3 className="font-bold text-amber-400 mb-2 flex items-center gap-2">
+              <AlertCircle className="w-5 h-5" />
+              Per vedere sul Mac i locali inseriti dal cellulare
+            </h3>
+            <p className="text-stone-300 text-sm mb-3">
+              Configura Supabase (gratuito): i locali inseriti dal telefono verranno salvati online e li vedrai qui per approvarli. Leggi <code className="px-1.5 py-0.5 bg-stone-800 rounded text-xs">docs/SUPABASE_SETUP.md</code>.
+            </p>
+            <p className="text-stone-500 text-xs">
+              Aggiungi in <code className="px-1 py-0.5 bg-stone-800 rounded">.env</code>: <code className="text-amber-400">VITE_SUPABASE_URL</code> e <code className="text-amber-400">VITE_SUPABASE_ANON_KEY</code>
+            </p>
+          </div>
+        )}
+
         {/* Stats */}
         <div className="grid md:grid-cols-3 gap-6 mb-8">
           <div className="bg-stone-900/50 rounded-2xl border border-stone-800/50 p-6">
@@ -119,24 +150,25 @@ export default function Dashboard() {
                 <AlertCircle className="w-6 h-6 text-amber-500" />
               </div>
               <div>
-                <p className="text-3xl font-bold">{pendingVenues.length}</p>
-                <p className="text-stone-500">In attesa</p>
+                <p className="text-3xl font-bold">{pendingVenues.length + cloudPendingVenues.length}</p>
+                <p className="text-stone-500">Locali in attesa</p>
               </div>
             </div>
           </div>
         </div>
 
-        {/* Pending Venues */}
-        <div className="bg-stone-900/50 rounded-2xl border border-stone-800/50 p-6">
-          <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+        {/* Locali in attesa (dal tuo dispositivo) */}
+        <div className="bg-stone-900/50 rounded-2xl border border-stone-800/50 p-6 mb-8">
+          <h2 className="text-xl font-bold mb-2 flex items-center gap-2">
             <MapPin className="w-5 h-5 text-amber-500" />
-            Locali in attesa di approvazione
+            Locali in attesa (dal tuo dispositivo)
           </h2>
+          <p className="text-stone-500 text-sm mb-6">I locali inseriti da questo dispositivo compaiono qui. Approvali per renderli visibili a tutti.</p>
 
           {pendingVenues.length === 0 ? (
             <div className="text-center py-12">
               <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-              <p className="text-stone-500">Nessun contenuto in attesa di approvazione</p>
+              <p className="text-stone-500">Nessun locale in attesa da questo dispositivo</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -149,14 +181,11 @@ export default function Dashboard() {
                   className="bg-stone-800/30 rounded-xl p-5 border border-stone-700/50"
                 >
                   <div className="flex flex-col md:flex-row gap-4">
-                    {/* Image */}
                     <img
                       src={venue.cover_image || "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=400"}
                       alt={venue.name}
                       className="w-full md:w-32 h-32 object-cover rounded-lg"
                     />
-
-                    {/* Info */}
                     <div className="flex-1">
                       <div className="flex items-start justify-between mb-3">
                         <div>
@@ -167,17 +196,11 @@ export default function Dashboard() {
                           </div>
                           <p className="text-stone-400 text-sm mb-3">{venue.address}</p>
                         </div>
-                        <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30">
-                          In attesa
-                        </Badge>
+                        <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30">In attesa</Badge>
                       </div>
-
                       {venue.description && (
-                        <p className="text-stone-400 text-sm mb-4 line-clamp-2">
-                          {venue.description}
-                        </p>
+                        <p className="text-stone-400 text-sm mb-4 line-clamp-2">{venue.description}</p>
                       )}
-
                       {(venue.created_date || venue.created_by) && (
                         <div className="flex items-center gap-4 text-xs text-stone-500 mb-4">
                           {venue.created_date && (
@@ -194,9 +217,7 @@ export default function Dashboard() {
                           )}
                         </div>
                       )}
-
-                      {/* Actions */}
-                      <div className="flex gap-3">
+                      <div className="flex flex-wrap gap-3">
                         <Button
                           onClick={() => approveMutation.mutate(venue.id)}
                           disabled={approveMutation.isPending}
@@ -206,18 +227,24 @@ export default function Dashboard() {
                           Approva
                         </Button>
                         <Button
+                          variant="outline"
+                          className="border-red-500/50 text-red-400 hover:bg-red-500/10"
                           onClick={() => {
                             if (confirm('Sei sicuro di voler eliminare questo locale?')) {
                               rejectMutation.mutate(venue.id);
                             }
                           }}
                           disabled={rejectMutation.isPending}
-                          variant="outline"
-                          className="border-red-500/30 text-red-400 hover:bg-red-500/10"
                         >
                           <XCircle className="w-4 h-4 mr-2" />
                           Rifiuta
                         </Button>
+                        <Link to={createPageUrl(`EditVenue?id=${venue.id}`)}>
+                          <Button variant="outline" className="border-stone-600">
+                            <Edit3 className="w-4 h-4 mr-2" />
+                            Modifica
+                          </Button>
+                        </Link>
                       </div>
                     </div>
                   </div>
@@ -226,6 +253,95 @@ export default function Dashboard() {
             </div>
           )}
         </div>
+
+        {/* Locali inviati dal cellulare (Supabase) */}
+        {isSupabaseConfigured() && (
+          <div className="bg-stone-900/50 rounded-2xl border border-stone-800/50 p-6 mb-8">
+            <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
+              <MapPin className="w-5 h-5 text-amber-500" />
+              Locali inviati dal cellulare (da approvare)
+            </h2>
+            {loadingCloudPending ? (
+              <div className="text-center py-8 text-stone-500">Caricamento...</div>
+            ) : cloudPendingVenues.length === 0 ? (
+              <div className="text-center py-12">
+                <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
+                <p className="text-stone-500">Nessun locale inviato dai cellulari</p>
+                <p className="text-stone-500 text-sm mt-2">Quando un utente aggiunge un locale dall’app, qui comparirà in attesa di approvazione.</p>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {cloudPendingVenues.map((venue, index) => (
+                  <motion.div
+                    key={venue.id}
+                    initial={{ opacity: 0, y: 20 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: index * 0.05 }}
+                    className="bg-stone-800/30 rounded-xl p-5 border border-stone-700/50"
+                  >
+                    <div className="flex flex-col md:flex-row gap-4">
+                      <img
+                        src={venue.cover_image || "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=400"}
+                        alt={venue.name}
+                        className="w-full md:w-32 h-32 object-cover rounded-lg"
+                      />
+                      <div className="flex-1">
+                        <div className="flex items-start justify-between mb-3">
+                          <div>
+                            <h3 className="text-xl font-bold mb-1">{venue.name}</h3>
+                            <div className="flex items-center gap-2 text-stone-400 text-sm mb-2">
+                              <MapPin className="w-4 h-4" />
+                              <span>{venue.city}, {venue.country}</span>
+                            </div>
+                            {venue.address && <p className="text-stone-400 text-sm mb-3">{venue.address}</p>}
+                          </div>
+                          <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30">Dal cellulare</Badge>
+                        </div>
+                        {venue.description && <p className="text-stone-400 text-sm mb-4 line-clamp-2">{venue.description}</p>}
+                        {venue.created_at && (
+                          <p className="text-xs text-stone-500 mb-4">Inviato il {new Date(venue.created_at).toLocaleDateString("it-IT")}</p>
+                        )}
+                        <div className="flex gap-3">
+                          <Button
+                            onClick={async () => {
+                              await approveVenueCloud(venue.id);
+                              loadCloudPending();
+                              toast.success("Locale approvato: ora è visibile a tutti");
+                            }}
+                            className="bg-green-600 hover:bg-green-700 text-white"
+                          >
+                            <CheckCircle className="w-4 h-4 mr-2" />
+                            Approva
+                          </Button>
+                          <Button
+                            variant="outline"
+                            className="border-red-500/50 text-red-400 hover:bg-red-500/10"
+                            onClick={async () => {
+                              if (confirm("Rifiutare questo locale? Non sarà visibile in app.")) {
+                                await rejectVenueCloud(venue.id);
+                                loadCloudPending();
+                                toast.success("Locale rifiutato");
+                              }
+                            }}
+                          >
+                            <XCircle className="w-4 h-4 mr-2" />
+                            Rifiuta
+                          </Button>
+                          <Link to={createPageUrl(`EditVenue?id=${venue.id}`)}>
+                            <Button variant="outline" className="border-stone-600">
+                              <Edit3 className="w-4 h-4 mr-2" />
+                              Modifica
+                            </Button>
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Scegli locale da modificare o eliminare */}
         <div className="mt-8 bg-stone-900/50 rounded-2xl border border-stone-800/50 p-6">

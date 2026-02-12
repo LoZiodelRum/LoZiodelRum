@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { 
@@ -40,17 +40,28 @@ const categories = [
 ];
 
 export default function Home() {
+  const DEFAULT_HERO = {
+    text1: "La community",
+    text2: "del bere consapevole",
+    text1Size: 72,
+    text2Size: 72,
+    text1Color: "#ffffff",
+    text2Color: "#f59e0b"
+  };
+
   const [editMode, setEditMode] = useState(false);
   const [heroSettings, setHeroSettings] = useState(() => {
-    const saved = localStorage.getItem('heroSettings');
-    return saved ? JSON.parse(saved) : {
-      text1: "Scopri i migliori",
-      text2: "locali del mondo",
-      text1Size: 72,
-      text2Size: 72,
-      text1Color: "#ffffff",
-      text2Color: "#f59e0b"
-    };
+    try {
+      const saved = localStorage.getItem('heroSettings');
+      if (!saved) return DEFAULT_HERO;
+      const parsed = JSON.parse(saved);
+      if (parsed.text1 === "Scopri i migliori" && parsed.text2 === "locali del mondo") {
+        return DEFAULT_HERO;
+      }
+      return parsed;
+    } catch {
+      return DEFAULT_HERO;
+    }
   });
 
   const { getVenues, getReviews, getArticles, user: currentUser } = useAppData();
@@ -74,6 +85,17 @@ export default function Home() {
     setEditMode(false);
   };
 
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem('heroSettings');
+      if (!saved) return;
+      const parsed = JSON.parse(saved);
+      if (parsed.text1 === "Scopri i migliori" && parsed.text2 === "locali del mondo") {
+        localStorage.setItem('heroSettings', JSON.stringify(DEFAULT_HERO));
+      }
+    } catch {}
+  }, []);
+
   const isAdmin = currentUser?.role === 'admin';
 
   return (
@@ -82,8 +104,10 @@ export default function Home() {
         @media (max-width: 1023px) {
           .home-page-root { padding-top: 120px !important; }
           .home-hero-section { margin-top: -11rem !important; padding-top: 11rem !important; box-sizing: border-box !important; min-height: calc(70vh + 11rem) !important; }
-          .home-hero-buttons { width: 100% !important; max-width: 16rem !important; margin-left: auto !important; margin-right: auto !important; }
-          .home-hero-buttons a, .home-hero-buttons button { width: 100% !important; box-sizing: border-box !important; }
+          .home-hero-title { font-size: clamp(1.75rem, 7vw, 3rem) !important; line-height: 1.15 !important; }
+          .home-hero-buttons { width: 100% !important; max-width: 20rem !important; margin-left: auto !important; margin-right: auto !important; gap: 0.75rem !important; }
+          .home-hero-buttons a, .home-hero-buttons button { width: 100% !important; min-height: 48px !important; box-sizing: border-box !important; font-size: 1rem !important; }
+          .home-hero-subtitle { font-size: 0.9375rem !important; line-height: 1.5 !important; }
         }
       `}</style>
       <section className="home-hero-section relative h-[70vh] lg:h-[80vh] flex items-start lg:items-center justify-center overflow-hidden">
@@ -123,12 +147,12 @@ export default function Home() {
               La community del bere consapevole
             </span>
             
-            <h1 className="font-bold leading-[1.1] space-y-2 text-balance">
+            <h1 className="home-hero-title font-bold leading-[1.1] space-y-2 text-balance">
               <span 
                 className="block max-w-[100vw] break-words"
                 style={{ 
                   color: heroSettings.text1Color,
-                  fontSize: `clamp(1.5rem, 5vw, ${heroSettings.text1Size}px)`
+                  fontSize: `clamp(1.75rem, 6vw, ${heroSettings.text1Size}px)`
                 }}
               >
                 {heroSettings.text1}
@@ -136,14 +160,14 @@ export default function Home() {
               <span 
                 className="block gradient-text max-w-[100vw] break-words"
                 style={{ 
-                  fontSize: `clamp(1.5rem, 5vw, ${heroSettings.text2Size}px)`
+                  fontSize: `clamp(1.75rem, 6vw, ${heroSettings.text2Size}px)`
                 }}
               >
                 {heroSettings.text2}
               </span>
             </h1>
             
-            <p className="text-lg md:text-xl text-stone-400 max-w-2xl mx-auto leading-relaxed">
+            <p className="home-hero-subtitle text-base md:text-lg text-stone-400 max-w-2xl mx-auto leading-relaxed">
               Recensioni autentiche, esperienze uniche, cultura del bere. 
               Trova cocktail bar, rum bar e locali d'eccellenza nella tua città.
             </p>
@@ -287,7 +311,7 @@ export default function Home() {
       </section>
 
       {/* Categories */}
-      <section className="py-8 md:py-16 px-4 md:px-6">
+      <section className="py-6 md:py-16 px-4 md:px-6">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-4 md:mb-8">
             <h2 className="text-xl md:text-3xl font-bold">Esplora per categoria</h2>
@@ -317,7 +341,7 @@ export default function Home() {
       </section>
 
       {/* Featured Venues */}
-      <section className="py-16 px-6 bg-stone-900/30">
+      <section className="py-8 md:py-16 px-4 md:px-6 bg-stone-900/30">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-8">
             <div>
@@ -373,7 +397,7 @@ export default function Home() {
       </section>
 
       {/* Latest Articles */}
-      <section className="py-16 px-6">
+      <section className="py-8 md:py-16 px-4 md:px-6">
         <div className="max-w-7xl mx-auto">
           <div className="flex items-center justify-between mb-8">
             <div>

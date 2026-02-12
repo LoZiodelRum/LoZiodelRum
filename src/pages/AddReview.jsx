@@ -129,7 +129,7 @@ export default function AddReview() {
         latitude: venueData.latitude ?? null,
         longitude: venueData.longitude ?? null,
         cover_image: venueData.cover_image || "",
-        verified: true,
+        verified: false,
         featured: false,
       };
       return addVenue(venueWithCoords);

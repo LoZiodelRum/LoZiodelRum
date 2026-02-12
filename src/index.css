@@ -173,16 +173,18 @@
   .home-page-root {
     padding-top: 120px !important;
   }
-  /* Pulsanti Esplora Locali / Vedi Mappa: stessa larghezza */
+  /* Pulsanti Esplora Locali / Vedi Mappa: ottimizzati per mobile */
   .home-hero-buttons {
     width: 100% !important;
-    max-width: 24rem !important;
+    max-width: 20rem !important;
     margin-left: auto !important;
     margin-right: auto !important;
   }
   .home-hero-buttons a,
   .home-hero-buttons button {
     width: 100% !important;
+    min-height: 48px !important;
+    font-size: 1rem !important;
   }
 }
 

@@ -3,6 +3,7 @@ import { venuesData as initialVenues } from "@/data/venues";
 import { reviewsData as initialReviews } from "@/data/reviews";
 import { articlesData as initialArticles } from "@/data/articles";
 import { drinksData as initialDrinks } from "@/data/drinks";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
 const STORAGE_KEYS = {
   venues: "app_venues",
@@ -58,6 +59,21 @@ export function AppDataProvider({ children }) {
   const [communityEvents, setCommunityEvents] = useState(() => load(STORAGE_KEYS.communityEvents, []));
   const [communityPosts, setCommunityPosts] = useState(() => load(STORAGE_KEYS.communityPosts, []));
   const [bartenders, setBartenders] = useState(() => load(STORAGE_KEYS.bartenders, []));
+  const [cloudVenues, setCloudVenues] = useState([]);
+
+  useEffect(() => {
+    if (!isSupabaseConfigured()) return;
+    supabase
+      .from("venues_cloud")
+      .select("*")
+      .eq("status", "approved")
+      .then(({ data }) => {
+        if (data && data.length > 0) {
+          setCloudVenues(data.map((row) => ({ ...row, id: String(row.id) })));
+        }
+      })
+      .catch(() => {});
+  }, []);
 
   useEffect(() => {
     save(STORAGE_KEYS.venues, venues);
@@ -90,18 +106,43 @@ export function AppDataProvider({ children }) {
       user,
       setUser,
 
-      getVenues: () => venues,
-      getVenueById: (id) => venues.find((v) => v.id === id),
+      getVenues: () => [...venues, ...cloudVenues],
+      getVenueById: (id) => venues.find((v) => v.id === id) || cloudVenues.find((v) => v.id === id),
       addVenue: (data) => {
         const id = data.id || generateId();
-        const venue = { ...data, id, review_count: 0, overall_rating: null };
+        const venue = { ...data, id, review_count: 0, overall_rating: null, verified: data.verified ?? false };
         setVenues((prev) => [...prev, venue]);
+        if (isSupabaseConfigured()) {
+          const row = {
+            name: venue.name,
+            slug: venue.slug || (venue.name || "").toLowerCase().replace(/\s+/g, "-"),
+            description: venue.description || "",
+            city: venue.city || "",
+            country: venue.country || "Italia",
+            address: venue.address || "",
+            latitude: venue.latitude ?? null,
+            longitude: venue.longitude ?? null,
+            cover_image: venue.cover_image || "",
+            category: venue.category || "cocktail_bar",
+            price_range: venue.price_range || "€€",
+            phone: venue.phone || "",
+            website: venue.website || "",
+            instagram: venue.instagram || "",
+            opening_hours: venue.opening_hours || "",
+            status: "pending",
+          };
+          supabase.from("venues_cloud").insert(row).then(() => {}).catch(() => {});
+        }
         return venue;
       },
       updateVenue: (id, data) => {
         setVenues((prev) =>
           prev.map((v) => (v.id === id ? { ...v, ...data } : v))
         );
+        const isCloud = cloudVenues.some((v) => v.id === id);
+        if (isCloud && isSupabaseConfigured()) {
+          supabase.from("venues_cloud").update(data).eq("id", id).then(() => {}).catch(() => {});
+        }
         return { id, ...data };
       },
       deleteVenue: (id) => {
@@ -382,6 +423,23 @@ export function AppDataProvider({ children }) {
         setDrinks(initialDrinks);
       },
 
+      isSupabaseConfigured,
+      getPendingVenuesFromCloud: async () => {
+        if (!isSupabaseConfigured()) return [];
+        const { data } = await supabase.from("venues_cloud").select("*").eq("status", "pending").order("created_at", { ascending: false });
+        return (data || []).map((row) => ({ ...row, id: String(row.id) }));
+      },
+      approveVenueCloud: async (id) => {
+        if (!isSupabaseConfigured()) return;
+        await supabase.from("venues_cloud").update({ status: "approved" }).eq("id", id);
+        const { data } = await supabase.from("venues_cloud").select("*").eq("status", "approved");
+        if (data) setCloudVenues(data.map((row) => ({ ...row, id: String(row.id) })));
+      },
+      rejectVenueCloud: async (id) => {
+        if (!isSupabaseConfigured()) return;
+        await supabase.from("venues_cloud").update({ status: "rejected" }).eq("id", id);
+      },
+
       exportData: () => ({
         venues,
         reviews,
@@ -407,7 +465,7 @@ export function AppDataProvider({ children }) {
         if (data.bartenders && Array.isArray(data.bartenders)) setBartenders(data.bartenders);
       },
     };
-  }, [venues, reviews, articles, drinks, user, ownerMessages, communityEvents, communityPosts, bartenders]);
+  }, [venues, cloudVenues, reviews, articles, drinks, user, ownerMessages, communityEvents, communityPosts, bartenders]);
 
   return (
     <AppDataContext.Provider value={api}>{children}</AppDataContext.Provider>
