@@ -46,18 +46,25 @@ export default function Home() {
     text1Size: 72,
     text2Size: 72,
     text1Color: "#ffffff",
-    text2Color: "#f59e0b"
+    text2Color: "#f59e0b",
+    _v: 2
   };
+
+  const HERO_STORAGE_KEY = 'heroSettings_v2';
 
   const [editMode, setEditMode] = useState(false);
   const [heroSettings, setHeroSettings] = useState(() => {
     try {
-      const saved = localStorage.getItem('heroSettings');
-      if (!saved) return DEFAULT_HERO;
-      const parsed = JSON.parse(saved);
-      if (parsed.text1 === "Scopri i migliori" && parsed.text2 === "locali del mondo") {
-        return DEFAULT_HERO;
-      }
+      let parsed = null;
+      const v2 = localStorage.getItem(HERO_STORAGE_KEY);
+      const legacy = localStorage.getItem('heroSettings');
+      const raw = v2 || legacy;
+      if (raw) parsed = JSON.parse(raw);
+      if (!parsed) return DEFAULT_HERO;
+      const t1 = (parsed.text1 || '').trim();
+      const t2 = (parsed.text2 || '').trim();
+      const isOldDefault = (t1 === "Scopri i migliori" && t2 === "locali del mondo");
+      if (isOldDefault || parsed._v !== 2) return DEFAULT_HERO;
       return parsed;
     } catch {
       return DEFAULT_HERO;
@@ -81,17 +88,20 @@ export default function Home() {
   const loadingArticles = false;
 
   const saveSettings = () => {
-    localStorage.setItem('heroSettings', JSON.stringify(heroSettings));
+    localStorage.setItem(HERO_STORAGE_KEY, JSON.stringify({ ...heroSettings, _v: 2 }));
     setEditMode(false);
   };
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem('heroSettings');
-      if (!saved) return;
-      const parsed = JSON.parse(saved);
-      if (parsed.text1 === "Scopri i migliori" && parsed.text2 === "locali del mondo") {
-        localStorage.setItem('heroSettings', JSON.stringify(DEFAULT_HERO));
+      const raw = localStorage.getItem(HERO_STORAGE_KEY) || localStorage.getItem('heroSettings');
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      const t1 = (parsed.text1 || '').trim();
+      const t2 = (parsed.text2 || '').trim();
+      const isOldDefault = (t1 === "Scopri i migliori" && t2 === "locali del mondo");
+      if (isOldDefault || parsed._v !== 2) {
+        localStorage.setItem(HERO_STORAGE_KEY, JSON.stringify(DEFAULT_HERO));
       }
     } catch {}
   }, []);
