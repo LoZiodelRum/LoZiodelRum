@@ -49,7 +49,7 @@ export default function CommunityFeed() {
     d.setHours(0, 0, 0, 0);
     return d >= today;
   });
-  const futureEvents = allFutureEvents.slice(-6);
+  const futureEvents = allFutureEvents.slice(0, 6);
 
   const handleAddPost = (e) => {
     e.preventDefault();
@@ -373,9 +373,10 @@ export default function CommunityFeed() {
             >
               {futureEvents.length > 0 ? (
                 futureEvents.map((event) => (
-                  <div
+                  <Link
                     key={event.id}
-                    className="rounded-lg border border-stone-700 bg-stone-900/50 p-3 md:p-4 hover:border-amber-500/30 transition-colors min-w-0"
+                    to={`/CommunityFeed/event/${event.id}`}
+                    className="rounded-lg border border-stone-700 bg-stone-900/50 p-3 md:p-4 hover:border-amber-500/30 transition-colors min-w-0 block"
                   >
                     <div className="flex gap-2 items-start">
                       <div className="w-8 h-8 rounded-md bg-amber-500/20 flex items-center justify-center shrink-0">
@@ -400,7 +401,7 @@ export default function CommunityFeed() {
                         </p>
                       )}
                     </div>
-                  </div>
+                  </Link>
                 ))
               ) : (
                 <div className="col-span-3 py-6 text-center rounded-xl bg-stone-900/30 border border-stone-800">

@@ -9,8 +9,10 @@ import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import { AppDataProvider } from '@/lib/AppDataContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
-// IMPORTANTE: Importiamo la pagina di dettaglio che abbiamo creato
+// IMPORTANTE: Importiamo le pagine di dettaglio
 import DrinkDetail from "./pages/DrinkDetail";
+import CommunityPostDetail from "./pages/CommunityPostDetail";
+import CommunityEventDetail from "./pages/CommunityEventDetail";
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -91,6 +93,26 @@ const AuthenticatedApp = () => {
         element={
           <LayoutWrapper currentPageName="CommunityFeed">
             {Pages.CommunityFeed && <Pages.CommunityFeed />}
+          </LayoutWrapper>
+        } 
+      />
+
+      {/* CommunityFeed – dettaglio post (owner/user) */}
+      <Route 
+        path="/CommunityFeed/post/:type/:id" 
+        element={
+          <LayoutWrapper currentPageName="CommunityPostDetail">
+            <CommunityPostDetail />
+          </LayoutWrapper>
+        } 
+      />
+
+      {/* CommunityFeed – dettaglio evento */}
+      <Route 
+        path="/CommunityFeed/event/:id" 
+        element={
+          <LayoutWrapper currentPageName="CommunityEventDetail">
+            <CommunityEventDetail />
           </LayoutWrapper>
         } 
       />

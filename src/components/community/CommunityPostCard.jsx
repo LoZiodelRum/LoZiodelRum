@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { Link } from "react-router-dom";
 import { MapPin } from "lucide-react";
 import { motion } from "framer-motion";
 
@@ -14,14 +15,16 @@ export default function CommunityPostCard({ post, type = "owner", index = 0 }) {
   const [imgSrc, setImgSrc] = useState(post.image || fallback);
   const title = post.title || (post.content?.slice(0, 50) + (post.content?.length > 50 ? "…" : "")) || "Post";
   const location = post.venue_name || post.location || post.author_name || "";
+  const postPath = `/CommunityFeed/post/${type}/${post.id}`;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ delay: index * 0.08 }}
-      className="group relative h-40 rounded-2xl overflow-hidden block bg-stone-900/50 border border-stone-800/50 hover:border-amber-500/30 transition-all duration-300"
-    >
+    <Link to={postPath}>
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: index * 0.08 }}
+        className="group relative h-40 rounded-2xl overflow-hidden block bg-stone-900/50 border border-stone-800/50 hover:border-amber-500/30 transition-all duration-300"
+      >
       <div className="absolute inset-0">
         <img
           src={imgSrc}
@@ -40,5 +43,6 @@ export default function CommunityPostCard({ post, type = "owner", index = 0 }) {
         </p>
       </div>
     </motion.div>
+    </Link>
   );
 }
