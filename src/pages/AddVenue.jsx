@@ -138,7 +138,7 @@ export default function AddVenue() {
   const isValid = formData.name && formData.city && formData.categories.length > 0;
 
   return (
-    <div className="min-h-screen px-4 md:px-6 pt-8 pb-8">
+    <div className="min-h-screen px-4 md:px-6 pt-8 pb-28 lg:pb-12">
       <div className="max-w-2xl mx-auto">
         {/* Header - spazio extra per evitare sovrapposizione con menu */}
         <div className="flex items-center gap-4 mb-8 pt-6">
