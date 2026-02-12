@@ -56,7 +56,12 @@ export function AppDataProvider({ children }) {
     } catch (_) {}
     return null;
   });
-  const [ownerMessages, setOwnerMessages] = useState(() => load(STORAGE_KEYS.ownerMessages, initialOwnerMessages));
+  const [ownerMessages, setOwnerMessages] = useState(() => {
+    const stored = load(STORAGE_KEYS.ownerMessages, []) || [];
+    const storedIds = new Set(stored.map((m) => m.id));
+    const missing = (initialOwnerMessages || []).filter((m) => !storedIds.has(m.id));
+    return stored.length > 0 ? [...stored, ...missing] : (initialOwnerMessages || []);
+  });
   const [communityEvents, setCommunityEvents] = useState(() => {
     const stored = (load(STORAGE_KEYS.communityEvents, []) || []).filter(
       (e) => e.title !== "Cocktail Tiki Night"
@@ -65,7 +70,12 @@ export function AppDataProvider({ children }) {
     const missing = (initialCommunityEvents || []).filter((e) => !storedIds.has(e.id));
     return [...stored, ...missing];
   });
-  const [communityPosts, setCommunityPosts] = useState(() => load(STORAGE_KEYS.communityPosts, initialCommunityPosts));
+  const [communityPosts, setCommunityPosts] = useState(() => {
+    const stored = load(STORAGE_KEYS.communityPosts, []) || [];
+    const storedIds = new Set(stored.map((p) => p.id));
+    const missing = (initialCommunityPosts || []).filter((p) => !storedIds.has(p.id));
+    return stored.length > 0 ? [...stored, ...missing] : (initialCommunityPosts || []);
+  });
   const [bartenders, setBartenders] = useState(() => load(STORAGE_KEYS.bartenders, []));
   const [cloudVenues, setCloudVenues] = useState([]);
 

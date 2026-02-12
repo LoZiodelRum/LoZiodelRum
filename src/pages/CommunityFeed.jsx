@@ -40,8 +40,8 @@ export default function CommunityFeed() {
 
   const ownerMessages = getOwnerMessages();
   const communityPosts = getCommunityPosts();
-  const ownerMessagesToShow = isMobile ? ownerMessages.slice(0, 4) : ownerMessages;
-  const communityPostsToShow = isMobile ? communityPosts.slice(0, 4) : communityPosts;
+  const ownerMessagesToShow = isMobile ? ownerMessages.slice(0, 4) : ownerMessages.slice(0, 3);
+  const communityPostsToShow = isMobile ? communityPosts.slice(0, 4) : communityPosts.slice(0, 3);
   const today = new Date();
   today.setHours(0, 0, 0, 0);
   const allFutureEvents = getCommunityEvents().filter((e) => {
