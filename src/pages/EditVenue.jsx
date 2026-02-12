@@ -66,6 +66,8 @@ export default function EditVenue() {
     city: "",
     country: "",
     address: "",
+    latitude: null,
+    longitude: null,
     category: "cocktail_bar",
     specialties: [],
     price_range: "€€",
@@ -86,6 +88,8 @@ export default function EditVenue() {
         city: venue.city || "",
         country: venue.country || "",
         address: venue.address || "",
+        latitude: venue.latitude ?? null,
+        longitude: venue.longitude ?? null,
         category: venue.category || "cocktail_bar",
         specialties: venue.specialties || [],
         price_range: venue.price_range || "€€",
@@ -235,6 +239,30 @@ export default function EditVenue() {
                     placeholder="Italia"
                     value={formData.country}
                     onChange={(e) => setFormData(prev => ({ ...prev, country: e.target.value }))}
+                    className="bg-stone-800/50 border-stone-700"
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="mb-2 block">Latitudine (per la mappa)</Label>
+                  <Input
+                    type="number"
+                    step="any"
+                    placeholder="45.4642"
+                    value={formData.latitude ?? ""}
+                    onChange={(e) => setFormData(prev => ({ ...prev, latitude: parseFloat(e.target.value) || null }))}
+                    className="bg-stone-800/50 border-stone-700"
+                  />
+                </div>
+                <div>
+                  <Label className="mb-2 block">Longitudine (per la mappa)</Label>
+                  <Input
+                    type="number"
+                    step="any"
+                    placeholder="9.1900"
+                    value={formData.longitude ?? ""}
+                    onChange={(e) => setFormData(prev => ({ ...prev, longitude: parseFloat(e.target.value) || null }))}
                     className="bg-stone-800/50 border-stone-700"
                   />
                 </div>

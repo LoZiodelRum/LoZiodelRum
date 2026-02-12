@@ -41,30 +41,23 @@ const categories = [
 
 export default function Home() {
   const DEFAULT_HERO = {
-    text1: "La community",
-    text2: "del bere consapevole",
+    text1: "Scopri i migliori",
+    text2: "locali del mondo",
     text1Size: 72,
     text2Size: 72,
     text1Color: "#ffffff",
-    text2Color: "#f59e0b",
-    _v: 2
+    text2Color: "#f59e0b"
   };
-
-  const HERO_STORAGE_KEY = 'heroSettings_v2';
 
   const [editMode, setEditMode] = useState(false);
   const [heroSettings, setHeroSettings] = useState(() => {
     try {
-      let parsed = null;
-      const v2 = localStorage.getItem(HERO_STORAGE_KEY);
-      const legacy = localStorage.getItem('heroSettings');
-      const raw = v2 || legacy;
-      if (raw) parsed = JSON.parse(raw);
-      if (!parsed) return DEFAULT_HERO;
+      const saved = localStorage.getItem('heroSettings');
+      if (!saved) return DEFAULT_HERO;
+      const parsed = JSON.parse(saved);
       const t1 = (parsed.text1 || '').trim();
       const t2 = (parsed.text2 || '').trim();
-      const isOldDefault = (t1 === "Scopri i migliori" && t2 === "locali del mondo");
-      if (isOldDefault || parsed._v !== 2) return DEFAULT_HERO;
+      if (t1 === "La community" && t2 === "del bere consapevole") return DEFAULT_HERO;
       return parsed;
     } catch {
       return DEFAULT_HERO;
@@ -88,20 +81,19 @@ export default function Home() {
   const loadingArticles = false;
 
   const saveSettings = () => {
-    localStorage.setItem(HERO_STORAGE_KEY, JSON.stringify({ ...heroSettings, _v: 2 }));
+    localStorage.setItem('heroSettings', JSON.stringify(heroSettings));
     setEditMode(false);
   };
 
   useEffect(() => {
     try {
-      const raw = localStorage.getItem(HERO_STORAGE_KEY) || localStorage.getItem('heroSettings');
-      if (!raw) return;
-      const parsed = JSON.parse(raw);
+      const saved = localStorage.getItem('heroSettings');
+      if (!saved) return;
+      const parsed = JSON.parse(saved);
       const t1 = (parsed.text1 || '').trim();
       const t2 = (parsed.text2 || '').trim();
-      const isOldDefault = (t1 === "Scopri i migliori" && t2 === "locali del mondo");
-      if (isOldDefault || parsed._v !== 2) {
-        localStorage.setItem(HERO_STORAGE_KEY, JSON.stringify(DEFAULT_HERO));
+      if (t1 === "La community" && t2 === "del bere consapevole") {
+        localStorage.setItem('heroSettings', JSON.stringify({ text1: "Scopri i migliori", text2: "locali del mondo", text1Size: 72, text2Size: 72, text1Color: "#ffffff", text2Color: "#f59e0b" }));
       }
     } catch {}
   }, []);

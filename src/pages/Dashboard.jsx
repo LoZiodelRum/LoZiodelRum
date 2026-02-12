@@ -19,6 +19,8 @@ import {
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
   Select,
   SelectContent,
@@ -44,6 +46,7 @@ export default function Dashboard() {
   const [selectedBartenderId, setSelectedBartenderId] = useState("");
   const [cloudPendingVenues, setCloudPendingVenues] = useState([]);
   const [loadingCloudPending, setLoadingCloudPending] = useState(false);
+  const [venueCoords, setVenueCoords] = useState({});
   const selectedVenue = selectedVenueId ? allVenues.find((v) => v.id === selectedVenueId) : null;
   const selectedArticle = selectedArticleId ? allArticles.find((a) => a.id === selectedArticleId) : null;
   const selectedDrink = selectedDrinkId ? allDrinks.find((d) => d.id === selectedDrinkId) : null;
@@ -93,7 +96,12 @@ export default function Dashboard() {
   };
 
   const approveMutation = useMutation({
-    mutationFn: (venueId) => updateVenue(venueId, { verified: true }),
+    mutationFn: ({ venueId, latitude, longitude }) => {
+      const data = { verified: true };
+      if (latitude != null) data.latitude = latitude;
+      if (longitude != null) data.longitude = longitude;
+      return updateVenue(venueId, data);
+    },
     onSuccess: () => {
       toast.success('Locale approvato con successo');
     },
@@ -217,9 +225,33 @@ export default function Dashboard() {
                           )}
                         </div>
                       )}
+                      <div className="grid grid-cols-2 gap-2 mb-4">
+                        <div>
+                          <Label className="text-xs text-stone-500">Latitudine (per mappa)</Label>
+                          <Input
+                            type="number"
+                            step="any"
+                            placeholder="45.4642"
+                            value={venueCoords[venue.id]?.latitude ?? venue.latitude ?? ""}
+                            onChange={(e) => setVenueCoords(prev => ({ ...prev, [venue.id]: { ...(prev[venue.id] || {}), latitude: parseFloat(e.target.value) || null } }))}
+                            className="bg-stone-800/50 border-stone-700 h-9 text-sm"
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-xs text-stone-500">Longitudine (per mappa)</Label>
+                          <Input
+                            type="number"
+                            step="any"
+                            placeholder="9.1900"
+                            value={venueCoords[venue.id]?.longitude ?? venue.longitude ?? ""}
+                            onChange={(e) => setVenueCoords(prev => ({ ...prev, [venue.id]: { ...(prev[venue.id] || {}), longitude: parseFloat(e.target.value) || null } }))}
+                            className="bg-stone-800/50 border-stone-700 h-9 text-sm"
+                          />
+                        </div>
+                      </div>
                       <div className="flex flex-wrap gap-3">
                         <Button
-                          onClick={() => approveMutation.mutate(venue.id)}
+                          onClick={() => approveMutation.mutate({ venueId: venue.id, latitude: venueCoords[venue.id]?.latitude ?? venue.latitude, longitude: venueCoords[venue.id]?.longitude ?? venue.longitude })}
                           disabled={approveMutation.isPending}
                           className="bg-green-600 hover:bg-green-700 text-white"
                         >
@@ -301,10 +333,39 @@ export default function Dashboard() {
                         {venue.created_at && (
                           <p className="text-xs text-stone-500 mb-4">Inviato il {new Date(venue.created_at).toLocaleDateString("it-IT")}</p>
                         )}
+                        <div className="grid grid-cols-2 gap-2 mb-4">
+                          <div>
+                            <Label className="text-xs text-stone-500">Latitudine (per mappa)</Label>
+                            <Input
+                              type="number"
+                              step="any"
+                              placeholder="45.4642"
+                              value={venueCoords[venue.id]?.latitude ?? venue.latitude ?? ""}
+                              onChange={(e) => setVenueCoords(prev => ({ ...prev, [venue.id]: { ...(prev[venue.id] || {}), latitude: parseFloat(e.target.value) || null } }))}
+                              className="bg-stone-800/50 border-stone-700 h-9 text-sm"
+                            />
+                          </div>
+                          <div>
+                            <Label className="text-xs text-stone-500">Longitudine (per mappa)</Label>
+                            <Input
+                              type="number"
+                              step="any"
+                              placeholder="9.1900"
+                              value={venueCoords[venue.id]?.longitude ?? venue.longitude ?? ""}
+                              onChange={(e) => setVenueCoords(prev => ({ ...prev, [venue.id]: { ...(prev[venue.id] || {}), longitude: parseFloat(e.target.value) || null } }))}
+                              className="bg-stone-800/50 border-stone-700 h-9 text-sm"
+                            />
+                          </div>
+                        </div>
                         <div className="flex gap-3">
                           <Button
                             onClick={async () => {
-                              await approveVenueCloud(venue.id);
+                              const lat = venueCoords[venue.id]?.latitude ?? venue.latitude;
+                              const lng = venueCoords[venue.id]?.longitude ?? venue.longitude;
+                              const extra = {};
+                              if (lat != null && !isNaN(lat)) extra.latitude = lat;
+                              if (lng != null && !isNaN(lng)) extra.longitude = lng;
+                              await approveVenueCloud(venue.id, extra);
                               loadCloudPending();
                               toast.success("Locale approvato: ora è visibile a tutti");
                             }}

@@ -429,9 +429,12 @@ export function AppDataProvider({ children }) {
         const { data } = await supabase.from("venues_cloud").select("*").eq("status", "pending").order("created_at", { ascending: false });
         return (data || []).map((row) => ({ ...row, id: String(row.id) }));
       },
-      approveVenueCloud: async (id) => {
+      approveVenueCloud: async (id, extra = {}) => {
         if (!isSupabaseConfigured()) return;
-        await supabase.from("venues_cloud").update({ status: "approved" }).eq("id", id);
+        const update = { status: "approved" };
+        if (extra.latitude != null) update.latitude = extra.latitude;
+        if (extra.longitude != null) update.longitude = extra.longitude;
+        await supabase.from("venues_cloud").update(update).eq("id", id);
         const { data } = await supabase.from("venues_cloud").select("*").eq("status", "approved");
         if (data) setCloudVenues(data.map((row) => ({ ...row, id: String(row.id) })));
       },
