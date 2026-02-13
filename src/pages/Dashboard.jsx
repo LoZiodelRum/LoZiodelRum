@@ -9,7 +9,6 @@ import {
   Calendar,
   User,
   AlertCircle,
-  Info,
   Edit3,
   Trash2,
   Download,
@@ -19,8 +18,7 @@ import {
   Wine as BartenderIcon,
   RefreshCw,
   Copy,
-  ExternalLink,
-  X
+  ExternalLink
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -36,11 +34,11 @@ import {
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { useAppData } from "@/lib/AppDataContext";
-import { getSupabaseDashboardUrl, getSupabaseSqlEditorUrl, saveSupabaseKey } from "@/lib/supabase";
+import { getSupabaseSqlEditorUrl } from "@/lib/supabase";
 import { exportAsFile } from "@/utils/mobileExport";
 
 export default function Dashboard() {
-  const { user, getVenues, getArticles, getDrinks, getBartenders, getPendingBartenders, updateVenue, deleteVenue, setBartenderStatus, deleteBartender, exportData, importData, importVenuesFromMobile, isSupabaseConfigured, getPendingVenuesFromCloud, getPendingLocalVenues, approveVenueCloud, rejectVenueCloud } = useAppData();
+  const { user, getVenues, getArticles, getDrinks, getBartenders, getPendingBartenders, updateVenue, deleteVenue, setBartenderStatus, deleteBartender, exportData, importData, isSupabaseConfigured, getPendingVenuesFromCloud, getPendingLocalVenues, approveVenueCloud, rejectVenueCloud } = useAppData();
   const allVenues = getVenues();
   const allArticles = getArticles();
   const allDrinks = getDrinks();
@@ -60,17 +58,6 @@ export default function Dashboard() {
   const selectedDrink = selectedDrinkId ? allDrinks.find((d) => d.id === selectedDrinkId) : null;
   const selectedBartender = selectedBartenderId ? getBartenders().find((b) => b.id === selectedBartenderId) : null;
   const fileInputRef = useRef(null);
-  const mobileVenuesInputRef = useRef(null);
-  const [supabaseKeyInput, setSupabaseKeyInput] = useState("");
-  const [savingKey, setSavingKey] = useState(false);
-  const [hideSetupBlock, setHideSetupBlock] = useState(() => {
-    try {
-      return localStorage.getItem("dashboard_hide_setup") === "1";
-    } catch {
-      return false;
-    }
-  });
-
   const loadCloudPending = () => {
     if (!isSupabaseConfigured()) return;
     setLoadingCloudPending(true);
@@ -154,147 +141,8 @@ export default function Dashboard() {
           <p className="text-stone-500">Gestisci i contenuti in attesa di approvazione</p>
         </div>
 
-        {/* Setup: Supabase non configurato - solo su desktop, nascosto su mobile */}
-        {!isSupabaseConfigured() && !hideSetupBlock && (
-          <div className="hidden lg:block mb-8 p-5 rounded-2xl bg-stone-800/50 border border-stone-700 relative">
-            <Button
-              variant="ghost"
-              size="icon"
-              className="absolute top-3 right-3 text-stone-500 hover:text-stone-300"
-              onClick={() => {
-                try {
-                  localStorage.setItem("dashboard_hide_setup", "1");
-                  setHideSetupBlock(true);
-                  toast.success("Avviso nascosto");
-                } catch (_) {}
-              }}
-              aria-label="Nascondi"
-            >
-              <X className="w-5 h-5" />
-            </Button>
-            <h3 className="font-bold text-stone-200 mb-2 flex items-center gap-2 pr-10">
-              <Info className="w-5 h-5 text-amber-500" />
-              Importa locali dal cellulare (es. Madrè)
-            </h3>
-            <p className="text-stone-300 text-sm mb-3">
-              Sul cellulare: accedi come admin → Dashboard → &quot;Esporta locali&quot;. Invia il file a te stesso (email, AirDrop, WhatsApp). Poi qui:
-            </p>
-            <input
-              ref={mobileVenuesInputRef}
-              type="file"
-              accept=".json,application/json"
-              className="hidden"
-              onChange={(e) => {
-                const file = e.target.files?.[0];
-                if (!file) return;
-                const reader = new FileReader();
-                reader.onload = () => {
-                  try {
-                    const data = JSON.parse(reader.result);
-                    const venuesToImport = Array.isArray(data) ? data : data?.venues;
-                    if (Array.isArray(venuesToImport) && venuesToImport.length > 0) {
-                      importVenuesFromMobile?.(venuesToImport);
-                      toast.success(`${venuesToImport.length} locale/i importato/i. Ora compaiono qui sotto.`);
-                    } else {
-                      toast.error("Nessun locale nel file. Esporta dal cellulare (Dashboard → Esporta locali).");
-                    }
-                  } catch {
-                    toast.error("File non valido. Usa il JSON esportato dal cellulare.");
-                  }
-                  e.target.value = "";
-                };
-                reader.readAsText(file);
-              }}
-            />
-            <div className="flex flex-wrap gap-3 mb-3">
-              <Button
-                onClick={() => mobileVenuesInputRef.current?.click()}
-                className="bg-amber-500 hover:bg-amber-600 text-stone-950 min-h-[44px]"
-              >
-                <Upload className="w-4 h-4 mr-2" />
-                Importa file
-              </Button>
-              <Button
-                variant="outline"
-                className="border-amber-500/50 text-amber-400 min-h-[44px]"
-                onClick={async () => {
-                  try {
-                    const text = await navigator.clipboard?.readText?.();
-                    if (!text) throw new Error("Appunti vuoti");
-                    const data = JSON.parse(text);
-                    const venuesToImport = Array.isArray(data) ? data : data?.venues;
-                    if (Array.isArray(venuesToImport) && venuesToImport.length > 0) {
-                      importVenuesFromMobile?.(venuesToImport);
-                      toast.success(`${venuesToImport.length} locale/i importato/i da appunti`);
-                    } else {
-                      toast.error("Nessun locale negli appunti. Copia il JSON esportato dal cellulare.");
-                    }
-                  } catch (e) {
-                    if (e?.name === "NotAllowedError") toast.error("Permesso appunti negato");
-                    else toast.error("Appunti non validi. Copia il JSON dal cellulare.");
-                  }
-                }}
-              >
-                Incolla da appunti
-              </Button>
-            </div>
-            <div className="mt-4 p-4 rounded-xl bg-stone-900/50 border border-stone-700">
-              <p className="text-stone-300 font-medium mb-2">Sync automatico cellulare ↔ desktop</p>
-              <p className="text-stone-400 text-sm mb-3">
-                1. Apri Supabase → Settings → API. 2. Copia la chiave &quot;anon public&quot;. 3. Incollala qui sotto e clicca Salva.
-              </p>
-              <div className="flex flex-col sm:flex-row gap-3 mb-3">
-                <Button
-                  variant="outline"
-                  size="sm"
-                  className="border-stone-600 text-stone-300 shrink-0"
-                  onClick={() => window.open(getSupabaseDashboardUrl(), "_blank")}
-                >
-                  Apri Supabase → Settings → API
-                </Button>
-                <div className="flex-1 flex flex-col sm:flex-row gap-2 min-w-0">
-                  <Input
-                    type="password"
-                    placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
-                    value={supabaseKeyInput}
-                    onChange={(e) => setSupabaseKeyInput(e.target.value)}
-                    className="bg-stone-900 border-stone-600 text-sm font-mono min-w-0 flex-1"
-                  />
-                  <Button
-                    className="bg-amber-500 hover:bg-amber-600 text-stone-950 shrink-0"
-                    disabled={!supabaseKeyInput.trim() || savingKey}
-                    onClick={async () => {
-                      setSavingKey(true);
-                      if (saveSupabaseKey(supabaseKeyInput)) {
-                        toast.success("Chiave salvata. Ricarico la pagina…");
-                        window.location.reload();
-                      } else {
-                        setSavingKey(false);
-                        toast.error("Chiave non valida. Copia la chiave 'anon public' da Supabase.");
-                      }
-                    }}
-                  >
-                    {savingKey ? "..." : "Salva"}
-                  </Button>
-                </div>
-              </div>
-              <p className="text-stone-500 text-xs">Dopo aver salvato, esegui <code className="bg-stone-900 px-1 rounded">npm run supabase:setup</code> se non l&apos;hai già fatto (crea la tabella).</p>
-            </div>
-          </div>
-        )}
-
-        {!isSupabaseConfigured() && hideSetupBlock && (
-          <button
-            type="button"
-            onClick={() => setHideSetupBlock(false)}
-            className="hidden lg:inline-block mb-6 text-sm text-stone-500 hover:text-amber-500 underline"
-          >
-            Mostra impostazioni import e sync
-          </button>
-        )}
-
-        {/* Stats - nascosto su mobile e tablet */}
-        <div className="hidden lg:grid lg:grid-cols-3 gap-6 mb-8">
+        {/* Stats */}
+        <div className="grid md:grid-cols-3 gap-6 mb-8">
           <div className="bg-stone-900/50 rounded-2xl border border-stone-800/50 p-6">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-stone-700/50 rounded-xl">
