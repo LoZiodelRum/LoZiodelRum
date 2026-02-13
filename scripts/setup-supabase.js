@@ -19,10 +19,9 @@ const __dirname = dirname(fileURLToPath(import.meta.url));
 const url = process.env.VITE_SUPABASE_URL || "";
 const key = process.env.VITE_SUPABASE_ANON_KEY || "";
 
-function loadEnv() {
+function loadEnvFile(filePath) {
   try {
-    const envPath = join(__dirname, "..", ".env");
-    const env = readFileSync(envPath, "utf8");
+    const env = readFileSync(filePath, "utf8");
     for (const line of env.split("\n")) {
       const trimmed = line.trim();
       if (trimmed.startsWith("VITE_SUPABASE_URL=")) {
@@ -35,7 +34,8 @@ function loadEnv() {
   } catch (_) {}
 }
 
-loadEnv();
+loadEnvFile(join(__dirname, "..", ".env"));
+loadEnvFile(join(__dirname, "..", ".env.local")); // override per Supabase locale
 
 const finalUrl = process.env.VITE_SUPABASE_URL || url;
 const finalKey = process.env.VITE_SUPABASE_ANON_KEY || key;

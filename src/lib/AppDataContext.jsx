@@ -188,6 +188,7 @@ export function AppDataProvider({ children }) {
       setUser,
 
       getVenues: () => [...venues.filter((v) => !v._cloudPending && v.verified !== false), ...cloudVenues],
+      getPendingLocalVenues: () => venues.filter((v) => !v.verified && !v._cloudPending),
       getVenueById: (id) => venues.find((v) => v.id === id) || cloudVenues.find((v) => v.id === id),
       addVenue: async (data) => {
         const id = data.id || generateId();
@@ -588,7 +589,8 @@ export function AppDataProvider({ children }) {
       },
       getPendingVenuesFromCloud: async () => {
         if (!isSupabaseConfigured()) return [];
-        const { data } = await supabase.from("venues_cloud").select("*").eq("status", "pending").order("created_at", { ascending: false });
+        const { data, error } = await supabase.from("venues_cloud").select("*").eq("status", "pending").order("created_at", { ascending: false });
+        if (error) throw error;
         return (data || []).map((row) => ({ ...row, id: String(row.id) }));
       },
       approveVenueCloud: async (id, extra = {}) => {

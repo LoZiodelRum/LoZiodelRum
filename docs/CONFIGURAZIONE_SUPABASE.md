@@ -2,7 +2,27 @@
 
 Per far funzionare l’approvazione dei locali dal cellulare nella Dashboard:
 
-## 1. Chiave API
+## Configurazione automatica
+
+### Opzione A – Supabase locale (sviluppo, richiede Docker)
+
+```bash
+npm run supabase:start
+```
+
+Attendi il completamento (primo avvio: 5–10 min per il download). Poi `npm run dev`. L'app userà `.env.local` e il box "Importa locali" sparirà. **Funziona solo da questo computer** (localhost).
+
+### Opzione B – Supabase cloud (produzione, cellulare + desktop)
+
+1. Crea un token su [supabase.com/dashboard/account/tokens](https://supabase.com/dashboard/account/tokens)
+2. Assicurati che `.env` contenga `VITE_SUPABASE_URL` (dal tuo progetto)
+3. Esegui: `SUPABASE_ACCESS_TOKEN=sbp_xxx npm run supabase:auto`
+
+Lo script recupera la chiave anon e la scrive in `.env`.
+
+---
+
+## 1. Chiave API (manuale)
 
 1. Vai su [supabase.com](https://supabase.com) e accedi al tuo progetto.
 2. Apri **Settings** → **API**.

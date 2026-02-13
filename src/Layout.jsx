@@ -9,7 +9,8 @@ import {
         Wine,
         Menu,
         X,
-        BookOpen
+        BookOpen,
+        LayoutDashboard
       } from "lucide-react";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
@@ -33,7 +34,7 @@ export default function Layout({ children, currentPageName }) {
 
   const adminNavItems = user?.role === 'admin' 
     ? [
-        { name: "Dashboard", icon: User, page: "Dashboard" },
+        { name: "Dashboard", icon: LayoutDashboard, page: "Dashboard" },
         { name: "Scrivi articolo", icon: PenLine, page: "AddArticle" },
       ]
     : [];
@@ -267,7 +268,7 @@ export default function Layout({ children, currentPageName }) {
               <Link
                 key={item.page}
                 to={createPageUrl(item.page)}
-                className={`flex flex-col items-center gap-1 px-2 py-2 rounded-xl transition-all ${
+                className={`flex flex-col items-center gap-1 px-2 py-2 rounded-xl transition-all min-w-[44px] min-h-[44px] justify-center ${
                   isActive(item.page)
                     ? "text-amber-400"
                     : "text-stone-400"
@@ -277,9 +278,26 @@ export default function Layout({ children, currentPageName }) {
                 <span className="text-[10px] font-medium">{item.name}</span>
               </Link>
             ))}
+            {user?.role === "admin" && (
+              <Link
+                to={createPageUrl("Dashboard")}
+                onClick={() => setMobileMenuOpen(false)}
+                className={`relative flex flex-col items-center gap-1 px-2 py-2 rounded-xl transition-all min-w-[44px] min-h-[44px] justify-center ${
+                  isActive("Dashboard") ? "text-amber-400" : "text-stone-400"
+                }`}
+              >
+                <LayoutDashboard className="w-5 h-5" />
+                <span className="text-[10px] font-medium">Dashboard</span>
+                {pendingVenuesCount > 0 && (
+                  <span className="absolute -top-0.5 right-0 min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full bg-amber-500 text-stone-950 text-[10px] font-bold">
+                    {pendingVenuesCount > 99 ? "99+" : pendingVenuesCount}
+                  </span>
+                )}
+              </Link>
+            )}
             <Link
               to={createPageUrl("AddReview")}
-              className="flex flex-col items-center gap-1 px-2 py-2 -mt-4"
+              className="flex flex-col items-center gap-1 px-2 py-2 -mt-4 min-w-[44px] min-h-[44px] justify-center"
             >
               <div className="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center shadow-lg shadow-amber-500/30">
                 <PlusCircle className="w-6 h-6 text-stone-950" />
@@ -287,7 +305,7 @@ export default function Layout({ children, currentPageName }) {
             </Link>
             <Link
               to={createPageUrl("Profile")}
-              className={`flex flex-col items-center gap-1 px-2 py-2 rounded-xl ${
+              className={`flex flex-col items-center gap-1 px-2 py-2 rounded-xl min-w-[44px] min-h-[44px] justify-center ${
                 isActive("Profile") ? "text-amber-400" : "text-stone-400"
               }`}
             >

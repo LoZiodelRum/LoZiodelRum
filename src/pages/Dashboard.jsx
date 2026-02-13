@@ -15,7 +15,8 @@ import {
   Upload,
   BookOpen,
   Wine,
-  Wine as BartenderIcon
+  Wine as BartenderIcon,
+  RefreshCw
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -31,13 +32,14 @@ import {
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { useAppData } from "@/lib/AppDataContext";
+import { exportAsFile } from "@/utils/mobileExport";
 
 export default function Dashboard() {
-  const { user, getVenues, getArticles, getDrinks, getBartenders, getPendingBartenders, getVenueById, updateVenue, deleteVenue, setBartenderStatus, deleteBartender, exportData, importData, importVenuesFromMobile, isSupabaseConfigured, getPendingVenuesFromCloud, approveVenueCloud, rejectVenueCloud } = useAppData();
+  const { user, getVenues, getArticles, getDrinks, getBartenders, getPendingBartenders, getVenueById, updateVenue, deleteVenue, setBartenderStatus, deleteBartender, exportData, importData, importVenuesFromMobile, isSupabaseConfigured, getPendingVenuesFromCloud, getPendingLocalVenues, approveVenueCloud, rejectVenueCloud } = useAppData();
   const allVenues = getVenues();
   const allArticles = getArticles();
   const allDrinks = getDrinks();
-  const pendingVenues = allVenues.filter((v) => !v.verified);
+  const pendingVenues = getPendingLocalVenues?.() ?? [];
   const pendingBartenders = getPendingBartenders();
   const approvedBartenders = getBartenders("approved");
   const [selectedVenueId, setSelectedVenueId] = useState("");
@@ -46,6 +48,7 @@ export default function Dashboard() {
   const [selectedBartenderId, setSelectedBartenderId] = useState("");
   const [cloudPendingVenues, setCloudPendingVenues] = useState([]);
   const [loadingCloudPending, setLoadingCloudPending] = useState(false);
+  const [cloudError, setCloudError] = useState(null);
   const [venueCoords, setVenueCoords] = useState({});
   const selectedVenue = selectedVenueId ? allVenues.find((v) => v.id === selectedVenueId) : null;
   const selectedArticle = selectedArticleId ? allArticles.find((a) => a.id === selectedArticleId) : null;
@@ -57,26 +60,28 @@ export default function Dashboard() {
   const loadCloudPending = () => {
     if (!isSupabaseConfigured()) return;
     setLoadingCloudPending(true);
+    setCloudError(null);
     getPendingVenuesFromCloud().then((list) => {
       setCloudPendingVenues(list);
       setLoadingCloudPending(false);
-    }).catch(() => setLoadingCloudPending(false));
+    }).catch((err) => {
+      setLoadingCloudPending(false);
+      setCloudError(err?.message || err?.code || "Errore connessione");
+    });
   };
 
   useEffect(() => {
     loadCloudPending();
   }, []);
 
-  const handleExport = () => {
+  const handleExport = async () => {
     const data = exportData();
-    const blob = new Blob([JSON.stringify(data, null, 2)], { type: "application/json" });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = `loziodelrum-backup-${new Date().toISOString().slice(0, 10)}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
-    toast.success("Backup scaricato");
+    const ok = await exportAsFile(data, `loziodelrum-backup-${new Date().toISOString().slice(0, 10)}.json`, {
+      title: "Backup Lo Zio del Rum",
+      onSuccess: () => toast.success("Backup esportato"),
+      onError: () => toast.error("Errore durante l'esportazione"),
+    });
+    if (!ok) toast.info("Esportazione annullata");
   };
 
   const handleImport = (e) => {
@@ -172,13 +177,38 @@ export default function Dashboard() {
                 reader.readAsText(file);
               }}
             />
-            <Button
-              onClick={() => mobileVenuesInputRef.current?.click()}
-              className="bg-amber-500 hover:bg-amber-600 text-stone-950 mb-3"
-            >
-              <Upload className="w-4 h-4 mr-2" />
-              Importa file dal cellulare
-            </Button>
+            <div className="flex flex-wrap gap-3 mb-3">
+              <Button
+                onClick={() => mobileVenuesInputRef.current?.click()}
+                className="bg-amber-500 hover:bg-amber-600 text-stone-950 min-h-[44px]"
+              >
+                <Upload className="w-4 h-4 mr-2" />
+                Importa file
+              </Button>
+              <Button
+                variant="outline"
+                className="border-amber-500/50 text-amber-400 min-h-[44px]"
+                onClick={async () => {
+                  try {
+                    const text = await navigator.clipboard?.readText?.();
+                    if (!text) throw new Error("Appunti vuoti");
+                    const data = JSON.parse(text);
+                    const venuesToImport = Array.isArray(data) ? data : data?.venues;
+                    if (Array.isArray(venuesToImport) && venuesToImport.length > 0) {
+                      importVenuesFromMobile?.(venuesToImport);
+                      toast.success(`${venuesToImport.length} locale/i importato/i da appunti`);
+                    } else {
+                      toast.error("Nessun locale negli appunti. Copia il JSON esportato dal cellulare.");
+                    }
+                  } catch (e) {
+                    if (e?.name === "NotAllowedError") toast.error("Permesso appunti negato");
+                    else toast.error("Appunti non validi. Copia il JSON dal cellulare.");
+                  }
+                }}
+              >
+                Incolla da appunti
+              </Button>
+            </div>
             <p className="text-stone-500 text-xs">
               Oppure configura Supabase per la sincronizzazione automatica (docs/CONFIGURAZIONE_SUPABASE.md)
             </p>
@@ -213,16 +243,14 @@ export default function Dashboard() {
             {!isSupabaseConfigured() && pendingVenues.length > 0 && (
               <Button
                 variant="outline"
-                className="border-amber-500/50 text-amber-400"
-                onClick={() => {
-                  const blob = new Blob([JSON.stringify(pendingVenues)], { type: "application/json" });
-                  const url = URL.createObjectURL(blob);
-                  const a = document.createElement("a");
-                  a.href = url;
-                  a.download = `locali-da-approvare-${new Date().toISOString().slice(0, 10)}.json`;
-                  a.click();
-                  URL.revokeObjectURL(url);
-                  toast.success("File scaricato. Invia al desktop e usa Importa.");
+                className="border-amber-500/50 text-amber-400 min-h-[44px]"
+                onClick={async () => {
+                  const ok = await exportAsFile(pendingVenues, `locali-da-approvare-${new Date().toISOString().slice(0, 10)}.json`, {
+                    title: "Locali da approvare",
+                    onSuccess: () => toast.success("Condividi il file (WhatsApp, email) e importalo su desktop"),
+                    onError: () => toast.error("Errore esportazione"),
+                  });
+                  if (!ok) toast.info("Condivisione annullata");
                 }}
               >
                 <Download className="w-4 h-4 mr-2" />
@@ -330,7 +358,7 @@ export default function Dashboard() {
                           Rifiuta
                         </Button>
                         <Link to={createPageUrl(`EditVenue?id=${venue.id}`)}>
-                          <Button variant="outline" className="border-stone-600">
+                          <Button className="bg-amber-500 hover:bg-amber-600 text-stone-950">
                             <Edit3 className="w-4 h-4 mr-2" />
                             Modifica
                           </Button>
@@ -347,10 +375,29 @@ export default function Dashboard() {
         {/* Locali inviati dal cellulare (Supabase) */}
         {isSupabaseConfigured() && (
           <div className="bg-stone-900/50 rounded-2xl border border-stone-800/50 p-6 mb-8">
-            <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-              <MapPin className="w-5 h-5 text-amber-500" />
-              Locali inviati dal cellulare (da approvare)
-            </h2>
+            <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+              <h2 className="text-xl font-bold flex items-center gap-2">
+                <MapPin className="w-5 h-5 text-amber-500" />
+                Locali inviati dal cellulare (da approvare)
+              </h2>
+              <Button
+                variant="outline"
+                size="sm"
+                className="border-stone-600 min-h-[44px]"
+                onClick={loadCloudPending}
+                disabled={loadingCloudPending}
+              >
+                <RefreshCw className={`w-4 h-4 mr-2 ${loadingCloudPending ? "animate-spin" : ""}`} />
+                Aggiorna
+              </Button>
+            </div>
+            {cloudError && (
+              <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30">
+                <p className="text-red-400 text-sm font-medium mb-2">Errore: {cloudError}</p>
+                <p className="text-stone-400 text-xs mb-2">Se la tabella venues_cloud non esiste, esegui: <code className="bg-stone-800 px-1 rounded">npm run supabase:setup</code></p>
+                <p className="text-stone-500 text-xs">Con Supabase locale (127.0.0.1) i locali aggiunti dal cellulare non arrivano qui: il telefono non può connettersi. Usa Supabase cloud per produzione.</p>
+              </div>
+            )}
             {loadingCloudPending ? (
               <div className="text-center py-8 text-stone-500">Caricamento...</div>
             ) : cloudPendingVenues.length === 0 ? (
@@ -447,7 +494,7 @@ export default function Dashboard() {
                             Rifiuta
                           </Button>
                           <Link to={createPageUrl(`EditVenue?id=${venue.id}`)} state={{ venue, fromCloud: true }}>
-                            <Button variant="outline" className="border-stone-600">
+                            <Button className="bg-amber-500 hover:bg-amber-600 text-stone-950">
                               <Edit3 className="w-4 h-4 mr-2" />
                               Modifica
                             </Button>
