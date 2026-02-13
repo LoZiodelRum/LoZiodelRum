@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "@/components/ui/use-toast";
 import { createPageUrl } from "@/utils";
 import { useMutation } from "@tanstack/react-query";
 import { useAppData } from "@/lib/AppDataContext";
@@ -50,7 +51,10 @@ const specialtyOptions = [
 
 export default function AddVenue() {
   const navigate = useNavigate();
-  const { addVenue } = useAppData();
+  const { addVenue, getLocalVenuesToSync, syncLocalVenuesToCloud, isSupabaseConfigured } = useAppData();
+  const hasSupabase = isSupabaseConfigured?.() ?? false;
+  const [syncing, setSyncing] = useState(false);
+  const localToSync = getLocalVenuesToSync?.() ?? [];
   
   const [formData, setFormData] = useState({
     name: "",
@@ -76,7 +80,15 @@ export default function AddVenue() {
   const createVenueMutation = useMutation({
     mutationFn: (venueData) => addVenue(venueData),
     onSuccess: (data) => {
-      navigate(createPageUrl(`VenueDetail?id=${data.id}`));
+      if (data.pending) {
+        toast({
+          title: "Locale inviato!",
+          description: "Sarà visibile dopo l'approvazione dell'amministratore.",
+        });
+        navigate(createPageUrl("Explore"));
+      } else {
+        navigate(createPageUrl(`VenueDetail?id=${data.id}`));
+      }
     },
   });
 
@@ -131,7 +143,7 @@ export default function AddVenue() {
       longitude: formData.longitude ?? null,
       cover_image: formData.cover_image || "",
       featured: false,
-      verified: true,
+      verified: hasSupabase, // senza Supabase: false → appare in "Locali in attesa"
     });
   };
 
@@ -155,6 +167,30 @@ export default function AddVenue() {
         </div>
 
         <div className="space-y-6">
+          {isSupabaseConfigured?.() && localToSync.length > 0 && (
+            <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30">
+              <p className="text-amber-400 font-medium mb-2">
+                Hai {localToSync.length} locale{localToSync.length > 1 ? "i" : ""} salvato{localToSync.length > 1 ? "i" : ""} solo su questo dispositivo
+              </p>
+              <p className="text-stone-400 text-sm mb-3">
+                {localToSync.map((v) => v.name).join(", ")}. Invia alla Dashboard per l&apos;approvazione.
+              </p>
+              <Button
+                onClick={async () => {
+                  setSyncing(true);
+                  const { synced } = await syncLocalVenuesToCloud?.();
+                  setSyncing(false);
+                  if (synced > 0) {
+                    toast({ title: "Inviato!", description: `${synced} locale/i ora in attesa nella Dashboard.` });
+                  }
+                }}
+                disabled={syncing}
+                className="bg-amber-500 hover:bg-amber-600 text-stone-950"
+              >
+                {syncing ? "Invio in corso..." : "Invia alla Dashboard"}
+              </Button>
+            </div>
+          )}
           {Object.keys(errors).length > 0 && (
             <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
               Correggi i campi indicati sotto prima di inviare.

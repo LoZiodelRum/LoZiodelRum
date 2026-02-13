@@ -33,7 +33,7 @@ import { toast } from "sonner";
 import { useAppData } from "@/lib/AppDataContext";
 
 export default function Dashboard() {
-  const { user, getVenues, getArticles, getDrinks, getBartenders, getPendingBartenders, getVenueById, updateVenue, deleteVenue, setBartenderStatus, deleteBartender, exportData, importData, isSupabaseConfigured, getPendingVenuesFromCloud, approveVenueCloud, rejectVenueCloud } = useAppData();
+  const { user, getVenues, getArticles, getDrinks, getBartenders, getPendingBartenders, getVenueById, updateVenue, deleteVenue, setBartenderStatus, deleteBartender, exportData, importData, importVenuesFromMobile, isSupabaseConfigured, getPendingVenuesFromCloud, approveVenueCloud, rejectVenueCloud } = useAppData();
   const allVenues = getVenues();
   const allArticles = getArticles();
   const allDrinks = getDrinks();
@@ -52,6 +52,7 @@ export default function Dashboard() {
   const selectedDrink = selectedDrinkId ? allDrinks.find((d) => d.id === selectedDrinkId) : null;
   const selectedBartender = selectedBartenderId ? getBartenders().find((b) => b.id === selectedBartenderId) : null;
   const fileInputRef = useRef(null);
+  const mobileVenuesInputRef = useRef(null);
 
   const loadCloudPending = () => {
     if (!isSupabaseConfigured()) return;
@@ -134,18 +135,52 @@ export default function Dashboard() {
           <p className="text-stone-500">Gestisci i contenuti in attesa di approvazione</p>
         </div>
 
-        {/* Avviso: Supabase non configurato */}
+        {/* Avviso: Supabase non configurato - Importa da cellulare */}
         {!isSupabaseConfigured() && (
           <div className="mb-8 p-5 rounded-2xl bg-amber-500/10 border border-amber-500/30">
             <h3 className="font-bold text-amber-400 mb-2 flex items-center gap-2">
               <AlertCircle className="w-5 h-5" />
-              Per vedere sul Mac i locali inseriti dal cellulare
+              Importa locali dal cellulare (es. Madrè)
             </h3>
             <p className="text-stone-300 text-sm mb-3">
-              Configura Supabase (gratuito): i locali inseriti dal telefono verranno salvati online e li vedrai qui per approvarli. Leggi <code className="px-1.5 py-0.5 bg-stone-800 rounded text-xs">docs/SUPABASE_SETUP.md</code>.
+              Sul cellulare: accedi come admin → Dashboard → &quot;Esporta locali&quot;. Invia il file a te stesso (email, AirDrop, WhatsApp). Poi qui:
             </p>
+            <input
+              ref={mobileVenuesInputRef}
+              type="file"
+              accept=".json,application/json"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (!file) return;
+                const reader = new FileReader();
+                reader.onload = () => {
+                  try {
+                    const data = JSON.parse(reader.result);
+                    const venuesToImport = Array.isArray(data) ? data : data?.venues;
+                    if (Array.isArray(venuesToImport) && venuesToImport.length > 0) {
+                      importVenuesFromMobile?.(venuesToImport);
+                      toast.success(`${venuesToImport.length} locale/i importato/i. Ora compaiono qui sotto.`);
+                    } else {
+                      toast.error("Nessun locale nel file. Esporta dal cellulare (Dashboard → Esporta locali).");
+                    }
+                  } catch {
+                    toast.error("File non valido. Usa il JSON esportato dal cellulare.");
+                  }
+                  e.target.value = "";
+                };
+                reader.readAsText(file);
+              }}
+            />
+            <Button
+              onClick={() => mobileVenuesInputRef.current?.click()}
+              className="bg-amber-500 hover:bg-amber-600 text-stone-950 mb-3"
+            >
+              <Upload className="w-4 h-4 mr-2" />
+              Importa file dal cellulare
+            </Button>
             <p className="text-stone-500 text-xs">
-              Aggiungi in <code className="px-1 py-0.5 bg-stone-800 rounded">.env</code>: <code className="text-amber-400">VITE_SUPABASE_URL</code> e <code className="text-amber-400">VITE_SUPABASE_ANON_KEY</code>
+              Oppure configura Supabase per la sincronizzazione automatica (docs/CONFIGURAZIONE_SUPABASE.md)
             </p>
           </div>
         )}
@@ -167,11 +202,34 @@ export default function Dashboard() {
 
         {/* Locali in attesa (dal tuo dispositivo) */}
         <div className="bg-stone-900/50 rounded-2xl border border-stone-800/50 p-6 mb-8">
-          <h2 className="text-xl font-bold mb-2 flex items-center gap-2">
-            <MapPin className="w-5 h-5 text-amber-500" />
-            Locali in attesa (dal tuo dispositivo)
-          </h2>
-          <p className="text-stone-500 text-sm mb-6">I locali inseriti da questo dispositivo compaiono qui. Approvali per renderli visibili a tutti.</p>
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+            <div>
+              <h2 className="text-xl font-bold mb-2 flex items-center gap-2">
+                <MapPin className="w-5 h-5 text-amber-500" />
+                Locali in attesa (dal tuo dispositivo)
+              </h2>
+              <p className="text-stone-500 text-sm">I locali inseriti da questo dispositivo compaiono qui. Approvali per renderli visibili a tutti.</p>
+            </div>
+            {!isSupabaseConfigured() && pendingVenues.length > 0 && (
+              <Button
+                variant="outline"
+                className="border-amber-500/50 text-amber-400"
+                onClick={() => {
+                  const blob = new Blob([JSON.stringify(pendingVenues)], { type: "application/json" });
+                  const url = URL.createObjectURL(blob);
+                  const a = document.createElement("a");
+                  a.href = url;
+                  a.download = `locali-da-approvare-${new Date().toISOString().slice(0, 10)}.json`;
+                  a.click();
+                  URL.revokeObjectURL(url);
+                  toast.success("File scaricato. Invia al desktop e usa Importa.");
+                }}
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Esporta locali
+              </Button>
+            )}
+          </div>
 
           {pendingVenues.length === 0 ? (
             <div className="text-center py-12">
@@ -388,7 +446,7 @@ export default function Dashboard() {
                             <XCircle className="w-4 h-4 mr-2" />
                             Rifiuta
                           </Button>
-                          <Link to={createPageUrl(`EditVenue?id=${venue.id}`)}>
+                          <Link to={createPageUrl(`EditVenue?id=${venue.id}`)} state={{ venue, fromCloud: true }}>
                             <Button variant="outline" className="border-stone-600">
                               <Edit3 className="w-4 h-4 mr-2" />
                               Modifica

@@ -63,7 +63,7 @@ export const initialCommunityPosts = [
   {
     id: "cp3",
     content: "Tre anni fa ho iniziato a bere con curiosità invece che con fretta. Ora ogni degustazione è un rituale. Grazie a questa community.",
-    image: "https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=600",
+    image: "https://placehold.co/600x400/1c1917/f59e0b?text=Degustazione",
     author_name: "Alessandro",
     createdAt: new Date(Date.now() - 4 * 24 * 60 * 60 * 1000).toISOString(),
     approved: true,

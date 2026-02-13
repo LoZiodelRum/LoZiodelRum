@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { useMutation } from "@tanstack/react-query";
 import { useAppData } from "@/lib/AppDataContext";
@@ -55,10 +55,12 @@ const specialtyOptions = [
 export default function EditVenue() {
   const urlParams = new URLSearchParams(window.location.search);
   const venueId = urlParams.get('id');
+  const location = useLocation();
+  const stateVenue = location.state?.fromCloud ? location.state?.venue : null;
   
   const navigate = useNavigate();
-  const { getVenueById, updateVenue } = useAppData();
-  const venue = getVenueById(venueId);
+  const { getVenueById, updateVenue, updateVenueCloud } = useAppData();
+  const venue = stateVenue || getVenueById(venueId);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -102,13 +104,18 @@ export default function EditVenue() {
     }
   }, [venue]);
 
+  const isCloudVenue = !!location.state?.fromCloud;
   const updateVenueMutation = useMutation({
     mutationFn: async (venueData) => {
-      return updateVenue(venueId, venueData);
+      return isCloudVenue ? updateVenueCloud(venueId, venueData) : updateVenue(venueId, venueData);
     },
     onSuccess: () => {
       setIsSubmitting(false);
-      navigate(createPageUrl(`VenueDetail?id=${venueId}`));
+      if (isCloudVenue) {
+        navigate(createPageUrl("Dashboard"));
+      } else {
+        navigate(createPageUrl(`VenueDetail?id=${venueId}`));
+      }
     },
     onError: () => {
       setIsSubmitting(false);

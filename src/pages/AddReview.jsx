@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { toast } from "@/components/ui/use-toast";
 import { createPageUrl } from "@/utils";
 import { useMutation } from "@tanstack/react-query";
 import { useAppData } from "@/lib/AppDataContext";
@@ -84,6 +85,7 @@ export default function AddReview() {
   const [newDrink, setNewDrink] = useState({ name: "", category: "cocktail", rating: 8, notes: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showNewVenueForm, setShowNewVenueForm] = useState(false);
+  const [isPendingVenue, setIsPendingVenue] = useState(false);
   const [newVenue, setNewVenue] = useState({ 
     name: "", 
     city: "", 
@@ -105,7 +107,15 @@ export default function AddReview() {
     },
     onSuccess: () => {
       setIsSubmitting(false);
-      navigate(createPageUrl(`VenueDetail?id=${selectedVenue}`));
+      if (isPendingVenue) {
+        toast({
+          title: "Recensione e locale inviati!",
+          description: "Saranno visibili dopo l'approvazione dell'amministratore.",
+        });
+        navigate(createPageUrl("Explore"));
+      } else {
+        navigate(createPageUrl(`VenueDetail?id=${selectedVenue}`));
+      }
     },
     onError: () => {
       setIsSubmitting(false);
@@ -136,6 +146,7 @@ export default function AddReview() {
     },
     onSuccess: (newVenueData) => {
       setSelectedVenue(newVenueData.id);
+      setIsPendingVenue(!!newVenueData.pending);
       setShowNewVenueForm(false);
       setNewVenue({ 
         name: "", 

@@ -90,11 +90,11 @@ export default function Profile() {
 
   const isAdmin = safeUser?.role === "admin";
   const rawEnv = (import.meta.env.VITE_ADMIN_PASSWORD || "").toString().trim().replace(/^["']|["']$/g, "");
-  const expectedAdminPassword = rawEnv || "admin";
+  const expectedAdminPassword = rawEnv || "850877";
 
   const isAdminPasswordValid = (input) => {
     const p = String(input ?? "").trim();
-    return p === expectedAdminPassword || p === "admin" || p === "850877";
+    return p === expectedAdminPassword;
   };
 
   const [adminDialogOpen, setAdminDialogOpen] = useState(false);
@@ -128,7 +128,7 @@ export default function Profile() {
     if (isAdminPasswordValid(password)) {
       doAdminLogin();
     } else {
-      setAdminError("Password non corretta. Prova 850877 o admin.");
+      setAdminError("Password non corretta.");
     }
   };
 
@@ -249,7 +249,7 @@ export default function Profile() {
                   type="password"
                   value={adminPasswordInput}
                   onChange={(e) => { setAdminPasswordInput(e.target.value); setAdminError(""); }}
-                  placeholder="Es. 850877 o admin"
+                  placeholder="Password"
                   className="bg-stone-800 border-stone-600 text-stone-100 placeholder:text-stone-500"
                   autoComplete="off"
                   autoCapitalize="none"

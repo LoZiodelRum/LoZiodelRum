@@ -20,11 +20,11 @@ const ROLES = [
 ];
 
 const rawAdminEnv = (import.meta.env.VITE_ADMIN_PASSWORD || "").toString().trim().replace(/^["']|["']$/g, "");
-const ADMIN_PASSWORD = rawAdminEnv || "admin";
+const ADMIN_PASSWORD = rawAdminEnv || "850877";
 
 const isAdminPasswordOk = (p) => {
   const t = String(p ?? "").trim();
-  return t === ADMIN_PASSWORD || t === "admin" || t === "850877";
+  return t === ADMIN_PASSWORD;
 };
 
 export default function Community() {

@@ -14,10 +14,12 @@ import {
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useAppData } from "@/lib/AppDataContext";
+import { usePendingVenuesCount } from "@/hooks/use-pending-venues";
 import { PenLine } from "lucide-react";
 
 export default function Layout({ children, currentPageName }) {
   const { user } = useAppData();
+  const pendingVenuesCount = usePendingVenuesCount();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
 
@@ -126,7 +128,7 @@ export default function Layout({ children, currentPageName }) {
                 <Link
                   key={item.page}
                   to={createPageUrl(item.page)}
-                  className={`flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 ${
+                  className={`relative flex items-center gap-2 px-4 py-2 rounded-xl transition-all duration-300 ${
                     isActive(item.page)
                       ? "bg-amber-500/20 text-amber-400"
                       : "text-stone-400 hover:text-stone-100 hover:bg-stone-800/50"
@@ -134,6 +136,11 @@ export default function Layout({ children, currentPageName }) {
                 >
                   <item.icon className="w-4 h-4" />
                   <span className="font-medium">{item.name}</span>
+                  {item.page === "Dashboard" && pendingVenuesCount > 0 && (
+                    <span className="absolute -top-1 -right-1 min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full bg-amber-500 text-stone-950 text-xs font-bold">
+                      {pendingVenuesCount > 99 ? "99+" : pendingVenuesCount}
+                    </span>
+                  )}
                 </Link>
               ))}
             </nav>
@@ -210,7 +217,7 @@ export default function Layout({ children, currentPageName }) {
                     key={item.page}
                     to={createPageUrl(item.page)}
                     onClick={() => setMobileMenuOpen(false)}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
+                    className={`relative flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
                       isActive(item.page)
                         ? "bg-amber-500/20 text-amber-400"
                         : "text-stone-400 hover:bg-stone-800/50"
@@ -218,6 +225,11 @@ export default function Layout({ children, currentPageName }) {
                   >
                     <item.icon className="w-5 h-5" />
                     <span className="font-medium">{item.name}</span>
+                    {item.page === "Dashboard" && pendingVenuesCount > 0 && (
+                      <span className="ml-auto min-w-[20px] h-5 px-1.5 flex items-center justify-center rounded-full bg-amber-500 text-stone-950 text-xs font-bold">
+                        {pendingVenuesCount > 99 ? "99+" : pendingVenuesCount}
+                      </span>
+                    )}
                   </Link>
                 ))}
                 <Link
