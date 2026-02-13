@@ -149,7 +149,7 @@ export const venuesData = [
     "opening_hours": "",
     "review_count": 0,
     "featured": false,
-    "verified": false
+    "verified": true
   },
   {
     "id": "6979362f42640c9c02303b4a",
@@ -175,7 +175,7 @@ export const venuesData = [
     "overall_rating": 8,
     "review_count": 0,
     "featured": false,
-    "verified": false
+    "verified": true
   },
   {
     "id": "697933ac9fb3643bb6578429",
@@ -273,7 +273,7 @@ export const venuesData = [
     "opening_hours": "",
     "review_count": 0,
     "featured": false,
-    "verified": false
+    "verified": true
   },
   {
     "id": "696fb96fdc0bb4cb30fe5eda",
@@ -299,7 +299,7 @@ export const venuesData = [
     "overall_rating": 6.8,
     "review_count": 1,
     "featured": false,
-    "verified": false
+    "verified": true
   },
   {
     "id": "696e6bd7cfb17e1d3b123ea7",

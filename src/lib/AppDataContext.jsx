@@ -44,7 +44,19 @@ function generateId() {
 const AppDataContext = createContext(null);
 
 export function AppDataProvider({ children }) {
-  const [venues, setVenues] = useState(() => load(STORAGE_KEYS.venues, initialVenues));
+  const [venues, setVenues] = useState(() => {
+    const loaded = load(STORAGE_KEYS.venues, initialVenues);
+    const initialIds = new Set(initialVenues.map((v) => v.id));
+    const migrated = loaded.map((v) =>
+      initialIds.has(v.id) && v.verified === false ? { ...v, verified: true } : v
+    );
+    if (migrated.some((v, i) => v.verified !== loaded[i]?.verified)) {
+      try {
+        localStorage.setItem(STORAGE_KEYS.venues, JSON.stringify(migrated));
+      } catch (_) {}
+    }
+    return migrated;
+  });
   const [reviews, setReviews] = useState(() => load(STORAGE_KEYS.reviews, initialReviews));
   const [articles, setArticles] = useState(() => load(STORAGE_KEYS.articles, initialArticles));
   const [drinks, setDrinks] = useState(() => load(STORAGE_KEYS.drinks, initialDrinks));
