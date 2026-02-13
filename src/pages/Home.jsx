@@ -9,7 +9,6 @@ import {
   Wine,
   Sparkles,
   ChevronRight,
-  Settings,
   Save,
   BookOpen
 } from "lucide-react";
@@ -115,19 +114,6 @@ export default function Home() {
 
         {/* Content */}
         <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 text-center">
-          {isAdmin && !editMode && (
-            <div className="fixed top-20 right-4 sm:top-24 sm:right-6 z-50">
-              <Button
-                onClick={() => setEditMode(true)}
-                size="sm"
-                className="bg-amber-500 hover:bg-amber-600 text-stone-950 font-semibold shadow-lg"
-              >
-                <Settings className="w-4 h-4 mr-2" />
-                Modifica Hero
-              </Button>
-            </div>
-          )}
-
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
