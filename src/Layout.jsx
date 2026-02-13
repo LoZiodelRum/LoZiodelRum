@@ -100,12 +100,7 @@ export default function Layout({ children, currentPageName }) {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link to={createPageUrl("Home")} className="flex items-center gap-3">
-              <img 
-                src="/logo.png" 
-                alt="Lo Zio del Rum" 
-                className="h-14 w-auto brightness-110 saturate-110"
-              />
-              <span className="font-bold text-lg text-stone-100 hidden sm:inline">Lo Zio del Rum</span>
+              <span className="font-bold text-lg text-amber-400">Lo Zio del Rum</span>
             </Link>
 
             {/* Nav */}
@@ -173,12 +168,7 @@ export default function Layout({ children, currentPageName }) {
       <header className="lg:hidden fixed top-0 left-0 right-0 z-50 glass-card border-b border-stone-800/50 safe-top safe-left safe-right">
         <div className="flex items-center justify-between px-4 min-[480px]:px-6 h-14 min-h-[56px]">
           <Link to={createPageUrl("Home")} className="flex items-center gap-2">
-            <img 
-              src="/logo.png" 
-              alt="Lo Zio del Rum" 
-              className="h-10 w-auto brightness-110 saturate-110"
-            />
-            <span className="font-bold text-stone-100">Lo Zio del Rum</span>
+            <span className="font-bold text-amber-400">Lo Zio del Rum</span>
           </Link>
           
           <button
