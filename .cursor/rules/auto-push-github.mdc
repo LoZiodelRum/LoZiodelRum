@@ -1,0 +1,14 @@
+---
+description: Push automatico su GitHub dopo ogni modifica al codice
+alwaysApply: true
+---
+
+# Push automatico su GitHub
+
+Dopo ogni modifica ai file del progetto (edit, creazione, eliminazione):
+
+1. Esegui `git add -A`
+2. Esegui `git commit -m "..."` con messaggio descrittivo delle modifiche
+3. Esegui `git push origin main`
+
+Fallo sempre, senza che l'utente lo richieda esplicitamente.

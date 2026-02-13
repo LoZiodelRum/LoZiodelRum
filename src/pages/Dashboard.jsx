@@ -9,6 +9,7 @@ import {
   Calendar,
   User,
   AlertCircle,
+  Info,
   Edit3,
   Trash2,
   Download,
@@ -145,11 +146,11 @@ export default function Dashboard() {
           <p className="text-stone-500">Gestisci i contenuti in attesa di approvazione</p>
         </div>
 
-        {/* Avviso: Supabase non configurato - Importa da cellulare */}
+        {/* Setup: Supabase non configurato - Importa da cellulare */}
         {!isSupabaseConfigured() && (
-          <div className="mb-8 p-5 rounded-2xl bg-amber-500/10 border border-amber-500/30">
-            <h3 className="font-bold text-amber-400 mb-2 flex items-center gap-2">
-              <AlertCircle className="w-5 h-5" />
+          <div className="mb-8 p-5 rounded-2xl bg-stone-800/50 border border-stone-700">
+            <h3 className="font-bold text-stone-200 mb-2 flex items-center gap-2">
+              <Info className="w-5 h-5 text-amber-500" />
               Importa locali dal cellulare (es. Madrè)
             </h3>
             <p className="text-stone-300 text-sm mb-3">
@@ -214,8 +215,8 @@ export default function Dashboard() {
                 Incolla da appunti
               </Button>
             </div>
-            <div className="mt-4 p-4 rounded-xl bg-stone-800/50 border border-stone-700">
-              <p className="text-amber-400 font-medium mb-2">Sync automatico cellulare ↔ desktop</p>
+            <div className="mt-4 p-4 rounded-xl bg-stone-900/50 border border-stone-700">
+              <p className="text-stone-300 font-medium mb-2">Sync automatico cellulare ↔ desktop</p>
               <p className="text-stone-400 text-sm mb-3">
                 1. Apri Supabase → Settings → API. 2. Copia la chiave &quot;anon public&quot;. 3. Incollala qui sotto e clicca Salva.
               </p>
@@ -223,18 +224,18 @@ export default function Dashboard() {
                 <Button
                   variant="outline"
                   size="sm"
-                  className="border-amber-500/50 text-amber-400 shrink-0"
+                  className="border-stone-600 text-stone-300 shrink-0"
                   onClick={() => window.open(getSupabaseDashboardUrl(), "_blank")}
                 >
                   Apri Supabase → Settings → API
                 </Button>
-                <div className="flex-1 flex gap-2">
+                <div className="flex-1 flex flex-col sm:flex-row gap-2 min-w-0">
                   <Input
                     type="password"
                     placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
                     value={supabaseKeyInput}
                     onChange={(e) => setSupabaseKeyInput(e.target.value)}
-                    className="bg-stone-900 border-stone-600 text-sm font-mono"
+                    className="bg-stone-900 border-stone-600 text-sm font-mono min-w-0 flex-1"
                   />
                   <Button
                     className="bg-amber-500 hover:bg-amber-600 text-stone-950 shrink-0"
@@ -263,8 +264,8 @@ export default function Dashboard() {
         <div className="grid md:grid-cols-3 gap-6 mb-8">
           <div className="bg-stone-900/50 rounded-2xl border border-stone-800/50 p-6">
             <div className="flex items-center gap-4">
-              <div className="p-3 bg-amber-500/20 rounded-xl">
-                <AlertCircle className="w-6 h-6 text-amber-500" />
+              <div className="p-3 bg-stone-700/50 rounded-xl">
+                <MapPin className="w-6 h-6 text-amber-500" />
               </div>
               <div>
                 <p className="text-3xl font-bold">{pendingVenues.length + cloudPendingVenues.length}</p>
