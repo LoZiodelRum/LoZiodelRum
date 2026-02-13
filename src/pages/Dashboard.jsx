@@ -154,9 +154,9 @@ export default function Dashboard() {
           <p className="text-stone-500">Gestisci i contenuti in attesa di approvazione</p>
         </div>
 
-        {/* Setup: Supabase non configurato - Importa da cellulare (nascondibile) */}
+        {/* Setup: Supabase non configurato - solo su desktop, nascosto su mobile */}
         {!isSupabaseConfigured() && !hideSetupBlock && (
-          <div className="mb-8 p-5 rounded-2xl bg-stone-800/50 border border-stone-700 relative">
+          <div className="hidden lg:block mb-8 p-5 rounded-2xl bg-stone-800/50 border border-stone-700 relative">
             <Button
               variant="ghost"
               size="icon"
@@ -287,14 +287,14 @@ export default function Dashboard() {
           <button
             type="button"
             onClick={() => setHideSetupBlock(false)}
-            className="mb-6 text-sm text-stone-500 hover:text-amber-500 underline"
+            className="hidden lg:inline-block mb-6 text-sm text-stone-500 hover:text-amber-500 underline"
           >
             Mostra impostazioni import e sync
           </button>
         )}
 
-        {/* Stats - nascosto su mobile per evitare confusione con "avvisi" */}
-        <div className="hidden md:grid md:grid-cols-3 gap-6 mb-8">
+        {/* Stats - nascosto su mobile e tablet */}
+        <div className="hidden lg:grid lg:grid-cols-3 gap-6 mb-8">
           <div className="bg-stone-900/50 rounded-2xl border border-stone-800/50 p-6">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-stone-700/50 rounded-xl">
