@@ -1,26 +1,11 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200" fill="none">
-  <!-- Lo Zio del Rum - faccia con cappello, occhiali, barba - arancione #f59e0b, sfondo trasparente -->
-  <g fill="#f59e0b" stroke="#f59e0b" stroke-linejoin="round">
-    <!-- Cappello fedora - tesa -->
-    <ellipse cx="100" cy="85" rx="55" ry="12" fill="#f59e0b"/>
-    <!-- Corona cappello -->
-    <path d="M50 85 L55 45 Q100 35 145 45 L150 85 Z" fill="#f59e0b"/>
-    <!-- Fascia cappello -->
-    <path d="M62 78 L138 78 L138 84 L62 84 Z" fill="#f59e0b"/>
-    <!-- Testa/faccia -->
-    <path d="M65 88 Q55 115 60 145 Q75 155 100 155 Q125 155 140 145 Q145 115 135 88 Z" fill="#f59e0b"/>
-    <!-- Orecchie -->
-    <ellipse cx="58" cy="115" rx="8" ry="12" fill="#f59e0b"/>
-    <ellipse cx="142" cy="115" rx="8" ry="12" fill="#f59e0b"/>
-    <!-- Occhiali - montatura -->
-    <circle cx="82" cy="108" r="18" fill="none" stroke="#f59e0b" stroke-width="5"/>
-    <circle cx="118" cy="108" r="18" fill="none" stroke="#f59e0b" stroke-width="5"/>
-    <rect x="97" y="100" width="6" height="16" fill="#f59e0b"/>
-    <!-- Barba -->
-    <path d="M72 125 Q80 150 100 155 Q120 150 128 125 Q125 118 100 118 Q75 118 72 125 Z" fill="#f59e0b"/>
-    <!-- Baffi -->
-    <path d="M80 122 Q92 118 100 120 Q108 118 120 122 Q118 128 100 128 Q82 128 80 122 Z" fill="#f59e0b"/>
-    <!-- Bocca sorridente -->
-    <path d="M88 132 Q100 138 112 132" fill="none" stroke="#f59e0b" stroke-width="3" stroke-linecap="round"/>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" viewBox="0 0 200 200">
+  <defs>
+    <filter id="invert">
+      <feColorMatrix type="matrix" values="-1 0 0 0 1  0 -1 0 0 1  0 0 -1 0 1  0 0 0 1 0"/>
+    </filter>
+    <mask id="faceMask">
+      <image href="/logo.png" x="0" y="0" width="200" height="200" filter="url(#invert)" preserveAspectRatio="xMidYMid meet"/>
+    </mask>
+  </defs>
+  <rect width="200" height="200" fill="#f59e0b" mask="url(#faceMask)"/>
 </svg>
