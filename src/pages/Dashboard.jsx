@@ -19,7 +19,8 @@ import {
   Wine as BartenderIcon,
   RefreshCw,
   Copy,
-  ExternalLink
+  ExternalLink,
+  X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -62,6 +63,13 @@ export default function Dashboard() {
   const mobileVenuesInputRef = useRef(null);
   const [supabaseKeyInput, setSupabaseKeyInput] = useState("");
   const [savingKey, setSavingKey] = useState(false);
+  const [hideSetupBlock, setHideSetupBlock] = useState(() => {
+    try {
+      return localStorage.getItem("dashboard_hide_setup") === "1";
+    } catch {
+      return false;
+    }
+  });
 
   const loadCloudPending = () => {
     if (!isSupabaseConfigured()) return;
@@ -146,10 +154,25 @@ export default function Dashboard() {
           <p className="text-stone-500">Gestisci i contenuti in attesa di approvazione</p>
         </div>
 
-        {/* Setup: Supabase non configurato - Importa da cellulare */}
-        {!isSupabaseConfigured() && (
-          <div className="mb-8 p-5 rounded-2xl bg-stone-800/50 border border-stone-700">
-            <h3 className="font-bold text-stone-200 mb-2 flex items-center gap-2">
+        {/* Setup: Supabase non configurato - Importa da cellulare (nascondibile) */}
+        {!isSupabaseConfigured() && !hideSetupBlock && (
+          <div className="mb-8 p-5 rounded-2xl bg-stone-800/50 border border-stone-700 relative">
+            <Button
+              variant="ghost"
+              size="icon"
+              className="absolute top-3 right-3 text-stone-500 hover:text-stone-300"
+              onClick={() => {
+                try {
+                  localStorage.setItem("dashboard_hide_setup", "1");
+                  setHideSetupBlock(true);
+                  toast.success("Avviso nascosto");
+                } catch (_) {}
+              }}
+              aria-label="Nascondi"
+            >
+              <X className="w-5 h-5" />
+            </Button>
+            <h3 className="font-bold text-stone-200 mb-2 flex items-center gap-2 pr-10">
               <Info className="w-5 h-5 text-amber-500" />
               Importa locali dal cellulare (es. Madrè)
             </h3>
@@ -260,8 +283,18 @@ export default function Dashboard() {
           </div>
         )}
 
-        {/* Stats */}
-        <div className="grid md:grid-cols-3 gap-6 mb-8">
+        {!isSupabaseConfigured() && hideSetupBlock && (
+          <button
+            type="button"
+            onClick={() => setHideSetupBlock(false)}
+            className="mb-6 text-sm text-stone-500 hover:text-amber-500 underline"
+          >
+            Mostra impostazioni import e sync
+          </button>
+        )}
+
+        {/* Stats - nascosto su mobile per evitare confusione con "avvisi" */}
+        <div className="hidden md:grid md:grid-cols-3 gap-6 mb-8">
           <div className="bg-stone-900/50 rounded-2xl border border-stone-800/50 p-6">
             <div className="flex items-center gap-4">
               <div className="p-3 bg-stone-700/50 rounded-xl">
