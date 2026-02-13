@@ -1,9 +1,8 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { 
         Home, 
         MapPin, 
-        Search, 
         PlusCircle, 
         User, 
         Wine,
@@ -22,7 +21,6 @@ export default function Layout({ children, currentPageName }) {
   const { user } = useAppData();
   const pendingVenuesCount = usePendingVenuesCount();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const location = useLocation();
 
   const navItems = [
     { name: "Home", icon: Home, page: "Home" },

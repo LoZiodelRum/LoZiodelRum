@@ -34,16 +34,19 @@ create table if not exists public.venues_cloud (
 -- Chiunque può inserire (utente dal cellulare)
 alter table public.venues_cloud enable row level security;
 
+drop policy if exists "Allow insert for everyone" on public.venues_cloud;
 create policy "Allow insert for everyone"
   on public.venues_cloud for insert
   with check (true);
 
 -- Chiunque può leggere (app carica approved, dashboard carica pending)
+drop policy if exists "Allow read for everyone" on public.venues_cloud;
 create policy "Allow read for everyone"
   on public.venues_cloud for select
   using (true);
 
 -- Chiunque può aggiornare (in produzione restringi con auth; la Dashboard è solo per admin)
+drop policy if exists "Allow update for everyone" on public.venues_cloud;
 create policy "Allow update for everyone"
   on public.venues_cloud for update
   using (true)

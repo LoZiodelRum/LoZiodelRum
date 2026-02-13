@@ -16,7 +16,9 @@ import {
   BookOpen,
   Wine,
   Wine as BartenderIcon,
-  RefreshCw
+  RefreshCw,
+  Copy,
+  ExternalLink
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -32,10 +34,11 @@ import {
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { useAppData } from "@/lib/AppDataContext";
+import { getSupabaseDashboardUrl, getSupabaseSqlEditorUrl, saveSupabaseKey } from "@/lib/supabase";
 import { exportAsFile } from "@/utils/mobileExport";
 
 export default function Dashboard() {
-  const { user, getVenues, getArticles, getDrinks, getBartenders, getPendingBartenders, getVenueById, updateVenue, deleteVenue, setBartenderStatus, deleteBartender, exportData, importData, importVenuesFromMobile, isSupabaseConfigured, getPendingVenuesFromCloud, getPendingLocalVenues, approveVenueCloud, rejectVenueCloud } = useAppData();
+  const { user, getVenues, getArticles, getDrinks, getBartenders, getPendingBartenders, updateVenue, deleteVenue, setBartenderStatus, deleteBartender, exportData, importData, importVenuesFromMobile, isSupabaseConfigured, getPendingVenuesFromCloud, getPendingLocalVenues, approveVenueCloud, rejectVenueCloud } = useAppData();
   const allVenues = getVenues();
   const allArticles = getArticles();
   const allDrinks = getDrinks();
@@ -56,6 +59,8 @@ export default function Dashboard() {
   const selectedBartender = selectedBartenderId ? getBartenders().find((b) => b.id === selectedBartenderId) : null;
   const fileInputRef = useRef(null);
   const mobileVenuesInputRef = useRef(null);
+  const [supabaseKeyInput, setSupabaseKeyInput] = useState("");
+  const [savingKey, setSavingKey] = useState(false);
 
   const loadCloudPending = () => {
     if (!isSupabaseConfigured()) return;
@@ -93,7 +98,7 @@ export default function Dashboard() {
         const data = JSON.parse(reader.result);
         importData(data);
         toast.success("Dati importati con successo");
-      } catch (err) {
+      } catch {
         toast.error("File non valido. Usa un backup JSON esportato da questa app.");
       }
     };
@@ -209,9 +214,48 @@ export default function Dashboard() {
                 Incolla da appunti
               </Button>
             </div>
-            <p className="text-stone-500 text-xs">
-              Oppure configura Supabase per la sincronizzazione automatica (docs/CONFIGURAZIONE_SUPABASE.md)
-            </p>
+            <div className="mt-4 p-4 rounded-xl bg-stone-800/50 border border-stone-700">
+              <p className="text-amber-400 font-medium mb-2">Sync automatico cellulare ↔ desktop</p>
+              <p className="text-stone-400 text-sm mb-3">
+                1. Apri Supabase → Settings → API. 2. Copia la chiave &quot;anon public&quot;. 3. Incollala qui sotto e clicca Salva.
+              </p>
+              <div className="flex flex-col sm:flex-row gap-3 mb-3">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="border-amber-500/50 text-amber-400 shrink-0"
+                  onClick={() => window.open(getSupabaseDashboardUrl(), "_blank")}
+                >
+                  Apri Supabase → Settings → API
+                </Button>
+                <div className="flex-1 flex gap-2">
+                  <Input
+                    type="password"
+                    placeholder="eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+                    value={supabaseKeyInput}
+                    onChange={(e) => setSupabaseKeyInput(e.target.value)}
+                    className="bg-stone-900 border-stone-600 text-sm font-mono"
+                  />
+                  <Button
+                    className="bg-amber-500 hover:bg-amber-600 text-stone-950 shrink-0"
+                    disabled={!supabaseKeyInput.trim() || savingKey}
+                    onClick={async () => {
+                      setSavingKey(true);
+                      if (saveSupabaseKey(supabaseKeyInput)) {
+                        toast.success("Chiave salvata. Ricarico la pagina…");
+                        window.location.reload();
+                      } else {
+                        setSavingKey(false);
+                        toast.error("Chiave non valida. Copia la chiave 'anon public' da Supabase.");
+                      }
+                    }}
+                  >
+                    {savingKey ? "..." : "Salva"}
+                  </Button>
+                </div>
+              </div>
+              <p className="text-stone-500 text-xs">Dopo aver salvato, esegui <code className="bg-stone-900 px-1 rounded">npm run supabase:setup</code> se non l&apos;hai già fatto (crea la tabella).</p>
+            </div>
           </div>
         )}
 
@@ -381,9 +425,8 @@ export default function Dashboard() {
                 Locali inviati dal cellulare (da approvare)
               </h2>
               <Button
-                variant="outline"
                 size="sm"
-                className="border-stone-600 min-h-[44px]"
+                className="bg-amber-500 hover:bg-amber-600 text-stone-950 min-h-[44px]"
                 onClick={loadCloudPending}
                 disabled={loadingCloudPending}
               >
@@ -392,10 +435,53 @@ export default function Dashboard() {
               </Button>
             </div>
             {cloudError && (
-              <div className="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30">
-                <p className="text-red-400 text-sm font-medium mb-2">Errore: {cloudError}</p>
-                <p className="text-stone-400 text-xs mb-2">Se la tabella venues_cloud non esiste, esegui: <code className="bg-stone-800 px-1 rounded">npm run supabase:setup</code></p>
-                <p className="text-stone-500 text-xs">Con Supabase locale (127.0.0.1) i locali aggiunti dal cellulare non arrivano qui: il telefono non può connettersi. Usa Supabase cloud per produzione.</p>
+              <div className="mb-6 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30">
+                <p className="text-amber-400 text-sm font-medium mb-2">
+                  {cloudError.includes("fetch") || cloudError.includes("Failed") ? "Supabase non raggiungibile" : cloudError.includes("venues_cloud") ? "Crea la tabella venues_cloud in Supabase" : `Errore: ${cloudError}`}
+                </p>
+                {cloudError.includes("venues_cloud") ? (
+                  <>
+                    <p className="text-stone-400 text-xs mb-3">1. Apri il SQL Editor. 2. Incolla lo script qui sotto. 3. Clicca Run.</p>
+                    <div className="flex flex-wrap gap-2 mb-3">
+                      <Button
+                        size="sm"
+                        className="bg-amber-500 hover:bg-amber-600 text-stone-950"
+                        onClick={() => window.open(getSupabaseSqlEditorUrl(), "_blank")}
+                      >
+                        <ExternalLink className="w-4 h-4 mr-2" />
+                        Apri SQL Editor
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="border-amber-500/50 text-amber-400"
+                        onClick={async () => {
+                          const sql = `create table if not exists public.venues_cloud (id uuid primary key default gen_random_uuid(), name text not null, slug text, description text, city text, country text default 'Italia', address text, latitude double precision, longitude double precision, cover_image text, category text, price_range text, phone text, website text, instagram text, opening_hours text, status text not null default 'pending' check (status in ('pending', 'approved', 'rejected')), created_at timestamptz default now(), avg_drink_quality numeric, avg_staff_competence numeric, avg_atmosphere numeric, avg_value numeric, overall_rating numeric, review_count int default 0, featured boolean default false, verified boolean default true);
+alter table public.venues_cloud enable row level security;
+drop policy if exists "Allow insert for everyone" on public.venues_cloud;
+create policy "Allow insert for everyone" on public.venues_cloud for insert with check (true);
+drop policy if exists "Allow read for everyone" on public.venues_cloud;
+create policy "Allow read for everyone" on public.venues_cloud for select using (true);
+drop policy if exists "Allow update for everyone" on public.venues_cloud;
+create policy "Allow update for everyone" on public.venues_cloud for update using (true) with check (true);
+create index if not exists idx_venues_cloud_status on public.venues_cloud (status);
+create index if not exists idx_venues_cloud_created_at on public.venues_cloud (created_at desc);`;
+                          try {
+                            await navigator.clipboard.writeText(sql);
+                            toast.success("SQL copiato negli appunti");
+                          } catch {
+                            toast.error("Impossibile copiare");
+                          }
+                        }}
+                      >
+                        <Copy className="w-4 h-4 mr-2" />
+                        Copia SQL
+                      </Button>
+                    </div>
+                  </>
+                ) : (
+                  <p className="text-stone-400 text-xs mb-2">Supabase locale: avvia con <code className="bg-stone-800 px-1 rounded">npm run supabase:start</code>. Supabase cloud: verifica la chiave in .env e crea la tabella con <code className="bg-stone-800 px-1 rounded">npm run supabase:setup</code>.</p>
+                )}
               </div>
             )}
             {loadingCloudPending ? (

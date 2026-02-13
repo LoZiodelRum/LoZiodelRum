@@ -47,9 +47,10 @@ if (!finalUrl || !finalKey) {
   process.exit(1);
 }
 
-if (finalKey.includes("copia quella") || finalKey.startsWith("sb_publishable_") || finalKey.length < 100) {
+const validKey = finalKey && !finalKey.includes("copia quella") && (finalKey.startsWith("eyJ") || finalKey.startsWith("sb_publishable_"));
+if (!validKey) {
   console.error("\n❌ VITE_SUPABASE_ANON_KEY non valida.");
-  console.error("   Copia la chiave 'anon public' da Supabase → Settings → API (è una stringa lunga che inizia con eyJ...)\n");
+  console.error("   Copia la chiave 'anon public' o 'publishable' da Supabase → Settings → API.\n");
   process.exit(1);
 }
 
@@ -61,7 +62,7 @@ async function main() {
   const { data, error } = await supabase.from("venues_cloud").select("id").limit(1);
 
   if (error) {
-    if (error.code === "42P01" || error.message?.includes("does not exist")) {
+    if (error.code === "42P01" || error.message?.includes("does not exist") || error.message?.includes("Could not find the table")) {
       console.log("⚠️  La tabella venues_cloud non esiste ancora.\n");
       console.log("Esegui questo SQL nel Supabase Dashboard (SQL Editor → New query):\n");
       const schemaPath = join(__dirname, "..", "supabase", "schema.sql");

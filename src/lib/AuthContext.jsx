@@ -1,5 +1,4 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
-import { appParams } from '@/lib/app-params';
 
 const AuthContext = createContext();
 
@@ -8,8 +7,8 @@ export const AuthProvider = ({ children }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(true);
   const [isLoadingAuth, setIsLoadingAuth] = useState(false);
   const [isLoadingPublicSettings, setIsLoadingPublicSettings] = useState(false);
-  const [authError, setAuthError] = useState(null);
-  const [appPublicSettings, setAppPublicSettings] = useState(null);
+  const [authError] = useState(null);
+  const [appPublicSettings] = useState(null);
 
   useEffect(() => {
     setIsLoadingPublicSettings(false);

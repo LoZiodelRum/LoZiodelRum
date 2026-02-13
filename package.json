@@ -6,6 +6,7 @@
   "scripts": {
     "supabase:setup": "node scripts/setup-supabase.js",
     "supabase:auto": "node scripts/supabase-auto-config.js",
+    "supabase:config": "node scripts/add-supabase-key.js",
     "supabase:start": "node scripts/ensure-env-local.js && npx supabase start",
     "dev": "vite",
     "build": "vite build",

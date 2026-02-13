@@ -19,18 +19,8 @@ import { Slider } from "@/components/ui/slider";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import VenueCard from "@/components/venue/VenueCard";
-import ReviewCard from "@/components/review/ReviewCard";
 import { useAppData } from "@/lib/AppDataContext";
 import { motion } from "framer-motion";
-
-const featuredCities = [
-  { name: "Milano", image: "https://images.unsplash.com/photo-1513581166391-887a96ddeafd?w=400", count: 45 },
-  { name: "Roma", image: "https://images.unsplash.com/photo-1552832230-c0197dd311b5?w=400", count: 38 },
-  { name: "Firenze", image: "https://images.unsplash.com/photo-1748641172448-e33ba1d0390b?w=400", count: 22 },
-  { name: "Napoli", image: "https://images.unsplash.com/photo-1534308983496-4fabb1a015ee?w=400", count: 18 },
-  { name: "Torino", image: "https://images.unsplash.com/photo-1746788151344-5b602982710e?w=400", count: 15 },
-  { name: "Bologna", image: "https://images.unsplash.com/photo-1682369551300-8901c39f2487?w=400", count: 12 },
-];
 
 const categories = [
   { name: "Cocktail Bar", value: "cocktail_bar", icon: "🍸" },

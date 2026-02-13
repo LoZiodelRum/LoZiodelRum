@@ -36,7 +36,7 @@ export default function CommentSection({ articleId }) {
   });
 
   const likeCommentMutation = useMutation({
-    mutationFn: ({ commentId, currentLikes }) => Promise.resolve(), // Disattivato
+    mutationFn: () => Promise.resolve(), // Disattivato
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['comments', articleId] });
     },

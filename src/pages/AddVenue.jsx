@@ -11,7 +11,6 @@ import {
   Globe, 
   Instagram,
   Clock,
-  Upload,
   Send,
   Loader2,
   Wine

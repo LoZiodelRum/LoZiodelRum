@@ -4,24 +4,20 @@ import { createPageUrl } from "@/utils";
 import { useMutation } from "@tanstack/react-query";
 import { useAppData } from "@/lib/AppDataContext";
 import { 
-  User, 
   MapPin, 
   Star, 
   Edit3, 
-  Settings, 
   LogOut,
   Wine,
   BookmarkPlus,
   Award,
-  TrendingUp,
-  Camera,
   Save,
   X,
   Shield,
   ShieldOff,
   Fingerprint
 } from "lucide-react";
-import { isWebAuthnAvailable, hasStoredPasskey, registerPasskey, authenticateWithPasskey, clearStoredPasskey } from "@/lib/webauthn-admin";
+import { isWebAuthnAvailable, hasStoredPasskey, registerPasskey, authenticateWithPasskey } from "@/lib/webauthn-admin";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";

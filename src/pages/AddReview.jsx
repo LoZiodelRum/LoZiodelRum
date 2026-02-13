@@ -6,7 +6,6 @@ import { useMutation } from "@tanstack/react-query";
 import { useAppData } from "@/lib/AppDataContext";
 import { 
   Star, 
-  Upload, 
   X, 
   Plus,
   ChevronLeft,
@@ -22,7 +21,6 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import { Badge } from "@/components/ui/badge";
 import {
   Select,
   SelectContent,
@@ -30,7 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { motion, AnimatePresence } from "framer-motion";
+import { motion } from "framer-motion";
 
 const ratingCategories = [
   { key: "drink_quality", label: "Qualità Drink", icon: Wine, description: "Gusto, presentazione, tecnica" },

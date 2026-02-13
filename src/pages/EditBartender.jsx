@@ -5,7 +5,6 @@ import { createPageUrl } from "@/utils";
 import {
   ChevronLeft,
   User,
-  MapPin,
   Award,
   Wine,
   Send,

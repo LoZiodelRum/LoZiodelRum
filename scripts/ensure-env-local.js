@@ -22,6 +22,7 @@ if (!existsSync(envLocal)) {
   console.log("✅ Creato .env.local per Supabase locale");
   console.log("   Esegui: npm run supabase:start (attendi il completamento)");
   console.log("   Poi: npm run dev\n");
+  console.log("   ⚠️  Per sync cellulare-desktop usa Supabase cloud: rimuovi .env.local e configura .env\n");
 } else {
   console.log("ℹ️  .env.local già presente\n");
 }

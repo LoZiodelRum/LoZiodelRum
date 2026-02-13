@@ -1,6 +1,5 @@
-import { useState, useEffect } from "react";
-import { useQuery } from "@tanstack/react-query";
-import { Wine, MapPin, List, Grid3X3, GlassWater, Plus } from "lucide-react";
+import { useState } from "react";
+import { Wine, List, Grid3X3, GlassWater, Plus } from "lucide-react";
 import { useAppData } from "@/lib/AppDataContext";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";

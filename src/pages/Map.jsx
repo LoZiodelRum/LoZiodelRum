@@ -5,7 +5,6 @@ import { useAppData } from "@/lib/AppDataContext";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
 import { MapPin, Star, Wine, X, List, Map as MapIcon } from "lucide-react";
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import VenueCard from "@/components/venue/VenueCard";
@@ -53,7 +52,6 @@ export default function MapPage() {
 
   const { getVenues } = useAppData();
   const venues = getVenues();
-  const isLoading = false;
 
   // Filter venues with coordinates
   const mappableVenues = venues.filter(v => v.latitude && v.longitude);
