@@ -5,10 +5,10 @@ alwaysApply: true
 
 # Push automatico su GitHub
 
-Dopo ogni modifica ai file del progetto (edit, creazione, eliminazione):
+**Obbligatorio**: dopo ogni modifica ai file del progetto (edit, creazione, eliminazione), invia sempre a GitHub in autonomia.
 
-1. Esegui `git add -A`
-2. Esegui `git commit -m "..."` con messaggio descrittivo delle modifiche
-3. Esegui `git push origin main`
+1. `git add -A`
+2. `git commit -m "..."` con messaggio descrittivo
+3. `git push origin main`
 
-Fallo sempre, senza che l'utente lo richieda esplicitamente.
+Esegui questi passaggi sempre, automaticamente, senza attendere richiesta dell'utente.
