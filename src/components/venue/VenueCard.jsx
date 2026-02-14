@@ -9,7 +9,12 @@ const categoryLabels = {
   cocktail_bar: "Cocktail Bar",
   rum_bar: "Rum Bar",
   wine_bar: "Wine Bar",
-  speakeasy: "Speakeasy"
+  speakeasy: "Speakeasy",
+  distillery: "Distilleria",
+  enoteca: "Enoteca",
+  pub: "Pub",
+  rooftop: "Rooftop Bar",
+  hotel_bar: "Hotel Bar"
 };
 
 const categoryColors = {
@@ -17,7 +22,11 @@ const categoryColors = {
   rum_bar: "bg-orange-500/20 text-orange-400 border-orange-500/30",
   wine_bar: "bg-rose-500/20 text-rose-400 border-rose-500/30",
   speakeasy: "bg-purple-500/20 text-purple-400 border-purple-500/30",
-  rooftop: "bg-sky-500/20 text-sky-400 border-sky-500/30"
+  distillery: "bg-amber-600/20 text-amber-500 border-amber-600/30",
+  enoteca: "bg-rose-600/20 text-rose-500 border-rose-600/30",
+  pub: "bg-stone-500/20 text-stone-400 border-stone-500/30",
+  rooftop: "bg-sky-500/20 text-sky-400 border-sky-500/30",
+  hotel_bar: "bg-indigo-500/20 text-indigo-400 border-indigo-500/30"
 };
 
 export default function VenueCard({ venue, index = 0, compact = false }) {

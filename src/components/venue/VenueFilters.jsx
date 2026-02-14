@@ -11,7 +11,12 @@ const categories = [
   { value: "cocktail_bar", label: "Cocktail Bar" },
   { value: "rum_bar", label: "Rum Bar" },
   { value: "wine_bar", label: "Wine Bar" },
-  { value: "speakeasy", label: "Speakeasy" }
+  { value: "speakeasy", label: "Speakeasy" },
+  { value: "distillery", label: "Distilleria" },
+  { value: "enoteca", label: "Enoteca" },
+  { value: "pub", label: "Pub" },
+  { value: "rooftop", label: "Rooftop Bar" },
+  { value: "hotel_bar", label: "Hotel Bar" }
 ];
 
 const priceRanges = [

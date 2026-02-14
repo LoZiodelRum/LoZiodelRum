@@ -33,37 +33,13 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Checkbox } from "@/components/ui/checkbox";
 import { motion } from "framer-motion";
 import { ratingOptions } from "@/lib/reviewRatings";
+import { highlightOptions, improvementOptions } from "@/lib/highlightsImprovements";
 
 const ratingCategories = [
   { key: "drink_quality", label: "Qualità Drink", icon: Wine, description: "Gusto, presentazione, tecnica" },
   { key: "staff_competence", label: "Competenza Staff", icon: Users, description: "Conoscenza, consigli, professionalità" },
   { key: "atmosphere", label: "Atmosfera", icon: Sparkles, description: "Ambiente, musica, design" },
   { key: "value_for_money", label: "Qualità/Prezzo", icon: Coins, description: "Rapporto tra qualità e costo" },
-];
-
-const highlightOptions = [
-  "Cocktail ben fatti",
-  "Buona carta rum",
-  "Staff competente",
-  "Atmosfera accogliente",
-  "Rapporto qualità/prezzo ok",
-  "Selezione vini interessante",
-  "Ingredienti curati",
-  "Location curata",
-  "Servizio puntuale",
-  "Musica di sottofondo"
-];
-
-const improvementOptions = [
-  "Servizio lento",
-  "Prezzi alti",
-  "Ambiente rumoroso",
-  "Cocktail a volte inconsistenti",
-  "Poca varietà in carta",
-  "Difficile da trovare",
-  "Orari limitati",
-  "Coperto fuori",
-  "Prenotazione consigliata"
 ];
 
 export default function AddReview() {

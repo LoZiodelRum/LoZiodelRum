@@ -9,6 +9,7 @@ import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { motion } from "framer-motion";
 import { getLabelForValue } from "@/lib/reviewRatings";
+import { migrateHighlights, migrateImprovements } from "@/lib/highlightsImprovements";
 
 const ratingLabels = {
   drink_quality: "Qualità Drink",
@@ -138,14 +139,14 @@ export default function ReviewCard({ review, showVenue = false, venue = null, in
         </div>
       )}
 
-      {/* Highlights & Improvements */}
+      {/* Highlights & Improvements (migrati per compatibilità con vecchie recensioni) */}
       <div className="flex flex-wrap gap-2 mb-4">
-        {review.highlights?.map((h, i) => (
+        {migrateHighlights(review.highlights)?.map((h, i) => (
           <Badge key={`h-${i}`} className="bg-emerald-500/20 text-emerald-400 border-emerald-500/30">
             ✓ {h}
           </Badge>
         ))}
-        {review.improvements?.map((imp, i) => (
+        {migrateImprovements(review.improvements)?.map((imp, i) => (
           <Badge key={`i-${i}`} className="bg-orange-500/20 text-orange-400 border-orange-500/30">
             ↗ {imp}
           </Badge>

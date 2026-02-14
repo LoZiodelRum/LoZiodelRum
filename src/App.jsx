@@ -13,6 +13,7 @@ import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 import DrinkDetail from "./pages/DrinkDetail";
 import CommunityPostDetail from "./pages/CommunityPostDetail";
 import CommunityEventDetail from "./pages/CommunityEventDetail";
+import EditVenue from "./pages/EditVenue";
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -64,18 +65,30 @@ const AuthenticatedApp = () => {
         </LayoutWrapper>
       } />
 
-      {/* Rotte generate automaticamente dal config */}
-      {Object.entries(Pages).map(([path, Page]) => (
-        <Route
-          key={path}
-          path={`/${path}`}
-          element={
-            <LayoutWrapper currentPageName={path}>
-              <Page />
-            </LayoutWrapper>
-          }
-        />
-      ))}
+      {/* EditVenue: SENZA Layout - bypass completo per sbloccare la modifica */}
+      <Route 
+        path="/EditVenue" 
+        element={
+          <div className="min-h-screen bg-stone-950 text-stone-100">
+            <EditVenue />
+          </div>
+        } 
+      />
+
+      {/* Rotte generate automaticamente dal config (EditVenue ha route dedicata sopra) */}
+      {Object.entries(Pages)
+        .filter(([path]) => path !== "EditVenue")
+        .map(([path, Page]) => (
+          <Route
+            key={path}
+            path={`/${path}`}
+            element={
+              <LayoutWrapper currentPageName={path}>
+                <Page />
+              </LayoutWrapper>
+            }
+          />
+        ))}
 
       {/* Rotta dinamica: drink per id */}
       <Route 

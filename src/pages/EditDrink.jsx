@@ -53,7 +53,7 @@ export default function EditDrink() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    if (drink) {
+    if (drink && drinkId) {
       setFormData({
         name: drink.name || "",
         category: (drink.category || "other").toLowerCase(),
@@ -64,7 +64,7 @@ export default function EditDrink() {
         abv: drink.abv != null ? String(drink.abv) : "",
       });
     }
-  }, [drink]);
+  }, [drinkId]);
 
   const updateDrinkMutation = useMutation({
     mutationFn: (data) =>

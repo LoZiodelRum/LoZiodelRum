@@ -33,7 +33,11 @@ const categories = [
   { value: "rum_bar", label: "Rum Bar" },
   { value: "wine_bar", label: "Wine Bar" },
   { value: "speakeasy", label: "Speakeasy" },
-  { value: "rooftop", label: "Rooftop" }
+  { value: "distillery", label: "Distilleria" },
+  { value: "enoteca", label: "Enoteca" },
+  { value: "pub", label: "Pub" },
+  { value: "rooftop", label: "Rooftop Bar" },
+  { value: "hotel_bar", label: "Hotel Bar" }
 ];
 
 const priceRanges = [
@@ -132,6 +136,7 @@ export default function AddVenue() {
       city: formData.city,
       country: formData.country || "Italia",
       address: formData.address || "",
+      categories: formData.categories,
       category: formData.categories?.[0] || "cocktail_bar",
       price_range: formData.price_range || "€€",
       phone: formData.phone || "",
@@ -239,10 +244,10 @@ export default function AddVenue() {
                       key={cat.value}
                       type="button"
                       onClick={() => toggleCategory(cat.value)}
-                      className={`px-3 py-2 rounded-lg text-sm transition-all ${
+                      className={`px-3 py-2 rounded-lg text-sm transition-all cursor-pointer touch-manipulation ${
                         formData.categories.includes(cat.value)
                           ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
-                          : "bg-stone-800 text-stone-400 border border-stone-700 hover:border-stone-600"
+                          : "bg-stone-800 text-stone-400 border border-stone-700 hover:border-stone-600 active:bg-stone-700"
                       }`}
                     >
                       {cat.label}

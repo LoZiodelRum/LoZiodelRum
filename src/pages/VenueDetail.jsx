@@ -32,7 +32,11 @@ const categoryLabels = {
   rum_bar: "Rum Bar",
   wine_bar: "Wine Bar",
   speakeasy: "Speakeasy",
-  rooftop: "Rooftop"
+  distillery: "Distilleria",
+  enoteca: "Enoteca",
+  pub: "Pub",
+  rooftop: "Rooftop Bar",
+  hotel_bar: "Hotel Bar"
 };
 
 const ratingCategories = [

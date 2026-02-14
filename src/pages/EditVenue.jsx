@@ -3,28 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { useMutation } from "@tanstack/react-query";
 import { useAppData } from "@/lib/AppDataContext";
-import { 
-  ChevronLeft,
-  Save,
-  Loader2,
-  MapPin,
-  Phone,
-  Globe,
-  Instagram,
-  Clock,
-  Image as ImageIcon
-} from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Textarea } from "@/components/ui/textarea";
-import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
+import { ChevronLeft, Save, Loader2, MapPin, Phone, Globe, Instagram, Clock, Image as ImageIcon } from "lucide-react";
 
 const categories = [
   { value: "cocktail_bar", label: "Cocktail Bar" },
@@ -41,22 +20,28 @@ const categories = [
 const priceRanges = ["€", "€€", "€€€", "€€€€"];
 
 const specialtyOptions = [
-  "Cocktail d'autore",
-  "Rum collection",
-  "Whisky selection",
-  "Vini naturali",
-  "Champagne bar",
-  "Gin tonic bar",
-  "Mixology",
-  "Degustazioni"
+  "Cocktail d'autore", "Rum collection", "Whisky selection", "Vini naturali",
+  "Champagne bar", "Gin tonic bar", "Mixology", "Degustazioni"
 ];
+
+const fieldStyle = {
+  width: "100%",
+  padding: "0.5rem 0.75rem",
+  fontSize: "16px",
+  minHeight: "2.5rem",
+  backgroundColor: "rgba(41,37,36,0.5)",
+  border: "1px solid rgba(68,64,60,0.8)",
+  borderRadius: "0.5rem",
+  color: "#e7e5e4",
+  pointerEvents: "auto",
+};
 
 export default function EditVenue() {
   const urlParams = new URLSearchParams(window.location.search);
-  const venueId = urlParams.get('id');
+  const venueId = urlParams.get("id");
   const location = useLocation();
   const stateVenue = location.state?.fromCloud ? location.state?.venue : null;
-  
+
   const navigate = useNavigate();
   const { getVenueById, updateVenue, updateVenueCloud } = useAppData();
   const venue = stateVenue || getVenueById(venueId);
@@ -69,20 +54,20 @@ export default function EditVenue() {
     address: "",
     latitude: null,
     longitude: null,
-    category: "cocktail_bar",
+    categories: [],
     specialties: [],
     price_range: "€€",
     phone: "",
     website: "",
     instagram: "",
     opening_hours: "",
-    cover_image: ""
+    cover_image: "",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    if (venue) {
+    if (venue && venueId) {
       setFormData({
         name: venue.name || "",
         description: venue.description || "",
@@ -91,17 +76,18 @@ export default function EditVenue() {
         address: venue.address || "",
         latitude: venue.latitude ?? null,
         longitude: venue.longitude ?? null,
-        category: venue.category || "cocktail_bar",
+        categories: venue.categories?.length ? venue.categories : (venue.category ? [venue.category] : ["cocktail_bar"]),
         specialties: venue.specialties || [],
         price_range: venue.price_range || "€€",
         phone: venue.phone || "",
         website: venue.website || "",
         instagram: venue.instagram || "",
         opening_hours: venue.opening_hours || "",
-        cover_image: venue.cover_image || ""
+        cover_image: venue.cover_image || "",
       });
     }
-  }, [venue]);
+  // venue non in deps: getVenueById restituisce nuovo oggetto ogni render, causava reset continuo e blocco modifica
+  }, [venueId]);
 
   const isCloudVenue = !!location.state?.fromCloud;
   const updateVenueMutation = useMutation({
@@ -116,312 +102,276 @@ export default function EditVenue() {
         navigate(createPageUrl(`VenueDetail?id=${venueId}`));
       }
     },
-    onError: () => {
-      setIsSubmitting(false);
-    }
+    onError: () => setIsSubmitting(false),
   });
 
-  const handleSubmit = async () => {
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (!formData.name || !formData.city || !formData.country || formData.categories.length === 0 || isSubmitting) return;
     setIsSubmitting(true);
-    updateVenueMutation.mutate(formData);
+    updateVenueMutation.mutate({
+      ...formData,
+      category: formData.categories[0] || "cocktail_bar",
+    });
   };
 
-  const toggleSpecialty = (specialty) => {
-    setFormData(prev => ({
+  const toggleCategory = (v) => {
+    setFormData((prev) => ({
       ...prev,
-      specialties: prev.specialties.includes(specialty)
-        ? prev.specialties.filter(s => s !== specialty)
-        : [...prev.specialties, specialty]
+      categories: prev.categories.includes(v) ? prev.categories.filter((c) => c !== v) : [...prev.categories, v],
+    }));
+  };
+
+  const toggleSpecialty = (s) => {
+    setFormData((prev) => ({
+      ...prev,
+      specialties: prev.specialties.includes(s) ? prev.specialties.filter((x) => x !== s) : [...prev.specialties, s],
     }));
   };
 
   if (venueId && !venue) {
     return (
-      <div className="min-h-screen flex items-center justify-center px-4">
-        <div className="text-center">
-          <MapPin className="w-20 h-20 text-stone-700 mx-auto mb-6" />
-          <h2 className="text-2xl font-bold mb-2">Locale non trovato</h2>
-          <p className="text-stone-500 mb-6">Il locale che stai cercando non esiste.</p>
-          <Link to={createPageUrl("Explore")}>
-            <Button className="bg-amber-500 hover:bg-amber-600 text-stone-950">
-              Torna all'esplorazione
-            </Button>
+      <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "1rem" }}>
+        <div style={{ textAlign: "center" }}>
+          <MapPin style={{ width: 80, height: 80, color: "#44403c", margin: "0 auto 1.5rem" }} />
+          <h2 style={{ fontSize: "1.5rem", fontWeight: 700, marginBottom: "0.5rem" }}>Locale non trovato</h2>
+          <p style={{ color: "#78716c", marginBottom: "1.5rem" }}>Il locale che stai cercando non esiste.</p>
+          <Link to={createPageUrl("Explore")} style={{ display: "inline-block", padding: "0.5rem 1rem", backgroundColor: "#f59e0b", color: "#0c0a09", borderRadius: "0.5rem", fontWeight: 600, textDecoration: "none" }}>
+            Torna all'esplorazione
           </Link>
         </div>
       </div>
     );
   }
 
+  const canSubmit = formData.name && formData.city && formData.country && formData.categories.length > 0 && !isSubmitting;
+
   return (
-    <div className="min-h-screen px-4 md:px-6 pt-8 pb-28 lg:pb-12">
-      <div className="max-w-3xl mx-auto">
-        {/* Header */}
-        <div className="flex items-center gap-4 mb-8 pt-6">
-          <Link 
+    <div
+      style={{
+        minHeight: "100vh",
+        padding: "1rem 1.5rem 7rem 1.5rem",
+        backgroundColor: "#0c0a09",
+        color: "#e7e5e4",
+        pointerEvents: "auto",
+      }}
+    >
+      <div style={{ maxWidth: 768, margin: "0 auto" }}>
+        <div style={{ display: "flex", alignItems: "center", gap: "1rem", marginBottom: "2rem", paddingTop: "1.5rem" }}>
+          <Link
             to={createPageUrl(`VenueDetail?id=${venueId}`)}
-            className="p-2 hover:bg-stone-800 rounded-xl transition-colors"
+            style={{ padding: "0.5rem", display: "flex", alignItems: "center", justifyContent: "center", color: "inherit" }}
           >
-            <ChevronLeft className="w-6 h-6" />
+            <ChevronLeft style={{ width: 24, height: 24 }} />
           </Link>
           <div>
-            <h1 className="text-2xl md:text-3xl font-bold">Modifica Locale</h1>
-            <p className="text-stone-500">Aggiorna le informazioni</p>
+            <h1 style={{ fontSize: "1.5rem", fontWeight: 700 }}>Modifica Locale</h1>
+            <p style={{ color: "#78716c", fontSize: "0.875rem" }}>Aggiorna le informazioni</p>
           </div>
         </div>
 
-        <div className="space-y-8">
-          {/* Basic Info */}
-          <div className="bg-stone-900/50 rounded-2xl border border-stone-800/50 p-6">
-            <h3 className="text-lg font-semibold mb-4">Informazioni Base</h3>
-            <div className="space-y-4">
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
+          <section style={{ backgroundColor: "rgba(28,25,23,0.5)", borderRadius: "1rem", border: "1px solid rgba(68,64,60,0.5)", padding: "1.5rem" }}>
+            <h3 style={{ fontSize: "1.125rem", fontWeight: 600, marginBottom: "1rem" }}>Informazioni Base</h3>
+            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
               <div>
-                <Label className="mb-2 block">Nome del locale *</Label>
-                <Input
-                  placeholder="Es. The Rum Bar"
+                <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.875rem" }}>Nome del locale *</label>
+                <input
+                  type="text"
                   value={formData.name}
-                  onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                  className="bg-stone-800/50 border-stone-700"
+                  onChange={(e) => setFormData((p) => ({ ...p, name: e.target.value }))}
+                  placeholder="Es. The Rum Bar"
+                  style={fieldStyle}
+                  autoComplete="off"
                 />
               </div>
-
               <div>
-                <Label className="mb-2 block">Descrizione</Label>
-                <Textarea
-                  placeholder="Racconta qualcosa su questo locale..."
+                <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.875rem" }}>Descrizione</label>
+                <textarea
                   value={formData.description}
-                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
-                  className="bg-stone-800/50 border-stone-700 min-h-[100px]"
+                  onChange={(e) => setFormData((p) => ({ ...p, description: e.target.value }))}
+                  placeholder="Racconta qualcosa su questo locale..."
+                  rows={4}
+                  style={{ ...fieldStyle, minHeight: 100 }}
+                  autoComplete="off"
                 />
               </div>
-
               <div>
-                <Label className="mb-2 block">Categoria *</Label>
-                <Select value={formData.category} onValueChange={(v) => setFormData(prev => ({ ...prev, category: v }))}>
-                  <SelectTrigger className="bg-stone-800/50 border-stone-700">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-stone-900 border-stone-800">
-                    {categories.map(cat => (
-                      <SelectItem key={cat.value} value={cat.value}>
-                        {cat.label}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-            </div>
-          </div>
-
-          {/* Location */}
-          <div className="bg-stone-900/50 rounded-2xl border border-stone-800/50 p-6">
-            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <MapPin className="w-5 h-5 text-amber-500" />
-              Località
-            </h3>
-            <div className="space-y-4">
-              <div>
-                <Label className="mb-2 block">Indirizzo completo</Label>
-                <Input
-                  placeholder="Via Roma 123"
-                  value={formData.address}
-                  onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
-                  className="bg-stone-800/50 border-stone-700"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label className="mb-2 block">Città *</Label>
-                  <Input
-                    placeholder="Milano"
-                    value={formData.city}
-                    onChange={(e) => setFormData(prev => ({ ...prev, city: e.target.value }))}
-                    className="bg-stone-800/50 border-stone-700"
-                  />
-                </div>
-                <div>
-                  <Label className="mb-2 block">Paese *</Label>
-                  <Input
-                    placeholder="Italia"
-                    value={formData.country}
-                    onChange={(e) => setFormData(prev => ({ ...prev, country: e.target.value }))}
-                    className="bg-stone-800/50 border-stone-700"
-                  />
-                </div>
-              </div>
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label className="mb-2 block">Latitudine (per la mappa)</Label>
-                  <Input
-                    type="number"
-                    step="any"
-                    placeholder="45.4642"
-                    value={formData.latitude ?? ""}
-                    onChange={(e) => setFormData(prev => ({ ...prev, latitude: parseFloat(e.target.value) || null }))}
-                    className="bg-stone-800/50 border-stone-700"
-                  />
-                </div>
-                <div>
-                  <Label className="mb-2 block">Longitudine (per la mappa)</Label>
-                  <Input
-                    type="number"
-                    step="any"
-                    placeholder="9.1900"
-                    value={formData.longitude ?? ""}
-                    onChange={(e) => setFormData(prev => ({ ...prev, longitude: parseFloat(e.target.value) || null }))}
-                    className="bg-stone-800/50 border-stone-700"
-                  />
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Specialties & Price */}
-          <div className="bg-stone-900/50 rounded-2xl border border-stone-800/50 p-6">
-            <h3 className="text-lg font-semibold mb-4">Specialità e Prezzi</h3>
-            <div className="space-y-4">
-              <div>
-                <Label className="mb-3 block">Specialità</Label>
-                <div className="flex flex-wrap gap-2">
-                  {specialtyOptions.map((specialty) => (
+                <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.875rem" }}>Categorie *</label>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+                  {categories.map((cat) => (
                     <button
-                      key={specialty}
-                      onClick={() => toggleSpecialty(specialty)}
-                      className={`px-3 py-1.5 rounded-full text-sm transition-all ${
-                        formData.specialties.includes(specialty)
-                          ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
-                          : "bg-stone-800 text-stone-400 border border-stone-700 hover:border-stone-600"
-                      }`}
+                      key={cat.value}
+                      type="button"
+                      onClick={() => toggleCategory(cat.value)}
+                      style={{
+                        padding: "0.5rem 0.75rem",
+                        fontSize: "0.875rem",
+                        borderRadius: "0.5rem",
+                        border: "1px solid",
+                        cursor: "pointer",
+                        backgroundColor: formData.categories.includes(cat.value) ? "rgba(245,158,11,0.2)" : "rgba(41,37,36,0.8)",
+                        borderColor: formData.categories.includes(cat.value) ? "rgba(245,158,11,0.5)" : "rgba(68,64,60,0.8)",
+                        color: formData.categories.includes(cat.value) ? "#fbbf24" : "#a8a29e",
+                      }}
                     >
-                      {specialty}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div>
-                <Label className="mb-2 block">Fascia di prezzo</Label>
-                <div className="flex gap-2">
-                  {priceRanges.map((price) => (
-                    <button
-                      key={price}
-                      onClick={() => setFormData(prev => ({ ...prev, price_range: price }))}
-                      className={`flex-1 py-2 rounded-lg transition-all ${
-                        formData.price_range === price
-                          ? "bg-amber-500 text-stone-950"
-                          : "bg-stone-800 text-stone-400 hover:bg-stone-700"
-                      }`}
-                    >
-                      {price}
+                      {cat.label}
                     </button>
                   ))}
                 </div>
               </div>
             </div>
-          </div>
+          </section>
 
-          {/* Contacts */}
-          <div className="bg-stone-900/50 rounded-2xl border border-stone-800/50 p-6">
-            <h3 className="text-lg font-semibold mb-4">Contatti</h3>
-            <div className="space-y-4">
-              <div>
-                <Label className="mb-2 block flex items-center gap-2">
-                  <Phone className="w-4 h-4 text-amber-500" />
-                  Telefono
-                </Label>
-                <Input
-                  placeholder="+39 02 1234567"
-                  value={formData.phone}
-                  onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                  className="bg-stone-800/50 border-stone-700"
-                />
-              </div>
-
-              <div>
-                <Label className="mb-2 block flex items-center gap-2">
-                  <Globe className="w-4 h-4 text-amber-500" />
-                  Sito web
-                </Label>
-                <Input
-                  placeholder="https://www.esempio.com"
-                  value={formData.website}
-                  onChange={(e) => setFormData(prev => ({ ...prev, website: e.target.value }))}
-                  className="bg-stone-800/50 border-stone-700"
-                />
-              </div>
-
-              <div>
-                <Label className="mb-2 block flex items-center gap-2">
-                  <Instagram className="w-4 h-4 text-amber-500" />
-                  Instagram (solo username)
-                </Label>
-                <Input
-                  placeholder="nomelocale"
-                  value={formData.instagram}
-                  onChange={(e) => setFormData(prev => ({ ...prev, instagram: e.target.value }))}
-                  className="bg-stone-800/50 border-stone-700"
-                />
-              </div>
-
-              <div>
-                <Label className="mb-2 block flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-amber-500" />
-                  Orari di apertura
-                </Label>
-                <Input
-                  placeholder="Mar-Dom 18:00-02:00"
-                  value={formData.opening_hours}
-                  onChange={(e) => setFormData(prev => ({ ...prev, opening_hours: e.target.value }))}
-                  className="bg-stone-800/50 border-stone-700"
-                />
-              </div>
-            </div>
-          </div>
-
-          {/* Cover Image */}
-          <div className="bg-stone-900/50 rounded-2xl border border-stone-800/50 p-6">
-            <h3 className="text-lg font-semibold mb-4 flex items-center gap-2">
-              <ImageIcon className="w-5 h-5 text-amber-500" />
-              Immagine di copertina
+          <section style={{ backgroundColor: "rgba(28,25,23,0.5)", borderRadius: "1rem", border: "1px solid rgba(68,64,60,0.5)", padding: "1.5rem" }}>
+            <h3 style={{ fontSize: "1.125rem", fontWeight: 600, marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <MapPin style={{ width: 20, height: 20, color: "#f59e0b" }} /> Località
             </h3>
-            <div>
-              <Label className="mb-2 block">URL immagine</Label>
-              <Input
-                placeholder="https://..."
-                value={formData.cover_image}
-                onChange={(e) => setFormData(prev => ({ ...prev, cover_image: e.target.value }))}
-                className="bg-stone-800/50 border-stone-700"
-              />
-              {formData.cover_image && (
-                <img 
-                  src={formData.cover_image} 
-                  alt="Preview"
-                  className="mt-3 w-full h-48 object-cover rounded-xl"
-                />
-              )}
+            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              <div>
+                <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.875rem" }}>Indirizzo</label>
+                <input type="text" value={formData.address} onChange={(e) => setFormData((p) => ({ ...p, address: e.target.value }))} placeholder="Via Roma 123" style={fieldStyle} />
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                <div>
+                  <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.875rem" }}>Città *</label>
+                  <input type="text" value={formData.city} onChange={(e) => setFormData((p) => ({ ...p, city: e.target.value }))} placeholder="Milano" style={fieldStyle} />
+                </div>
+                <div>
+                  <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.875rem" }}>Paese *</label>
+                  <input type="text" value={formData.country} onChange={(e) => setFormData((p) => ({ ...p, country: e.target.value }))} placeholder="Italia" style={fieldStyle} />
+                </div>
+              </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
+                <div>
+                  <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.875rem" }}>Latitudine</label>
+                  <input type="number" step="any" value={formData.latitude ?? ""} onChange={(e) => setFormData((p) => ({ ...p, latitude: parseFloat(e.target.value) || null }))} placeholder="45.46" style={fieldStyle} />
+                </div>
+                <div>
+                  <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.875rem" }}>Longitudine</label>
+                  <input type="number" step="any" value={formData.longitude ?? ""} onChange={(e) => setFormData((p) => ({ ...p, longitude: parseFloat(e.target.value) || null }))} placeholder="9.19" style={fieldStyle} />
+                </div>
+              </div>
             </div>
-          </div>
+          </section>
 
-          {/* Submit */}
-          <Button
-            onClick={handleSubmit}
-            disabled={!formData.name || !formData.city || !formData.country || isSubmitting}
-            className="w-full h-14 bg-amber-500 hover:bg-amber-600 text-stone-950 font-semibold text-lg rounded-xl disabled:opacity-50"
+          <section style={{ backgroundColor: "rgba(28,25,23,0.5)", borderRadius: "1rem", border: "1px solid rgba(68,64,60,0.5)", padding: "1.5rem" }}>
+            <h3 style={{ fontSize: "1.125rem", fontWeight: 600, marginBottom: "1rem" }}>Specialità e Prezzi</h3>
+            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              <div>
+                <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.875rem" }}>Specialità</label>
+                <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+                  {specialtyOptions.map((s) => (
+                    <button
+                      key={s}
+                      type="button"
+                      onClick={() => toggleSpecialty(s)}
+                      style={{
+                        padding: "0.375rem 0.75rem",
+                        fontSize: "0.875rem",
+                        borderRadius: "9999px",
+                        border: "1px solid",
+                        cursor: "pointer",
+                        backgroundColor: formData.specialties.includes(s) ? "rgba(245,158,11,0.2)" : "rgba(41,37,36,0.8)",
+                        borderColor: formData.specialties.includes(s) ? "rgba(245,158,11,0.5)" : "rgba(68,64,60,0.8)",
+                        color: formData.specialties.includes(s) ? "#fbbf24" : "#a8a29e",
+                      }}
+                    >
+                      {s}
+                    </button>
+                  ))}
+                </div>
+              </div>
+              <div>
+                <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.875rem" }}>Fascia di prezzo</label>
+                <div style={{ display: "flex", gap: "0.5rem" }}>
+                  {priceRanges.map((pr) => (
+                    <button
+                      key={pr}
+                      type="button"
+                      onClick={() => setFormData((p) => ({ ...p, price_range: pr }))}
+                      style={{
+                        flex: 1,
+                        padding: "0.5rem",
+                        border: "none",
+                        borderRadius: "0.5rem",
+                        cursor: "pointer",
+                        backgroundColor: formData.price_range === pr ? "#f59e0b" : "rgba(41,37,36,0.8)",
+                        color: formData.price_range === pr ? "#0c0a09" : "#a8a29e",
+                      }}
+                    >
+                      {pr}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section style={{ backgroundColor: "rgba(28,25,23,0.5)", borderRadius: "1rem", border: "1px solid rgba(68,64,60,0.5)", padding: "1.5rem" }}>
+            <h3 style={{ fontSize: "1.125rem", fontWeight: 600, marginBottom: "1rem" }}>Contatti</h3>
+            <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
+              <div>
+                <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem", fontSize: "0.875rem" }}><Phone style={{ width: 16, height: 16, color: "#f59e0b" }} /> Telefono</label>
+                <input type="tel" value={formData.phone} onChange={(e) => setFormData((p) => ({ ...p, phone: e.target.value }))} placeholder="+39 02 1234567" style={fieldStyle} />
+              </div>
+              <div>
+                <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem", fontSize: "0.875rem" }}><Globe style={{ width: 16, height: 16, color: "#f59e0b" }} /> Sito web</label>
+                <input type="url" value={formData.website} onChange={(e) => setFormData((p) => ({ ...p, website: e.target.value }))} placeholder="https://..." style={fieldStyle} />
+              </div>
+              <div>
+                <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem", fontSize: "0.875rem" }}><Instagram style={{ width: 16, height: 16, color: "#f59e0b" }} /> Instagram</label>
+                <input type="text" value={formData.instagram} onChange={(e) => setFormData((p) => ({ ...p, instagram: e.target.value }))} placeholder="nomelocale" style={fieldStyle} />
+              </div>
+              <div>
+                <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem", fontSize: "0.875rem" }}><Clock style={{ width: 16, height: 16, color: "#f59e0b" }} /> Orari</label>
+                <input type="text" value={formData.opening_hours} onChange={(e) => setFormData((p) => ({ ...p, opening_hours: e.target.value }))} placeholder="Mar-Dom 18:00-02:00" style={fieldStyle} />
+              </div>
+            </div>
+          </section>
+
+          <section style={{ backgroundColor: "rgba(28,25,23,0.5)", borderRadius: "1rem", border: "1px solid rgba(68,64,60,0.5)", padding: "1.5rem" }}>
+            <h3 style={{ fontSize: "1.125rem", fontWeight: 600, marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
+              <ImageIcon style={{ width: 20, height: 20, color: "#f59e0b" }} /> Immagine di copertina
+            </h3>
+            <input type="url" value={formData.cover_image} onChange={(e) => setFormData((p) => ({ ...p, cover_image: e.target.value }))} placeholder="https://..." style={fieldStyle} />
+            {formData.cover_image && <img src={formData.cover_image} alt="Preview" style={{ marginTop: "0.75rem", width: "100%", height: 192, objectFit: "cover", borderRadius: "0.75rem" }} />}
+          </section>
+
+          <button
+            type="submit"
+            disabled={!canSubmit}
+            style={{
+              width: "100%",
+              padding: "1rem 1.5rem",
+              fontSize: "1.125rem",
+              fontWeight: 600,
+              backgroundColor: canSubmit ? "#f59e0b" : "#44403c",
+              color: canSubmit ? "#0c0a09" : "#78716c",
+              border: "none",
+              borderRadius: "0.75rem",
+              cursor: canSubmit ? "pointer" : "not-allowed",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              gap: "0.5rem",
+            }}
           >
             {isSubmitting ? (
               <>
-                <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                <Loader2 style={{ width: 20, height: 20, animation: "spin 1s linear infinite" }} />
                 Salvataggio...
               </>
             ) : (
               <>
-                <Save className="w-5 h-5 mr-2" />
+                <Save style={{ width: 20, height: 20 }} />
                 Salva Modifiche
               </>
             )}
-          </Button>
-        </div>
+          </button>
+        </form>
       </div>
+      <style>{`@keyframes spin { to { transform: rotate(360deg); } }`}</style>
     </div>
   );
 }

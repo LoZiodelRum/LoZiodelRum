@@ -246,7 +246,10 @@ export default function Layout({ children, currentPageName }) {
       </header>
 
       {/* Main Content */}
-      <main className="pt-24 lg:pt-28 pb-32 lg:pb-16 min-h-screen safe-top safe-left safe-right safe-bottom">
+      <main 
+        className="pt-24 lg:pt-28 pb-32 lg:pb-16 min-h-screen safe-top safe-left safe-right safe-bottom"
+        data-page={currentPageName}
+      >
         {children}
       </main>
 

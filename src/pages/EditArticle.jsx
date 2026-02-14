@@ -42,7 +42,7 @@ export default function EditArticle() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    if (article) {
+    if (article && articleId) {
       setFormData({
         title: article.title || "",
         excerpt: article.excerpt || "",
@@ -51,7 +51,7 @@ export default function EditArticle() {
         category: article.category || "cultura",
       });
     }
-  }, [article]);
+  }, [articleId]);
 
   const updateArticleMutation = useMutation({
     mutationFn: (data) => updateArticle(articleId, data),

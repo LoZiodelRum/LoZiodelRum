@@ -63,7 +63,7 @@ export default function EditBartender() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    if (bartender) {
+    if (bartender && bartenderId) {
       setFormData({
         name: bartender.name || "",
         surname: bartender.surname || "",
@@ -83,7 +83,7 @@ export default function EditBartender() {
         consent_linee_editoriali: !!bartender.consent_linee_editoriali,
       });
     }
-  }, [bartender]);
+  }, [bartenderId]);
 
   const updateField = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));

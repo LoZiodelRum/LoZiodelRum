@@ -211,3 +211,17 @@
     padding-right: env(safe-area-inset-right, 0);
   }
 }
+
+/* SBLOCCA scheda Modifica Locale: forza interazione, z-index sopra eventuali overlay */
+main[data-page="EditVenue"] {
+  pointer-events: auto !important;
+  position: relative;
+  z-index: 40;
+}
+main[data-page="EditVenue"] * {
+  pointer-events: auto !important;
+}
+main[data-page="EditVenue"] input,
+main[data-page="EditVenue"] textarea {
+  cursor: text;
+}

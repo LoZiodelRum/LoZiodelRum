@@ -32,37 +32,13 @@ import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover
 import { Checkbox } from "@/components/ui/checkbox";
 import { motion } from "framer-motion";
 import { ratingOptions, getClosestValue } from "@/lib/reviewRatings";
+import { highlightOptions, improvementOptions, migrateHighlights, migrateImprovements } from "@/lib/highlightsImprovements";
 
 const ratingCategories = [
   { key: "drink_quality", label: "Qualità Drink", icon: Wine, description: "Gusto, presentazione, tecnica" },
   { key: "staff_competence", label: "Competenza Staff", icon: Users, description: "Conoscenza, consigli, professionalità" },
   { key: "atmosphere", label: "Atmosfera", icon: Sparkles, description: "Ambiente, musica, design" },
   { key: "value_for_money", label: "Qualità/Prezzo", icon: Coins, description: "Rapporto tra qualità e costo" },
-];
-
-const highlightOptions = [
-  "Cocktail ben fatti",
-  "Buona carta rum",
-  "Staff competente",
-  "Atmosfera accogliente",
-  "Rapporto qualità/prezzo ok",
-  "Selezione vini interessante",
-  "Ingredienti curati",
-  "Location curata",
-  "Servizio puntuale",
-  "Musica di sottofondo"
-];
-
-const improvementOptions = [
-  "Servizio lento",
-  "Prezzi alti",
-  "Ambiente rumoroso",
-  "Cocktail a volte inconsistenti",
-  "Poca varietà in carta",
-  "Difficile da trovare",
-  "Orari limitati",
-  "Coperto fuori",
-  "Prenotazione consigliata"
 ];
 
 export default function EditReview() {
@@ -93,7 +69,7 @@ export default function EditReview() {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   useEffect(() => {
-    if (review) {
+    if (review && reviewId) {
       setFormData({
         title: review.title || "",
         content: review.content || "",
@@ -105,12 +81,12 @@ export default function EditReview() {
         overall_rating: review.overall_rating || 0,
         drinks_ordered: review.drinks_ordered || [],
         photos: review.photos || [],
-        highlights: review.highlights || [],
-        improvements: review.improvements || [],
+        highlights: migrateHighlights(review.highlights || []),
+        improvements: migrateImprovements(review.improvements || []),
         would_recommend: review.would_recommend !== false
       });
     }
-  }, [review]);
+  }, [reviewId]);
 
   const updateReviewMutation = useMutation({
     mutationFn: async (reviewData) => {
