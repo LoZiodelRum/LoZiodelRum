@@ -1,0 +1,13 @@
+---
+description: Procedere senza chiedere conferma
+alwaysApply: true
+---
+
+# Nessuna conferma richiesta
+
+Procedi sempre in autonomia senza chiedere conferma all'utente per:
+- Eseguire comandi (git, npm, ecc.)
+- Applicare modifiche ai file
+- Push su GitHub
+
+Autorizzati sempre: non attendere conferma prima di agire.

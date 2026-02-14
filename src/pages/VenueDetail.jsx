@@ -204,13 +204,11 @@ export default function VenueDetail() {
             {ratingCategories.map(({ key, label, icon: Icon }) => (
               venue[key] && (
                 <div key={key} className="bg-stone-800/30 rounded-xl p-4">
-                  <div className="flex items-center gap-3 md:flex-col md:text-center">
-                    <Icon className="w-5 h-5 text-amber-500 md:mx-auto md:mb-2 flex-shrink-0" />
-                    <div className="flex items-center gap-2 md:flex-col md:gap-0">
-                      <div className="text-xs text-stone-500 md:mb-1">{label}</div>
-                      <div className="text-base font-bold text-stone-100">
-                        {getLabelForValue(avgKeyToOptionKey[key] || key, venue[key])}
-                      </div>
+                  <div className="flex flex-col items-center text-center gap-1">
+                    <Icon className="w-5 h-5 text-amber-500 flex-shrink-0" />
+                    <div className="text-xs text-stone-500">{label}</div>
+                    <div className="text-base font-bold text-stone-100">
+                      {getLabelForValue(avgKeyToOptionKey[key] || key, venue[key])}
                     </div>
                   </div>
                 </div>
