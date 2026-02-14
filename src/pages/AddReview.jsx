@@ -460,9 +460,27 @@ export default function AddReview() {
               </div>
               
               <div>
-                <Label className="mb-2 block">Racconta la tua esperienza</Label>
+                <div className="flex items-center justify-between mb-2">
+                  <Label>Racconta la tua esperienza</Label>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    className="text-stone-500 hover:text-amber-400 h-8 text-xs"
+                    onClick={async () => {
+                      try {
+                        const text = await navigator.clipboard.readText();
+                        if (text) setFormData(prev => ({ ...prev, content: (prev.content || "") + (prev.content ? "\n\n" : "") + text }));
+                      } catch {
+                        toast({ title: "Incolla con Ctrl+V (Cmd+V su Mac)", variant: "destructive" });
+                      }
+                    }}
+                  >
+                    Incolla
+                  </Button>
+                </div>
                 <Textarea
-                  placeholder="Descrivi la tua visita: cosa hai ordinato, com'era l'atmosfera, cosa ti ha colpito..."
+                  placeholder="Descrivi la tua visita: cosa hai ordinato, com'era l'atmosfera, cosa ti ha colpito... Puoi incollare con Ctrl+V (Cmd+V) o col pulsante Incolla."
                   value={formData.content}
                   onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
                   className="bg-stone-800/50 border-stone-700 min-h-[120px]"
