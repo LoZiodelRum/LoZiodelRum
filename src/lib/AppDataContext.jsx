@@ -56,7 +56,15 @@ export function AppDataProvider({ children }) {
     const customVenues = loaded.filter((v) => !seedIds.has(v.id));
     return [...fromSeed, ...customVenues];
   });
-  const [reviews, setReviews] = useState(() => load(STORAGE_KEYS.reviews, initialReviews));
+  const [reviews, setReviews] = useState(() => {
+    const loaded = load(STORAGE_KEYS.reviews, []);
+    const seedIds = new Set(initialReviews.map((r) => r.id));
+    // Recensioni seed: sempre incluse (fonte di verità)
+    const fromSeed = initialReviews;
+    // Recensioni create dall'utente (solo in localStorage, non nel seed)
+    const customReviews = loaded.filter((r) => !seedIds.has(r.id));
+    return [...fromSeed, ...customReviews];
+  });
   const [articles, setArticles] = useState(() => load(STORAGE_KEYS.articles, initialArticles));
   const [drinks, setDrinks] = useState(() => load(STORAGE_KEYS.drinks, initialDrinks));
   const [user, setUser] = useState(() => {
