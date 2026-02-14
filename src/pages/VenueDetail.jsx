@@ -24,6 +24,7 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import ReviewCard from "@/components/review/ReviewCard";
 import RatingStars from "@/components/ui/RatingStars";
+import { getLabelForValue, avgKeyToOptionKey } from "@/lib/reviewRatings";
 import { motion } from "framer-motion";
 
 const categoryLabels = {
@@ -206,8 +207,8 @@ export default function VenueDetail() {
                   <div className="flex items-center gap-3 md:flex-col md:text-center">
                     <Icon className="w-5 h-5 text-amber-500 md:mx-auto md:mb-2 flex-shrink-0" />
                     <div className="flex items-center gap-2 md:flex-col md:gap-0">
-                      <div className="text-2xl font-bold text-stone-100">
-                        {venue[key].toFixed(1)}
+                      <div className="text-base font-bold text-stone-100">
+                        {getLabelForValue(avgKeyToOptionKey[key] || key, venue[key])}
                       </div>
                       <div className="text-xs text-stone-500 md:mt-1">{label}</div>
                     </div>

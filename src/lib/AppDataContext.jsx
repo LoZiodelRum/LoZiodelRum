@@ -234,6 +234,36 @@ export function AppDataProvider({ children }) {
           setVenues((prev) => [...prev, cloudVenue]);
           return { ...cloudVenue, pending: true };
         }
+        if (typeof fetch === "function") {
+          try {
+            const base = typeof window !== "undefined" ? window.location.origin : "";
+            const res = await fetch(`${base}/api/add-venue`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                name: venue.name,
+                slug: venue.slug || (venue.name || "").toLowerCase().replace(/\s+/g, "-"),
+                description: venue.description || "",
+                city: venue.city || "",
+                country: venue.country || "Italia",
+                address: venue.address || "",
+                latitude: venue.latitude ?? null,
+                longitude: venue.longitude ?? null,
+                cover_image: venue.cover_image || "",
+                category: venue.category || "cocktail_bar",
+                price_range: venue.price_range || "€€",
+                phone: venue.phone || "",
+                website: venue.website || "",
+                instagram: venue.instagram || "",
+                opening_hours: venue.opening_hours || "",
+              }),
+            });
+            const json = await res.json();
+            if (json.ok && json.id) {
+              return { ...venue, id: json.id, pending: true };
+            }
+          } catch (_) {}
+        }
         setVenues((prev) => [...prev, venue]);
         return venue;
       },
@@ -600,13 +630,51 @@ export function AppDataProvider({ children }) {
         return { synced };
       },
       getPendingVenuesFromCloud: async () => {
-        if (!isSupabaseConfigured()) return [];
-        const { data, error } = await supabase.from("venues_cloud").select("*").eq("status", "pending").order("created_at", { ascending: false });
-        if (error) throw error;
-        return (data || []).map((row) => ({ ...row, id: String(row.id) }));
+        const base = typeof window !== "undefined" ? window.location.origin : "";
+        const viaApi = async () => {
+          if (typeof fetch !== "function") return [];
+          const res = await fetch(`${base}/api/pending-venues`);
+          const json = await res.json();
+          if (json.ok && Array.isArray(json.data)) return json.data;
+          throw new Error(json.error || "Errore caricamento");
+        };
+        if (!isSupabaseConfigured()) return viaApi();
+        const run = async () => {
+          const { data, error } = await supabase.from("venues_cloud").select("*").eq("status", "pending").order("created_at", { ascending: false });
+          if (error) throw error;
+          return (data || []).map((row) => ({ ...row, id: String(row.id) }));
+        };
+        try {
+          return await run();
+        } catch (err) {
+          const needsInit = err?.message?.includes("venues_cloud") || err?.message?.includes("does not exist") || err?.code === "42P01";
+          if (needsInit && typeof fetch === "function") {
+            try {
+              const res = await fetch(`${base}/api/init-db`, { method: "POST" });
+              if (res.ok) return await run();
+            } catch (_) {}
+          }
+          try {
+            return await viaApi();
+          } catch (_) {
+            throw err;
+          }
+        }
       },
       approveVenueCloud: async (id, extra = {}) => {
-        if (!isSupabaseConfigured()) return;
+        const base = typeof window !== "undefined" ? window.location.origin : "";
+        if (!isSupabaseConfigured()) {
+          if (typeof fetch === "function") {
+            const res = await fetch(`${base}/api/venue-action`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ action: "approve", id, latitude: extra.latitude, longitude: extra.longitude }),
+            });
+            const json = await res.json();
+            if (json.ok && json.venue) setCloudVenues((prev) => [...prev, json.venue]);
+          }
+          return;
+        }
         const update = { status: "approved" };
         if (extra.latitude != null) update.latitude = extra.latitude;
         if (extra.longitude != null) update.longitude = extra.longitude;
@@ -616,7 +684,17 @@ export function AppDataProvider({ children }) {
         setVenues((prev) => prev.filter((v) => v.id !== id || !v._cloudPending));
       },
       rejectVenueCloud: async (id) => {
-        if (!isSupabaseConfigured()) return;
+        const base = typeof window !== "undefined" ? window.location.origin : "";
+        if (!isSupabaseConfigured()) {
+          if (typeof fetch === "function") {
+            await fetch(`${base}/api/venue-action`, {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({ action: "reject", id }),
+            });
+          }
+          return;
+        }
         await supabase.from("venues_cloud").update({ status: "rejected" }).eq("id", id);
       },
       exportVenuesForMobileSync: () => {

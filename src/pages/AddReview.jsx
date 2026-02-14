@@ -29,6 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { motion } from "framer-motion";
+import { ratingOptions } from "@/lib/reviewRatings";
 
 const ratingCategories = [
   { key: "drink_quality", label: "Qualità Drink", icon: Wine, description: "Gusto, presentazione, tecnica" },
@@ -409,21 +410,21 @@ export default function AddReview() {
                       <p className="text-sm text-stone-500">{description}</p>
                     </div>
                   </div>
-                  <div className="flex gap-1">
-                    {[...Array(10)].map((_, i) => (
-                      <button
-                        key={i}
-                        onClick={() => handleRatingChange(key, i + 1)}
-                        className={`flex-1 h-10 rounded-lg transition-all ${
-                          i + 1 <= formData[key]
-                            ? "bg-amber-500 hover:bg-amber-400"
-                            : "bg-stone-800 hover:bg-stone-700"
-                        }`}
-                      >
-                        <span className="text-xs font-medium">{i + 1}</span>
-                      </button>
-                    ))}
-                  </div>
+                  <Select
+                    value={formData[key] ? String(formData[key]) : ""}
+                    onValueChange={(v) => handleRatingChange(key, parseFloat(v))}
+                  >
+                    <SelectTrigger className="bg-stone-800/50 border-stone-700">
+                      <SelectValue placeholder="Seleziona un giudizio" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(ratingOptions[key] || []).map((opt) => (
+                        <SelectItem key={opt.value} value={String(opt.value)}>
+                          {opt.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               ))}
 

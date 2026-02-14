@@ -28,6 +28,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { motion } from "framer-motion";
+import { ratingOptions, getClosestValue } from "@/lib/reviewRatings";
 
 const ratingCategories = [
   { key: "drink_quality", label: "Qualità Drink", icon: Wine, description: "Gusto, presentazione, tecnica" },
@@ -89,10 +90,10 @@ export default function EditReview() {
         title: review.title || "",
         content: review.content || "",
         visit_date: review.visit_date || new Date().toISOString().split('T')[0],
-        drink_quality: review.drink_quality || 0,
-        staff_competence: review.staff_competence || 0,
-        atmosphere: review.atmosphere || 0,
-        value_for_money: review.value_for_money || 0,
+        drink_quality: getClosestValue("drink_quality", review.drink_quality) || 0,
+        staff_competence: getClosestValue("staff_competence", review.staff_competence) || 0,
+        atmosphere: getClosestValue("atmosphere", review.atmosphere) || 0,
+        value_for_money: getClosestValue("value_for_money", review.value_for_money) || 0,
         overall_rating: review.overall_rating || 0,
         drinks_ordered: review.drinks_ordered || [],
         photos: review.photos || [],
@@ -223,21 +224,21 @@ export default function EditReview() {
                       <p className="text-sm text-stone-500">{description}</p>
                     </div>
                   </div>
-                  <div className="flex gap-1">
-                    {[...Array(10)].map((_, i) => (
-                      <button
-                        key={i}
-                        onClick={() => handleRatingChange(key, i + 1)}
-                        className={`flex-1 h-10 rounded-lg transition-all ${
-                          i + 1 <= formData[key]
-                            ? "bg-amber-500 hover:bg-amber-400"
-                            : "bg-stone-800 hover:bg-stone-700"
-                        }`}
-                      >
-                        <span className="text-xs font-medium">{i + 1}</span>
-                      </button>
-                    ))}
-                  </div>
+                  <Select
+                    value={formData[key] ? String(formData[key]) : ""}
+                    onValueChange={(v) => handleRatingChange(key, parseFloat(v))}
+                  >
+                    <SelectTrigger className="bg-stone-800/50 border-stone-700">
+                      <SelectValue placeholder="Seleziona un giudizio" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {(ratingOptions[key] || []).map((opt) => (
+                        <SelectItem key={opt.value} value={String(opt.value)}>
+                          {opt.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               ))}
 

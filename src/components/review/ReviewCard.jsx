@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { motion } from "framer-motion";
-import RatingStars from "@/components/ui/RatingStars";
+import { getLabelForValue } from "@/lib/reviewRatings";
 
 const ratingLabels = {
   drink_quality: "Qualità Drink",
@@ -92,10 +92,9 @@ export default function ReviewCard({ review, showVenue = false, venue = null, in
           review[key] && (
             <div key={key} className="flex items-center justify-between gap-2 p-3 bg-stone-800/30 rounded-lg">
               <span className="text-xs text-stone-500 flex-shrink-0">{label}</span>
-              <div className="flex items-center gap-1">
-                <RatingStars rating={review[key]} size="xs" />
-                <span className="text-sm font-medium text-stone-300 ml-1">{review[key].toFixed(1)}</span>
-              </div>
+              <span className="text-sm font-medium text-stone-300 text-right">
+                {getLabelForValue(key, review[key])}
+              </span>
             </div>
           )
         ))}

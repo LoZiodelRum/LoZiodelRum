@@ -17,8 +17,6 @@ import {
   Wine,
   Wine as BartenderIcon,
   RefreshCw,
-  Copy,
-  ExternalLink
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -34,7 +32,6 @@ import {
 import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { useAppData } from "@/lib/AppDataContext";
-import { getSupabaseSqlEditorUrl } from "@/lib/supabase";
 import { exportAsFile } from "@/utils/mobileExport";
 
 export default function Dashboard() {
@@ -59,7 +56,6 @@ export default function Dashboard() {
   const selectedBartender = selectedBartenderId ? getBartenders().find((b) => b.id === selectedBartenderId) : null;
   const fileInputRef = useRef(null);
   const loadCloudPending = () => {
-    if (!isSupabaseConfigured()) return;
     setLoadingCloudPending(true);
     setCloudError(null);
     getPendingVenuesFromCloud().then((list) => {
@@ -156,39 +152,52 @@ export default function Dashboard() {
           </div>
         </div>
 
-        {/* Locali in attesa (dal tuo dispositivo) */}
+        {/* Locali in attesa - unificato (locale + cloud) */}
         <div className="bg-stone-900/50 rounded-2xl border border-stone-800/50 p-6 mb-8">
           <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
             <div>
               <h2 className="text-xl font-bold mb-2 flex items-center gap-2">
                 <MapPin className="w-5 h-5 text-amber-500" />
-                Locali in attesa (dal tuo dispositivo)
+                Locali in attesa
               </h2>
-              <p className="text-stone-500 text-sm">I locali inseriti da questo dispositivo compaiono qui. Approvali per renderli visibili a tutti.</p>
+              <p className="text-stone-500 text-sm">Locali da questo dispositivo e da tablet/cellulare. Approva per renderli visibili a tutti.</p>
             </div>
-            {!isSupabaseConfigured() && pendingVenues.length > 0 && (
+            <div className="flex items-center gap-2">
               <Button
-                variant="outline"
-                className="border-amber-500/50 text-amber-400 min-h-[44px]"
-                onClick={async () => {
-                  const ok = await exportAsFile(pendingVenues, `locali-da-approvare-${new Date().toISOString().slice(0, 10)}.json`, {
-                    title: "Locali da approvare",
-                    onSuccess: () => toast.success("Condividi il file (WhatsApp, email) e importalo su desktop"),
-                    onError: () => toast.error("Errore esportazione"),
-                  });
-                  if (!ok) toast.info("Condivisione annullata");
-                }}
+                size="sm"
+                className="bg-amber-500 hover:bg-amber-600 text-stone-950 min-h-[44px]"
+                onClick={loadCloudPending}
+                disabled={loadingCloudPending}
               >
-                <Download className="w-4 h-4 mr-2" />
-                Esporta locali
+                <RefreshCw className={`w-4 h-4 mr-2 ${loadingCloudPending ? "animate-spin" : ""}`} />
+                Aggiorna
               </Button>
-            )}
+              {!isSupabaseConfigured() && pendingVenues.length > 0 && (
+                <Button
+                  variant="outline"
+                  className="border-amber-500/50 text-amber-400 min-h-[44px]"
+                  onClick={async () => {
+                    const ok = await exportAsFile(pendingVenues, `locali-da-approvare-${new Date().toISOString().slice(0, 10)}.json`, {
+                      title: "Locali da approvare",
+                      onSuccess: () => toast.success("Condividi il file e importalo su desktop"),
+                      onError: () => toast.error("Errore esportazione"),
+                    });
+                    if (!ok) toast.info("Condivisione annullata");
+                  }}
+                >
+                  <Download className="w-4 h-4 mr-2" />
+                  Esporta locali
+                </Button>
+              )}
+            </div>
           </div>
 
-          {pendingVenues.length === 0 ? (
+          {loadingCloudPending && pendingVenues.length === 0 ? (
+            <div className="text-center py-12 text-stone-500">Caricamento...</div>
+          ) : pendingVenues.length === 0 && cloudPendingVenues.length === 0 ? (
             <div className="text-center py-12">
               <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-              <p className="text-stone-500">Nessun locale in attesa da questo dispositivo</p>
+              <p className="text-stone-500">Nessun locale in attesa</p>
             </div>
           ) : (
             <div className="space-y-4">
@@ -294,188 +303,105 @@ export default function Dashboard() {
                   </div>
                 </motion.div>
               ))}
+              {cloudPendingVenues.map((venue, index) => (
+                <motion.div
+                  key={`cloud-${venue.id}`}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: (pendingVenues.length + index) * 0.05 }}
+                  className="bg-stone-800/30 rounded-xl p-5 border border-stone-700/50"
+                >
+                  <div className="flex flex-col md:flex-row gap-4">
+                    <img
+                      src={venue.cover_image || "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=400"}
+                      alt={venue.name}
+                      className="w-full md:w-32 h-32 object-cover rounded-lg"
+                    />
+                    <div className="flex-1">
+                      <div className="flex items-start justify-between mb-3">
+                        <div>
+                          <h3 className="text-xl font-bold mb-1">{venue.name}</h3>
+                          <div className="flex items-center gap-2 text-stone-400 text-sm mb-2">
+                            <MapPin className="w-4 h-4" />
+                            <span>{venue.city || ""}, {venue.country || "Italia"}</span>
+                          </div>
+                          {venue.address && <p className="text-stone-400 text-sm mb-3">{venue.address}</p>}
+                        </div>
+                        <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30">In attesa</Badge>
+                      </div>
+                      {venue.description && <p className="text-stone-400 text-sm mb-4 line-clamp-2">{venue.description}</p>}
+                      {venue.created_at && (
+                        <p className="text-xs text-stone-500 mb-4">Inviato il {new Date(venue.created_at).toLocaleDateString("it-IT")}</p>
+                      )}
+                      <div className="grid grid-cols-2 gap-2 mb-4">
+                        <div>
+                          <Label className="text-xs text-stone-500">Latitudine (per mappa)</Label>
+                          <Input
+                            type="number"
+                            step="any"
+                            placeholder="45.4642"
+                            value={venueCoords[venue.id]?.latitude ?? venue.latitude ?? ""}
+                            onChange={(e) => setVenueCoords(prev => ({ ...prev, [venue.id]: { ...(prev[venue.id] || {}), latitude: parseFloat(e.target.value) || null } }))}
+                            className="bg-stone-800/50 border-stone-700 h-9 text-sm"
+                          />
+                        </div>
+                        <div>
+                          <Label className="text-xs text-stone-500">Longitudine (per mappa)</Label>
+                          <Input
+                            type="number"
+                            step="any"
+                            placeholder="9.1900"
+                            value={venueCoords[venue.id]?.longitude ?? venue.longitude ?? ""}
+                            onChange={(e) => setVenueCoords(prev => ({ ...prev, [venue.id]: { ...(prev[venue.id] || {}), longitude: parseFloat(e.target.value) || null } }))}
+                            className="bg-stone-800/50 border-stone-700 h-9 text-sm"
+                          />
+                        </div>
+                      </div>
+                      <div className="flex flex-wrap gap-3">
+                        <Button
+                          onClick={async () => {
+                            const lat = venueCoords[venue.id]?.latitude ?? venue.latitude;
+                            const lng = venueCoords[venue.id]?.longitude ?? venue.longitude;
+                            const extra = {};
+                            if (lat != null && !isNaN(lat)) extra.latitude = lat;
+                            if (lng != null && !isNaN(lng)) extra.longitude = lng;
+                            await approveVenueCloud(venue.id, extra);
+                            loadCloudPending();
+                            toast.success("Locale approvato: ora è visibile a tutti");
+                          }}
+                          className="bg-green-600 hover:bg-green-700 text-white"
+                        >
+                          <CheckCircle className="w-4 h-4 mr-2" />
+                          Approva
+                        </Button>
+                        <Button
+                          variant="outline"
+                          className="border-red-500/50 text-red-400 hover:bg-red-500/10"
+                          onClick={async () => {
+                            if (confirm("Rifiutare questo locale? Non sarà visibile in app.")) {
+                              await rejectVenueCloud(venue.id);
+                              loadCloudPending();
+                              toast.success("Locale rifiutato");
+                            }
+                          }}
+                        >
+                          <XCircle className="w-4 h-4 mr-2" />
+                          Rifiuta
+                        </Button>
+                        <Link to={createPageUrl(`EditVenue?id=${venue.id}`)} state={{ venue, fromCloud: true }}>
+                          <Button className="bg-amber-500 hover:bg-amber-600 text-stone-950">
+                            <Edit3 className="w-4 h-4 mr-2" />
+                            Modifica
+                          </Button>
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
             </div>
           )}
         </div>
-
-        {/* Locali inviati dal cellulare (Supabase) */}
-        {isSupabaseConfigured() && (
-          <div className="bg-stone-900/50 rounded-2xl border border-stone-800/50 p-6 mb-8">
-            <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
-              <h2 className="text-xl font-bold flex items-center gap-2">
-                <MapPin className="w-5 h-5 text-amber-500" />
-                Locali inviati dal cellulare (da approvare)
-              </h2>
-              <Button
-                size="sm"
-                className="bg-amber-500 hover:bg-amber-600 text-stone-950 min-h-[44px]"
-                onClick={loadCloudPending}
-                disabled={loadingCloudPending}
-              >
-                <RefreshCw className={`w-4 h-4 mr-2 ${loadingCloudPending ? "animate-spin" : ""}`} />
-                Aggiorna
-              </Button>
-            </div>
-            {cloudError && (
-              <div className="mb-6 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30">
-                <p className="text-amber-400 text-sm font-medium mb-2">
-                  {cloudError.includes("fetch") || cloudError.includes("Failed") ? "Supabase non raggiungibile" : cloudError.includes("venues_cloud") ? "Crea la tabella venues_cloud in Supabase" : `Errore: ${cloudError}`}
-                </p>
-                {cloudError.includes("venues_cloud") ? (
-                  <>
-                    <p className="text-stone-400 text-xs mb-3">1. Apri il SQL Editor. 2. Incolla lo script qui sotto. 3. Clicca Run.</p>
-                    <div className="flex flex-wrap gap-2 mb-3">
-                      <Button
-                        size="sm"
-                        className="bg-amber-500 hover:bg-amber-600 text-stone-950"
-                        onClick={() => window.open(getSupabaseSqlEditorUrl(), "_blank")}
-                      >
-                        <ExternalLink className="w-4 h-4 mr-2" />
-                        Apri SQL Editor
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="border-amber-500/50 text-amber-400"
-                        onClick={async () => {
-                          const sql = `create table if not exists public.venues_cloud (id uuid primary key default gen_random_uuid(), name text not null, slug text, description text, city text, country text default 'Italia', address text, latitude double precision, longitude double precision, cover_image text, category text, price_range text, phone text, website text, instagram text, opening_hours text, status text not null default 'pending' check (status in ('pending', 'approved', 'rejected')), created_at timestamptz default now(), avg_drink_quality numeric, avg_staff_competence numeric, avg_atmosphere numeric, avg_value numeric, overall_rating numeric, review_count int default 0, featured boolean default false, verified boolean default true);
-alter table public.venues_cloud enable row level security;
-drop policy if exists "Allow insert for everyone" on public.venues_cloud;
-create policy "Allow insert for everyone" on public.venues_cloud for insert with check (true);
-drop policy if exists "Allow read for everyone" on public.venues_cloud;
-create policy "Allow read for everyone" on public.venues_cloud for select using (true);
-drop policy if exists "Allow update for everyone" on public.venues_cloud;
-create policy "Allow update for everyone" on public.venues_cloud for update using (true) with check (true);
-create index if not exists idx_venues_cloud_status on public.venues_cloud (status);
-create index if not exists idx_venues_cloud_created_at on public.venues_cloud (created_at desc);`;
-                          try {
-                            await navigator.clipboard.writeText(sql);
-                            toast.success("SQL copiato negli appunti");
-                          } catch {
-                            toast.error("Impossibile copiare");
-                          }
-                        }}
-                      >
-                        <Copy className="w-4 h-4 mr-2" />
-                        Copia SQL
-                      </Button>
-                    </div>
-                  </>
-                ) : (
-                  <p className="text-stone-400 text-xs mb-2">Supabase locale: avvia con <code className="bg-stone-800 px-1 rounded">npm run supabase:start</code>. Supabase cloud: verifica la chiave in .env e crea la tabella con <code className="bg-stone-800 px-1 rounded">npm run supabase:setup</code>.</p>
-                )}
-              </div>
-            )}
-            {loadingCloudPending ? (
-              <div className="text-center py-8 text-stone-500">Caricamento...</div>
-            ) : cloudPendingVenues.length === 0 ? (
-              <div className="text-center py-12">
-                <CheckCircle className="w-16 h-16 text-green-500 mx-auto mb-4" />
-                <p className="text-stone-500">Nessun locale inviato dai cellulari</p>
-                <p className="text-stone-500 text-sm mt-2">Quando un utente aggiunge un locale dall’app, qui comparirà in attesa di approvazione.</p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                {cloudPendingVenues.map((venue, index) => (
-                  <motion.div
-                    key={venue.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: index * 0.05 }}
-                    className="bg-stone-800/30 rounded-xl p-5 border border-stone-700/50"
-                  >
-                    <div className="flex flex-col md:flex-row gap-4">
-                      <img
-                        src={venue.cover_image || "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=400"}
-                        alt={venue.name}
-                        className="w-full md:w-32 h-32 object-cover rounded-lg"
-                      />
-                      <div className="flex-1">
-                        <div className="flex items-start justify-between mb-3">
-                          <div>
-                            <h3 className="text-xl font-bold mb-1">{venue.name}</h3>
-                            <div className="flex items-center gap-2 text-stone-400 text-sm mb-2">
-                              <MapPin className="w-4 h-4" />
-                              <span>{venue.city}, {venue.country}</span>
-                            </div>
-                            {venue.address && <p className="text-stone-400 text-sm mb-3">{venue.address}</p>}
-                          </div>
-                          <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30">Dal cellulare</Badge>
-                        </div>
-                        {venue.description && <p className="text-stone-400 text-sm mb-4 line-clamp-2">{venue.description}</p>}
-                        {venue.created_at && (
-                          <p className="text-xs text-stone-500 mb-4">Inviato il {new Date(venue.created_at).toLocaleDateString("it-IT")}</p>
-                        )}
-                        <div className="grid grid-cols-2 gap-2 mb-4">
-                          <div>
-                            <Label className="text-xs text-stone-500">Latitudine (per mappa)</Label>
-                            <Input
-                              type="number"
-                              step="any"
-                              placeholder="45.4642"
-                              value={venueCoords[venue.id]?.latitude ?? venue.latitude ?? ""}
-                              onChange={(e) => setVenueCoords(prev => ({ ...prev, [venue.id]: { ...(prev[venue.id] || {}), latitude: parseFloat(e.target.value) || null } }))}
-                              className="bg-stone-800/50 border-stone-700 h-9 text-sm"
-                            />
-                          </div>
-                          <div>
-                            <Label className="text-xs text-stone-500">Longitudine (per mappa)</Label>
-                            <Input
-                              type="number"
-                              step="any"
-                              placeholder="9.1900"
-                              value={venueCoords[venue.id]?.longitude ?? venue.longitude ?? ""}
-                              onChange={(e) => setVenueCoords(prev => ({ ...prev, [venue.id]: { ...(prev[venue.id] || {}), longitude: parseFloat(e.target.value) || null } }))}
-                              className="bg-stone-800/50 border-stone-700 h-9 text-sm"
-                            />
-                          </div>
-                        </div>
-                        <div className="flex gap-3">
-                          <Button
-                            onClick={async () => {
-                              const lat = venueCoords[venue.id]?.latitude ?? venue.latitude;
-                              const lng = venueCoords[venue.id]?.longitude ?? venue.longitude;
-                              const extra = {};
-                              if (lat != null && !isNaN(lat)) extra.latitude = lat;
-                              if (lng != null && !isNaN(lng)) extra.longitude = lng;
-                              await approveVenueCloud(venue.id, extra);
-                              loadCloudPending();
-                              toast.success("Locale approvato: ora è visibile a tutti");
-                            }}
-                            className="bg-green-600 hover:bg-green-700 text-white"
-                          >
-                            <CheckCircle className="w-4 h-4 mr-2" />
-                            Approva
-                          </Button>
-                          <Button
-                            variant="outline"
-                            className="border-red-500/50 text-red-400 hover:bg-red-500/10"
-                            onClick={async () => {
-                              if (confirm("Rifiutare questo locale? Non sarà visibile in app.")) {
-                                await rejectVenueCloud(venue.id);
-                                loadCloudPending();
-                                toast.success("Locale rifiutato");
-                              }
-                            }}
-                          >
-                            <XCircle className="w-4 h-4 mr-2" />
-                            Rifiuta
-                          </Button>
-                          <Link to={createPageUrl(`EditVenue?id=${venue.id}`)} state={{ venue, fromCloud: true }}>
-                            <Button className="bg-amber-500 hover:bg-amber-600 text-stone-950">
-                              <Edit3 className="w-4 h-4 mr-2" />
-                              Modifica
-                            </Button>
-                          </Link>
-                        </div>
-                      </div>
-                    </div>
-                  </motion.div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
 
         {/* Scegli locale da modificare o eliminare */}
         <div className="mt-8 bg-stone-900/50 rounded-2xl border border-stone-800/50 p-6">
