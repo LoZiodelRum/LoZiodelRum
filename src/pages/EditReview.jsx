@@ -15,7 +15,8 @@ import {
   Coins,
   ThumbsUp,
   Send,
-  Loader2
+  Loader2,
+  Trash2
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -46,7 +47,7 @@ export default function EditReview() {
   const reviewId = urlParams.get('id');
   
   const navigate = useNavigate();
-  const { getReviewById, updateReview } = useAppData();
+  const { getReviewById, updateReview, deleteReview } = useAppData();
   const review = getReviewById(reviewId);
 
   const [formData, setFormData] = useState({
@@ -67,6 +68,7 @@ export default function EditReview() {
   
   const [newDrink, setNewDrink] = useState({ name: "", category: "cocktail", rating: 8, notes: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   useEffect(() => {
     if (review && reviewId) {
@@ -155,6 +157,13 @@ export default function EditReview() {
     updateReviewMutation.mutate(formData);
   };
 
+  const handleDelete = () => {
+    if (!reviewId || !review) return;
+    deleteReview(reviewId);
+    navigate(createPageUrl(`VenueDetail?id=${review.venue_id}`));
+    setShowDeleteConfirm(false);
+  };
+
   const isValid = formData.overall_rating > 0;
 
   if (reviewId && !review) {
@@ -185,11 +194,42 @@ export default function EditReview() {
           >
             <ChevronLeft className="w-6 h-6" />
           </Link>
-          <div>
+          <div className="flex-1">
             <h1 className="text-2xl md:text-3xl font-bold">Modifica Recensione</h1>
             <p className="text-stone-500">Aggiorna la tua esperienza</p>
           </div>
+          <button
+            type="button"
+            onClick={() => setShowDeleteConfirm(true)}
+            title="Elimina recensione"
+            className="p-2 flex items-center justify-center text-red-500 bg-red-500/10 border border-red-500/30 rounded-xl hover:bg-red-500/20 transition-colors"
+          >
+            <Trash2 className="w-5 h-5" />
+          </button>
         </div>
+
+        {showDeleteConfirm && (
+          <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+            <div className="bg-stone-900 rounded-2xl p-6 max-w-sm w-full border border-stone-800">
+              <p className="mb-6 text-stone-200">Sei sicuro di voler eliminare questa recensione?</p>
+              <div className="flex gap-3 justify-end">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowDeleteConfirm(false)}
+                  className="border-stone-600 text-stone-400 hover:bg-stone-800"
+                >
+                  Annulla
+                </Button>
+                <Button
+                  onClick={handleDelete}
+                  className="bg-red-600 hover:bg-red-700 text-white"
+                >
+                  Elimina
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="space-y-8">
           {/* Ratings */}

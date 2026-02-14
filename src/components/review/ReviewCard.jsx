@@ -1,9 +1,10 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import { useAppData } from "@/lib/AppDataContext";
 import { createPageUrl } from "@/utils";
 import { format } from "date-fns";
 import { it } from "date-fns/locale";
-import { Heart, MessageCircle, Share2, ThumbsUp, Wine, Star, User, Edit } from "lucide-react";
+import { Heart, MessageCircle, Share2, ThumbsUp, Wine, Star, User, Edit, Trash2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -21,8 +22,15 @@ const ratingLabels = {
 export default function ReviewCard({ review, showVenue = false, venue = null, index = 0, currentUser = null }) {
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(review.likes_count || 0);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const { deleteReview } = useAppData();
   
   const canEdit = currentUser && (currentUser.role === 'admin' || review.created_by === currentUser.email);
+
+  const handleDelete = () => {
+    deleteReview(review.id);
+    setShowDeleteConfirm(false);
+  };
 
   const handleLike = () => {
     setLiked(!liked);
@@ -182,18 +190,52 @@ export default function ReviewCard({ review, showVenue = false, venue = null, in
         </Button>
         <div className="ml-auto flex items-center gap-2">
           {canEdit && (
-            <Link to={createPageUrl(`EditReview?id=${review.id}`)}>
-              <Button variant="ghost" size="sm" className="text-amber-500 hover:text-amber-400">
-                <Edit className="w-4 h-4 mr-1.5" />
-                Modifica
+            <>
+              <Link to={createPageUrl(`EditReview?id=${review.id}`)}>
+                <Button variant="ghost" size="sm" className="text-amber-500 hover:text-amber-400">
+                  <Edit className="w-4 h-4 mr-1.5" />
+                  Modifica
+                </Button>
+              </Link>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="text-red-500 hover:text-red-400 hover:bg-red-500/10"
+                onClick={() => setShowDeleteConfirm(true)}
+                title="Elimina recensione"
+              >
+                <Trash2 className="w-4 h-4" />
               </Button>
-            </Link>
+            </>
           )}
           <Button variant="ghost" size="sm" className="text-stone-400 hover:text-stone-200">
             <Share2 className="w-4 h-4" />
           </Button>
         </div>
       </div>
+
+      {showDeleteConfirm && (
+        <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+          <div className="bg-stone-900 rounded-2xl p-6 max-w-sm w-full border border-stone-800">
+            <p className="mb-6 text-stone-200">Sei sicuro di voler eliminare questa recensione?</p>
+            <div className="flex gap-3 justify-end">
+              <Button
+                variant="outline"
+                onClick={() => setShowDeleteConfirm(false)}
+                className="border-stone-600 text-stone-400 hover:bg-stone-800"
+              >
+                Annulla
+              </Button>
+              <Button
+                onClick={handleDelete}
+                className="bg-red-600 hover:bg-red-700 text-white"
+              >
+                Elimina
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </motion.div>
   );
 }

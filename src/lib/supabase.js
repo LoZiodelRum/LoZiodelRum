@@ -1,5 +1,10 @@
 import { createClient } from "@supabase/supabase-js";
 
+/**
+ * Supabase: legge VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY da .env
+ * Vite carica automaticamente le variabili dal file .env nella root del progetto.
+ * Su Vercel: imposta le stesse variabili in Environment Variables.
+ */
 const SUPABASE_KEY_STORAGE = "supabase_anon_key";
 
 function getAnonKey() {

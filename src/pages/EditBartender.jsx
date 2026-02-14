@@ -9,6 +9,7 @@ import {
   Wine,
   Send,
   Loader2,
+  Trash2,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -37,7 +38,7 @@ export default function EditBartender() {
   const urlParams = new URLSearchParams(window.location.search);
   const bartenderId = urlParams.get("id");
   const navigate = useNavigate();
-  const { getBartenderById, updateBartender, getVenues } = useAppData();
+  const { getBartenderById, updateBartender, deleteBartender, getVenues } = useAppData();
   const bartender = getBartenderById(bartenderId);
   const venues = getVenues();
 
@@ -61,6 +62,7 @@ export default function EditBartender() {
   });
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   useEffect(() => {
     if (bartender && bartenderId) {
@@ -119,6 +121,13 @@ export default function EditBartender() {
     }
   };
 
+  const handleDelete = () => {
+    if (!bartenderId || !bartender) return;
+    deleteBartender(bartenderId);
+    navigate(createPageUrl("Dashboard"));
+    setShowDeleteConfirm(false);
+  };
+
   if (bartenderId && !bartender) {
     return (
       <div className="min-h-screen flex items-center justify-center px-4">
@@ -146,7 +155,38 @@ export default function EditBartender() {
             <ChevronLeft className="w-4 h-4" />
             Torna alla Dashboard
           </Link>
+          <button
+            type="button"
+            onClick={() => setShowDeleteConfirm(true)}
+            title="Elimina bartender"
+            className="p-2 flex items-center justify-center text-red-500 bg-red-500/10 border border-red-500/30 rounded-xl hover:bg-red-500/20 transition-colors"
+          >
+            <Trash2 className="w-5 h-5" />
+          </button>
         </div>
+
+        {showDeleteConfirm && (
+          <div className="fixed inset-0 bg-black/70 flex items-center justify-center z-50 p-4">
+            <div className="bg-stone-900 rounded-2xl p-6 max-w-sm w-full border border-stone-800">
+              <p className="mb-6 text-stone-200">Sei sicuro di voler eliminare questa scheda bartender?</p>
+              <div className="flex gap-3 justify-end">
+                <Button
+                  variant="outline"
+                  onClick={() => setShowDeleteConfirm(false)}
+                  className="border-stone-600 text-stone-400 hover:bg-stone-800"
+                >
+                  Annulla
+                </Button>
+                <Button
+                  onClick={handleDelete}
+                  className="bg-red-600 hover:bg-red-700 text-white"
+                >
+                  Elimina
+                </Button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <div className="mb-8">
           <div className="relative h-40 md:h-52 rounded-3xl overflow-hidden mb-6">

@@ -45,9 +45,9 @@ const AppDataContext = createContext(null);
 
 export function AppDataProvider({ children }) {
   const [venues, setVenues] = useState(() => {
+    if (isSupabaseConfigured()) return [];
     const loaded = load(STORAGE_KEYS.venues, []);
     const seedIds = new Set(initialVenues.map((v) => v.id));
-    // Seed: SEMPRE da venues.js – identico su tutti i device
     const fromSeed = [...initialVenues];
     const customVenues = loaded.filter((v) => !seedIds.has(v.id));
     return [...fromSeed, ...customVenues];
@@ -119,10 +119,19 @@ export function AppDataProvider({ children }) {
       .eq("status", "approved")
       .then(({ data }) => {
         if (data && data.length > 0) {
-          setCloudVenues(data.map((row) => ({ ...row, id: String(row.id) })));
+          const mapped = data.map((row) => ({
+            ...row,
+            id: row.external_id || String(row.id),
+            supabase_id: String(row.id),
+          }));
+          setVenues(mapped);
+        } else {
+          setVenues([...initialVenues]);
         }
       })
-      .catch(() => {});
+      .catch(() => {
+        setVenues([...initialVenues]);
+      });
   }, []);
 
   // Sincronizza locali salvati solo in locale (prima della config Supabase) verso Supabase
@@ -171,6 +180,7 @@ export function AppDataProvider({ children }) {
   }, []);
 
   useEffect(() => {
+    if (isSupabaseConfigured()) return;
     const seedIds = new Set(initialVenues.map((v) => v.id));
     const toSave = venues.map((v) => (seedIds.has(v.id) ? initialVenues.find((s) => s.id === v.id) || v : v));
     save(STORAGE_KEYS.venues, toSave);
@@ -394,6 +404,41 @@ export function AppDataProvider({ children }) {
         );
         return { id, ...data };
       },
+      restoreReviewsFromSeed: () => {
+        setReviews([...initialReviews]);
+      },
+      deleteReview: (id) => {
+        const review = reviews.find((r) => r.id === id);
+        if (!review) return;
+        setReviews((prev) => prev.filter((r) => r.id !== id));
+        const venueReviews = reviews.filter((r) => r.venue_id === review.venue_id && r.id !== id);
+        if (venueReviews.length > 0) {
+          const avg = (key) => venueReviews.reduce((s, r) => s + (r[key] || 0), 0) / venueReviews.length;
+          setVenues((prev) =>
+            prev.map((v) =>
+              v.id === review.venue_id
+                ? {
+                    ...v,
+                    review_count: venueReviews.length,
+                    avg_drink_quality: Math.round(avg("drink_quality") * 10) / 10,
+                    avg_staff_competence: Math.round(avg("staff_competence") * 10) / 10,
+                    avg_atmosphere: Math.round(avg("atmosphere") * 10) / 10,
+                    avg_value: Math.round(avg("value_for_money") * 10) / 10,
+                    overall_rating: Math.round(avg("overall_rating") * 10) / 10,
+                  }
+                : v
+            )
+          );
+        } else {
+          setVenues((prev) =>
+            prev.map((v) =>
+              v.id === review.venue_id
+                ? { ...v, review_count: 0, overall_rating: null, avg_drink_quality: null, avg_staff_competence: null, avg_atmosphere: null, avg_value: null }
+                : v
+            )
+          );
+        }
+      },
 
       getArticles: () => articles,
       getArticleById: (id) => articles.find((a) => a.id === id),
@@ -422,6 +467,9 @@ export function AppDataProvider({ children }) {
         );
         return { id, ...data };
       },
+      deleteArticle: (id) => {
+        setArticles((prev) => prev.filter((a) => a.id !== id));
+      },
 
       getDrinks: () => drinks,
       getDrinkById: (id) => drinks.find((d) => d.id === id),
@@ -446,6 +494,9 @@ export function AppDataProvider({ children }) {
           prev.map((d) => (d.id === id ? { ...d, ...data } : d))
         );
         return { id, ...data };
+      },
+      deleteDrink: (id) => {
+        setDrinks((prev) => prev.filter((d) => d.id !== id));
       },
 
       // Community: messaggi proprietari (inviti, annunci)
@@ -615,7 +666,10 @@ export function AppDataProvider({ children }) {
       },
 
       resetToDefaults: () => {
-        setVenues(initialVenues);
+        if (!isSupabaseConfigured()) setVenues(initialVenues);
+        else supabase?.from("venues_cloud").select("*").eq("status", "approved").then(({ data }) => {
+          if (data?.length) setVenues(data.map((r) => ({ ...r, id: r.external_id || String(r.id) })));
+        });
         setReviews(initialReviews);
         setArticles(initialArticles);
         setDrinks(initialDrinks);
@@ -708,8 +762,12 @@ export function AppDataProvider({ children }) {
         if (extra.longitude != null) update.longitude = extra.longitude;
         await supabase.from("venues_cloud").update(update).eq("id", id);
         const { data } = await supabase.from("venues_cloud").select("*").eq("status", "approved");
-        if (data) setCloudVenues(data.map((row) => ({ ...row, id: String(row.id) })));
-        setVenues((prev) => prev.filter((v) => v.id !== id || !v._cloudPending));
+        if (data && data.length > 0) {
+          const mapped = data.map((row) => ({ ...row, id: row.external_id || String(row.id), supabase_id: String(row.id) }));
+          setVenues(mapped);
+        } else {
+          setVenues((prev) => prev.filter((v) => v.id !== id || !v._cloudPending));
+        }
       },
       rejectVenueCloud: async (id) => {
         const base = typeof window !== "undefined" ? window.location.origin : "";

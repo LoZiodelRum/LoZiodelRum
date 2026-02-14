@@ -3,7 +3,7 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { useMutation } from "@tanstack/react-query";
 import { useAppData } from "@/lib/AppDataContext";
-import { ChevronLeft, Save, Loader2, MapPin, Phone, Globe, Instagram, Clock, Image as ImageIcon } from "lucide-react";
+import { ChevronLeft, Save, Loader2, MapPin, Phone, Globe, Instagram, Clock, Image as ImageIcon, Trash2 } from "lucide-react";
 
 const categories = [
   { value: "cocktail_bar", label: "Cocktail Bar" },
@@ -45,7 +45,7 @@ export default function EditVenue() {
   const stateVenue = location.state?.fromCloud ? location.state?.venue : null;
 
   const navigate = useNavigate();
-  const { getVenueById, updateVenue, updateVenueCloud } = useAppData();
+  const { getVenueById, updateVenue, updateVenueCloud, deleteVenue, rejectVenueCloud } = useAppData();
   const venue = stateVenue || getVenueById(venueId);
 
   const [formData, setFormData] = useState({
@@ -67,6 +67,7 @@ export default function EditVenue() {
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
 
   useEffect(() => {
     if (venue && venueId) {
@@ -131,6 +132,19 @@ export default function EditVenue() {
     }));
   };
 
+  const handleDelete = async () => {
+    if (!venueId || !venue) return;
+    if (isCloudVenue) {
+      const supabaseId = venue.supabase_id || venueId;
+      await rejectVenueCloud(supabaseId);
+      navigate(createPageUrl("Dashboard"));
+    } else {
+      deleteVenue(venueId);
+      navigate(createPageUrl("Explore"));
+    }
+    setShowDeleteConfirm(false);
+  };
+
   const handlePaste = (field, e) => {
     const text = e.clipboardData?.getData("text/plain");
     if (!text) return;
@@ -181,11 +195,86 @@ export default function EditVenue() {
           >
             <ChevronLeft style={{ width: 24, height: 24 }} />
           </Link>
-          <div>
+          <div style={{ flex: 1 }}>
             <h1 style={{ fontSize: "1.5rem", fontWeight: 700 }}>Modifica Locale</h1>
             <p style={{ color: "#78716c", fontSize: "0.875rem" }}>Aggiorna le informazioni</p>
           </div>
+          <button
+            type="button"
+            onClick={() => setShowDeleteConfirm(true)}
+            title="Elimina locale"
+            style={{
+              padding: "0.5rem",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              color: "#ef4444",
+              background: "rgba(239,68,68,0.1)",
+              border: "1px solid rgba(239,68,68,0.3)",
+              borderRadius: "0.5rem",
+              cursor: "pointer",
+            }}
+          >
+            <Trash2 style={{ width: 20, height: 20 }} />
+          </button>
         </div>
+
+        {showDeleteConfirm && (
+          <div
+            style={{
+              position: "fixed",
+              inset: 0,
+              backgroundColor: "rgba(0,0,0,0.7)",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              zIndex: 50,
+              padding: "1rem",
+            }}
+          >
+            <div
+              style={{
+                backgroundColor: "#1c1917",
+                borderRadius: "1rem",
+                padding: "1.5rem",
+                maxWidth: 360,
+                border: "1px solid rgba(68,64,60,0.5)",
+              }}
+            >
+              <p style={{ marginBottom: "1rem", fontSize: "1rem" }}>Sei sicuro di voler eliminare questo locale?</p>
+              <div style={{ display: "flex", gap: "0.75rem", justifyContent: "flex-end" }}>
+                <button
+                  type="button"
+                  onClick={() => setShowDeleteConfirm(false)}
+                  style={{
+                    padding: "0.5rem 1rem",
+                    borderRadius: "0.5rem",
+                    border: "1px solid rgba(68,64,60,0.8)",
+                    background: "transparent",
+                    color: "#a8a29e",
+                    cursor: "pointer",
+                  }}
+                >
+                  Annulla
+                </button>
+                <button
+                  type="button"
+                  onClick={handleDelete}
+                  style={{
+                    padding: "0.5rem 1rem",
+                    borderRadius: "0.5rem",
+                    border: "none",
+                    background: "#ef4444",
+                    color: "white",
+                    cursor: "pointer",
+                  }}
+                >
+                  Elimina
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
 
         <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
           <section style={{ backgroundColor: "rgba(28,25,23,0.5)", borderRadius: "1rem", border: "1px solid rgba(68,64,60,0.5)", padding: "1.5rem" }}>

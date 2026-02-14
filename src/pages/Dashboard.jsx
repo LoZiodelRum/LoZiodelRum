@@ -35,14 +35,13 @@ import { useAppData } from "@/lib/AppDataContext";
 import { exportAsFile } from "@/utils/mobileExport";
 
 export default function Dashboard() {
-  const { user, getVenues, getArticles, getDrinks, getBartenders, getPendingBartenders, updateVenue, deleteVenue, setBartenderStatus, deleteBartender, exportData, importData, isSupabaseConfigured, getPendingVenuesFromCloud, getPendingLocalVenues, approveVenueCloud, rejectVenueCloud } = useAppData();
+  const { user, getVenues, getArticles, getDrinks, getBartenders, getPendingBartenders, updateVenue, deleteVenue, setBartenderStatus, deleteBartender, exportData, importData, restoreReviewsFromSeed, isSupabaseConfigured, getPendingVenuesFromCloud, getPendingLocalVenues, approveVenueCloud, rejectVenueCloud } = useAppData();
   const allVenues = getVenues();
   const allArticles = getArticles();
   const allDrinks = getDrinks();
   const pendingVenues = getPendingLocalVenues?.() ?? [];
   const pendingBartenders = getPendingBartenders();
   const approvedBartenders = getBartenders("approved");
-  const [selectedVenueId, setSelectedVenueId] = useState("");
   const [selectedArticleId, setSelectedArticleId] = useState("");
   const [selectedDrinkId, setSelectedDrinkId] = useState("");
   const [selectedBartenderId, setSelectedBartenderId] = useState("");
@@ -50,7 +49,6 @@ export default function Dashboard() {
   const [loadingCloudPending, setLoadingCloudPending] = useState(false);
   const [cloudError, setCloudError] = useState(null);
   const [venueCoords, setVenueCoords] = useState({});
-  const selectedVenue = selectedVenueId ? allVenues.find((v) => v.id === selectedVenueId) : null;
   const selectedArticle = selectedArticleId ? allArticles.find((a) => a.id === selectedArticleId) : null;
   const selectedDrink = selectedDrinkId ? allDrinks.find((d) => d.id === selectedDrinkId) : null;
   const selectedBartender = selectedBartenderId ? getBartenders().find((b) => b.id === selectedBartenderId) : null;
@@ -403,72 +401,63 @@ export default function Dashboard() {
           )}
         </div>
 
-        {/* Scegli locale da modificare o eliminare */}
+        {/* Locali approvati: modifica o elimina */}
         <div className="mt-8 bg-stone-900/50 rounded-2xl border border-stone-800/50 p-6">
           <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
             <MapPin className="w-5 h-5 text-amber-500" />
             Modifica o elimina un locale
           </h2>
-          <div className="space-y-4">
-            <div>
-              <label className="text-sm font-medium text-stone-400 mb-2 block">
-                Seleziona il locale
-              </label>
-              <Select value={selectedVenueId} onValueChange={setSelectedVenueId}>
-                <SelectTrigger className="w-full max-w-md bg-stone-800/50 border-stone-700">
-                  <SelectValue placeholder="Scegli un locale dall'elenco..." />
-                </SelectTrigger>
-                <SelectContent className="bg-stone-900 border-stone-800 max-h-64">
-                  {allVenues.map((venue) => (
-                    <SelectItem key={venue.id} value={venue.id}>
-                      {venue.name} — {venue.city}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            {selectedVenue && (
-              <motion.div
-                initial={{ opacity: 0, y: 8 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="flex flex-wrap items-center gap-4 p-4 rounded-xl bg-stone-800/30 border border-stone-700/50"
-              >
-                <div className="min-w-0">
-                  <p className="font-semibold">{selectedVenue.name}</p>
-                  <p className="text-sm text-stone-500">
-                    {selectedVenue.city}
-                    {selectedVenue.country ? `, ${selectedVenue.country}` : ""}
-                  </p>
-                </div>
-                <div className="flex gap-2">
-                  <Link to={createPageUrl(`EditVenue?id=${selectedVenue.id}`)}>
+          {allVenues.length === 0 ? (
+            <p className="text-stone-500 py-6">Nessun locale approvato. I locali in attesa sono nella sezione sopra.</p>
+          ) : (
+            <div className="space-y-3">
+              {allVenues.map((venue) => (
+                <motion.div
+                  key={venue.id}
+                  initial={{ opacity: 0, y: 4 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl bg-stone-800/30 border border-stone-700/50"
+                >
+                  <div className="min-w-0 flex-1">
+                    <p className="font-semibold">{venue.name}</p>
+                    <p className="text-sm text-stone-500">
+                      {venue.city}
+                      {venue.country ? `, ${venue.country}` : ""}
+                    </p>
+                  </div>
+                  <div className="flex gap-2 shrink-0">
+                    <Link to={createPageUrl(`EditVenue?id=${venue.id}`)}>
+                      <Button
+                        size="sm"
+                        className="bg-amber-500 hover:bg-amber-600 text-stone-950"
+                      >
+                        <Edit3 className="w-4 h-4 mr-1" />
+                        Modifica
+                      </Button>
+                    </Link>
                     <Button
+                      variant="outline"
                       size="sm"
-                      className="bg-amber-500 hover:bg-amber-600 text-stone-950"
+                      className="border-red-500/30 text-red-400 hover:bg-red-500/10"
+                      onClick={async () => {
+                        if (!confirm(`Eliminare "${venue.name}"?`)) return;
+                        if (venue.supabase_id && isSupabaseConfigured()) {
+                          await rejectVenueCloud(venue.supabase_id);
+                          toast.success("Locale eliminato");
+                        } else {
+                          deleteVenue(venue.id);
+                          toast.success("Locale eliminato");
+                        }
+                      }}
                     >
-                      <Edit3 className="w-4 h-4 mr-1" />
-                      Modifica
+                      <Trash2 className="w-4 h-4 mr-1" />
+                      Elimina
                     </Button>
-                  </Link>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    className="border-red-500/30 text-red-400 hover:bg-red-500/10"
-                    onClick={() => {
-                      if (confirm(`Eliminare "${selectedVenue.name}"?`)) {
-                        deleteVenue(selectedVenue.id);
-                        setSelectedVenueId("");
-                        toast.success("Locale eliminato");
-                      }
-                    }}
-                  >
-                    <Trash2 className="w-4 h-4 mr-1" />
-                    Elimina
-                  </Button>
-                </div>
-              </motion.div>
-            )}
-          </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Modifica articolo */}
@@ -657,6 +646,17 @@ export default function Dashboard() {
             >
               <Download className="w-4 h-4 mr-2" />
               Esporta backup (JSON)
+            </Button>
+            <Button
+              variant="outline"
+              className="border-amber-500/50 text-amber-400 hover:bg-amber-500/10"
+              onClick={() => {
+                restoreReviewsFromSeed();
+                toast.success("Recensioni ripristinate dal seed");
+              }}
+            >
+              <RefreshCw className="w-4 h-4 mr-2" />
+              Ripristina recensioni
             </Button>
             <input
               ref={fileInputRef}
