@@ -207,10 +207,10 @@ export default function VenueDetail() {
                   <div className="flex items-center gap-3 md:flex-col md:text-center">
                     <Icon className="w-5 h-5 text-amber-500 md:mx-auto md:mb-2 flex-shrink-0" />
                     <div className="flex items-center gap-2 md:flex-col md:gap-0">
+                      <div className="text-xs text-stone-500 md:mb-1">{label}</div>
                       <div className="text-base font-bold text-stone-100">
                         {getLabelForValue(avgKeyToOptionKey[key] || key, venue[key])}
                       </div>
-                      <div className="text-xs text-stone-500 md:mt-1">{label}</div>
                     </div>
                   </div>
                 </div>
