@@ -1,6 +1,5 @@
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { toast } from "@/components/ui/use-toast";
 import { createPageUrl } from "@/utils";
 import { useMutation } from "@tanstack/react-query";
 import { useAppData } from "@/lib/AppDataContext";
@@ -274,27 +273,9 @@ export default function EditReview() {
               </div>
               
               <div>
-                <div className="flex items-center justify-between mb-2">
-                  <Label>Racconta la tua esperienza</Label>
-                  <Button
-                    type="button"
-                    variant="ghost"
-                    size="sm"
-                    className="text-stone-500 hover:text-amber-400 h-8 text-xs"
-                    onClick={async () => {
-                      try {
-                        const text = await navigator.clipboard.readText();
-                        if (text) setFormData(prev => ({ ...prev, content: (prev.content || "") + (prev.content ? "\n\n" : "") + text }));
-                      } catch {
-                        toast({ title: "Incolla con Ctrl+V (Cmd+V su Mac)", variant: "destructive" });
-                      }
-                    }}
-                  >
-                    Incolla
-                  </Button>
-                </div>
+                <Label className="mb-2 block">Racconta la tua esperienza</Label>
                 <Textarea
-                  placeholder="Descrivi la tua visita... Puoi incollare con Ctrl+V (Cmd+V) o col pulsante Incolla."
+                  placeholder="Descrivi la tua visita: cosa hai ordinato, com'era l'atmosfera, cosa ti ha colpito..."
                   value={formData.content}
                   onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
                   className="bg-stone-800/50 border-stone-700 min-h-[120px]"

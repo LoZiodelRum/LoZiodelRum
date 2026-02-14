@@ -142,6 +142,8 @@
   main textarea {
     font-size: 16px !important;
     min-height: 2.75rem;
+    -webkit-user-select: text;
+    user-select: text;
   }
 
   /* Immagini in card e contenuti: adattate e proporzionate */
