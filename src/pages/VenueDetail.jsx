@@ -96,17 +96,17 @@ export default function VenueDetail() {
         />
         <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-stone-950/30 to-transparent" />
         
-        {/* Back Button - pt-safe per non essere coperto dall'header */}
+        {/* Back Button - sotto l'header su mobile e desktop */}
         <Link 
           to={createPageUrl("Explore")}
-          className="absolute top-4 left-4 mt-14 lg:mt-16 flex items-center gap-2 px-3 py-2 bg-stone-950/50 backdrop-blur-sm rounded-xl text-stone-200 hover:bg-stone-950/70 transition-colors z-10"
+          className="absolute top-20 left-4 lg:top-24 flex items-center gap-2 px-3 py-2 bg-stone-950/50 backdrop-blur-sm rounded-xl text-stone-200 hover:bg-stone-950/70 transition-colors z-10"
         >
           <ChevronLeft className="w-5 h-5" />
           <span className="hidden sm:inline">Indietro</span>
         </Link>
 
         {/* Actions */}
-        <div className="absolute top-4 right-4 mt-14 lg:mt-16 flex gap-2 z-10">
+        <div className="absolute top-20 right-4 lg:top-24 flex gap-2 z-10">
           {currentUser?.role === 'admin' && (
             <Link to={createPageUrl(`EditVenue?id=${venueId}`)}>
               <Button size="icon" variant="secondary" className="bg-amber-500/90 backdrop-blur-sm hover:bg-amber-500 border-0 text-stone-950">
