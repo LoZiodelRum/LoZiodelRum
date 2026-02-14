@@ -146,7 +146,7 @@ export default function VenueCard({ venue, index = 0, compact = false }) {
 
             <div className="flex items-center justify-between mt-3 md:mt-4 pt-3 md:pt-4 border-t border-stone-800/50">
               <span className="text-xs text-stone-500">
-                {venue.review_count > 0 ? `${venue.review_count} recensioni` : ""}
+                {venue.review_count ?? 0} recensioni
               </span>
               <span className="text-xs text-amber-500 font-medium group-hover:translate-x-1 transition-transform">
                 Scopri di più →
