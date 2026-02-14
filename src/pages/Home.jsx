@@ -488,7 +488,7 @@ export default function Home() {
                     transition={{ delay: i * 0.1 }}
                   >
                     <Link 
-                      to={createPageUrl(`VenueDetail?id=${review.venue_id}`)}
+                      to={createPageUrl(`ReviewDetail?id=${review.id}`)}
                       className="group relative h-40 rounded-2xl overflow-hidden block"
                     >
                       <img 

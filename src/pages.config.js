@@ -69,6 +69,7 @@ import Magazine from './pages/Magazine';
 import Map from './pages/Map';
 import Privacy from './pages/Privacy';
 import Profile from './pages/Profile';
+import ReviewDetail from './pages/ReviewDetail';
 import VenueDetail from './pages/VenueDetail';
 import __Layout from './Layout.jsx';
 
@@ -96,6 +97,7 @@ export const PAGES = {
     "Map": Map,
     "Privacy": Privacy,
     "Profile": Profile,
+    "ReviewDetail": ReviewDetail,
     "VenueDetail": VenueDetail,
 }
 

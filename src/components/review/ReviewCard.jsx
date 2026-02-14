@@ -44,6 +44,10 @@ export default function ReviewCard({ review, showVenue = false, venue = null, in
       transition={{ duration: 0.4, delay: index * 0.08 }}
       className="bg-stone-900/30 backdrop-blur-sm rounded-2xl border border-stone-800/50 p-6 hover:border-stone-700/50 transition-colors"
     >
+      <Link
+        to={createPageUrl(`ReviewDetail?id=${review.id}`)}
+        className="block -m-6 p-6 rounded-2xl hover:bg-stone-800/20 transition-colors cursor-pointer"
+      >
       {/* Header */}
       <div className="flex items-start justify-between mb-4">
         <div className="flex items-center gap-3">
@@ -172,6 +176,7 @@ export default function ReviewCard({ review, showVenue = false, venue = null, in
           {review.would_recommend ? "Lo consiglio" : "Con riserva"}
         </div>
       )}
+      </Link>
 
       {/* Actions */}
       <div className="flex items-center gap-4 mt-4 pt-4 border-t border-stone-800/50">
