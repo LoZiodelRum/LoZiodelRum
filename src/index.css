@@ -233,3 +233,11 @@ main[data-page="EditVenue"] textarea {
   user-select: text !important;
   cursor: text !important;
 }
+
+/* AddReview / EditReview: incolla e selezione testo nel riquadro esperienza */
+main[data-page="AddReview"] textarea,
+main[data-page="EditReview"] textarea {
+  -webkit-user-select: text !important;
+  user-select: text !important;
+  cursor: text !important;
+}

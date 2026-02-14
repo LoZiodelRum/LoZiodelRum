@@ -90,6 +90,21 @@ export default function EditReview() {
     }
   }, [reviewId]);
 
+  const handlePasteContent = (e) => {
+    const text = e.clipboardData?.getData("text/plain");
+    if (!text) return;
+    e.preventDefault();
+    const el = e.target;
+    const start = el.selectionStart ?? 0;
+    const end = el.selectionEnd ?? 0;
+    const val = String(formData.content ?? "");
+    const newVal = val.slice(0, start) + text + val.slice(end);
+    setFormData((prev) => ({ ...prev, content: newVal }));
+    setTimeout(() => {
+      el.selectionStart = el.selectionEnd = start + text.length;
+    }, 0);
+  };
+
   const updateReviewMutation = useMutation({
     mutationFn: async (reviewData) => {
       return updateReview(reviewId, reviewData);
@@ -302,6 +317,7 @@ export default function EditReview() {
                   placeholder="Descrivi la tua visita: cosa hai ordinato, com'era l'atmosfera, cosa ti ha colpito..."
                   value={formData.content}
                   onChange={(e) => setFormData(prev => ({ ...prev, content: e.target.value }))}
+                  onPaste={handlePasteContent}
                   className="bg-stone-800/50 border-stone-700 min-h-[120px]"
                 />
               </div>
