@@ -53,12 +53,14 @@ export function AppDataProvider({ children }) {
     return [...fromSeed, ...customVenues];
   });
   const [reviews, setReviews] = useState(() => {
-    const loaded = load(STORAGE_KEYS.reviews, []);
-    const seedIds = new Set(initialReviews.map((r) => r.id));
-    // Seed: SEMPRE da reviews.js – identico su tutti i device
-    const fromSeed = [...initialReviews];
-    const customReviews = loaded.filter((r) => !seedIds.has(r.id));
-    return [...fromSeed, ...customReviews];
+    const raw = localStorage.getItem(STORAGE_KEYS.reviews);
+    if (raw !== null) {
+      try {
+        const data = JSON.parse(raw);
+        if (Array.isArray(data)) return data;
+      } catch (_) {}
+    }
+    return [...initialReviews];
   });
   const [articles, setArticles] = useState(() => load(STORAGE_KEYS.articles, initialArticles));
   const [drinks, setDrinks] = useState(() => load(STORAGE_KEYS.drinks, initialDrinks));
