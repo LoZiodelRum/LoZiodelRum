@@ -254,33 +254,33 @@ export default function Layout({ children, currentPageName }) {
       </main>
 
       {/* Mobile Bottom Nav */}
-      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-stone-950 border-t border-stone-800 safe-bottom safe-left safe-right">
-        <div className="flex items-center justify-center h-16 min-h-[64px] px-2">
-          <div className="flex items-center justify-evenly w-full max-w-lg">
+      <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-stone-950 border-t border-stone-800 safe-bottom safe-left safe-right overflow-x-auto scrollbar-hide">
+        <div className="flex items-center justify-center h-16 min-h-[64px] px-1 min-w-0">
+          <div className="flex items-center justify-between w-full max-w-lg mx-auto gap-0.5 flex-shrink-0">
             {mobileNavItems.map((item) => (
               <Link
                 key={item.page}
                 to={createPageUrl(item.page)}
-                className={`flex flex-col items-center gap-1 px-2 py-2 rounded-xl transition-all min-w-[44px] min-h-[44px] justify-center ${
+                className={`flex flex-col items-center gap-0.5 px-1.5 py-2 rounded-xl transition-all min-w-[36px] min-h-[44px] justify-center flex-shrink-0 ${
                   isActive(item.page)
                     ? "text-amber-400"
                     : "text-stone-400"
                 }`}
               >
                 <item.icon className="w-5 h-5" />
-                <span className="text-[10px] font-medium">{item.name}</span>
+                <span className="text-[9px] font-medium truncate max-w-[52px]">{item.name}</span>
               </Link>
             ))}
             {user?.role === "admin" && (
               <Link
                 to={createPageUrl("Dashboard")}
                 onClick={() => setMobileMenuOpen(false)}
-                className={`relative flex flex-col items-center gap-1 px-2 py-2 rounded-xl transition-all min-w-[44px] min-h-[44px] justify-center ${
+                className={`relative flex flex-col items-center gap-0.5 px-1.5 py-2 rounded-xl transition-all min-w-[36px] min-h-[44px] justify-center flex-shrink-0 ${
                   isActive("Dashboard") ? "text-amber-400" : "text-stone-400"
                 }`}
               >
                 <LayoutDashboard className="w-5 h-5" />
-                <span className="text-[10px] font-medium">Dashboard</span>
+                <span className="text-[9px] font-medium truncate max-w-[48px]">Dashboard</span>
                 {pendingVenuesCount > 0 && (
                   <span className="absolute -top-0.5 right-0 min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full bg-amber-500 text-stone-950 text-[10px] font-bold">
                     {pendingVenuesCount > 99 ? "99+" : pendingVenuesCount}
@@ -290,7 +290,7 @@ export default function Layout({ children, currentPageName }) {
             )}
             <Link
               to={createPageUrl("AddReview")}
-              className="flex flex-col items-center gap-1 px-2 py-2 -mt-4 min-w-[44px] min-h-[44px] justify-center"
+              className="flex flex-col items-center gap-0.5 px-1.5 py-2 -mt-4 min-w-[44px] min-h-[44px] justify-center flex-shrink-0"
             >
               <div className="w-12 h-12 bg-amber-500 rounded-full flex items-center justify-center shadow-lg shadow-amber-500/30">
                 <PlusCircle className="w-6 h-6 text-stone-950" />
@@ -298,12 +298,12 @@ export default function Layout({ children, currentPageName }) {
             </Link>
             <Link
               to={createPageUrl("Profile")}
-              className={`flex flex-col items-center gap-1 px-2 py-2 rounded-xl min-w-[44px] min-h-[44px] justify-center ${
+              className={`flex flex-col items-center gap-0.5 px-1.5 py-2 rounded-xl min-w-[36px] min-h-[44px] justify-center flex-shrink-0 ${
                 isActive("Profile") ? "text-amber-400" : "text-stone-400"
               }`}
             >
               <User className="w-5 h-5" />
-              <span className="text-[10px] font-medium">Profilo</span>
+              <span className="text-[9px] font-medium truncate max-w-[48px]">Profilo</span>
             </Link>
           </div>
         </div>

@@ -241,3 +241,12 @@ main[data-page="EditReview"] textarea {
   user-select: text !important;
   cursor: text !important;
 }
+
+/* Mobile: contenuto a tutta larghezza, evita overflow */
+@media (max-width: 640px) {
+  main {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+  }
+}
