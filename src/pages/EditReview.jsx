@@ -213,13 +213,6 @@ export default function EditReview() {
             <h1 className="text-2xl md:text-3xl font-bold">Modifica Recensione</h1>
             <p className="text-stone-500">Aggiorna la tua esperienza</p>
           </div>
-          <Button
-            onClick={handleSubmit}
-            disabled={!isValid || isSubmitting}
-            className="bg-amber-500 hover:bg-amber-600 text-stone-950 font-semibold px-4"
-          >
-            {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : "Salva"}
-          </Button>
           <button
             type="button"
             onClick={() => setShowDeleteConfirm(true)}

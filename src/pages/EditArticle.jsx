@@ -107,13 +107,6 @@ export default function EditArticle() {
             <h1 className="text-2xl md:text-3xl font-bold">Modifica articolo</h1>
             <p className="text-stone-500">{article?.title}</p>
           </div>
-          <Button
-            onClick={handleSubmit}
-            disabled={!formData.title?.trim() || isSubmitting}
-            className="bg-amber-500 hover:bg-amber-600 text-stone-950 font-semibold px-4"
-          >
-            {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : "Salva"}
-          </Button>
           <button
             type="button"
             onClick={() => setShowDeleteConfirm(true)}

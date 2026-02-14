@@ -200,30 +200,6 @@ export default function EditVenue() {
             <p style={{ color: "#78716c", fontSize: "0.875rem" }}>Aggiorna le informazioni</p>
           </div>
           <button
-            type="submit"
-            form="edit-venue-form"
-            disabled={!canSubmit}
-            style={{
-              padding: "0.5rem 1rem",
-              fontSize: "0.9375rem",
-              fontWeight: 600,
-              backgroundColor: canSubmit ? "#f59e0b" : "#44403c",
-              color: canSubmit ? "#0c0a09" : "#78716c",
-              border: "none",
-              borderRadius: "0.5rem",
-              cursor: canSubmit ? "pointer" : "not-allowed",
-              display: "flex",
-              alignItems: "center",
-              gap: "0.5rem",
-            }}
-          >
-            {isSubmitting ? (
-              <Loader2 style={{ width: 18, height: 18, animation: "spin 1s linear infinite" }} />
-            ) : (
-              "Salva"
-            )}
-          </button>
-          <button
             type="button"
             onClick={() => setShowDeleteConfirm(true)}
             title="Elimina locale"
@@ -300,7 +276,7 @@ export default function EditVenue() {
           </div>
         )}
 
-        <form id="edit-venue-form" onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
+        <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "2rem" }}>
           <section style={{ backgroundColor: "rgba(28,25,23,0.5)", borderRadius: "1rem", border: "1px solid rgba(68,64,60,0.5)", padding: "1.5rem" }}>
             <h3 style={{ fontSize: "1.125rem", fontWeight: 600, marginBottom: "1rem" }}>Informazioni Base</h3>
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>

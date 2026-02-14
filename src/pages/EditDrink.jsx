@@ -125,13 +125,6 @@ export default function EditDrink() {
             <h1 className="text-2xl md:text-3xl font-bold">Modifica drink</h1>
             <p className="text-stone-500">{drink?.name}</p>
           </div>
-          <Button
-            onClick={handleSubmit}
-            disabled={!formData.name?.trim() || isSubmitting}
-            className="bg-amber-500 hover:bg-amber-600 text-stone-950 font-semibold px-4"
-          >
-            {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : "Salva"}
-          </Button>
           <button
             type="button"
             onClick={() => setShowDeleteConfirm(true)}
