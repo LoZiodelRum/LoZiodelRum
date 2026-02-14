@@ -312,12 +312,7 @@ export default function VenueDetail() {
             ) : (
               <div className="text-center py-12 bg-stone-800/20 rounded-2xl">
                 <Star className="w-12 h-12 text-stone-700 mx-auto mb-4" />
-                <p className="text-stone-500 mb-4">Nessuna recensione ancora</p>
-                <Link to={createPageUrl(`AddReview?venue=${venueId}`)}>
-<Button className="bg-amber-500 hover:bg-amber-600 text-stone-950">
-                  Sii il primo a recensire
-                  </Button>
-                </Link>
+                <p className="text-stone-500">Nessuna recensione ancora</p>
               </div>
             )}
           </div>
