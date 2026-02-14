@@ -117,7 +117,7 @@ export const initialCommunityEvents = [
     title: "Serata Gin Artigianale",
     description: "Assaggi e storia dei gin italiani con degustazione comparata",
     date: new Date(Date.now() + 28 * 24 * 60 * 60 * 1000).toISOString().slice(0, 10),
-    location: "Mag Cafè, Roma",
+    location: "Mag Cafè, Milano",
     image: "https://images.unsplash.com/photo-1536935338788-846a998298fe?w=600",
     author_name: "Mag Cafè",
     createdAt: new Date().toISOString(),

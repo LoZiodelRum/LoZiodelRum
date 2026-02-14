@@ -364,7 +364,7 @@ export const venuesData = [
     "latitude": 45.45135,
     "longitude": 9.173433,
     "cover_image": "https://lh3.googleusercontent.com/p/AF1QipM8FUrbv3I0hRhJf7MzhMhCBEavEK4i1KkUdSzY=s1360-w1360-h1020-rw",
-    "category": "",
+    "category": "rum_bar",
     "price_range": "€€",
     "phone": "",
     "website": "",
