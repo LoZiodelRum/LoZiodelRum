@@ -146,6 +146,12 @@
     user-select: text;
   }
 
+  /* Icona calendario gialla nei campi data */
+  main input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1) sepia(1) saturate(5) hue-rotate(10deg);
+    opacity: 0.9;
+  }
+
   /* Immagini in card e contenuti: adattate e proporzionate */
   main img {
     max-width: 100%;
