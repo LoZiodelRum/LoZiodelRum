@@ -9,6 +9,7 @@ import {
   X, 
   Plus,
   ChevronLeft,
+  ChevronDown,
   Wine,
   Users,
   Sparkles,
@@ -28,6 +29,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Checkbox } from "@/components/ui/checkbox";
 import { motion } from "framer-motion";
 import { ratingOptions } from "@/lib/reviewRatings";
 
@@ -39,23 +42,28 @@ const ratingCategories = [
 ];
 
 const highlightOptions = [
-  "Cocktail eccezionali",
-  "Carta rum straordinaria",
-  "Staff preparatissimo",
-  "Atmosfera unica",
-  "Ottimo rapporto Q/P",
-  "Selezione vini top",
-  "Ingredienti premium",
-  "Location suggestiva"
+  "Cocktail ben fatti",
+  "Buona carta rum",
+  "Staff competente",
+  "Atmosfera accogliente",
+  "Rapporto qualità/prezzo ok",
+  "Selezione vini interessante",
+  "Ingredienti curati",
+  "Location curata",
+  "Servizio puntuale",
+  "Musica di sottofondo"
 ];
 
 const improvementOptions = [
   "Servizio lento",
-  "Prezzi elevati",
-  "Rumoroso",
-  "Cocktail inconsistenti",
-  "Poca varietà",
-  "Difficile da trovare"
+  "Prezzi alti",
+  "Ambiente rumoroso",
+  "Cocktail a volte inconsistenti",
+  "Poca varietà in carta",
+  "Difficile da trovare",
+  "Orari limitati",
+  "Coperto fuori",
+  "Prenotazione consigliata"
 ];
 
 export default function AddReview() {
@@ -560,42 +568,70 @@ export default function AddReview() {
                 <Label className="text-base font-medium mb-3 block text-emerald-400">
                   ✓ Punti di forza
                 </Label>
-                <div className="flex flex-wrap gap-2">
-                  {highlightOptions.map((item) => (
-                    <button
-                      key={item}
-                      onClick={() => toggleHighlight(item)}
-                      className={`px-3 py-1.5 rounded-full text-sm transition-all ${
-                        formData.highlights.includes(item)
-                          ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-                          : "bg-stone-800 text-stone-400 border border-stone-700 hover:border-stone-600"
-                      }`}
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-between bg-stone-800/50 border-stone-700 text-stone-300 hover:bg-stone-700/50"
                     >
-                      {item}
-                    </button>
-                  ))}
-                </div>
+                      {formData.highlights.length > 0
+                        ? `${formData.highlights.length} selezionati`
+                        : "Seleziona..."}
+                      <ChevronDown className="h-4 w-4 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[var(--radix-popover-trigger-width)] bg-stone-900 border-stone-700 p-2 max-h-64 overflow-y-auto">
+                    <div className="space-y-2">
+                      {highlightOptions.map((item) => (
+                        <label
+                          key={item}
+                          className="flex items-center gap-3 p-2 rounded-lg hover:bg-stone-800 cursor-pointer"
+                        >
+                          <Checkbox
+                            checked={formData.highlights.includes(item)}
+                            onCheckedChange={() => toggleHighlight(item)}
+                          />
+                          <span className="text-sm">{item}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </PopoverContent>
+                </Popover>
               </div>
 
               <div>
                 <Label className="text-base font-medium mb-3 block text-orange-400">
                   ↗ Aree di miglioramento
                 </Label>
-                <div className="flex flex-wrap gap-2">
-                  {improvementOptions.map((item) => (
-                    <button
-                      key={item}
-                      onClick={() => toggleImprovement(item)}
-                      className={`px-3 py-1.5 rounded-full text-sm transition-all ${
-                        formData.improvements.includes(item)
-                          ? "bg-orange-500/20 text-orange-400 border border-orange-500/30"
-                          : "bg-stone-800 text-stone-400 border border-stone-700 hover:border-stone-600"
-                      }`}
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className="w-full justify-between bg-stone-800/50 border-stone-700 text-stone-300 hover:bg-stone-700/50"
                     >
-                      {item}
-                    </button>
-                  ))}
-                </div>
+                      {formData.improvements.length > 0
+                        ? `${formData.improvements.length} selezionati`
+                        : "Seleziona..."}
+                      <ChevronDown className="h-4 w-4 opacity-50" />
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-[var(--radix-popover-trigger-width)] bg-stone-900 border-stone-700 p-2 max-h-64 overflow-y-auto">
+                    <div className="space-y-2">
+                      {improvementOptions.map((item) => (
+                        <label
+                          key={item}
+                          className="flex items-center gap-3 p-2 rounded-lg hover:bg-stone-800 cursor-pointer"
+                        >
+                          <Checkbox
+                            checked={formData.improvements.includes(item)}
+                            onCheckedChange={() => toggleImprovement(item)}
+                          />
+                          <span className="text-sm">{item}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </PopoverContent>
+                </Popover>
               </div>
             </div>
           </div>
