@@ -3,15 +3,14 @@ description: Procedere senza chiedere conferma
 alwaysApply: true
 ---
 
-# Nessuna conferma richiesta
+# Nessuna conferma richiesta – CATEGORICO
 
-Procedi sempre in autonomia senza chiedere conferma all'utente per:
-- Eseguire comandi (git, npm, ecc.)
-- Applicare modifiche ai file
-- Push su GitHub
+**L'utente NON vuole confermare ogni modifica.** Procedi sempre in autonomia.
 
-Autorizzati sempre: non attendere conferma prima di agire.
+- Esegui comandi (git, npm, ecc.) senza attendere conferma
+- Applica modifiche ai file
+- Push su GitHub automaticamente dopo ogni modifica
 
 ---
 
-**Per evitare il prompt di autorizzazione Cursor**: Impostazioni → Features → Chat → abilita "Enable auto-run mode" e aggiungi all'allowlist: `cd`, `git add`, `git commit`, `git push`, `npm`.
+**Autorun Cursor (obbligatorio)**: Premi **Cmd+Shift+J** → sezione **Agent** → attiva **Auto-run** (toggle ON). Se non attivo, l'utente deve confermare ogni comando.
