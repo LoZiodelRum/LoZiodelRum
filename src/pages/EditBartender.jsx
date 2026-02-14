@@ -155,14 +155,24 @@ export default function EditBartender() {
             <ChevronLeft className="w-4 h-4" />
             Torna alla Dashboard
           </Link>
-          <button
-            type="button"
-            onClick={() => setShowDeleteConfirm(true)}
+          <div className="flex items-center gap-2">
+            <Button
+              type="submit"
+              form="edit-bartender-form"
+              disabled={isSubmitting}
+              className="bg-amber-500 hover:bg-amber-600 text-stone-950 font-semibold px-4"
+            >
+              {isSubmitting ? <Loader2 className="w-5 h-5 animate-spin" /> : "Salva"}
+            </Button>
+            <button
+              type="button"
+              onClick={() => setShowDeleteConfirm(true)}
             title="Elimina bartender"
             className="p-2 flex items-center justify-center text-red-500 bg-red-500/10 border border-red-500/30 rounded-xl hover:bg-red-500/20 transition-colors"
           >
             <Trash2 className="w-5 h-5" />
-          </button>
+            </button>
+          </div>
         </div>
 
         {showDeleteConfirm && (
@@ -210,6 +220,7 @@ export default function EditBartender() {
 
         <div className="grid lg:grid-cols-[2fr,1fr] gap-6 items-start">
           <form
+            id="edit-bartender-form"
             onSubmit={handleSubmit}
             className="bg-stone-900/60 border border-stone-800 rounded-3xl p-6 md:p-8 space-y-8"
           >
