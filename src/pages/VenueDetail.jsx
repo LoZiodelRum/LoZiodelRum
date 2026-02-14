@@ -136,11 +136,11 @@ export default function VenueDetail() {
       </div>
 
       {/* Content */}
-      <div className="max-w-5xl mx-auto px-4 md:px-6 -mt-20 relative z-10 pb-28 lg:pb-20">
+      <div className="max-w-5xl mx-auto px-2 sm:px-4 md:px-6 -mt-20 relative z-10 pb-28 lg:pb-20 w-full">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-stone-900/80 backdrop-blur-xl rounded-3xl border border-stone-800/50 p-6 md:p-8"
+          className="bg-stone-900/80 backdrop-blur-xl rounded-3xl border border-stone-800/50 p-4 sm:p-6 md:p-8"
         >
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-start md:justify-between gap-4 mb-6">
