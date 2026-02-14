@@ -101,15 +101,15 @@ export const reviewsData = [
   {
     "id": "696d326e30cee44083123692-r1",
     "venue_id": "696d326e30cee44083123692",
-    "title": "Un affascinante salotto bohémien sui Navigli",
-    "content": "Un affascinante salotto bohémien sui Navigli che mixa arredi vintage anni '30 e cocktail d'avanguardia. Celebre per la sua atmosfera intima e le drink list creative, è un'icona milanese per chi cerca qualità e stile.",
-    "visit_date": "2026-01-15",
+    "title": "Mag Caffè: L'Anima Bohémien dei Navigli",
+    "content": "Al civico 43 di Ripa di Porta Ticinese, Mag Caffè è un salotto che respira l'eccentricità parigina degli anni Trenta: banconi in legno scuro, specchi antichi, divani in velluto e luci soffuse creano un'atmosfera in cui il brusio costante si mescola al tintinnio dei bicchieri. È sia cocktail bar che caffetteria: la drink list innova sui classici — Negroni, Spritz — senza tradirne l'anima. L'aperitivo offre una selezione gourmet di salumi e formaggi. Esperienza autentica, lontana dalle trappole turistiche: il posto giusto per un buon drink o per leggere un libro. Voto dello Zio: 9.0 — un'istituzione milanese dove il tempo sembra fermarsi, ma la qualità dei drink corre sempre velocissima.",
+    "visit_date": "2023-02-14",
     "drink_quality": 9,
     "staff_competence": 9,
     "atmosphere": 9,
-    "value_for_money": 8,
-    "overall_rating": 8.9,
+    "value_for_money": 7,
+    "overall_rating": 8.5,
     "author_name": "Lo Zio del Rum - Maurizio Graci",
-    "created_date": "2026-01-15T12:00:00.000000"
+    "created_date": "2023-02-14T12:00:00.000000"
   }
 ];

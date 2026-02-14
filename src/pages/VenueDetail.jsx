@@ -9,8 +9,6 @@ import {
   Globe, 
   Instagram,
   ExternalLink,
-  BookmarkPlus,
-  Share2,
   Wine,
   Users,
   Sparkles,
@@ -118,12 +116,6 @@ export default function VenueDetail() {
               </Button>
             </Link>
           )}
-          <Button size="icon" variant="secondary" className="bg-stone-950/50 backdrop-blur-sm hover:bg-stone-950/70 border-0">
-            <BookmarkPlus className="w-5 h-5" />
-          </Button>
-          <Button size="icon" variant="secondary" className="bg-stone-950/50 backdrop-blur-sm hover:bg-stone-950/70 border-0">
-            <Share2 className="w-5 h-5" />
-          </Button>
         </div>
 
         {/* Badges */}
