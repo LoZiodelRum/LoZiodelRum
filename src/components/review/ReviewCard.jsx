@@ -42,11 +42,11 @@ export default function ReviewCard({ review, showVenue = false, venue = null, in
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.4, delay: index * 0.08 }}
-      className="bg-stone-900/30 backdrop-blur-sm rounded-2xl border border-stone-800/50 p-4 sm:p-6 hover:border-stone-700/50 transition-colors"
+      className="bg-stone-900/30 backdrop-blur-sm rounded-2xl border border-stone-800/50 p-6 hover:border-stone-700/50 transition-colors overflow-visible"
     >
       <Link
         to={createPageUrl(`ReviewDetail?id=${review.id}`)}
-        className="block -m-4 sm:-m-6 p-4 sm:p-6 rounded-2xl hover:bg-stone-800/20 transition-colors cursor-pointer"
+        className="block cursor-pointer hover:opacity-95 transition-opacity"
       >
       {/* Header */}
       <div className="flex items-start justify-between mb-4">

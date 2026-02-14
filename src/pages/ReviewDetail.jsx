@@ -44,7 +44,7 @@ export default function ReviewDetail() {
   return (
     <div className="min-h-screen bg-stone-950 text-stone-100 pb-28 lg:pb-16">
       {/* Header */}
-      <div className="sticky top-0 z-50 px-2 sm:px-4 py-4 bg-stone-950/90 backdrop-blur-md border-b border-stone-800/50 flex items-center justify-between">
+      <div className="sticky top-0 z-50 px-4 py-4 bg-stone-950/90 backdrop-blur-md border-b border-stone-800/50 flex items-center justify-between">
         <Link
           to={venue ? createPageUrl(`VenueDetail?id=${review.venue_id}`) : createPageUrl("Explore")}
           className="flex items-center gap-2 text-stone-400 hover:text-stone-100 transition-colors"
@@ -73,9 +73,9 @@ export default function ReviewDetail() {
       </div>
 
       {/* Contenuto */}
-      <div className="px-2 sm:px-4 md:px-6 py-8 w-full">
-        <div className="max-w-2xl mx-auto w-full">
-          <div className="bg-stone-900/50 rounded-2xl border border-stone-800/50 p-4 sm:p-6 md:p-8">
+      <div className="px-4 md:px-6 py-8">
+        <div className="max-w-2xl mx-auto">
+          <div className="bg-stone-900/50 rounded-2xl border border-stone-800/50 p-6 md:p-8">
             {/* Header recensione */}
             <div className="flex items-start justify-between mb-6">
               <div className="flex items-center gap-3">
