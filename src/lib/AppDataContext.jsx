@@ -191,6 +191,25 @@ export function AppDataProvider({ children }) {
   useEffect(() => { save(STORAGE_KEYS.bartenders, bartenders); }, [bartenders]);
 
   const api = useMemo(() => {
+    const enrichVenueWithRealCount = (v) => {
+      const venueReviews = reviews.filter((r) => r.venue_id === v.id);
+      const count = venueReviews.length;
+      if (count === 0) {
+        return { ...v, review_count: 0, overall_rating: null };
+      }
+      const avg = (key) => venueReviews.reduce((s, r) => s + (r[key] || 0), 0) / venueReviews.length;
+      return {
+        ...v,
+        review_count: count,
+        overall_rating: Math.round(avg("overall_rating") * 10) / 10,
+        avg_drink_quality: Math.round(avg("drink_quality") * 10) / 10,
+        avg_staff_competence: Math.round(avg("staff_competence") * 10) / 10,
+        avg_atmosphere: Math.round(avg("atmosphere") * 10) / 10,
+        avg_value: Math.round(avg("value_for_money") * 10) / 10,
+      };
+    };
+
+    const baseVenues = [...venues.filter((v) => !v._cloudPending && v.verified !== false), ...cloudVenues];
     return {
       venues,
       reviews,
@@ -199,9 +218,12 @@ export function AppDataProvider({ children }) {
       user,
       setUser,
 
-      getVenues: () => [...venues.filter((v) => !v._cloudPending && v.verified !== false), ...cloudVenues],
+      getVenues: () => baseVenues.map(enrichVenueWithRealCount),
       getPendingLocalVenues: () => venues.filter((v) => !v.verified && !v._cloudPending),
-      getVenueById: (id) => venues.find((v) => v.id === id) || cloudVenues.find((v) => v.id === id),
+      getVenueById: (id) => {
+        const v = venues.find((x) => x.id === id) || cloudVenues.find((x) => x.id === id);
+        return v ? enrichVenueWithRealCount(v) : null;
+      },
       addVenue: async (data) => {
         const id = data.id || generateId();
         const venue = { ...data, id, review_count: 0, overall_rating: null, verified: data.verified ?? false };

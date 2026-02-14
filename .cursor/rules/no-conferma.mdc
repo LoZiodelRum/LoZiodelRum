@@ -11,3 +11,7 @@ Procedi sempre in autonomia senza chiedere conferma all'utente per:
 - Push su GitHub
 
 Autorizzati sempre: non attendere conferma prima di agire.
+
+---
+
+**Per evitare il prompt di autorizzazione Cursor**: Impostazioni → Features → Chat → abilita "Enable auto-run mode" e aggiungi all'allowlist: `cd`, `git add`, `git commit`, `git push`, `npm`.

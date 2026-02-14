@@ -163,8 +163,8 @@ export default function VenueDetail() {
               </div>
             </div>
 
-            {/* Overall Rating */}
-            {venue.overall_rating && (
+            {/* Overall Rating - solo se ci sono recensioni reali */}
+            {reviews.length > 0 && venue.overall_rating && (
               <div className="flex items-center gap-4 bg-stone-800/50 px-5 py-3 rounded-2xl">
                 <div className="text-center">
                   <div className="text-4xl font-bold text-amber-400">
@@ -173,7 +173,7 @@ export default function VenueDetail() {
                   <RatingStars rating={venue.overall_rating} size="sm" showValue={false} />
                 </div>
                 <div className="text-stone-500 text-sm">
-                  <div>{venue.review_count || 0}</div>
+                  <div>{reviews.length}</div>
                   <div>recensioni</div>
                 </div>
               </div>
