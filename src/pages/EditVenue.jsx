@@ -34,6 +34,8 @@ const fieldStyle = {
   borderRadius: "0.5rem",
   color: "#e7e5e4",
   pointerEvents: "auto",
+  WebkitUserSelect: "text",
+  userSelect: "text",
 };
 
 export default function EditVenue() {
@@ -129,6 +131,21 @@ export default function EditVenue() {
     }));
   };
 
+  const handlePaste = (field, e) => {
+    const text = e.clipboardData?.getData("text/plain");
+    if (!text) return;
+    e.preventDefault();
+    const el = e.target;
+    const start = el.selectionStart ?? 0;
+    const end = el.selectionEnd ?? 0;
+    const val = String(formData[field] ?? "");
+    const newVal = val.slice(0, start) + text + val.slice(end);
+    setFormData((p) => ({ ...p, [field]: newVal }));
+    setTimeout(() => {
+      el.selectionStart = el.selectionEnd = start + text.length;
+    }, 0);
+  };
+
   if (venueId && !venue) {
     return (
       <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "1rem" }}>
@@ -180,6 +197,7 @@ export default function EditVenue() {
                   type="text"
                   value={formData.name}
                   onChange={(e) => setFormData((p) => ({ ...p, name: e.target.value }))}
+                  onPaste={(e) => handlePaste("name", e)}
                   placeholder="Es. The Rum Bar"
                   style={fieldStyle}
                   autoComplete="off"
@@ -190,6 +208,7 @@ export default function EditVenue() {
                 <textarea
                   value={formData.description}
                   onChange={(e) => setFormData((p) => ({ ...p, description: e.target.value }))}
+                  onPaste={(e) => handlePaste("description", e)}
                   placeholder="Racconta qualcosa su questo locale..."
                   rows={4}
                   style={{ ...fieldStyle, minHeight: 100 }}
@@ -230,16 +249,16 @@ export default function EditVenue() {
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
               <div>
                 <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.875rem" }}>Indirizzo</label>
-                <input type="text" value={formData.address} onChange={(e) => setFormData((p) => ({ ...p, address: e.target.value }))} placeholder="Via Roma 123" style={fieldStyle} />
+                <input type="text" value={formData.address} onChange={(e) => setFormData((p) => ({ ...p, address: e.target.value }))} onPaste={(e) => handlePaste("address", e)} placeholder="Via Roma 123" style={fieldStyle} />
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                 <div>
                   <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.875rem" }}>Città *</label>
-                  <input type="text" value={formData.city} onChange={(e) => setFormData((p) => ({ ...p, city: e.target.value }))} placeholder="Milano" style={fieldStyle} />
+                  <input type="text" value={formData.city} onChange={(e) => setFormData((p) => ({ ...p, city: e.target.value }))} onPaste={(e) => handlePaste("city", e)} placeholder="Milano" style={fieldStyle} />
                 </div>
                 <div>
                   <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.875rem" }}>Paese *</label>
-                  <input type="text" value={formData.country} onChange={(e) => setFormData((p) => ({ ...p, country: e.target.value }))} placeholder="Italia" style={fieldStyle} />
+                  <input type="text" value={formData.country} onChange={(e) => setFormData((p) => ({ ...p, country: e.target.value }))} onPaste={(e) => handlePaste("country", e)} placeholder="Italia" style={fieldStyle} />
                 </div>
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
@@ -313,19 +332,19 @@ export default function EditVenue() {
             <div style={{ display: "flex", flexDirection: "column", gap: "1rem" }}>
               <div>
                 <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem", fontSize: "0.875rem" }}><Phone style={{ width: 16, height: 16, color: "#f59e0b" }} /> Telefono</label>
-                <input type="tel" value={formData.phone} onChange={(e) => setFormData((p) => ({ ...p, phone: e.target.value }))} placeholder="+39 02 1234567" style={fieldStyle} />
+                <input type="tel" value={formData.phone} onChange={(e) => setFormData((p) => ({ ...p, phone: e.target.value }))} onPaste={(e) => handlePaste("phone", e)} placeholder="+39 02 1234567" style={fieldStyle} />
               </div>
               <div>
                 <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem", fontSize: "0.875rem" }}><Globe style={{ width: 16, height: 16, color: "#f59e0b" }} /> Sito web</label>
-                <input type="url" value={formData.website} onChange={(e) => setFormData((p) => ({ ...p, website: e.target.value }))} placeholder="https://..." style={fieldStyle} />
+                <input type="url" value={formData.website} onChange={(e) => setFormData((p) => ({ ...p, website: e.target.value }))} onPaste={(e) => handlePaste("website", e)} placeholder="https://..." style={fieldStyle} />
               </div>
               <div>
                 <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem", fontSize: "0.875rem" }}><Instagram style={{ width: 16, height: 16, color: "#f59e0b" }} /> Instagram</label>
-                <input type="text" value={formData.instagram} onChange={(e) => setFormData((p) => ({ ...p, instagram: e.target.value }))} placeholder="nomelocale" style={fieldStyle} />
+                <input type="text" value={formData.instagram} onChange={(e) => setFormData((p) => ({ ...p, instagram: e.target.value }))} onPaste={(e) => handlePaste("instagram", e)} placeholder="nomelocale" style={fieldStyle} />
               </div>
               <div>
                 <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem", fontSize: "0.875rem" }}><Clock style={{ width: 16, height: 16, color: "#f59e0b" }} /> Orari</label>
-                <input type="text" value={formData.opening_hours} onChange={(e) => setFormData((p) => ({ ...p, opening_hours: e.target.value }))} placeholder="Mar-Dom 18:00-02:00" style={fieldStyle} />
+                <input type="text" value={formData.opening_hours} onChange={(e) => setFormData((p) => ({ ...p, opening_hours: e.target.value }))} onPaste={(e) => handlePaste("opening_hours", e)} placeholder="Mar-Dom 18:00-02:00" style={fieldStyle} />
               </div>
             </div>
           </section>
@@ -334,7 +353,7 @@ export default function EditVenue() {
             <h3 style={{ fontSize: "1.125rem", fontWeight: 600, marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
               <ImageIcon style={{ width: 20, height: 20, color: "#f59e0b" }} /> Immagine di copertina
             </h3>
-            <input type="url" value={formData.cover_image} onChange={(e) => setFormData((p) => ({ ...p, cover_image: e.target.value }))} placeholder="https://..." style={fieldStyle} />
+            <input type="url" value={formData.cover_image} onChange={(e) => setFormData((p) => ({ ...p, cover_image: e.target.value }))} onPaste={(e) => handlePaste("cover_image", e)} placeholder="https://..." style={fieldStyle} />
             {formData.cover_image && <img src={formData.cover_image} alt="Preview" style={{ marginTop: "0.75rem", width: "100%", height: 192, objectFit: "cover", borderRadius: "0.75rem" }} />}
           </section>
 

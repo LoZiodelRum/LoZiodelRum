@@ -167,8 +167,17 @@ export default function VenueDetail() {
               </div>
             </div>
 
-            {/* Box valutazione e numero recensioni (0 se nessuna, aggiornato con nuove recensioni) */}
-            <div className="flex items-center gap-4 bg-stone-800/50 px-5 py-3 rounded-2xl">
+            <div className="flex items-center gap-4 flex-shrink-0">
+              {currentUser?.role === 'admin' && (
+                <Link to={createPageUrl(`EditVenue?id=${venueId}`)}>
+                  <Button className="bg-amber-500 hover:bg-amber-600 text-stone-950">
+                    <Edit className="w-4 h-4 mr-2" />
+                    Modifica
+                  </Button>
+                </Link>
+              )}
+              {/* Box valutazione e numero recensioni (0 se nessuna, aggiornato con nuove recensioni) */}
+              <div className="flex items-center gap-4 bg-stone-800/50 px-5 py-3 rounded-2xl">
               {reviews.length > 0 && venue.overall_rating ? (
                 <>
                   <div className="text-center">
@@ -188,6 +197,7 @@ export default function VenueDetail() {
                   <div>recensioni</div>
                 </div>
               )}
+              </div>
             </div>
           </div>
 

@@ -35,3 +35,7 @@ Su **Vercel** (deploy): nelle variabili d’ambiente del progetto imposta `VITE_
 - **Modifica**: dalla Dashboard puoi aprire “Modifica” su un locale in attesa; il salvataggio aggiorna Supabase. Dopo l’approvazione il locale resta modificabile dalla scheda del locale (se hai il link Modifica per i locali cloud).
 
 I locali approvati restano in Supabase e vengono caricati dall’app a ogni avvio; non è necessario copiarli a mano in `src/data/venues.js` per vederli in app.
+
+## Sincronizzazione modifiche admin (venue_overrides)
+
+Per far sì che le modifiche ai locali seed (da Amministratore) siano visibili su tutti i device (Cursor, cellulare, tablet, PC), esegui nel SQL Editor di Supabase lo script `supabase/venue_overrides.sql`. Le modifiche verranno salvate in Supabase e lette da tutti i punti di accesso.

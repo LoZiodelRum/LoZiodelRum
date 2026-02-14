@@ -69,7 +69,7 @@ const AuthenticatedApp = () => {
       <Route 
         path="/EditVenue" 
         element={
-          <div className="min-h-screen bg-stone-950 text-stone-100">
+          <div className="min-h-screen bg-stone-950 text-stone-100 edit-venue-page">
             <EditVenue />
           </div>
         } 

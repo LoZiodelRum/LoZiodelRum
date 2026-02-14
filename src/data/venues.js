@@ -357,7 +357,7 @@ export const venuesData = [
     "id": "696d326e30cee44083123692",
     "name": "Mag Cafè",
     "slug": "mag-cafe-milano",
-    "description": "Tempio del rum a Milano, con una delle selezioni più vaste d'Italia. Oltre 400 referenze di rum da tutto il mondo, staff preparatissimo e atmosfera accogliente.",
+    "description": "Un affascinante salotto bohémien sui Navigli che mixa arredi vintage anni '30 e cocktail d'avanguardia. Celebre per la sua atmosfera intima e le drink list creative, è un'icona milanese per chi cerca qualità e stile.",
     "city": "Milano",
     "country": "Italia",
     "address": "Ripa di Porta Ticinese 43, 20143 Milano",

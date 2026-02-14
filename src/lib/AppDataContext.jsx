@@ -47,21 +47,16 @@ export function AppDataProvider({ children }) {
   const [venues, setVenues] = useState(() => {
     const loaded = load(STORAGE_KEYS.venues, []);
     const seedIds = new Set(initialVenues.map((v) => v.id));
-    // Seed venues: initialVenues è la fonte di verità (aggiornata ad ogni deploy) – tutti i device vedono le stesse modifiche dal Mac
-    const fromSeed = initialVenues.map((v) => {
-      const stored = loaded.find((l) => l.id === v.id);
-      return { ...v, verified: stored?.verified ?? v.verified };
-    });
-    // Venues creati dall'utente (solo in localStorage): li manteniamo
+    // Seed: SEMPRE da venues.js – identico su tutti i device
+    const fromSeed = [...initialVenues];
     const customVenues = loaded.filter((v) => !seedIds.has(v.id));
     return [...fromSeed, ...customVenues];
   });
   const [reviews, setReviews] = useState(() => {
     const loaded = load(STORAGE_KEYS.reviews, []);
     const seedIds = new Set(initialReviews.map((r) => r.id));
-    // Recensioni seed: sempre incluse (fonte di verità)
-    const fromSeed = initialReviews;
-    // Recensioni create dall'utente (solo in localStorage, non nel seed)
+    // Seed: SEMPRE da reviews.js – identico su tutti i device
+    const fromSeed = [...initialReviews];
     const customReviews = loaded.filter((r) => !seedIds.has(r.id));
     return [...fromSeed, ...customReviews];
   });
@@ -176,10 +171,14 @@ export function AppDataProvider({ children }) {
   }, []);
 
   useEffect(() => {
-    save(STORAGE_KEYS.venues, venues);
+    const seedIds = new Set(initialVenues.map((v) => v.id));
+    const toSave = venues.map((v) => (seedIds.has(v.id) ? initialVenues.find((s) => s.id === v.id) || v : v));
+    save(STORAGE_KEYS.venues, toSave);
   }, [venues]);
   useEffect(() => {
-    save(STORAGE_KEYS.reviews, reviews);
+    const seedIds = new Set(initialReviews.map((r) => r.id));
+    const toSave = reviews.map((r) => (seedIds.has(r.id) ? initialReviews.find((s) => s.id === r.id) || r : r));
+    save(STORAGE_KEYS.reviews, toSave);
   }, [reviews]);
   useEffect(() => {
     save(STORAGE_KEYS.articles, articles);

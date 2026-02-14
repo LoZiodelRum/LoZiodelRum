@@ -225,3 +225,11 @@ main[data-page="EditVenue"] input,
 main[data-page="EditVenue"] textarea {
   cursor: text;
 }
+
+/* EditVenue (route senza Layout): incolla e selezione testo abilitati */
+.edit-venue-page input,
+.edit-venue-page textarea {
+  -webkit-user-select: text !important;
+  user-select: text !important;
+  cursor: text !important;
+}

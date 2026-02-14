@@ -97,5 +97,19 @@ export const reviewsData = [
     "overall_rating": 8,
     "author_name": "Lo Zio del Rum - Maurizio Graci",
     "created_date": "2026-01-19T17:17:31.004000"
+  },
+  {
+    "id": "696d326e30cee44083123692-r1",
+    "venue_id": "696d326e30cee44083123692",
+    "title": "Un affascinante salotto bohémien sui Navigli",
+    "content": "Un affascinante salotto bohémien sui Navigli che mixa arredi vintage anni '30 e cocktail d'avanguardia. Celebre per la sua atmosfera intima e le drink list creative, è un'icona milanese per chi cerca qualità e stile.",
+    "visit_date": "2026-01-15",
+    "drink_quality": 9,
+    "staff_competence": 9,
+    "atmosphere": 9,
+    "value_for_money": 8,
+    "overall_rating": 8.9,
+    "author_name": "Lo Zio del Rum - Maurizio Graci",
+    "created_date": "2026-01-15T12:00:00.000000"
   }
 ];
