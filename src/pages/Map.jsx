@@ -82,7 +82,7 @@ export default function MapPage() {
         </div>
         <Button
           onClick={() => setShowList(!showList)}
-          className="h-12 px-4 bg-stone-950/90 backdrop-blur-sm border border-stone-800 hover:bg-stone-800 rounded-xl"
+          className="h-12 px-4 bg-stone-950/90 backdrop-blur-sm border border-stone-700 text-stone-300 hover:bg-stone-800 hover:text-stone-100 rounded-xl"
         >
           {showList ? <MapIcon className="w-5 h-5" /> : <List className="w-5 h-5" />}
         </Button>
