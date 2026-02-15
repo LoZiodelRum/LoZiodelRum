@@ -36,7 +36,7 @@ const SPECIALIZZAZIONI = [
 
 export default function AddBartender() {
   const navigate = useNavigate();
-  const { addBartender, getVenues } = useAppData();
+  const { addBartender, getVenues, isSupabaseConfigured } = useAppData();
   const venues = getVenues();
 
   const [formData, setFormData] = useState({
@@ -81,18 +81,29 @@ export default function AddBartender() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if (!isSupabaseConfigured()) {
+      setErrors((prev) => ({ ...prev, _form: "Supabase non configurato. Configura le variabili d'ambiente per salvare i bartender." }));
+      return;
+    }
     if (!validate()) return;
     setIsSubmitting(true);
     try {
       const selectedVenue = formData.venue_id ? venues.find((v) => v.id === formData.venue_id) : null;
+      const isValidUuid = (s) => s && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(s));
+      const venueIdForDb = formData.venue_id && selectedVenue
+        ? (selectedVenue.supabase_id || (isValidUuid(formData.venue_id) ? formData.venue_id : null))
+        : null;
       const payload = {
         ...formData,
         city: formData.city || selectedVenue?.city || "",
-        venue_id: formData.venue_id || "",
+        venue_id: venueIdForDb,
         venue_name: formData.venue_name?.trim() || "",
       };
       await addBartender(payload);
       navigate(createPageUrl("Dashboard"));
+    } catch (err) {
+      console.error(err);
+      setErrors((prev) => ({ ...prev, _form: err?.message || "Errore durante il salvataggio" }));
     } finally {
       setIsSubmitting(false);
     }
@@ -143,6 +154,11 @@ export default function AddBartender() {
             onSubmit={handleSubmit}
             className="bg-stone-900/60 border border-stone-800 rounded-3xl p-6 md:p-8 space-y-8"
           >
+            {errors._form && (
+              <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
+                {errors._form}
+              </div>
+            )}
             {/* Header profilo */}
             <section className="space-y-4">
               <div className="flex items-center gap-3">

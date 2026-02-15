@@ -39,7 +39,7 @@ export default function EditBartender() {
   const urlParams = new URLSearchParams(window.location.search);
   const bartenderId = urlParams.get("id");
   const navigate = useNavigate();
-  const { getBartenderById, updateBartender, deleteBartender, getVenues } = useAppData();
+  const { getBartenderById, updateBartender, deleteBartender, getVenues, isSupabaseConfigured } = useAppData();
   const bartender = getBartenderById(bartenderId);
   const venues = getVenues();
 
@@ -113,14 +113,21 @@ export default function EditBartender() {
     setIsSubmitting(true);
     try {
       const selectedVenue = formData.venue_id ? venues.find((v) => v.id === formData.venue_id) : null;
+      const isValidUuid = (s) => s && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(s));
+      const venueIdForDb = formData.venue_id && selectedVenue
+        ? (selectedVenue.supabase_id || (isValidUuid(formData.venue_id) ? formData.venue_id : null))
+        : null;
       const payload = {
         ...formData,
         city: formData.city || selectedVenue?.city || "",
-        venue_id: formData.venue_id || "",
+        venue_id: venueIdForDb,
         venue_name: formData.venue_name?.trim() || "",
       };
-      updateBartender(bartenderId, payload);
+      await updateBartender(bartenderId, payload);
       navigate(createPageUrl("Dashboard"));
+    } catch (err) {
+      console.error(err);
+      setErrors((prev) => ({ ...prev, _form: err?.message || "Errore durante il salvataggio" }));
     } finally {
       setIsSubmitting(false);
     }

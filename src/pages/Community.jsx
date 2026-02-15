@@ -84,7 +84,9 @@ export default function Community() {
     setRegBioLight("");
     setRegHomeCity("");
     try {
-      await insertAppUser(userPayload);
+      if (regRole !== "bartender") {
+        await insertAppUser(userPayload);
+      }
     } catch (_) {}
     setIsSubmitting(false);
     if (regRole === "bartender") {

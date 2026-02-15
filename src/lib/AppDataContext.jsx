@@ -5,7 +5,7 @@ import { articlesData as initialArticles } from "@/data/articles";
 import { drinksData as initialDrinks } from "@/data/drinks";
 import { initialOwnerMessages, initialCommunityPosts, initialCommunityEvents } from "@/data/community";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
-import { getPendingRegistrations, updateAppUserStatus } from "@/lib/supabaseUsers";
+import { getPendingRegistrations, updateAppUserStatus, insertAppUser, updateAppUser } from "@/lib/supabaseUsers";
 import { useVenuesRealtime } from "@/hooks/useSupabaseRealtime";
 
 const COMMUNITY_POSTS_VERSION = 11;
@@ -19,7 +19,6 @@ const STORAGE_KEYS = {
   ownerMessages: "app_owner_messages",
   communityEvents: "app_community_events",
   communityPosts: "app_community_posts",
-  bartenders: "app_bartenders",
 };
 
 function load(key, fallback) {
@@ -112,44 +111,45 @@ export function AppDataProvider({ children }) {
     const missing = (initialCommunityPosts || []).filter((p) => !mergedIds.has(p.id));
     return stored.length > 0 ? [...merged, ...missing] : (initialCommunityPosts || []);
   });
-  const [bartenders, setBartenders] = useState(() => load(STORAGE_KEYS.bartenders, []));
+  const [bartenders, setBartenders] = useState([]);
   const [cloudVenues, setCloudVenues] = useState([]);
 
-  // Carica bartenders da Supabase (se bartenders_cloud esiste)
+  const mapAppUserToBartender = useCallback((row) => ({
+    id: String(row.id),
+    name: row.name || "",
+    surname: row.surname || "",
+    photo: row.photo || "",
+    venue_id: row.venue_id ? String(row.venue_id) : "",
+    venue_name: row.custom_venue_name || "",
+    city: row.city || "",
+    specialization: row.specialization || "",
+    years_experience: row.years_experience || "",
+    philosophy: row.philosophy || "",
+    distillati_preferiti: row.distillati_preferiti || "",
+    approccio_degustazione: row.approccio_degustazione || "",
+    consiglio_inizio: row.consiglio_inizio || "",
+    signature_drinks: row.signature_drinks || "",
+    percorso_esperienze: row.percorso_esperienze || "",
+    bio: row.bio || "",
+    motivation: row.motivation || "",
+    consent_linee_editoriali: !!row.consent_linee_editoriali,
+    status: row.status || "pending",
+    created_at: row.created_at,
+    interview_links: Array.isArray(row.interview_links) ? row.interview_links : [],
+    qa_links: Array.isArray(row.qa_links) ? row.qa_links : [],
+  }), []);
+
+  // Carica bartenders da app_users (role=bartender)
   useEffect(() => {
     if (!isSupabaseConfigured()) return;
     supabase
-      .from("bartenders_cloud")
+      .from("app_users")
       .select("*")
+      .eq("role", "bartender")
       .order("created_at", { ascending: false })
       .then(({ data, error }) => {
-        if (!error && data && Array.isArray(data) && data.length > 0) {
-          const mapped = data.map((row) => ({
-            id: row.external_id || String(row.id),
-            supabase_id: String(row.id),
-            name: row.name || "",
-            surname: row.surname || "",
-            photo: row.photo || "",
-            venue_id: row.venue_id || "",
-            venue_name: row.venue_name || "",
-            city: row.city || "",
-            specialization: row.specialization || "",
-            years_experience: row.years_experience || "",
-            philosophy: row.philosophy || "",
-            distillati_preferiti: row.distillati_preferiti || "",
-            approccio_degustazione: row.approccio_degustazione || "",
-            consiglio_inizio: row.consiglio_inizio || "",
-            signature_drinks: row.signature_drinks || "",
-            percorso_esperienze: row.percorso_esperienze || "",
-            bio: row.bio || "",
-            motivation: row.motivation || "",
-            consent_linee_editoriali: !!row.consent_linee_editoriali,
-            status: row.status || "pending",
-            created_at: row.created_at,
-            interview_links: Array.isArray(row.interview_links) ? row.interview_links : [],
-            qa_links: Array.isArray(row.qa_links) ? row.qa_links : [],
-          }));
-          setBartenders(mapped);
+        if (!error && data && Array.isArray(data)) {
+          setBartenders(data.map(mapAppUserToBartender));
         }
       })
       .catch(() => {});
@@ -272,7 +272,6 @@ export function AppDataProvider({ children }) {
   useEffect(() => { save(STORAGE_KEYS.ownerMessages, ownerMessages); }, [ownerMessages]);
   useEffect(() => { save(STORAGE_KEYS.communityEvents, communityEvents); }, [communityEvents]);
   useEffect(() => { save(STORAGE_KEYS.communityPosts, communityPosts); }, [communityPosts]);
-  useEffect(() => { save(STORAGE_KEYS.bartenders, bartenders); }, [bartenders]);
 
   const api = useMemo(() => {
     const enrichVenueWithRealCount = (v) => {
@@ -692,46 +691,23 @@ export function AppDataProvider({ children }) {
       getPendingBartenders: () => bartenders.filter((b) => b.status === "pending"),
       loadBartendersFromCloud: async () => {
         if (!isSupabaseConfigured()) return;
-        const { data, error } = await supabase.from("bartenders_cloud").select("*").order("created_at", { ascending: false });
-        if (error) return;
-        const mapped = (data || []).map((row) => ({
-            id: row.external_id || String(row.id),
-            supabase_id: String(row.id),
-            name: row.name || "",
-            surname: row.surname || "",
-            photo: row.photo || "",
-            venue_id: row.venue_id || "",
-            venue_name: row.venue_name || "",
-            city: row.city || "",
-            specialization: row.specialization || "",
-            years_experience: row.years_experience || "",
-            philosophy: row.philosophy || "",
-            distillati_preferiti: row.distillati_preferiti || "",
-            approccio_degustazione: row.approccio_degustazione || "",
-            consiglio_inizio: row.consiglio_inizio || "",
-            signature_drinks: row.signature_drinks || "",
-            percorso_esperienze: row.percorso_esperienze || "",
-            bio: row.bio || "",
-            motivation: row.motivation || "",
-            consent_linee_editoriali: !!row.consent_linee_editoriali,
-            status: row.status || "pending",
-            created_at: row.created_at,
-            interview_links: Array.isArray(row.interview_links) ? row.interview_links : [],
-            qa_links: Array.isArray(row.qa_links) ? row.qa_links : [],
-          }));
-        const cloudIds = new Set(mapped.map((m) => m.id));
-        const localOnly = bartenders.filter((b) => !cloudIds.has(b.id) && !b.supabase_id);
-        setBartenders([...mapped, ...localOnly]);
+        const { data, error } = await supabase.from("app_users").select("*").eq("role", "bartender").order("created_at", { ascending: false });
+        if (!error && data && Array.isArray(data)) {
+          setBartenders(data.map(mapAppUserToBartender));
+        }
       },
       addBartender: async (data) => {
-        const id = data.id || generateId();
-        const b = {
-          id,
+        if (!isSupabaseConfigured()) throw new Error("Supabase non configurato");
+        const isValidUuid = (s) => s && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(s));
+        const venueId = data.venue_id && isValidUuid(data.venue_id) ? data.venue_id : null;
+        const customVenueName = data.venue_name?.trim() || null;
+        const row = await insertAppUser({
+          role: "bartender",
           name: data.name || "",
           surname: data.surname || "",
           photo: data.photo || "",
-          venue_id: data.venue_id || "",
-          venue_name: data.venue_name || "",
+          venue_id: venueId,
+          custom_venue_name: customVenueName,
           city: data.city || "",
           specialization: data.specialization || "",
           years_experience: data.years_experience || "",
@@ -745,95 +721,54 @@ export function AppDataProvider({ children }) {
           motivation: data.motivation || "",
           consent_linee_editoriali: !!data.consent_linee_editoriali,
           status: data.status || "pending",
-          created_at: new Date().toISOString(),
-          interview_links: Array.isArray(data.interview_links) ? data.interview_links : [],
-          qa_links: Array.isArray(data.qa_links) ? data.qa_links : [],
-        };
-        setBartenders((prev) => [...prev, b]);
-        if (isSupabaseConfigured()) {
-          try {
-            const row = {
-              external_id: id,
-              name: b.name,
-              surname: b.surname,
-              photo: b.photo,
-              venue_id: b.venue_id || null,
-              venue_name: b.venue_name || null,
-              city: b.city,
-              specialization: b.specialization,
-              years_experience: b.years_experience,
-              philosophy: b.philosophy,
-              distillati_preferiti: b.distillati_preferiti,
-              approccio_degustazione: b.approccio_degustazione,
-              consiglio_inizio: b.consiglio_inizio,
-              signature_drinks: b.signature_drinks,
-              percorso_esperienze: b.percorso_esperienze,
-              bio: b.bio,
-              motivation: b.motivation,
-              consent_linee_editoriali: b.consent_linee_editoriali,
-              status: b.status,
-              interview_links: b.interview_links,
-              qa_links: b.qa_links,
-            };
-            const { data: inserted, error } = await supabase.from("bartenders_cloud").insert(row).select().single();
-            if (!error && inserted) {
-              setBartenders((prev) =>
-                prev.map((x) => (x.id === id ? { ...x, supabase_id: String(inserted.id) } : x))
-              );
-            }
-          } catch (_) {}
-        }
+        });
+        if (!row) throw new Error("Errore salvataggio bartender");
+        const b = mapAppUserToBartender(row);
+        setBartenders((prev) => [b, ...prev]);
         return b;
       },
       updateBartender: async (id, data) => {
-        const updated = { ...data };
-        setBartenders((prev) =>
-          prev.map((b) => (b.id === id ? { ...b, ...data } : b))
-        );
-        if (isSupabaseConfigured()) {
-          const bartender = bartenders.find((b) => b.id === id);
-          const supabaseId = bartender?.supabase_id;
-          if (supabaseId) {
-            try {
-              const row = {
-                ...(data.name !== undefined && { name: data.name }),
-                ...(data.surname !== undefined && { surname: data.surname }),
-                ...(data.photo !== undefined && { photo: data.photo }),
-                ...(data.venue_id !== undefined && { venue_id: data.venue_id || null }),
-                ...(data.venue_name !== undefined && { venue_name: data.venue_name || null }),
-                ...(data.city !== undefined && { city: data.city }),
-                ...(data.specialization !== undefined && { specialization: data.specialization }),
-                ...(data.years_experience !== undefined && { years_experience: data.years_experience }),
-                ...(data.philosophy !== undefined && { philosophy: data.philosophy }),
-                ...(data.distillati_preferiti !== undefined && { distillati_preferiti: data.distillati_preferiti }),
-                ...(data.approccio_degustazione !== undefined && { approccio_degustazione: data.approccio_degustazione }),
-                ...(data.consiglio_inizio !== undefined && { consiglio_inizio: data.consiglio_inizio }),
-                ...(data.signature_drinks !== undefined && { signature_drinks: data.signature_drinks }),
-                ...(data.percorso_esperienze !== undefined && { percorso_esperienze: data.percorso_esperienze }),
-                ...(data.bio !== undefined && { bio: data.bio }),
-                ...(data.motivation !== undefined && { motivation: data.motivation }),
-                ...(data.consent_linee_editoriali !== undefined && { consent_linee_editoriali: data.consent_linee_editoriali }),
-                ...(data.status !== undefined && { status: data.status }),
-              };
-              await supabase.from("bartenders_cloud").update(row).eq("id", supabaseId);
-            } catch (_) {}
-          }
+        if (!isSupabaseConfigured()) throw new Error("Supabase non configurato");
+        const isValidUuid = (s) => s && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(s));
+        const row = {
+          ...(data.name !== undefined && { name: data.name }),
+          ...(data.surname !== undefined && { surname: data.surname }),
+          ...(data.photo !== undefined && { photo: data.photo }),
+          ...(data.venue_id !== undefined && { venue_id: data.venue_id && isValidUuid(data.venue_id) ? data.venue_id : null }),
+          ...(data.venue_name !== undefined && { custom_venue_name: data.venue_name?.trim() || null }),
+          ...(data.city !== undefined && { city: data.city }),
+          ...(data.specialization !== undefined && { specialization: data.specialization }),
+          ...(data.years_experience !== undefined && { years_experience: data.years_experience }),
+          ...(data.philosophy !== undefined && { philosophy: data.philosophy }),
+          ...(data.distillati_preferiti !== undefined && { distillati_preferiti: data.distillati_preferiti }),
+          ...(data.approccio_degustazione !== undefined && { approccio_degustazione: data.approccio_degustazione }),
+          ...(data.consiglio_inizio !== undefined && { consiglio_inizio: data.consiglio_inizio }),
+          ...(data.signature_drinks !== undefined && { signature_drinks: data.signature_drinks }),
+          ...(data.percorso_esperienze !== undefined && { percorso_esperienze: data.percorso_esperienze }),
+          ...(data.bio !== undefined && { bio: data.bio }),
+          ...(data.motivation !== undefined && { motivation: data.motivation }),
+          ...(data.consent_linee_editoriali !== undefined && { consent_linee_editoriali: data.consent_linee_editoriali }),
+          ...(data.status !== undefined && { status: data.status }),
+        };
+        const updated = await updateAppUser(id, row);
+        if (updated) {
+          setBartenders((prev) => prev.map((b) => (b.id === id ? mapAppUserToBartender(updated) : b)));
         }
-        return { id, ...updated };
+        return { id, ...data };
       },
-      setBartenderStatus: (id, status) => {
-        setBartenders((prev) =>
-          prev.map((b) => (b.id === id ? { ...b, status } : b))
-        );
+      setBartenderStatus: async (id, status) => {
+        if (!isSupabaseConfigured()) return;
+        const updated = await updateAppUser(id, { status });
+        if (updated) {
+          setBartenders((prev) => prev.map((b) => (b.id === id ? mapAppUserToBartender(updated) : b)));
+        }
       },
       deleteBartender: async (id) => {
-        const bartender = bartenders.find((b) => b.id === id);
-        if (isSupabaseConfigured() && bartender?.supabase_id) {
-          try {
-            await supabase.from("bartenders_cloud").delete().eq("id", bartender.supabase_id);
-          } catch (_) {}
+        if (!isSupabaseConfigured()) return;
+        const { error } = await supabase.from("app_users").delete().eq("id", id);
+        if (!error) {
+          setBartenders((prev) => prev.filter((b) => b.id !== id));
         }
-        setBartenders((prev) => prev.filter((b) => b.id !== id));
       },
 
       resetToDefaults: () => {
@@ -994,7 +929,6 @@ export function AppDataProvider({ children }) {
         ownerMessages,
         communityEvents,
         communityPosts,
-        bartenders,
         exportedAt: new Date().toISOString(),
         version: 1,
       }),
@@ -1013,10 +947,9 @@ export function AppDataProvider({ children }) {
         if (data.ownerMessages && Array.isArray(data.ownerMessages)) setOwnerMessages(data.ownerMessages);
         if (data.communityEvents && Array.isArray(data.communityEvents)) setCommunityEvents(data.communityEvents);
         if (data.communityPosts && Array.isArray(data.communityPosts)) setCommunityPosts(data.communityPosts);
-        if (data.bartenders && Array.isArray(data.bartenders)) setBartenders(data.bartenders);
       },
     };
-  }, [venues, cloudVenues, reviews, articles, drinks, user, ownerMessages, communityEvents, communityPosts, bartenders]);
+  }, [venues, cloudVenues, reviews, articles, drinks, user, ownerMessages, communityEvents, communityPosts, bartenders, mapAppUserToBartender]);
 
   return (
     <AppDataContext.Provider value={api}>{children}</AppDataContext.Provider>

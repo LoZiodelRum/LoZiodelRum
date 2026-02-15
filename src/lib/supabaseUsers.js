@@ -22,11 +22,16 @@ export async function insertAppUser(userData) {
       surname: userData.surname,
       photo: userData.photo,
       venue_id: userData.venue_id || null,
-      venue_name: userData.venue_name || null,
+      custom_venue_name: userData.custom_venue_name || userData.venue_name || null,
       city: userData.city,
       specialization: userData.specialization,
       years_experience: userData.years_experience,
       philosophy: userData.philosophy,
+      distillati_preferiti: userData.distillati_preferiti,
+      approccio_degustazione: userData.approccio_degustazione,
+      consiglio_inizio: userData.consiglio_inizio,
+      signature_drinks: userData.signature_drinks,
+      percorso_esperienze: userData.percorso_esperienze,
       bio: userData.bio,
       motivation: userData.motivation,
       consent_linee_editoriali: userData.consent_linee_editoriali,
@@ -62,4 +67,14 @@ export async function updateAppUserStatus(id, status) {
   if (!isSupabaseConfigured()) return false;
   const { error } = await supabase.from("app_users").update({ status }).eq("id", id);
   return !error;
+}
+
+export async function updateAppUser(id, data) {
+  if (!isSupabaseConfigured()) return null;
+  const { data: updated, error } = await supabase.from("app_users").update(data).eq("id", id).select().single();
+  if (error) {
+    console.error("Supabase update app_user:", error);
+    return null;
+  }
+  return updated;
 }
