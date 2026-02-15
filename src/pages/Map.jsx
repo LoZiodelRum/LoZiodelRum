@@ -8,11 +8,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import VenueCard from "@/components/venue/VenueCard";
-import MapGoogle from "@/components/map/MapGoogle";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
-
-const GOOGLE_MAPS_KEY = (import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "").toString().trim();
 
 // Fix per marker Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
@@ -91,16 +88,7 @@ export default function MapPage() {
         </Button>
       </div>
 
-      {/* Map */}
-      {GOOGLE_MAPS_KEY ? (
-        <div className="absolute inset-0 z-0 h-full w-full">
-          <MapGoogle
-            venues={filteredVenues}
-            selectedVenue={selectedVenue}
-            onVenueSelect={setSelectedVenue}
-          />
-        </div>
-      ) : (
+      {/* Map - Leaflet con locali da Supabase */}
       <MapContainer
         center={mapCenter}
         zoom={4}
@@ -143,7 +131,6 @@ export default function MapPage() {
           </Marker>
         ))}
       </MapContainer>
-      )}
 
       {/* Venues Count */}
       <div className="absolute bottom-4 left-4 z-[1000] bg-stone-950/90 backdrop-blur-sm px-4 py-2 rounded-xl border border-stone-800">

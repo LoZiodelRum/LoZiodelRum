@@ -39,12 +39,10 @@ VITE_GOOGLE_MAPS_API_KEY=xxx  # Per Google Maps SDK
 - `videos`: array di URL (brevi video, max ~30s)
 - UI: upload o URL per foto/video in AddReview
 
-## 7. Google Maps SDK
+## 7. Mappa
 
-- **Implementato**: `@react-google-maps/api` con fallback Leaflet
-- Se `VITE_GOOGLE_MAPS_API_KEY` è impostato → usa Google Maps (marker precisi)
-- Altrimenti → Leaflet (OpenStreetMap)
-- Componente: `src/components/map/MapGoogle.jsx`
+- Leaflet (OpenStreetMap) - nessuna chiave API richiesta
+- Locali caricati da Supabase (venues_cloud)
 
 ## 8. Real-time
 
