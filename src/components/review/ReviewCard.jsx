@@ -104,10 +104,10 @@ export default function ReviewCard({ review, showVenue = false, venue = null, in
         {Object.entries(ratingLabels).map(([key, label]) => (
           review[key] && (
             <div key={key} className="flex items-center justify-between gap-2 p-3 bg-stone-800/30 rounded-lg">
-              <span className="text-sm font-medium text-stone-300">
+              <span className="text-xs text-stone-500 flex-shrink-0">{label}</span>
+              <span className="text-sm font-medium text-stone-100">
                 {getLabelForValue(key, review[key])}
               </span>
-              <span className="text-xs text-stone-500 flex-shrink-0 text-right">{label}</span>
             </div>
           )
         ))}

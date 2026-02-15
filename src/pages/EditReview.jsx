@@ -309,7 +309,8 @@ export default function EditReview() {
                     <SelectContent>
                       {(ratingOptions[key] || []).map((opt) => (
                         <SelectItem key={opt.value} value={String(opt.value)}>
-                          {opt.label}
+                          <span className="text-stone-500">{label}</span>
+                          <span className="text-stone-100 font-medium"> › {opt.label}</span>
                         </SelectItem>
                       ))}
                     </SelectContent>
