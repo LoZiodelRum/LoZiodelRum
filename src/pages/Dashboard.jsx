@@ -634,16 +634,16 @@ export default function Dashboard() {
                   key={venue.id}
                   initial={{ opacity: 0, y: 4 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl bg-stone-800/30 border border-stone-700/50"
+                  className="flex flex-col gap-3 p-4 rounded-xl bg-stone-800/30 border border-stone-700/50"
                 >
-                  <div className="min-w-0 flex-1">
+                  <div>
                     <p className="font-semibold">{venue.name}</p>
                     <p className="text-sm text-stone-500">
                       {venue.city}
                       {venue.country ? `, ${venue.country}` : ""}
                     </p>
                   </div>
-                  <div className="flex gap-2 shrink-0">
+                  <div className="flex gap-2">
                     <Link to={createPageUrl(`EditVenue?id=${venue.id}`)}>
                       <Button
                         size="sm"
