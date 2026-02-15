@@ -39,19 +39,7 @@ export default function Home() {
   };
 
   const [editMode, setEditMode] = useState(false);
-  const [heroSettings, setHeroSettings] = useState(() => {
-    try {
-      const saved = localStorage.getItem('heroSettings');
-      if (!saved) return DEFAULT_HERO;
-      const parsed = JSON.parse(saved);
-      const t1 = (parsed.text1 || '').trim();
-      const t2 = (parsed.text2 || '').trim();
-      if (t1 === "La community" && t2 === "del bere consapevole") return DEFAULT_HERO;
-      return parsed;
-    } catch {
-      return DEFAULT_HERO;
-    }
-  });
+  const [heroSettings, setHeroSettings] = useState(DEFAULT_HERO);
 
   const { getVenues, getReviews, getArticles, user: currentUser } = useAppData();
   const venuesList = getVenues();
@@ -70,22 +58,8 @@ export default function Home() {
   const loadingArticles = false;
 
   const saveSettings = () => {
-    localStorage.setItem('heroSettings', JSON.stringify(heroSettings));
     setEditMode(false);
   };
-
-  useEffect(() => {
-    try {
-      const saved = localStorage.getItem('heroSettings');
-      if (!saved) return;
-      const parsed = JSON.parse(saved);
-      const t1 = (parsed.text1 || '').trim();
-      const t2 = (parsed.text2 || '').trim();
-      if (t1 === "La community" && t2 === "del bere consapevole") {
-        localStorage.setItem('heroSettings', JSON.stringify({ text1: "Scopri i migliori", text2: "locali del mondo", text1Size: 72, text2Size: 72, text1Color: "#ffffff", text2Color: "#f59e0b" }));
-      }
-    } catch {}
-  }, []);
 
   const isAdmin = currentUser?.role === 'admin';
 

@@ -8,36 +8,6 @@ import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { getPendingRegistrations, updateAppUserStatus, insertAppUser, updateAppUser } from "@/lib/supabaseUsers";
 import { useVenuesRealtime } from "@/hooks/useSupabaseRealtime";
 
-const COMMUNITY_POSTS_VERSION = 11;
-const STORAGE_KEYS = {
-  venues: "app_venues",
-  communityPostsVersion: "app_community_posts_version",
-  reviews: "app_reviews",
-  articles: "app_articles",
-  drinks: "app_drinks",
-  user: "app_user",
-  ownerMessages: "app_owner_messages",
-  communityEvents: "app_community_events",
-  communityPosts: "app_community_posts",
-};
-
-function load(key, fallback) {
-  try {
-    const raw = localStorage.getItem(key);
-    if (raw) {
-      const data = JSON.parse(raw);
-      if (Array.isArray(data) && data.length > 0) return data;
-    }
-  } catch (_) {}
-  return fallback;
-}
-
-function save(key, data) {
-  try {
-    localStorage.setItem(key, JSON.stringify(data));
-  } catch (_) {}
-}
-
 function generateId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 9);
 }
@@ -45,72 +15,14 @@ function generateId() {
 const AppDataContext = createContext(null);
 
 export function AppDataProvider({ children }) {
-  const [venues, setVenues] = useState(() => {
-    if (isSupabaseConfigured()) return [];
-    const loaded = load(STORAGE_KEYS.venues, []);
-    const seedIds = new Set(initialVenues.map((v) => v.id));
-    const fromSeed = [...initialVenues];
-    const customVenues = loaded.filter((v) => !seedIds.has(v.id));
-    return [...fromSeed, ...customVenues];
-  });
-  const [reviews, setReviews] = useState(() => {
-    const raw = localStorage.getItem(STORAGE_KEYS.reviews);
-    if (raw !== null) {
-      try {
-        const data = JSON.parse(raw);
-        if (Array.isArray(data)) return data;
-      } catch (_) {}
-    }
-    return [...initialReviews];
-  });
-  const [articles, setArticles] = useState(() => load(STORAGE_KEYS.articles, initialArticles));
-  const [drinks, setDrinks] = useState(() => load(STORAGE_KEYS.drinks, initialDrinks));
-  const [user, setUser] = useState(() => {
-    try {
-      const raw = localStorage.getItem(STORAGE_KEYS.user);
-      if (raw) {
-        const u = JSON.parse(raw);
-        if (u && typeof u === "object" && u.role) return u;
-      }
-    } catch (_) {}
-    return null;
-  });
-  const [ownerMessages, setOwnerMessages] = useState(() => {
-    const stored = load(STORAGE_KEYS.ownerMessages, []) || [];
-    const seedMap = new Map((initialOwnerMessages || []).map((m) => [m.id, m]));
-    const merged = stored.map((m) => {
-      const seed = seedMap.get(m.id);
-      return seed && seed.image ? { ...m, image: seed.image } : m;
-    });
-    const mergedIds = new Set(merged.map((m) => m.id));
-    const missing = (initialOwnerMessages || []).filter((m) => !mergedIds.has(m.id));
-    return stored.length > 0 ? [...merged, ...missing] : (initialOwnerMessages || []);
-  });
-  const [communityEvents, setCommunityEvents] = useState(() => {
-    const stored = (load(STORAGE_KEYS.communityEvents, []) || []).filter(
-      (e) => e.title !== "Cocktail Tiki Night"
-    );
-    const storedIds = new Set(stored.map((e) => e.id));
-    const missing = (initialCommunityEvents || []).filter((e) => !storedIds.has(e.id));
-    return [...stored, ...missing];
-  });
-  const [communityPosts, setCommunityPosts] = useState(() => {
-    const storedVersion = parseInt(localStorage.getItem(STORAGE_KEYS.communityPostsVersion) || "0", 10);
-    if (storedVersion < COMMUNITY_POSTS_VERSION) {
-      localStorage.removeItem(STORAGE_KEYS.communityPosts);
-      localStorage.setItem(STORAGE_KEYS.communityPostsVersion, String(COMMUNITY_POSTS_VERSION));
-      return initialCommunityPosts || [];
-    }
-    const stored = load(STORAGE_KEYS.communityPosts, []) || [];
-    const seedMap = new Map((initialCommunityPosts || []).map((p) => [p.id, p]));
-    const merged = stored.map((p) => {
-      const seed = seedMap.get(p.id);
-      return seed && seed.image ? { ...p, image: seed.image } : p;
-    });
-    const mergedIds = new Set(merged.map((p) => p.id));
-    const missing = (initialCommunityPosts || []).filter((p) => !mergedIds.has(p.id));
-    return stored.length > 0 ? [...merged, ...missing] : (initialCommunityPosts || []);
-  });
+  const [venues, setVenues] = useState([]);
+  const [reviews, setReviews] = useState([]);
+  const [articles, setArticles] = useState(initialArticles);
+  const [drinks, setDrinks] = useState(initialDrinks);
+  const [user, setUser] = useState(null);
+  const [ownerMessages, setOwnerMessages] = useState(initialOwnerMessages || []);
+  const [communityEvents, setCommunityEvents] = useState(initialCommunityEvents || []);
+  const [communityPosts, setCommunityPosts] = useState(initialCommunityPosts || []);
   const [bartenders, setBartenders] = useState([]);
   const [cloudVenues, setCloudVenues] = useState([]);
 
@@ -139,44 +51,62 @@ export function AppDataProvider({ children }) {
     qa_links: Array.isArray(row.qa_links) ? row.qa_links : [],
   }), []);
 
-  // Carica bartenders da app_users (role=bartender)
-  useEffect(() => {
-    if (!isSupabaseConfigured()) return;
-    supabase
-      .from("app_users")
-      .select("*")
-      .eq("role", "bartender")
-      .order("created_at", { ascending: false })
-      .then(({ data, error }) => {
-        if (!error && data && Array.isArray(data)) {
-          setBartenders(data.map(mapAppUserToBartender));
-        }
-      })
-      .catch(() => {});
-  }, []);
+  const mapReviewCloudToLocal = useCallback((row) => ({
+    id: String(row.id),
+    venue_id: row.venue_id,
+    author_name: row.author_name || "",
+    author_id: row.author_id,
+    title: row.title || "",
+    content: row.content || "",
+    visit_date: row.visit_date,
+    drink_quality: row.drink_quality ?? 0,
+    staff_competence: row.staff_competence ?? 0,
+    atmosphere: row.atmosphere ?? 0,
+    value_for_money: row.value_for_money ?? 0,
+    overall_rating: row.overall_rating ?? 0,
+    drinks_ordered: Array.isArray(row.drinks_ordered) ? row.drinks_ordered : [],
+    photos: Array.isArray(row.photos) ? row.photos : [],
+    videos: Array.isArray(row.videos) ? row.videos : [],
+    highlights: Array.isArray(row.highlights) ? row.highlights : [],
+    improvements: Array.isArray(row.improvements) ? row.improvements : [],
+    would_recommend: row.would_recommend ?? true,
+    created_date: row.created_at,
+    status: row.status || "approved",
+  }), []);
 
+  // Fetch iniziale: venues, reviews, bartenders da Supabase
   useEffect(() => {
-    if (!isSupabaseConfigured()) return;
-    supabase
-      .from("venues_cloud")
-      .select("*")
-      .eq("status", "approved")
-      .then(({ data }) => {
-        if (data && data.length > 0) {
-          const mapped = data.map((row) => ({
-            ...row,
-            id: row.external_id || String(row.id),
-            supabase_id: String(row.id),
-          }));
-          setVenues(mapped);
-        } else {
-          setVenues([...initialVenues]);
-        }
-      })
-      .catch(() => {
+    if (!isSupabaseConfigured()) {
+      setVenues([...initialVenues]);
+      setReviews([...initialReviews]);
+      return;
+    }
+    supabase.from("venues_cloud").select("*").eq("status", "approved").then(({ data }) => {
+      if (data && data.length > 0) {
+        setVenues(data.map((row) => ({
+          ...row,
+          id: row.external_id || String(row.id),
+          supabase_id: String(row.id),
+        })));
+      } else {
         setVenues([...initialVenues]);
-      });
-  }, []);
+      }
+    }).catch(() => setVenues([...initialVenues]));
+
+    supabase.from("reviews_cloud").select("*").eq("status", "approved").order("created_at", { ascending: false }).then(({ data, error }) => {
+      if (!error && data && Array.isArray(data)) {
+        setReviews(data.map(mapReviewCloudToLocal));
+      } else {
+        setReviews([...initialReviews]);
+      }
+    }).catch(() => setReviews([...initialReviews]));
+
+    supabase.from("app_users").select("*").eq("role", "bartender").order("created_at", { ascending: false }).then(({ data, error }) => {
+      if (!error && data && Array.isArray(data)) {
+        setBartenders(data.map(mapAppUserToBartender));
+      }
+    }).catch(() => {});
+  }, [mapAppUserToBartender, mapReviewCloudToLocal]);
 
   // Real-time: aggiornamenti live da Supabase
   const onInsert = useCallback((row) => {
@@ -202,76 +132,6 @@ export function AppDataProvider({ children }) {
   }, []);
   useVenuesRealtime(onInsert, onUpdate, onDelete);
 
-  // Sincronizza locali salvati solo in locale (prima della config Supabase) verso Supabase
-  const [hasSyncedLocalVenues, setHasSyncedLocalVenues] = useState(false);
-  useEffect(() => {
-    if (!isSupabaseConfigured() || hasSyncedLocalVenues) return;
-    const toSync = venues.filter((v) => !v._cloudPending && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v.id) && (v.id?.length ?? 0) < 20);
-    if (toSync.length === 0) {
-      setHasSyncedLocalVenues(true);
-      return;
-    }
-    setHasSyncedLocalVenues(true);
-    toSync.forEach((v) => {
-      const row = {
-        name: v.name,
-        slug: v.slug || (v.name || "").toLowerCase().replace(/\s+/g, "-"),
-        description: v.description || "",
-        city: v.city || "",
-        country: v.country || "Italia",
-        address: v.address || "",
-        latitude: v.latitude ?? null,
-        longitude: v.longitude ?? null,
-        cover_image: v.cover_image || "",
-        category: v.category || "cocktail_bar",
-        price_range: v.price_range || "€€",
-        phone: v.phone || "",
-        website: v.website || "",
-        instagram: v.instagram || "",
-        opening_hours: v.opening_hours || "",
-        status: "pending",
-      };
-      supabase
-        .from("venues_cloud")
-        .insert(row)
-        .select()
-        .single()
-        .then(({ data: inserted, error }) => {
-          if (!error && inserted) {
-            const newId = String(inserted.id);
-            setVenues((prev) => prev.filter((x) => x.id !== v.id).concat([{ ...v, id: newId, _cloudPending: true }]));
-            setReviews((prev) => prev.map((r) => (r.venue_id === v.id ? { ...r, venue_id: newId } : r)));
-          }
-        })
-        .catch(() => {});
-    });
-  }, []);
-
-  useEffect(() => {
-    if (isSupabaseConfigured()) return;
-    const seedIds = new Set(initialVenues.map((v) => v.id));
-    const toSave = venues.map((v) => (seedIds.has(v.id) ? initialVenues.find((s) => s.id === v.id) || v : v));
-    save(STORAGE_KEYS.venues, toSave);
-  }, [venues]);
-  useEffect(() => {
-    const seedIds = new Set(initialReviews.map((r) => r.id));
-    const toSave = reviews.map((r) => (seedIds.has(r.id) ? initialReviews.find((s) => s.id === r.id) || r : r));
-    save(STORAGE_KEYS.reviews, toSave);
-  }, [reviews]);
-  useEffect(() => {
-    save(STORAGE_KEYS.articles, articles);
-  }, [articles]);
-  useEffect(() => {
-    save(STORAGE_KEYS.drinks, drinks);
-  }, [drinks]);
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEYS.user, JSON.stringify(user));
-    } catch (_) {}
-  }, [user]);
-  useEffect(() => { save(STORAGE_KEYS.ownerMessages, ownerMessages); }, [ownerMessages]);
-  useEffect(() => { save(STORAGE_KEYS.communityEvents, communityEvents); }, [communityEvents]);
-  useEffect(() => { save(STORAGE_KEYS.communityPosts, communityPosts); }, [communityPosts]);
 
   const api = useMemo(() => {
     const enrichVenueWithRealCount = (v) => {
@@ -428,83 +288,64 @@ export function AppDataProvider({ children }) {
       getReviewById: (id) => reviews.find((r) => r.id === id),
       getReviewsByVenueId: (venueId) =>
         reviews.filter((r) => r.venue_id === venueId).sort((a, b) => new Date(b.created_date) - new Date(a.created_date)),
-      addReview: (data) => {
-        const id = data.id || generateId();
-        const review = {
-          ...data,
-          id,
-          created_date: new Date().toISOString(),
-          author_name: user?.name || "Utente",
-          created_by: user?.email,
+      addReview: async (data) => {
+        if (!isSupabaseConfigured()) throw new Error("Supabase non configurato");
+        const row = {
+          venue_id: String(data.venue_id),
+          author_name: data.author_name || user?.name || "Utente",
+          author_id: user?.id || null,
+          title: data.title || null,
+          content: data.content || null,
+          visit_date: data.visit_date || null,
+          drink_quality: data.drink_quality ?? null,
+          staff_competence: data.staff_competence ?? null,
+          atmosphere: data.atmosphere ?? null,
+          value_for_money: data.value_for_money ?? null,
+          overall_rating: data.overall_rating ?? null,
+          drinks_ordered: Array.isArray(data.drinks_ordered) ? data.drinks_ordered : [],
+          photos: Array.isArray(data.photos) ? data.photos : [],
+          videos: Array.isArray(data.videos) ? data.videos : [],
+          highlights: Array.isArray(data.highlights) ? data.highlights : [],
+          improvements: Array.isArray(data.improvements) ? data.improvements : [],
+          would_recommend: data.would_recommend ?? true,
+          status: "approved",
         };
-        setReviews((prev) => [...prev, review]);
-        const venueReviews = [...reviews, review].filter((r) => r.venue_id === data.venue_id);
-        if (venueReviews.length > 0) {
-          const avg = (key) =>
-            venueReviews.reduce((s, r) => s + (r[key] || 0), 0) / venueReviews.length;
-          const avgDrink = avg("drink_quality");
-          const avgStaff = avg("staff_competence");
-          const avgAtmo = avg("atmosphere");
-          const avgVal = avg("value_for_money");
-          const overall = avg("overall_rating");
-          setVenues((prev) =>
-            prev.map((v) =>
-              v.id === data.venue_id
-                ? {
-                    ...v,
-                    review_count: venueReviews.length,
-                    avg_drink_quality: Math.round(avgDrink * 10) / 10,
-                    avg_staff_competence: Math.round(avgStaff * 10) / 10,
-                    avg_atmosphere: Math.round(avgAtmo * 10) / 10,
-                    avg_value: Math.round(avgVal * 10) / 10,
-                    overall_rating: Math.round(overall * 10) / 10,
-                  }
-                : v
-            )
-          );
-        }
+        const { data: inserted, error } = await supabase.from("reviews_cloud").insert(row).select().single();
+        if (error) throw error;
+        const review = mapReviewCloudToLocal(inserted);
+        setReviews((prev) => [review, ...prev]);
         return review;
       },
-      updateReview: (id, data) => {
-        setReviews((prev) =>
-          prev.map((r) => (r.id === id ? { ...r, ...data } : r))
-        );
+      updateReview: async (id, data) => {
+        if (!isSupabaseConfigured()) throw new Error("Supabase non configurato");
+        const row = {
+          ...(data.title !== undefined && { title: data.title }),
+          ...(data.content !== undefined && { content: data.content }),
+          ...(data.visit_date !== undefined && { visit_date: data.visit_date }),
+          ...(data.drink_quality !== undefined && { drink_quality: data.drink_quality }),
+          ...(data.staff_competence !== undefined && { staff_competence: data.staff_competence }),
+          ...(data.atmosphere !== undefined && { atmosphere: data.atmosphere }),
+          ...(data.value_for_money !== undefined && { value_for_money: data.value_for_money }),
+          ...(data.overall_rating !== undefined && { overall_rating: data.overall_rating }),
+          ...(data.drinks_ordered !== undefined && { drinks_ordered: data.drinks_ordered }),
+          ...(data.photos !== undefined && { photos: data.photos }),
+          ...(data.videos !== undefined && { videos: data.videos }),
+          ...(data.highlights !== undefined && { highlights: data.highlights }),
+          ...(data.improvements !== undefined && { improvements: data.improvements }),
+          ...(data.would_recommend !== undefined && { would_recommend: data.would_recommend }),
+        };
+        const { data: updated, error } = await supabase.from("reviews_cloud").update(row).eq("id", id).select().single();
+        if (error) throw error;
+        if (updated) setReviews((prev) => prev.map((r) => (r.id === id ? mapReviewCloudToLocal(updated) : r)));
         return { id, ...data };
       },
       restoreReviewsFromSeed: () => {
         setReviews([...initialReviews]);
       },
-      deleteReview: (id) => {
-        const review = reviews.find((r) => r.id === id);
-        if (!review) return;
-        setReviews((prev) => prev.filter((r) => r.id !== id));
-        const venueReviews = reviews.filter((r) => r.venue_id === review.venue_id && r.id !== id);
-        if (venueReviews.length > 0) {
-          const avg = (key) => venueReviews.reduce((s, r) => s + (r[key] || 0), 0) / venueReviews.length;
-          setVenues((prev) =>
-            prev.map((v) =>
-              v.id === review.venue_id
-                ? {
-                    ...v,
-                    review_count: venueReviews.length,
-                    avg_drink_quality: Math.round(avg("drink_quality") * 10) / 10,
-                    avg_staff_competence: Math.round(avg("staff_competence") * 10) / 10,
-                    avg_atmosphere: Math.round(avg("atmosphere") * 10) / 10,
-                    avg_value: Math.round(avg("value_for_money") * 10) / 10,
-                    overall_rating: Math.round(avg("overall_rating") * 10) / 10,
-                  }
-                : v
-            )
-          );
-        } else {
-          setVenues((prev) =>
-            prev.map((v) =>
-              v.id === review.venue_id
-                ? { ...v, review_count: 0, overall_rating: null, avg_drink_quality: null, avg_staff_competence: null, avg_atmosphere: null, avg_value: null }
-                : v
-            )
-          );
-        }
+      deleteReview: async (id) => {
+        if (!isSupabaseConfigured()) return;
+        const { error } = await supabase.from("reviews_cloud").delete().eq("id", id);
+        if (!error) setReviews((prev) => prev.filter((r) => r.id !== id));
       },
 
       getArticles: () => articles,
@@ -949,7 +790,7 @@ export function AppDataProvider({ children }) {
         if (data.communityPosts && Array.isArray(data.communityPosts)) setCommunityPosts(data.communityPosts);
       },
     };
-  }, [venues, cloudVenues, reviews, articles, drinks, user, ownerMessages, communityEvents, communityPosts, bartenders, mapAppUserToBartender]);
+  }, [venues, cloudVenues, reviews, articles, drinks, user, ownerMessages, communityEvents, communityPosts, bartenders, mapAppUserToBartender, mapReviewCloudToLocal]);
 
   return (
     <AppDataContext.Provider value={api}>{children}</AppDataContext.Provider>
