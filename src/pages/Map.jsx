@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { useAppData } from "@/lib/AppDataContext";
 import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
-import { MapPin, Star, Wine, X, List, Map as MapIcon } from "lucide-react";
+import { MapPin, Star, Wine, X, List, Map as MapIcon, ChevronLeft } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
@@ -69,8 +69,14 @@ export default function MapPage() {
 
   return (
     <div className="h-[calc(100vh-3.5rem)] min-h-[320px] lg:h-[calc(100vh-4rem)] relative w-full overflow-hidden">
-      {/* Search Bar */}
-      <div className="absolute top-3 left-3 right-3 sm:top-4 sm:left-4 sm:right-4 z-[1000] flex gap-2">
+      {/* Back + Search Bar */}
+      <div className="absolute top-3 left-3 right-3 sm:top-4 sm:left-4 sm:right-4 z-[1000] flex gap-2 items-center">
+        <Link
+          to={createPageUrl("Home")}
+          className="flex-shrink-0 p-2.5 h-12 w-12 flex items-center justify-center bg-stone-950/90 backdrop-blur-sm border border-stone-700 text-stone-300 hover:bg-stone-800 hover:text-stone-100 rounded-xl"
+        >
+          <ChevronLeft className="w-5 h-5" />
+        </Link>
         <div className="relative flex-1 max-w-md">
           <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-stone-500" />
           <Input
@@ -131,13 +137,6 @@ export default function MapPage() {
           </Marker>
         ))}
       </MapContainer>
-
-      {/* Venues Count */}
-      <div className="absolute bottom-4 left-4 z-[1000] bg-stone-950/90 backdrop-blur-sm px-4 py-2 rounded-xl border border-stone-800">
-        <span className="text-stone-400 text-sm">
-          {filteredVenues.length} locali sulla mappa
-        </span>
-      </div>
 
       {/* List Sheet */}
       <Sheet open={showList} onOpenChange={setShowList}>
