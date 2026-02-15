@@ -19,6 +19,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import VenueCard from "@/components/venue/VenueCard";
 import { useAppData } from "@/lib/AppDataContext";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { motion } from "framer-motion";
 
 const categories = [
@@ -40,8 +41,29 @@ export default function Home() {
 
   const [editMode, setEditMode] = useState(false);
   const [heroSettings, setHeroSettings] = useState(DEFAULT_HERO);
+  const [heroLoading, setHeroLoading] = useState(true);
 
   const { getVenues, getReviews, getArticles, user: currentUser } = useAppData();
+
+  useEffect(() => {
+    if (!isSupabaseConfigured()) {
+      setHeroLoading(false);
+      return;
+    }
+    supabase.from("hero_settings").select("*").limit(1).maybeSingle().then(({ data, error }) => {
+      setHeroLoading(false);
+      if (!error && data) {
+        setHeroSettings({
+          text1: data.text1 || DEFAULT_HERO.text1,
+          text2: data.text2 || DEFAULT_HERO.text2,
+          text1Size: data.text1_size ?? DEFAULT_HERO.text1Size,
+          text2Size: data.text2_size ?? DEFAULT_HERO.text2Size,
+          text1Color: data.text1_color || DEFAULT_HERO.text1Color,
+          text2Color: data.text2_color || DEFAULT_HERO.text2Color,
+        });
+      }
+    }).catch(() => setHeroLoading(false));
+  }, []);
   const venuesList = getVenues();
   const reviewsList = getReviews();
   const articlesList = getArticles();
@@ -57,7 +79,24 @@ export default function Home() {
   const recentArticles = [...articlesList].sort((a, b) => new Date(b.created_date) - new Date(a.created_date)).slice(0, 6);
   const loadingArticles = false;
 
-  const saveSettings = () => {
+  const saveSettings = async () => {
+    if (isSupabaseConfigured()) {
+      const row = {
+        text1: heroSettings.text1,
+        text2: heroSettings.text2,
+        text1_size: heroSettings.text1Size,
+        text2_size: heroSettings.text2Size,
+        text1_color: heroSettings.text1Color,
+        text2_color: heroSettings.text2Color,
+        updated_at: new Date().toISOString(),
+      };
+      const { data: existing } = await supabase.from("hero_settings").select("id").limit(1).maybeSingle();
+      if (existing) {
+        await supabase.from("hero_settings").update(row).eq("id", existing.id);
+      } else {
+        await supabase.from("hero_settings").insert(row);
+      }
+    }
     setEditMode(false);
   };
 
