@@ -4,7 +4,7 @@ import { useAppData } from "@/lib/AppDataContext";
 import { createPageUrl } from "@/utils";
 import { format } from "date-fns";
 import { it } from "date-fns/locale";
-import { Heart, MessageCircle, Share2, ThumbsUp, Wine, Star, User, Edit, Trash2 } from "lucide-react";
+import { Heart, MessageCircle, Share2, ThumbsUp, Wine, Star, User, Edit, Trash2, Video } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -148,6 +148,14 @@ export default function ReviewCard({ review, showVenue = false, venue = null, in
               className="h-20 w-20 object-cover rounded-lg flex-shrink-0"
             />
           ))}
+        </div>
+      )}
+
+      {/* Videos indicator */}
+      {review.videos && review.videos.length > 0 && (
+        <div className="flex items-center gap-2 mb-4 text-sm text-stone-500">
+          <Video className="w-4 h-4 text-amber-500" />
+          <span>{review.videos.length} video allegat{review.videos.length === 1 ? "o" : "i"}</span>
         </div>
       )}
 

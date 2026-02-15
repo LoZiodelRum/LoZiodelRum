@@ -35,7 +35,7 @@ import { useAppData } from "@/lib/AppDataContext";
 import { exportAsFile } from "@/utils/mobileExport";
 
 export default function Dashboard() {
-  const { user, getVenues, getArticles, getDrinks, getBartenders, getPendingBartenders, updateVenue, deleteVenue, setBartenderStatus, deleteBartender, exportData, importData, restoreReviewsFromSeed, isSupabaseConfigured, getPendingVenuesFromCloud, getPendingLocalVenues, approveVenueCloud, rejectVenueCloud } = useAppData();
+  const { user, getVenues, getArticles, getDrinks, getBartenders, getPendingBartenders, updateVenue, deleteVenue, setBartenderStatus, deleteBartender, exportData, importData, restoreReviewsFromSeed, isSupabaseConfigured, getPendingVenuesFromCloud, getPendingLocalVenues, approveVenueCloud, rejectVenueCloud, getPendingRegistrationsFromCloud, updateAppUserStatus } = useAppData();
   const allVenues = getVenues();
   const allArticles = getArticles();
   const allDrinks = getDrinks();
@@ -49,6 +49,8 @@ export default function Dashboard() {
   const [loadingCloudPending, setLoadingCloudPending] = useState(false);
   const [cloudError, setCloudError] = useState(null);
   const [venueCoords, setVenueCoords] = useState({});
+  const [pendingRegistrations, setPendingRegistrations] = useState([]);
+  const [loadingRegistrations, setLoadingRegistrations] = useState(false);
   const selectedArticle = selectedArticleId ? allArticles.find((a) => a.id === selectedArticleId) : null;
   const selectedDrink = selectedDrinkId ? allDrinks.find((d) => d.id === selectedDrinkId) : null;
   const selectedBartender = selectedBartenderId ? getBartenders().find((b) => b.id === selectedBartenderId) : null;
@@ -65,8 +67,17 @@ export default function Dashboard() {
     });
   };
 
+  const loadPendingRegistrations = () => {
+    setLoadingRegistrations(true);
+    getPendingRegistrationsFromCloud?.()
+      .then((list) => setPendingRegistrations(list || []))
+      .catch(() => setPendingRegistrations([]))
+      .finally(() => setLoadingRegistrations(false));
+  };
+
   useEffect(() => {
     loadCloudPending();
+    loadPendingRegistrations();
   }, []);
 
   const handleExport = async () => {
@@ -149,6 +160,65 @@ export default function Dashboard() {
             </div>
           </div>
         </div>
+
+        {/* Nuovi iscritti (app_users pending) */}
+        {getPendingRegistrationsFromCloud && (
+          <div className="bg-stone-900/50 rounded-2xl border border-stone-800/50 p-6 mb-8">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold flex items-center gap-2">
+                <User className="w-5 h-5 text-amber-500" />
+                Nuovi iscritti ({pendingRegistrations.length})
+              </h2>
+              <Button size="sm" variant="outline" onClick={loadPendingRegistrations} disabled={loadingRegistrations}>
+                <RefreshCw className={`w-4 h-4 mr-2 ${loadingRegistrations ? "animate-spin" : ""}`} />
+                Aggiorna
+              </Button>
+            </div>
+            {loadingRegistrations ? (
+              <div className="text-center py-8 text-stone-500">Caricamento...</div>
+            ) : pendingRegistrations.length === 0 ? (
+              <div className="text-center py-8 text-stone-500">Nessun nuovo iscritto in attesa</div>
+            ) : (
+              <div className="space-y-3">
+                {pendingRegistrations.map((r) => (
+                  <div key={r.id} className="flex items-center justify-between p-4 bg-stone-800/30 rounded-xl border border-stone-700/50">
+                    <div>
+                      <p className="font-medium">{r.name}</p>
+                      <p className="text-sm text-stone-500">{r.role_label || r.role} • {r.created_at ? new Date(r.created_at).toLocaleDateString("it-IT") : ""}</p>
+                    </div>
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        className="bg-green-600 hover:bg-green-700"
+                        onClick={async () => {
+                          await updateAppUserStatus?.(r.id, "approved");
+                          loadPendingRegistrations();
+                          toast.success("Iscritto approvato");
+                        }}
+                      >
+                        <CheckCircle className="w-4 h-4 mr-1" />
+                        Approva
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        className="border-red-500/50 text-red-400"
+                        onClick={async () => {
+                          await updateAppUserStatus?.(r.id, "rejected");
+                          loadPendingRegistrations();
+                          toast.success("Iscritto rifiutato");
+                        }}
+                      >
+                        <XCircle className="w-4 h-4 mr-1" />
+                        Rifiuta
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Locali in attesa - unificato (locale + cloud) */}
         <div className="bg-stone-900/50 rounded-2xl border border-stone-800/50 p-6 mb-8">

@@ -1,10 +1,12 @@
-import React, { createContext, useContext, useMemo, useState, useEffect } from "react";
+import React, { createContext, useContext, useMemo, useState, useEffect, useCallback } from "react";
 import { venuesData as initialVenues } from "@/data/venues";
 import { reviewsData as initialReviews } from "@/data/reviews";
 import { articlesData as initialArticles } from "@/data/articles";
 import { drinksData as initialDrinks } from "@/data/drinks";
 import { initialOwnerMessages, initialCommunityPosts, initialCommunityEvents } from "@/data/community";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
+import { getPendingRegistrations, updateAppUserStatus } from "@/lib/supabaseUsers";
+import { useVenuesRealtime } from "@/hooks/useSupabaseRealtime";
 
 const COMMUNITY_POSTS_VERSION = 11;
 const STORAGE_KEYS = {
@@ -135,6 +137,30 @@ export function AppDataProvider({ children }) {
         setVenues([...initialVenues]);
       });
   }, []);
+
+  // Real-time: aggiornamenti live da Supabase
+  const onInsert = useCallback((row) => {
+    if (row?.status === "approved") {
+      const mapped = { ...row, id: row.external_id || String(row.id), supabase_id: String(row.id) };
+      setVenues((prev) => {
+        const exists = prev.some((v) => v.id === mapped.id || v.supabase_id === row.id);
+        if (exists) return prev.map((v) => (v.id === mapped.id || v.supabase_id === row.id ? mapped : v));
+        return [...prev, mapped];
+      });
+    }
+  }, []);
+  const onUpdate = useCallback((row) => {
+    if (row?.status === "approved") {
+      const mapped = { ...row, id: row.external_id || String(row.id), supabase_id: String(row.id) };
+      setVenues((prev) => prev.map((v) => (v.id === mapped.id || v.supabase_id === row.id ? mapped : v)));
+    } else {
+      setVenues((prev) => prev.filter((v) => v.supabase_id !== row?.id));
+    }
+  }, []);
+  const onDelete = useCallback((old) => {
+    setVenues((prev) => prev.filter((v) => v.supabase_id !== old?.id && v.id !== (old?.external_id || old?.id)));
+  }, []);
+  useVenuesRealtime(onInsert, onUpdate, onDelete);
 
   // Sincronizza locali salvati solo in locale (prima della config Supabase) verso Supabase
   const [hasSyncedLocalVenues, setHasSyncedLocalVenues] = useState(false);
@@ -785,6 +811,8 @@ export function AppDataProvider({ children }) {
         }
         await supabase.from("venues_cloud").update({ status: "rejected" }).eq("id", id);
       },
+      getPendingRegistrationsFromCloud: () => getPendingRegistrations(),
+      updateAppUserStatus: (id, status) => updateAppUserStatus(id, status),
       exportVenuesForMobileSync: () => {
         const toExport = venues.filter((v) => !v._cloudPending && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(v.id) && (v.id?.length ?? 0) < 20);
         return JSON.stringify({ venues: toExport, exportedAt: new Date().toISOString(), type: "loziodelrum-venues-sync" }, null, 2);

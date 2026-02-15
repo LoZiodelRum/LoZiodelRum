@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, Navigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { useAppData } from "@/lib/AppDataContext";
 import { useIsMobile } from "@/hooks/use-mobile";
@@ -26,6 +26,10 @@ import { Calendar } from "@/components/ui/calendar";
 export default function CommunityFeed() {
   const isMobile = useIsMobile();
   const { user, getOwnerMessages, getCommunityPosts, getCommunityEvents, addCommunityPost, addOwnerMessage, addCommunityEvent } = useAppData();
+
+  if (!user || !user.role) {
+    return <Navigate to={createPageUrl("Community")} replace />;
+  }
   const [postOpen, setPostOpen] = useState(false);
   const [postContent, setPostContent] = useState("");
   const [ownerOpen, setOwnerOpen] = useState(false);

@@ -8,10 +8,13 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from "@/components/ui/sheet";
 import VenueCard from "@/components/venue/VenueCard";
+import MapGoogle from "@/components/map/MapGoogle";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 
-// Fix for default marker icons in react-leaflet
+const GOOGLE_MAPS_KEY = (import.meta.env.VITE_GOOGLE_MAPS_API_KEY || "").toString().trim();
+
+// Fix per marker Leaflet
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
@@ -20,25 +23,20 @@ L.Icon.Default.mergeOptions({
 });
 
 const customIcon = new L.DivIcon({
-  className: 'custom-marker',
+  className: "custom-marker",
   html: `<div style="
-    width: 36px; 
-    height: 36px; 
+    width: 36px; height: 36px;
     background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
     border-radius: 50% 50% 50% 0;
     transform: rotate(-45deg);
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: flex; align-items: center; justify-content: center;
     box-shadow: 0 4px 12px rgba(0,0,0,0.3);
     border: 2px solid white;
-  ">
-    <div style="transform: rotate(45deg); color: #1c1917;">
-      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M8 2h8l4 10H4l4-10zm2 2l-2 6h8l-2-6h-4zM4 14h16v2H4v-2zm5 4h6v4H9v-4z"/>
-      </svg>
-    </div>
-  </div>`,
+  "><div style="transform: rotate(45deg); color: #1c1917;">
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+      <path d="M8 2h8l4 10H4l4-10zm2 2l-2 6h8l-2-6h-4zM4 14h16v2H4v-2zm5 4h6v4H9v-4z"/>
+    </svg>
+  </div></div>`,
   iconSize: [36, 36],
   iconAnchor: [18, 36],
   popupAnchor: [0, -36],
@@ -94,6 +92,15 @@ export default function MapPage() {
       </div>
 
       {/* Map */}
+      {GOOGLE_MAPS_KEY ? (
+        <div className="absolute inset-0 z-0 h-full w-full">
+          <MapGoogle
+            venues={filteredVenues}
+            selectedVenue={selectedVenue}
+            onVenueSelect={setSelectedVenue}
+          />
+        </div>
+      ) : (
       <MapContainer
         center={mapCenter}
         zoom={4}
@@ -136,6 +143,7 @@ export default function MapPage() {
           </Marker>
         ))}
       </MapContainer>
+      )}
 
       {/* Venues Count */}
       <div className="absolute bottom-4 left-4 z-[1000] bg-stone-950/90 backdrop-blur-sm px-4 py-2 rounded-xl border border-stone-800">

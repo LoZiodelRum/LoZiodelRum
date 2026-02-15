@@ -181,6 +181,58 @@ export default function ReviewDetail() {
               </div>
             )}
 
+            {/* Video */}
+            {review.videos && review.videos.length > 0 && (
+              <div className="space-y-3 mb-6">
+                <p className="text-sm font-medium text-stone-400">Video</p>
+                <div className="space-y-3">
+                  {review.videos.map((url, i) => {
+                    const isYoutube = /youtube\.com|youtu\.be/i.test(url);
+                    const isVimeo = /vimeo\.com/i.test(url);
+                    if (isYoutube) {
+                      const vid = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/)([^&?]+)/)?.[1];
+                      return vid ? (
+                        <div key={i} className="aspect-video rounded-xl overflow-hidden bg-stone-800">
+                          <iframe
+                            src={`https://www.youtube.com/embed/${vid}`}
+                            title={`Video ${i + 1}`}
+                            className="w-full h-full"
+                            allowFullScreen
+                          />
+                        </div>
+                      ) : (
+                        <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="text-amber-500 hover:underline block truncate">
+                          {url}
+                        </a>
+                      );
+                    }
+                    if (isVimeo) {
+                      const vid = url.match(/vimeo\.com\/(?:video\/)?(\d+)/)?.[1];
+                      return vid ? (
+                        <div key={i} className="aspect-video rounded-xl overflow-hidden bg-stone-800">
+                          <iframe
+                            src={`https://player.vimeo.com/video/${vid}`}
+                            title={`Video ${i + 1}`}
+                            className="w-full h-full"
+                            allowFullScreen
+                          />
+                        </div>
+                      ) : (
+                        <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="text-amber-500 hover:underline block truncate">
+                          {url}
+                        </a>
+                      );
+                    }
+                    return (
+                      <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="text-amber-500 hover:underline block truncate">
+                        Video {i + 1}
+                      </a>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+
             {/* Highlights & Improvements */}
             <div className="flex flex-wrap gap-2 mb-6">
               {migrateHighlights(review.highlights)?.map((h, i) => (

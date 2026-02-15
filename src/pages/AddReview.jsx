@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, Navigate } from "react-router-dom";
 import { toast } from "@/components/ui/use-toast";
 import { createPageUrl } from "@/utils";
 import { useMutation } from "@tanstack/react-query";
@@ -16,7 +16,9 @@ import {
   Coins,
   ThumbsUp,
   Send,
-  Loader2
+  Loader2,
+  Image,
+  Video
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -60,11 +62,14 @@ export default function AddReview() {
     overall_rating: 0,
     drinks_ordered: [],
     photos: [],
+    videos: [],
     highlights: [],
     improvements: [],
     would_recommend: true
   });
   
+  const [newPhotoUrl, setNewPhotoUrl] = useState("");
+  const [newVideoUrl, setNewVideoUrl] = useState("");
   const [newDrink, setNewDrink] = useState({ name: "", category: "cocktail", rating: 8, notes: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showNewVenueForm, setShowNewVenueForm] = useState(false);
@@ -83,6 +88,10 @@ export default function AddReview() {
 
   const { getVenues, addReview, addVenue, user } = useAppData();
   const venues = getVenues();
+
+  if (!user || !user.role) {
+    return <Navigate to={createPageUrl("Community")} replace />;
+  }
 
   const createReviewMutation = useMutation({
     mutationFn: async (reviewData) => {
@@ -189,6 +198,36 @@ export default function AddReview() {
     setFormData(prev => ({
       ...prev,
       drinks_ordered: prev.drinks_ordered.filter((_, i) => i !== index)
+    }));
+  };
+
+  const addPhoto = () => {
+    const url = (newPhotoUrl || "").trim();
+    if (url && (url.startsWith("http://") || url.startsWith("https://"))) {
+      setFormData(prev => ({ ...prev, photos: [...(prev.photos || []), url] }));
+      setNewPhotoUrl("");
+    }
+  };
+
+  const removePhoto = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      photos: (prev.photos || []).filter((_, i) => i !== index)
+    }));
+  };
+
+  const addVideo = () => {
+    const url = (newVideoUrl || "").trim();
+    if (url && (url.startsWith("http://") || url.startsWith("https://"))) {
+      setFormData(prev => ({ ...prev, videos: [...(prev.videos || []), url] }));
+      setNewVideoUrl("");
+    }
+  };
+
+  const removeVideo = (index) => {
+    setFormData(prev => ({
+      ...prev,
+      videos: (prev.videos || []).filter((_, i) => i !== index)
     }));
   };
 
@@ -477,6 +516,74 @@ export default function AddReview() {
                   onChange={(e) => setFormData(prev => ({ ...prev, visit_date: e.target.value }))}
                   className="bg-stone-800/50 border-stone-700"
                 />
+              </div>
+            </div>
+          </div>
+
+          {/* Foto e Video */}
+          <div className="bg-stone-900/50 rounded-2xl border border-stone-800/50 p-6">
+            <Label className="text-base font-medium mb-4 block flex items-center gap-2">
+              <Image className="w-5 h-5 text-amber-500" />
+              Foto e video
+            </Label>
+            <p className="text-sm text-stone-500 mb-4">Aggiungi URL di foto o brevi video (YouTube, Vimeo, link diretti)</p>
+            
+            <div className="space-y-4">
+              <div>
+                <Label className="text-sm text-stone-400 mb-2 block">Foto (URL)</Label>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="https://..."
+                    value={newPhotoUrl}
+                    onChange={(e) => setNewPhotoUrl(e.target.value)}
+                    className="bg-stone-800/50 border-stone-700 flex-1"
+                  />
+                  <Button type="button" onClick={addPhoto} disabled={!newPhotoUrl?.trim()} className="bg-stone-800 hover:bg-stone-700">
+                    <Plus className="w-4 h-4" />
+                  </Button>
+                </div>
+                {formData.photos?.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {formData.photos.map((url, i) => (
+                      <div key={i} className="relative group">
+                        <img src={url} alt="" className="h-16 w-16 object-cover rounded-lg" onError={(e) => e.target.style.display = "none"} />
+                        <button type="button" onClick={() => removePhoto(i)} className="absolute -top-1 -right-1 p-1 bg-red-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+              <div>
+                <Label className="text-sm text-stone-400 mb-2 block flex items-center gap-2">
+                  <Video className="w-4 h-4" />
+                  Video (URL)
+                </Label>
+                <div className="flex gap-2">
+                  <Input
+                    placeholder="https://youtube.com/... o https://..."
+                    value={newVideoUrl}
+                    onChange={(e) => setNewVideoUrl(e.target.value)}
+                    className="bg-stone-800/50 border-stone-700 flex-1"
+                  />
+                  <Button type="button" onClick={addVideo} disabled={!newVideoUrl?.trim()} className="bg-stone-800 hover:bg-stone-700">
+                    <Plus className="w-4 h-4" />
+                  </Button>
+                </div>
+                {formData.videos?.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {formData.videos.map((url, i) => (
+                      <div key={i} className="flex items-center gap-2 px-3 py-2 bg-stone-800/50 rounded-lg">
+                        <Video className="w-4 h-4 text-amber-500" />
+                        <span className="text-sm text-stone-400 truncate max-w-[180px]">{url}</span>
+                        <button type="button" onClick={() => removeVideo(i)} className="p-1 hover:bg-stone-700 rounded">
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           </div>

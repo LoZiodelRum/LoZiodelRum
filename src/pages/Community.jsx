@@ -2,9 +2,19 @@ import { useState } from "react";
 import { UserPlus, Shield, Store, Wine, User, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Link } from "react-router-dom";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { useAppData } from "@/lib/AppDataContext";
+import { insertAppUser } from "@/lib/supabaseUsers";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 
 // Sfondi in tema rum/cocktail/bar
 const BG = {
@@ -28,13 +38,20 @@ const isAdminPasswordOk = (p) => {
 };
 
 export default function Community() {
-  const { user, setUser } = useAppData();
+  const { user, setUser, getVenues } = useAppData();
+  const navigate = useNavigate();
+  const venues = getVenues();
   const [regName, setRegName] = useState("");
   const [regRole, setRegRole] = useState("");
   const [regPassword, setRegPassword] = useState("");
+  const [regEmail, setRegEmail] = useState("");
+  const [regVenueIds, setRegVenueIds] = useState([]);
+  const [regBioLight, setRegBioLight] = useState("");
+  const [regHomeCity, setRegHomeCity] = useState("");
   const [regError, setRegError] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const handleRegister = (e) => {
+  const handleRegister = async (e) => {
     e.preventDefault();
     setRegError("");
     const name = (regName || "").trim();
@@ -49,15 +66,30 @@ export default function Community() {
       }
     }
     const roleConfig = ROLES.find((r) => r.id === regRole);
-    setUser({
+    setIsSubmitting(true);
+    const userPayload = {
       name,
-      email: "",
+      email: regRole === "proprietario" ? (regEmail || "").trim() || null : "",
       role: regRole,
       roleLabel: roleConfig?.label || regRole,
-    });
+      ...(regRole === "proprietario" && { venue_ids: regVenueIds }),
+      ...(regRole === "user" && { bio_light: (regBioLight || "").trim() || null, home_city: (regHomeCity || "").trim() || null }),
+    };
+    setUser(userPayload);
     setRegName("");
     setRegRole("");
     setRegPassword("");
+    setRegEmail("");
+    setRegVenueIds([]);
+    setRegBioLight("");
+    setRegHomeCity("");
+    try {
+      await insertAppUser(userPayload);
+    } catch (_) {}
+    setIsSubmitting(false);
+    if (regRole === "bartender") {
+      navigate(createPageUrl("AddBartender"));
+    }
   };
 
   // Non registrato: mostra hero + carta + form registrazione
@@ -163,9 +195,64 @@ export default function Community() {
                   ))}
                 </div>
               </div>
+              {regRole === "proprietario" && (
+                <div className="space-y-4">
+                  <div>
+                    <Label className="block text-sm font-medium text-stone-200 mb-2">Email</Label>
+                    <Input
+                      type="email"
+                      value={regEmail}
+                      onChange={(e) => setRegEmail(e.target.value)}
+                      placeholder="email@esempio.it"
+                      className="bg-stone-800 border-stone-600 text-stone-100 placeholder:text-stone-500"
+                    />
+                  </div>
+                  <div>
+                    <Label className="block text-sm font-medium text-stone-200 mb-2">Locali di cui sei proprietario</Label>
+                    <Select
+                      value={regVenueIds[0] || ""}
+                      onValueChange={(v) => setRegVenueIds(v ? [v] : [])}
+                    >
+                      <SelectTrigger className="bg-stone-800 border-stone-600 text-stone-100">
+                        <SelectValue placeholder="Seleziona un locale (opzionale)" />
+                      </SelectTrigger>
+                      <SelectContent className="bg-stone-900 border-stone-800">
+                        {venues.map((v) => (
+                          <SelectItem key={v.id} value={v.id}>
+                            {v.name} - {v.city}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <p className="text-xs text-stone-500 mt-1">Associa il tuo profilo a un locale</p>
+                  </div>
+                </div>
+              )}
+              {regRole === "user" && (
+                <div className="space-y-4">
+                  <div>
+                    <Label className="block text-sm font-medium text-stone-200 mb-2">Città di residenza (opzionale)</Label>
+                    <Input
+                      value={regHomeCity}
+                      onChange={(e) => setRegHomeCity(e.target.value)}
+                      placeholder="Milano, Roma..."
+                      className="bg-stone-800 border-stone-600 text-stone-100 placeholder:text-stone-500"
+                    />
+                  </div>
+                  <div>
+                    <Label className="block text-sm font-medium text-stone-200 mb-2">Breve presentazione (opzionale)</Label>
+                    <Textarea
+                      value={regBioLight}
+                      onChange={(e) => setRegBioLight(e.target.value)}
+                      placeholder="Qualche riga su di te e il tuo rapporto con il bere consapevole..."
+                      className="bg-stone-800 border-stone-600 text-stone-100 placeholder:text-stone-500 min-h-[80px]"
+                    />
+                  </div>
+                </div>
+              )}
               {regRole === "admin" && (
                 <div>
-                  <label className="block text-sm font-medium text-stone-200 mb-2">Password amministratore</label>
+                  <Label className="block text-sm font-medium text-stone-200 mb-2">Password amministratore</Label>
                   <Input
                     type="password"
                     value={regPassword}
@@ -180,8 +267,8 @@ export default function Community() {
                 </div>
               )}
               {regError && <p className="text-sm text-red-600">{regError}</p>}
-              <Button type="submit" className="w-full bg-amber-500 hover:bg-amber-600 text-stone-950">
-                Registrati
+              <Button type="submit" disabled={isSubmitting} className="w-full bg-amber-500 hover:bg-amber-600 text-stone-950">
+                {isSubmitting ? "Registrazione..." : "Registrati"}
               </Button>
             </form>
             <p className="text-center text-stone-400 text-sm mt-4">
