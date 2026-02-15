@@ -208,6 +208,9 @@ export default function MapPage() {
       )}
 
       <style>{`
+        .leaflet-top .leaflet-control-zoom {
+          display: none;
+        }
         .leaflet-popup-content-wrapper {
           background: transparent;
           box-shadow: none;
