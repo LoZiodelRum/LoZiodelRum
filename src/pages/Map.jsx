@@ -222,6 +222,6 @@ export default function MapPage() {
           font-family: inherit;
         }
       `}</style>
-    </div>
+    </div> 
   );
 }

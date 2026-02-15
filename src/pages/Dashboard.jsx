@@ -17,6 +17,11 @@ import {
   Wine,
   Wine as BartenderIcon,
   RefreshCw,
+  Eye,
+  Phone,
+  Globe,
+  Instagram,
+  Clock,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -33,6 +38,24 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { useAppData } from "@/lib/AppDataContext";
 import { exportAsFile } from "@/utils/mobileExport";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+
+const CATEGORY_LABELS = {
+  cocktail_bar: "Cocktail Bar",
+  rum_bar: "Rum Bar",
+  wine_bar: "Wine Bar",
+  speakeasy: "Speakeasy",
+  distillery: "Distilleria",
+  enoteca: "Enoteca",
+  pub: "Pub",
+  rooftop: "Rooftop Bar",
+  hotel_bar: "Hotel Bar",
+};
 
 export default function Dashboard() {
   const { user, getVenues, getArticles, getDrinks, getBartenders, getPendingBartenders, updateVenue, deleteVenue, setBartenderStatus, deleteBartender, exportData, importData, restoreReviewsFromSeed, isSupabaseConfigured, getPendingVenuesFromCloud, getPendingLocalVenues, approveVenueCloud, rejectVenueCloud, getPendingRegistrationsFromCloud, updateAppUserStatus } = useAppData();
@@ -51,6 +74,7 @@ export default function Dashboard() {
   const [venueCoords, setVenueCoords] = useState({});
   const [pendingRegistrations, setPendingRegistrations] = useState([]);
   const [loadingRegistrations, setLoadingRegistrations] = useState(false);
+  const [previewVenue, setPreviewVenue] = useState(null);
   const selectedArticle = selectedArticleId ? allArticles.find((a) => a.id === selectedArticleId) : null;
   const selectedDrink = selectedDrinkId ? allDrinks.find((d) => d.id === selectedDrinkId) : null;
   const selectedBartender = selectedBartenderId ? getBartenders().find((b) => b.id === selectedBartenderId) : null;
@@ -340,6 +364,14 @@ export default function Dashboard() {
                       </div>
                       <div className="flex flex-wrap gap-3">
                         <Button
+                          variant="outline"
+                          className="border-stone-600 text-stone-400 hover:bg-stone-800"
+                          onClick={() => setPreviewVenue(venue)}
+                        >
+                          <Eye className="w-4 h-4 mr-2" />
+                          Anteprima
+                        </Button>
+                        <Button
                           onClick={() => approveMutation.mutate({ venueId: venue.id, latitude: venueCoords[venue.id]?.latitude ?? venue.latitude, longitude: venueCoords[venue.id]?.longitude ?? venue.longitude })}
                           disabled={approveMutation.isPending}
                           className="bg-green-600 hover:bg-green-700 text-white"
@@ -427,6 +459,14 @@ export default function Dashboard() {
                       </div>
                       <div className="flex flex-wrap gap-3">
                         <Button
+                          variant="outline"
+                          className="border-stone-600 text-stone-400 hover:bg-stone-800"
+                          onClick={() => setPreviewVenue(venue)}
+                        >
+                          <Eye className="w-4 h-4 mr-2" />
+                          Anteprima
+                        </Button>
+                        <Button
                           onClick={async () => {
                             const lat = venueCoords[venue.id]?.latitude ?? venue.latitude;
                             const lng = venueCoords[venue.id]?.longitude ?? venue.longitude;
@@ -470,6 +510,114 @@ export default function Dashboard() {
             </div>
           )}
         </div>
+
+        {/* Dialog Anteprima locale */}
+        <Dialog open={!!previewVenue} onOpenChange={(open) => !open && setPreviewVenue(null)}>
+          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-stone-900 border-stone-800 text-stone-100">
+            <DialogHeader>
+              <DialogTitle className="text-xl font-bold text-amber-400">
+                Anteprima scheda locale – dati da Supabase
+              </DialogTitle>
+            </DialogHeader>
+            {previewVenue && (
+              <div className="space-y-6">
+                <div className="flex gap-4">
+                  <img
+                    src={previewVenue.cover_image || "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=400"}
+                    alt={previewVenue.name}
+                    className="w-32 h-32 object-cover rounded-lg flex-shrink-0"
+                  />
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-lg font-bold mb-1">{previewVenue.name}</h3>
+                    <div className="flex items-center gap-2 text-stone-400 text-sm mb-2">
+                      <MapPin className="w-4 h-4 flex-shrink-0" />
+                      <span>{previewVenue.city || "—"}, {previewVenue.country || "Italia"}</span>
+                    </div>
+                    {previewVenue.address && (
+                      <p className="text-stone-400 text-sm">{previewVenue.address}</p>
+                    )}
+                    {(previewVenue.category || previewVenue.price_range) && (
+                      <div className="flex gap-2 mt-2">
+                        {previewVenue.category && (
+                          <Badge variant="outline" className="text-xs border-stone-600 text-stone-400">
+                            {CATEGORY_LABELS[previewVenue.category] || previewVenue.category}
+                          </Badge>
+                        )}
+                        {previewVenue.price_range && (
+                          <Badge variant="outline" className="text-xs border-stone-600 text-stone-400">
+                            {previewVenue.price_range}
+                          </Badge>
+                        )}
+                      </div>
+                    )}
+                  </div>
+                </div>
+                {previewVenue.description && (
+                  <div>
+                    <p className="text-xs text-stone-500 font-medium mb-1">Descrizione</p>
+                    <p className="text-stone-300 text-sm leading-relaxed whitespace-pre-wrap">{previewVenue.description}</p>
+                  </div>
+                )}
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {previewVenue.phone && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <Phone className="w-4 h-4 text-amber-500" />
+                      <a href={`tel:${previewVenue.phone}`} className="text-amber-400 hover:underline">{previewVenue.phone}</a>
+                    </div>
+                  )}
+                  {previewVenue.website && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <Globe className="w-4 h-4 text-amber-500" />
+                      <a href={previewVenue.website} target="_blank" rel="noopener noreferrer" className="text-amber-400 hover:underline truncate">{previewVenue.website}</a>
+                    </div>
+                  )}
+                  {previewVenue.instagram && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <Instagram className="w-4 h-4 text-amber-500" />
+                      <a href={`https://instagram.com/${previewVenue.instagram}`} target="_blank" rel="noopener noreferrer" className="text-amber-400 hover:underline">@{previewVenue.instagram}</a>
+                    </div>
+                  )}
+                  {previewVenue.opening_hours && (
+                    <div className="flex items-center gap-2 text-sm">
+                      <Clock className="w-4 h-4 text-amber-500" />
+                      <span className="text-stone-300">{previewVenue.opening_hours}</span>
+                    </div>
+                  )}
+                </div>
+                <div className="grid grid-cols-2 gap-3">
+                  {previewVenue.latitude != null && (
+                    <div>
+                      <p className="text-xs text-stone-500 mb-0.5">Latitudine</p>
+                      <p className="text-sm text-stone-300">{previewVenue.latitude}</p>
+                    </div>
+                  )}
+                  {previewVenue.longitude != null && (
+                    <div>
+                      <p className="text-xs text-stone-500 mb-0.5">Longitudine</p>
+                      <p className="text-sm text-stone-300">{previewVenue.longitude}</p>
+                    </div>
+                  )}
+                </div>
+                {(previewVenue.created_at || previewVenue.created_date || previewVenue.created_by) && (
+                  <div className="flex items-center gap-4 text-xs text-stone-500 pt-2 border-t border-stone-800">
+                    {(previewVenue.created_at || previewVenue.created_date) && (
+                      <div className="flex items-center gap-1">
+                        <Calendar className="w-3 h-3" />
+                        {new Date(previewVenue.created_at || previewVenue.created_date).toLocaleString("it-IT")}
+                      </div>
+                    )}
+                    {previewVenue.created_by && (
+                      <div className="flex items-center gap-1">
+                        <User className="w-3 h-3" />
+                        {previewVenue.created_by}
+                      </div>
+                    )}
+                  </div>
+                )}
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
 
         {/* Locali approvati: modifica o elimina */}
         <div className="mt-8 bg-stone-900/50 rounded-2xl border border-stone-800/50 p-6">
