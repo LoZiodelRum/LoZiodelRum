@@ -98,9 +98,18 @@ export default function Profile() {
   const [adminError, setAdminError] = useState("");
   const [adminPasskeyLoading, setAdminPasskeyLoading] = useState(false);
   const [showOfferPasskey, setShowOfferPasskey] = useState(false);
+  const [hasPasskey, setHasPasskey] = useState(false);
 
   const webauthnAvailable = isWebAuthnAvailable();
-  const hasPasskey = hasStoredPasskey();
+
+  const refreshPasskeyState = async () => {
+    const ok = await hasStoredPasskey();
+    setHasPasskey(ok);
+  };
+
+  useEffect(() => {
+    if (webauthnAvailable) refreshPasskeyState();
+  }, [webauthnAvailable]);
 
   const handleAdminLoginClick = () => {
     setAdminPasswordInput("");
@@ -149,6 +158,7 @@ export default function Profile() {
       await registerPasskey();
       setShowOfferPasskey(false);
       setAdminError("");
+      await refreshPasskeyState();
     } catch (err) {
       setAdminError(err?.message || "Associazione impronta non riuscita.");
     } finally {

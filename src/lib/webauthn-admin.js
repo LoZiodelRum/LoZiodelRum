@@ -2,9 +2,10 @@
  * WebAuthn (impronta digitale / Face ID) per accesso amministratore.
  * Registra una passkey dopo il login con password; accesso successivo con impronta.
  * Funziona solo in contesto sicuro (HTTPS o localhost).
+ * Usa Supabase (admin_passkeys) invece di localStorage.
  */
 
-const STORAGE_KEY = "loziodelrum_admin_passkey_id";
+import { supabase } from "./supabase";
 
 function base64urlEncode(buffer) {
   const bytes = new Uint8Array(buffer);
@@ -33,9 +34,18 @@ export function isWebAuthnAvailable() {
     window.isSecureContext;
 }
 
-export function hasStoredPasskey() {
+/**
+ * Verifica se esiste almeno una passkey registrata (da Supabase).
+ */
+export async function hasStoredPasskey() {
+  if (!supabase) return false;
   try {
-    return !!localStorage.getItem(STORAGE_KEY);
+    const { data, error } = await supabase
+      .from("admin_passkeys")
+      .select("id")
+      .limit(1);
+    if (error) return false;
+    return Array.isArray(data) && data.length > 0;
   } catch {
     return false;
   }
@@ -54,6 +64,7 @@ function getRpId() {
  */
 export async function registerPasskey() {
   if (!isWebAuthnAvailable()) throw new Error("WebAuthn non supportato (usa HTTPS o localhost)");
+  if (!supabase) throw new Error("Supabase non configurato");
   const challenge = randomChallenge();
   const rpId = getRpId();
   const options = {
@@ -77,8 +88,9 @@ export async function registerPasskey() {
   };
   const credential = await navigator.credentials.create({ publicKey: options });
   if (!credential || !(credential instanceof PublicKeyCredential)) throw new Error("Registrazione annullata");
-  const id = base64urlEncode(credential.rawId);
-  localStorage.setItem(STORAGE_KEY, id);
+  const credentialId = base64urlEncode(credential.rawId);
+  const { error } = await supabase.from("admin_passkeys").insert({ credential_id: credentialId });
+  if (error) throw new Error("Salvataggio passkey non riuscito");
   return true;
 }
 
@@ -87,18 +99,22 @@ export async function registerPasskey() {
  */
 export async function authenticateWithPasskey() {
   if (!isWebAuthnAvailable()) throw new Error("WebAuthn non supportato");
-  const storedId = localStorage.getItem(STORAGE_KEY);
-  if (!storedId) throw new Error("Nessuna impronta associata. Accedi prima con la password e associa l'impronta.");
+  if (!supabase) throw new Error("Supabase non configurato");
+  const { data, error } = await supabase.from("admin_passkeys").select("credential_id");
+  if (error || !Array.isArray(data) || data.length === 0) {
+    throw new Error("Nessuna impronta associata. Accedi prima con la password e associa l'impronta.");
+  }
+  const allowCredentials = data.map((r) => ({
+    type: "public-key",
+    id: new Uint8Array(base64urlDecode(r.credential_id)),
+  }));
   const challenge = randomChallenge();
   const rpId = getRpId();
-  const credentialId = new Uint8Array(base64urlDecode(storedId));
   const options = {
     challenge,
     timeout: 60000,
     rpId,
-    allowCredentials: [
-      { type: "public-key", id: credentialId },
-    ],
+    allowCredentials,
     userVerification: "required",
   };
   const credential = await navigator.credentials.get({ publicKey: options });
@@ -106,8 +122,12 @@ export async function authenticateWithPasskey() {
   return true;
 }
 
-export function clearStoredPasskey() {
+/**
+ * Rimuove tutte le passkey registrate da Supabase.
+ */
+export async function clearStoredPasskey() {
+  if (!supabase) return;
   try {
-    localStorage.removeItem(STORAGE_KEY);
+    await supabase.from("admin_passkeys").delete().neq("id", "00000000-0000-0000-0000-000000000000");
   } catch {}
 }
