@@ -658,6 +658,7 @@ export function AppDataProvider({ children }) {
           surname: data.surname || "",
           photo: data.photo || "",
           venue_id: data.venue_id || "",
+          venue_name: data.venue_name || "",
           city: data.city || "",
           specialization: data.specialization || "",
           years_experience: data.years_experience || "",

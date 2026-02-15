@@ -22,6 +22,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import VenueCombobox from "@/components/venue/VenueCombobox";
 
 const SPECIALIZZAZIONI = [
   "Rum",
@@ -47,6 +48,7 @@ export default function EditBartender() {
     surname: "",
     photo: "",
     venue_id: "",
+    venue_name: "",
     city: "",
     specialization: "",
     years_experience: "",
@@ -71,6 +73,7 @@ export default function EditBartender() {
         surname: bartender.surname || "",
         photo: bartender.photo || "",
         venue_id: bartender.venue_id || "",
+        venue_name: bartender.venue_name || "",
         city: bartender.city || "",
         specialization: bartender.specialization || "",
         years_experience: bartender.years_experience || "",
@@ -95,7 +98,7 @@ export default function EditBartender() {
     const newErrors = {};
     if (!formData.name.trim()) newErrors.name = "Inserisci il nome.";
     if (!formData.surname.trim()) newErrors.surname = "Inserisci il cognome.";
-    if (!formData.venue_id) newErrors.venue_id = "Seleziona il locale attuale.";
+    if (!formData.venue_id && !formData.venue_name?.trim()) newErrors.venue_id = "Seleziona o scrivi il locale attuale.";
     if (!formData.specialization) newErrors.specialization = "Indica una specializzazione.";
     if (!formData.bio.trim()) newErrors.bio = "Scrivi una breve bio.";
     if (!formData.motivation.trim()) newErrors.motivation = "Scrivi la motivazione a partecipare.";
@@ -109,10 +112,12 @@ export default function EditBartender() {
     if (!validate()) return;
     setIsSubmitting(true);
     try {
-      const selectedVenue = venues.find((v) => v.id === formData.venue_id);
+      const selectedVenue = formData.venue_id ? venues.find((v) => v.id === formData.venue_id) : null;
       const payload = {
         ...formData,
         city: formData.city || selectedVenue?.city || "",
+        venue_id: formData.venue_id || "",
+        venue_name: formData.venue_name?.trim() || "",
       };
       updateBartender(bartenderId, payload);
       navigate(createPageUrl("Dashboard"));
@@ -258,22 +263,24 @@ export default function EditBartender() {
                   />
                 </div>
                 <div>
-                  <Label className="text-sm text-stone-300">Locale attuale</Label>
-                  <Select
-                    value={formData.venue_id}
-                    onValueChange={(value) => updateField("venue_id", value)}
-                  >
-                    <SelectTrigger className="mt-1 bg-stone-900 border-stone-700">
-                      <SelectValue placeholder="Seleziona un locale" />
-                    </SelectTrigger>
-                    <SelectContent className="bg-stone-900 border-stone-800 max-h-64">
-                      {venues.map((v) => (
-                        <SelectItem key={v.id} value={v.id}>
-                          {v.name} — {v.city}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                  <Label className="text-sm text-stone-300">Locale dove lavora</Label>
+                  <VenueCombobox
+                    venues={venues}
+                    value={{
+                      venue_id: formData.venue_id,
+                      venue_name: formData.venue_name,
+                    }}
+                    onChange={({ venue_id, venue_name }) => {
+                      updateField("venue_id", venue_id);
+                      updateField("venue_name", venue_name);
+                    }}
+                    placeholder="Cerca o scrivi un locale..."
+                    className="mt-1"
+                    error={!!errors.venue_id}
+                  />
+                  <p className="text-xs text-stone-500 mt-1">
+                    Scegli dalla lista o scrivi il nome di un nuovo locale
+                  </p>
                   {errors.venue_id && <p className="text-xs text-red-500 mt-1">{errors.venue_id}</p>}
                 </div>
               </div>
