@@ -271,23 +271,6 @@ export default function Layout({ children, currentPageName }) {
                 <span className="text-[9px] font-medium truncate max-w-[52px]">{item.name}</span>
               </Link>
             ))}
-            {user?.role === "admin" && (
-              <Link
-                to={createPageUrl("Dashboard")}
-                onClick={() => setMobileMenuOpen(false)}
-                className={`relative flex flex-col items-center gap-0.5 px-1.5 py-2 rounded-xl transition-all min-w-[36px] min-h-[44px] justify-center flex-shrink-0 ${
-                  isActive("Dashboard") ? "text-amber-400" : "text-stone-400"
-                }`}
-              >
-                <LayoutDashboard className="w-5 h-5" />
-                <span className="text-[9px] font-medium truncate max-w-[48px]">Dashboard</span>
-                {pendingVenuesCount > 0 && (
-                  <span className="absolute -top-0.5 right-0 min-w-[16px] h-4 px-1 flex items-center justify-center rounded-full bg-amber-500 text-stone-950 text-[10px] font-bold">
-                    {pendingVenuesCount > 99 ? "99+" : pendingVenuesCount}
-                  </span>
-                )}
-              </Link>
-            )}
             <Link
               to={createPageUrl("AddReview")}
               className="flex flex-col items-center gap-0.5 px-1.5 py-2 -mt-4 min-w-[44px] min-h-[44px] justify-center flex-shrink-0"
