@@ -21,7 +21,8 @@ export async function insertAppUser(userData) {
     ...(userData.role === "bartender" && {
       surname: userData.surname,
       photo: userData.photo,
-      venue_id: userData.venue_id,
+      venue_id: userData.venue_id || null,
+      venue_name: userData.venue_name || null,
       city: userData.city,
       specialization: userData.specialization,
       years_experience: userData.years_experience,

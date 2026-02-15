@@ -211,6 +211,7 @@ export default function AddBartender() {
                     onChange={({ venue_id, venue_name }) => {
                       updateField("venue_id", venue_id);
                       updateField("venue_name", venue_name);
+                      if (errors.venue_id) setErrors((prev) => ({ ...prev, venue_id: undefined }));
                     }}
                     placeholder="Cerca o scrivi un locale..."
                     className="mt-1"

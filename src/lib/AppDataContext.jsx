@@ -115,6 +115,46 @@ export function AppDataProvider({ children }) {
   const [bartenders, setBartenders] = useState(() => load(STORAGE_KEYS.bartenders, []));
   const [cloudVenues, setCloudVenues] = useState([]);
 
+  // Carica bartenders da Supabase (se bartenders_cloud esiste)
+  useEffect(() => {
+    if (!isSupabaseConfigured()) return;
+    supabase
+      .from("bartenders_cloud")
+      .select("*")
+      .order("created_at", { ascending: false })
+      .then(({ data, error }) => {
+        if (!error && data && Array.isArray(data) && data.length > 0) {
+          const mapped = data.map((row) => ({
+            id: row.external_id || String(row.id),
+            supabase_id: String(row.id),
+            name: row.name || "",
+            surname: row.surname || "",
+            photo: row.photo || "",
+            venue_id: row.venue_id || "",
+            venue_name: row.venue_name || "",
+            city: row.city || "",
+            specialization: row.specialization || "",
+            years_experience: row.years_experience || "",
+            philosophy: row.philosophy || "",
+            distillati_preferiti: row.distillati_preferiti || "",
+            approccio_degustazione: row.approccio_degustazione || "",
+            consiglio_inizio: row.consiglio_inizio || "",
+            signature_drinks: row.signature_drinks || "",
+            percorso_esperienze: row.percorso_esperienze || "",
+            bio: row.bio || "",
+            motivation: row.motivation || "",
+            consent_linee_editoriali: !!row.consent_linee_editoriali,
+            status: row.status || "pending",
+            created_at: row.created_at,
+            interview_links: Array.isArray(row.interview_links) ? row.interview_links : [],
+            qa_links: Array.isArray(row.qa_links) ? row.qa_links : [],
+          }));
+          setBartenders(mapped);
+        }
+      })
+      .catch(() => {});
+  }, []);
+
   useEffect(() => {
     if (!isSupabaseConfigured()) return;
     supabase
@@ -650,7 +690,7 @@ export function AppDataProvider({ children }) {
       },
       getBartenderById: (id) => bartenders.find((b) => b.id === id),
       getPendingBartenders: () => bartenders.filter((b) => b.status === "pending"),
-      addBartender: (data) => {
+      addBartender: async (data) => {
         const id = data.id || generateId();
         const b = {
           id,
@@ -677,20 +717,89 @@ export function AppDataProvider({ children }) {
           qa_links: Array.isArray(data.qa_links) ? data.qa_links : [],
         };
         setBartenders((prev) => [...prev, b]);
+        if (isSupabaseConfigured()) {
+          try {
+            const row = {
+              external_id: id,
+              name: b.name,
+              surname: b.surname,
+              photo: b.photo,
+              venue_id: b.venue_id || null,
+              venue_name: b.venue_name || null,
+              city: b.city,
+              specialization: b.specialization,
+              years_experience: b.years_experience,
+              philosophy: b.philosophy,
+              distillati_preferiti: b.distillati_preferiti,
+              approccio_degustazione: b.approccio_degustazione,
+              consiglio_inizio: b.consiglio_inizio,
+              signature_drinks: b.signature_drinks,
+              percorso_esperienze: b.percorso_esperienze,
+              bio: b.bio,
+              motivation: b.motivation,
+              consent_linee_editoriali: b.consent_linee_editoriali,
+              status: b.status,
+              interview_links: b.interview_links,
+              qa_links: b.qa_links,
+            };
+            const { data: inserted, error } = await supabase.from("bartenders_cloud").insert(row).select().single();
+            if (!error && inserted) {
+              setBartenders((prev) =>
+                prev.map((x) => (x.id === id ? { ...x, supabase_id: String(inserted.id) } : x))
+              );
+            }
+          } catch (_) {}
+        }
         return b;
       },
-      updateBartender: (id, data) => {
+      updateBartender: async (id, data) => {
+        const updated = { ...data };
         setBartenders((prev) =>
           prev.map((b) => (b.id === id ? { ...b, ...data } : b))
         );
-        return { id, ...data };
+        if (isSupabaseConfigured()) {
+          const bartender = bartenders.find((b) => b.id === id);
+          const supabaseId = bartender?.supabase_id;
+          if (supabaseId) {
+            try {
+              const row = {
+                ...(data.name !== undefined && { name: data.name }),
+                ...(data.surname !== undefined && { surname: data.surname }),
+                ...(data.photo !== undefined && { photo: data.photo }),
+                ...(data.venue_id !== undefined && { venue_id: data.venue_id || null }),
+                ...(data.venue_name !== undefined && { venue_name: data.venue_name || null }),
+                ...(data.city !== undefined && { city: data.city }),
+                ...(data.specialization !== undefined && { specialization: data.specialization }),
+                ...(data.years_experience !== undefined && { years_experience: data.years_experience }),
+                ...(data.philosophy !== undefined && { philosophy: data.philosophy }),
+                ...(data.distillati_preferiti !== undefined && { distillati_preferiti: data.distillati_preferiti }),
+                ...(data.approccio_degustazione !== undefined && { approccio_degustazione: data.approccio_degustazione }),
+                ...(data.consiglio_inizio !== undefined && { consiglio_inizio: data.consiglio_inizio }),
+                ...(data.signature_drinks !== undefined && { signature_drinks: data.signature_drinks }),
+                ...(data.percorso_esperienze !== undefined && { percorso_esperienze: data.percorso_esperienze }),
+                ...(data.bio !== undefined && { bio: data.bio }),
+                ...(data.motivation !== undefined && { motivation: data.motivation }),
+                ...(data.consent_linee_editoriali !== undefined && { consent_linee_editoriali: data.consent_linee_editoriali }),
+                ...(data.status !== undefined && { status: data.status }),
+              };
+              await supabase.from("bartenders_cloud").update(row).eq("id", supabaseId);
+            } catch (_) {}
+          }
+        }
+        return { id, ...updated };
       },
       setBartenderStatus: (id, status) => {
         setBartenders((prev) =>
           prev.map((b) => (b.id === id ? { ...b, status } : b))
         );
       },
-      deleteBartender: (id) => {
+      deleteBartender: async (id) => {
+        const bartender = bartenders.find((b) => b.id === id);
+        if (isSupabaseConfigured() && bartender?.supabase_id) {
+          try {
+            await supabase.from("bartenders_cloud").delete().eq("id", bartender.supabase_id);
+          } catch (_) {}
+        }
         setBartenders((prev) => prev.filter((b) => b.id !== id));
       },
 

@@ -92,6 +92,12 @@ export default function VenueCombobox({
             placeholder="Cerca per nome o città..."
             value={inputValue}
             onValueChange={setInputValue}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && inputValue.trim() && canCreate) {
+                e.preventDefault();
+                handleCreate();
+              }
+            }}
             className="border-stone-700"
           />
           <CommandList>
