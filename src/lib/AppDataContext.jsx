@@ -690,6 +690,39 @@ export function AppDataProvider({ children }) {
       },
       getBartenderById: (id) => bartenders.find((b) => b.id === id),
       getPendingBartenders: () => bartenders.filter((b) => b.status === "pending"),
+      loadBartendersFromCloud: async () => {
+        if (!isSupabaseConfigured()) return;
+        const { data, error } = await supabase.from("bartenders_cloud").select("*").order("created_at", { ascending: false });
+        if (error) return;
+        const mapped = (data || []).map((row) => ({
+            id: row.external_id || String(row.id),
+            supabase_id: String(row.id),
+            name: row.name || "",
+            surname: row.surname || "",
+            photo: row.photo || "",
+            venue_id: row.venue_id || "",
+            venue_name: row.venue_name || "",
+            city: row.city || "",
+            specialization: row.specialization || "",
+            years_experience: row.years_experience || "",
+            philosophy: row.philosophy || "",
+            distillati_preferiti: row.distillati_preferiti || "",
+            approccio_degustazione: row.approccio_degustazione || "",
+            consiglio_inizio: row.consiglio_inizio || "",
+            signature_drinks: row.signature_drinks || "",
+            percorso_esperienze: row.percorso_esperienze || "",
+            bio: row.bio || "",
+            motivation: row.motivation || "",
+            consent_linee_editoriali: !!row.consent_linee_editoriali,
+            status: row.status || "pending",
+            created_at: row.created_at,
+            interview_links: Array.isArray(row.interview_links) ? row.interview_links : [],
+            qa_links: Array.isArray(row.qa_links) ? row.qa_links : [],
+          }));
+        const cloudIds = new Set(mapped.map((m) => m.id));
+        const localOnly = bartenders.filter((b) => !cloudIds.has(b.id) && !b.supabase_id);
+        setBartenders([...mapped, ...localOnly]);
+      },
       addBartender: async (data) => {
         const id = data.id || generateId();
         const b = {

@@ -58,7 +58,7 @@ const CATEGORY_LABELS = {
 };
 
 export default function Dashboard() {
-  const { user, getVenues, getArticles, getDrinks, getBartenders, getPendingBartenders, updateVenue, deleteVenue, setBartenderStatus, deleteBartender, exportData, importData, restoreReviewsFromSeed, isSupabaseConfigured, getPendingVenuesFromCloud, getPendingLocalVenues, approveVenueCloud, rejectVenueCloud, getPendingRegistrationsFromCloud, updateAppUserStatus } = useAppData();
+  const { user, getVenues, getArticles, getDrinks, getBartenders, getPendingBartenders, loadBartendersFromCloud, updateVenue, deleteVenue, setBartenderStatus, deleteBartender, exportData, importData, restoreReviewsFromSeed, isSupabaseConfigured, getPendingVenuesFromCloud, getPendingLocalVenues, approveVenueCloud, rejectVenueCloud, getPendingRegistrationsFromCloud, updateAppUserStatus } = useAppData();
   const allVenues = getVenues();
   const allArticles = getArticles();
   const allDrinks = getDrinks();
@@ -74,6 +74,7 @@ export default function Dashboard() {
   const [venueCoords, setVenueCoords] = useState({});
   const [pendingRegistrations, setPendingRegistrations] = useState([]);
   const [loadingRegistrations, setLoadingRegistrations] = useState(false);
+  const [loadingBartenders, setLoadingBartenders] = useState(false);
   const [previewVenue, setPreviewVenue] = useState(null);
   const selectedArticle = selectedArticleId ? allArticles.find((a) => a.id === selectedArticleId) : null;
   const selectedDrink = selectedDrinkId ? allDrinks.find((d) => d.id === selectedDrinkId) : null;
@@ -771,10 +772,18 @@ export default function Dashboard() {
 
         {/* Bartender */}
         <div className="mt-8 bg-stone-900/50 rounded-2xl border border-stone-800/50 p-6">
-          <h2 className="text-xl font-bold mb-6 flex items-center gap-2">
-            <BartenderIcon className="w-5 h-5 text-amber-500" />
-            Bartender
-          </h2>
+          <div className="flex flex-wrap items-center justify-between gap-4 mb-6">
+            <h2 className="text-xl font-bold flex items-center gap-2">
+              <BartenderIcon className="w-5 h-5 text-amber-500" />
+              Bartender
+            </h2>
+            {isSupabaseConfigured() && (
+              <Button size="sm" variant="outline" onClick={async () => { setLoadingBartenders(true); await loadBartendersFromCloud?.(); setLoadingBartenders(false); toast.success("Bartender aggiornati"); }} disabled={loadingBartenders} className="border-stone-600">
+                <RefreshCw className={`w-4 h-4 mr-2 ${loadingBartenders ? "animate-spin" : ""}`} />
+                Aggiorna
+              </Button>
+            )}
+          </div>
           {pendingBartenders.length > 0 && (
             <div className="mb-6">
               <h3 className="text-sm font-medium text-stone-400 mb-3">In attesa di approvazione</h3>
