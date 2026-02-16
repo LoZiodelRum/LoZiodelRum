@@ -555,7 +555,7 @@ export default function AddVenue() {
                   onClick={() => coverInputRef.current?.click()}
                   className="w-full px-4 py-3 rounded-lg bg-stone-800 border border-stone-700 text-stone-300 text-left hover:bg-stone-700 cursor-pointer"
                 >
-                  CARICA UNA FOTO
+                  carica una foto
                 </button>
                 <input
                   ref={coverInputRef}
