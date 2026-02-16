@@ -1,5 +1,5 @@
-import { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import { useAppData } from "@/lib/AppDataContext";
 import { createPageUrl } from "@/utils";
 import {
@@ -38,7 +38,6 @@ const SPECIALIZZAZIONI = [
 ];
 
 export default function AddBartender() {
-  const navigate = useNavigate();
   const { addBartender, getVenues } = useAppData();
   const venues = getVenues();
 
@@ -64,8 +63,35 @@ export default function AddBartender() {
 
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [status, setStatus] = useState(null); // 'success' | 'error' | null
   const [photoFiles, setPhotoFiles] = useState([]);
   const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
+
+  useEffect(() => {
+    if (!status) return;
+    const t = setTimeout(() => setStatus(null), 5000);
+    return () => clearTimeout(t);
+  }, [status]);
+
+  const initialFormData = {
+    name: "",
+    surname: "",
+    photo: "",
+    venue_id: "",
+    venue_name: "",
+    city: "",
+    specialization: "",
+    years_experience: "",
+    philosophy: "",
+    distillati_preferiti: "",
+    approccio_degustazione: "",
+    consiglio_inizio: "",
+    signature_drinks: "",
+    percorso_esperienze: "",
+    bio: "",
+    motivation: "",
+    consent_linee_editoriali: false,
+  };
 
   const updateField = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
@@ -112,10 +138,15 @@ export default function AddBartender() {
         venue_name: formData.venue_name?.trim() || "",
       };
       await addBartender(payload);
-      navigate(createPageUrl("Dashboard"));
+      setStatus("success");
+      setFormData(initialFormData);
+      setPhotoFiles([]);
+      setErrors({});
+      setUploadProgress({ current: 0, total: 0 });
     } catch (err) {
       console.error("[AddBartender] Errore salvataggio:", err);
       if (err?.originalError) console.error("[AddBartender] Dettaglio Supabase (RLS/rete):", err.originalError);
+      setStatus("error");
       setErrors((prev) => ({ ...prev, _form: err?.message || "Errore durante il salvataggio" }));
     } finally {
       setIsSubmitting(false);
@@ -160,6 +191,18 @@ export default function AddBartender() {
             </div>
           </div>
         </div>
+
+        {/* Banner status - auto-close 5s */}
+        {status === "success" && (
+          <div className="mb-6 p-4 rounded-xl bg-green-500/20 border border-green-500/50 text-green-200 text-center font-medium">
+            Inviato con successo! Il profilo è in fase di revisione.
+          </div>
+        )}
+        {status === "error" && (
+          <div className="mb-6 p-4 rounded-xl bg-red-500/20 border border-red-500/50 text-red-200 text-center font-medium">
+            Errore durante l'invio. Riprova.
+          </div>
+        )}
 
         <div className="grid lg:grid-cols-[2fr,1fr] gap-6 items-start">
           {/* Form principale */}
@@ -515,12 +558,12 @@ export default function AddBartender() {
                 {isSubmitting ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Salvataggio...
+                    Caricamento...
                   </>
                 ) : (
                   <>
                     <Send className="w-4 h-4 mr-2" />
-                    Salva scheda bartender
+                    Invia
                   </>
                 )}
               </Button>

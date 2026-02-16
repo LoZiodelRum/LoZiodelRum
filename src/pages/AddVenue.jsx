@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "@/components/ui/use-toast";
 import { createPageUrl } from "@/utils";
@@ -83,26 +83,52 @@ export default function AddVenue() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
+  const [status, setStatus] = useState(null); // 'success' | 'error' | null
   const [coverImageFiles, setCoverImageFiles] = useState([]);
   const [videoFile, setVideoFile] = useState(null);
   const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
+
+  useEffect(() => {
+    if (!status) return;
+    const t = setTimeout(() => setStatus(null), 5000);
+    return () => clearTimeout(t);
+  }, [status]);
+
+  const initialFormData = {
+    name: "",
+    description: "",
+    city: "",
+    country: "Italia",
+    address: "",
+    categories: [],
+    price_range: "€€",
+    specialties: [],
+    phone: "",
+    website: "",
+    instagram: "",
+    opening_hours: "",
+    latitude: null,
+    longitude: null,
+    cover_image: "",
+  };
 
   const createVenueMutation = useMutation({
     mutationFn: (venueData) => addVenue(venueData),
     onSuccess: (data) => {
       setIsSubmitting(false);
-      if (data.pending) {
-        toast({
-          title: "Locale inviato!",
-          description: "Sarà visibile dopo l'approvazione dell'amministratore.",
-        });
-        navigate(createPageUrl("Explore"));
-      } else {
+      setStatus("success");
+      setFormData(initialFormData);
+      setCoverImageFiles([]);
+      setVideoFile(null);
+      setErrors({});
+      setUploadProgress({ current: 0, total: 0 });
+      if (!data.pending) {
         navigate(createPageUrl(`VenueDetail?id=${data.id}`));
       }
     },
     onError: (err) => {
       setIsSubmitting(false);
+      setStatus("error");
       setErrors((prev) => ({ ...prev, _form: err?.message || "Errore di salvataggio" }));
     },
   });
@@ -153,6 +179,7 @@ export default function AddVenue() {
           videoUrl = await uploadToSupabaseStorage(videoFile, "venues", "video");
         }
       } catch (err) {
+        setStatus("error");
         setErrors((prev) => ({ ...prev, _form: err?.message || "Errore caricamento file" }));
         setIsSubmitting(false);
         setUploadProgress({ current: 0, total: 0 });
@@ -192,6 +219,17 @@ export default function AddVenue() {
   return (
     <div className="min-h-screen px-4 md:px-6 pt-8 pb-28 lg:pb-12">
       <div className="max-w-2xl mx-auto">
+        {/* Banner status - auto-close 5s */}
+        {status === "success" && (
+          <div className="mb-6 p-4 rounded-xl bg-green-500/20 border border-green-500/50 text-green-200 text-center font-medium">
+            Inviato con successo! Il profilo è in fase di revisione.
+          </div>
+        )}
+        {status === "error" && (
+          <div className="mb-6 p-4 rounded-xl bg-red-500/20 border border-red-500/50 text-red-200 text-center font-medium">
+            Errore durante l'invio. Riprova.
+          </div>
+        )}
         {/* Header - spazio extra per evitare sovrapposizione con menu */}
         <div className="flex items-center gap-4 mb-8 pt-6">
           <Link 
@@ -599,7 +637,7 @@ export default function AddVenue() {
             {isSubmitting ? (
               <>
                 <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                Creazione...
+                Caricamento...
               </>
             ) : (
               <>

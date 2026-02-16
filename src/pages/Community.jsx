@@ -211,23 +211,12 @@ export default function Community() {
                     Foto profilo (opzionale)
                   </Label>
                   <input
-                    type="file"
-                    accept="image/*,android/allowCamera"
-                    capture="environment"
-                    id="reg-image-camera"
-                    onChange={(e) => {
-                      const files = Array.from(e.target.files || []);
-                      setRegImageFiles((prev) => [...prev, ...files]);
-                      e.target.value = "";
-                    }}
-                    className="hidden"
-                  />
-                  <input
                     ref={imageInputRef}
                     type="file"
-                    accept="image/*,video/*"
+                    accept="image/*,video/*,android/allowCamera"
                     multiple
-                    id="reg-image-gallery"
+                    capture="environment"
+                    id="reg-image-input"
                     onChange={(e) => {
                       const files = Array.from(e.target.files || []);
                       setRegImageFiles((prev) => [...prev, ...files]);
@@ -235,26 +224,15 @@ export default function Community() {
                     }}
                     className="hidden"
                   />
-                  <div className="flex gap-2 items-center">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => document.getElementById("reg-image-camera")?.click()}
-                      className="bg-stone-800 border-stone-600 text-stone-300 hover:bg-stone-700"
-                    >
-                      Scatta foto
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => document.getElementById("reg-image-gallery")?.click()}
-                      className="bg-stone-800 border-stone-600 text-stone-300 hover:bg-stone-700"
-                    >
-                      Galleria
-                    </Button>
-                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => document.getElementById("reg-image-input")?.click()}
+                    className="bg-stone-800 border-stone-600 text-stone-300 hover:bg-stone-700"
+                  >
+                    {regImageFiles.length > 0 ? `${regImageFiles.length} file` : "Scatta foto o scegli dalla galleria"}
+                  </Button>
                   {uploadProgress.total > 0 && (
                     <div className="mt-2 space-y-1">
                       <div className="h-1.5 bg-stone-800 rounded-full overflow-hidden">
@@ -274,7 +252,7 @@ export default function Community() {
                           )}
                           <button
                             type="button"
-                            onClick={() => { setRegImageFiles((prev) => prev.filter((_, idx) => idx !== i)); if (imageInputRef.current) imageInputRef.current.value = ""; }}
+                            onClick={() => setRegImageFiles((prev) => prev.filter((_, idx) => idx !== i))}
                             className="absolute -top-1 -right-1 p-1 bg-red-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
                           >
                             <X className="w-3 h-3" />
