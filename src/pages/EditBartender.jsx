@@ -305,9 +305,9 @@ export default function EditBartender() {
                     onClick={() => document.getElementById("edit-bartender-photo-input")?.click()}
                     className="mt-1 bg-stone-800 border-stone-600 text-stone-300 hover:bg-stone-700"
                   >
-                    {photoFiles.length > 0 ? `${photoFiles.length} file selezionati` : "Carica foto da cellulare o galleria"}
+                    {photoFiles.length > 0 ? `${photoFiles.length} file selezionati` : "Carica foto"}
                   </Button>
-                  <p className="text-xs text-stone-500 mt-1">Fotocamera o galleria • max 5MB immagini, 10MB video</p>
+                  <p className="text-xs text-stone-500 mt-1">Scatta una foto o scegli dalla galleria • max 5MB immagini, 10MB video</p>
                   {uploadProgress.total > 0 && (
                     <div className="mt-2 space-y-1">
                       <div className="h-1.5 bg-stone-800 rounded-full overflow-hidden">
