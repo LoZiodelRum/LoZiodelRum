@@ -1,6 +1,6 @@
 /**
- * Registrazione community – Supabase (app_users).
- * Nessun localStorage: insertAppUser salva su Supabase.
+ * Registrazione community – Supabase (app_users). Nessun localStorage.
+ * insertAppUser salva su Supabase. Inserimenti da mobile → cloud → visibili su Mac.
  */
 import { useState } from "react";
 import { UserPlus, Shield, Store, Wine, User, ChevronRight } from "lucide-react";
@@ -128,7 +128,7 @@ export default function Community() {
               <p>Questa community nasce per restituire valore a un gesto quotidiano: bere. Crediamo che il bere non sia una performance, ma una scelta. Non cerchiamo il consenso, ma il contesto. Non raccogliamo classifiche, ma esperienze.</p>
               <p>Lo Zio del Rum è uno spazio editoriale indipendente dove:</p>
               <ul className="list-disc list-inside space-y-2 pl-2 text-stone-300">
-                <li>ogni racconto nasce da un’esperienza reale</li>
+                <li>ogni racconto nasce da un'esperienza reale</li>
                 <li>ogni luogo viene rispettato prima di essere giudicato</li>
                 <li>ogni contributo è basato su attenzione e responsabilità</li>
               </ul>
@@ -331,7 +331,7 @@ export default function Community() {
               Lo Zio del Rum è uno spazio editoriale indipendente dove:
             </p>
             <ul className="list-disc list-inside space-y-2 pl-2 text-stone-300">
-              <li>ogni racconto nasce da un’esperienza reale</li>
+              <li>ogni racconto nasce da un'esperienza reale</li>
               <li>ogni luogo viene rispettato prima di essere giudicato</li>
               <li>ogni contributo è basato su attenzione e responsabilità</li>
             </ul>

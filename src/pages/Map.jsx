@@ -1,6 +1,6 @@
 /**
- * Mappa locali – dati da Supabase (AppDataContext).
- * Nessun localStorage: venues da venues_cloud via getVenues().
+ * Mappa locali – Supabase (venues_cloud). Nessun localStorage.
+ * getVenues() carica da Supabase. Inserimenti da mobile → cloud → visibili su Mac.
  */
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -91,7 +91,7 @@ export default function MapPage() {
         </Button>
       </div>
 
-      {/* Map - Leaflet con locali da Supabase */}
+      {/* Map - Leaflet con locali da Supabase (venues_cloud) */}
       <MapContainer
         center={mapCenter}
         zoom={4}
