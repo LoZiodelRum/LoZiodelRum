@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "@/components/ui/use-toast";
 import { createPageUrl } from "@/utils";
@@ -87,6 +87,9 @@ export default function AddVenue() {
   const [coverImageFiles, setCoverImageFiles] = useState([]);
   const [videoFile, setVideoFile] = useState(null);
   const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
+
+  const coverInputRef = useRef(null);
+  const videoInputRef = useRef(null);
 
   const handleCoverCapture = (e) => {
     const files = Array.from(e.target.files || []);
@@ -546,14 +549,25 @@ export default function AddVenue() {
               Immagine di copertina
             </h2>
             <div className="space-y-2">
-              <input
-                type="file"
-                accept="image/*,video/*"
-                capture="environment"
-                multiple
-                className="camera-input"
-                onChange={handleCoverCapture}
-              />
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => coverInputRef.current?.click()}
+                  className="w-full px-4 py-3 rounded-lg bg-stone-800 border border-stone-700 text-stone-300 text-left hover:bg-stone-700 cursor-pointer"
+                >
+                  CARICA UNA FOTO
+                </button>
+                <input
+                  ref={coverInputRef}
+                  type="file"
+                  accept="image/*,video/*"
+                  capture="environment"
+                  multiple
+                  onChange={handleCoverCapture}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  style={{ fontSize: 0 }}
+                />
+              </div>
               <p className="text-xs text-stone-500">Fotocamera, video o galleria • max 5MB foto, 10MB video</p>
               {uploadProgress.total > 0 && (
                 <div className="space-y-1">
@@ -597,18 +611,29 @@ export default function AddVenue() {
                 <VideoIcon className="w-4 h-4 text-amber-500" />
                 Video breve (opzionale)
               </h3>
-              <input
-                type="file"
-                accept="image/*,video/*"
-                capture="environment"
-                multiple
-                className="camera-input"
-                onChange={(e) => {
-                  const f = e.target.files?.[0];
-                  if (f) setVideoFile(f);
-                  e.target.value = "";
-                }}
-              />
+              <div className="relative">
+                <button
+                  type="button"
+                  onClick={() => videoInputRef.current?.click()}
+                  className="w-full px-4 py-3 rounded-lg bg-stone-800 border border-stone-700 text-stone-300 text-left hover:bg-stone-700 cursor-pointer"
+                >
+                  Video breve (opzionale)
+                </button>
+                <input
+                  ref={videoInputRef}
+                  type="file"
+                  accept="image/*,video/*"
+                  capture="environment"
+                  multiple
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) setVideoFile(f);
+                    e.target.value = "";
+                  }}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  style={{ fontSize: 0 }}
+                />
+              </div>
                 <div className="flex gap-2 items-center mt-2">
                   {videoFile && (
                     <button
