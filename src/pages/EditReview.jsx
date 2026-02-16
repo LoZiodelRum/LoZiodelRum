@@ -446,21 +446,40 @@ export default function EditReview() {
                 <input
                   type="file"
                   accept="image/*,video/*"
-                  id="edit-review-photos-input"
+                  capture="environment"
+                  id="edit-review-photos-camera"
+                  onChange={addPhotoFiles}
+                  className="hidden"
+                />
+                <input
+                  type="file"
+                  accept="image/*,video/*"
+                  id="edit-review-photos-gallery"
                   onChange={addPhotoFiles}
                   multiple
                   className="hidden"
                 />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => document.getElementById("edit-review-photos-input")?.click()}
-                  className="bg-stone-800 border-stone-600 text-stone-300 hover:bg-stone-700"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Aggiungi foto
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => document.getElementById("edit-review-photos-camera")?.click()}
+                    className="bg-stone-800 border-stone-600 text-stone-300 hover:bg-stone-700"
+                  >
+                    Scatta foto
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => document.getElementById("edit-review-photos-gallery")?.click()}
+                    className="bg-stone-800 border-stone-600 text-stone-300 hover:bg-stone-700"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Galleria
+                  </Button>
+                </div>
                 <p className="text-xs text-stone-500 mt-1">max 5MB per immagine</p>
                 {(formData.photos?.length > 0 || photoFiles.length > 0) && (
                   <div className="flex flex-wrap gap-2 mt-3">
@@ -491,21 +510,40 @@ export default function EditReview() {
                 <input
                   type="file"
                   accept="image/*,video/*"
-                  id="edit-review-videos-input"
+                  capture="environment"
+                  id="edit-review-videos-camera"
+                  onChange={addVideoFiles}
+                  className="hidden"
+                />
+                <input
+                  type="file"
+                  accept="image/*,video/*"
+                  id="edit-review-videos-gallery"
                   onChange={addVideoFiles}
                   multiple
                   className="hidden"
                 />
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => document.getElementById("edit-review-videos-input")?.click()}
-                  className="bg-stone-800 border-stone-600 text-stone-300 hover:bg-stone-700"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Aggiungi video
-                </Button>
+                <div className="flex gap-2">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => document.getElementById("edit-review-videos-camera")?.click()}
+                    className="bg-stone-800 border-stone-600 text-stone-300 hover:bg-stone-700"
+                  >
+                    Registra video
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => document.getElementById("edit-review-videos-gallery")?.click()}
+                    className="bg-stone-800 border-stone-600 text-stone-300 hover:bg-stone-700"
+                  >
+                    <Plus className="w-4 h-4 mr-2" />
+                    Galleria
+                  </Button>
+                </div>
                 <p className="text-xs text-stone-500 mt-1">max 10MB per video</p>
                 {(formData.videos?.length > 0 || videoFiles.length > 0) && (
                   <div className="flex flex-wrap gap-2 mt-3">

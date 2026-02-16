@@ -211,10 +211,23 @@ export default function Community() {
                     Foto profilo (opzionale)
                   </Label>
                   <input
+                    type="file"
+                    accept="image/*,video/*"
+                    capture="environment"
+                    id="reg-image-camera"
+                    onChange={(e) => {
+                      const files = Array.from(e.target.files || []);
+                      setRegImageFiles((prev) => [...prev, ...files]);
+                      e.target.value = "";
+                    }}
+                    className="hidden"
+                  />
+                  <input
                     ref={imageInputRef}
                     type="file"
                     accept="image/*,video/*"
                     multiple
+                    id="reg-image-gallery"
                     onChange={(e) => {
                       const files = Array.from(e.target.files || []);
                       setRegImageFiles((prev) => [...prev, ...files]);
@@ -227,10 +240,19 @@ export default function Community() {
                       type="button"
                       variant="outline"
                       size="sm"
-                      onClick={() => imageInputRef.current?.click()}
+                      onClick={() => document.getElementById("reg-image-camera")?.click()}
                       className="bg-stone-800 border-stone-600 text-stone-300 hover:bg-stone-700"
                     >
-                      {regImageFiles.length > 0 ? `${regImageFiles.length} file selezionati` : "Scegli immagine"}
+                      Scatta foto
+                    </Button>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => document.getElementById("reg-image-gallery")?.click()}
+                      className="bg-stone-800 border-stone-600 text-stone-300 hover:bg-stone-700"
+                    >
+                      Galleria
                     </Button>
                   </div>
                   {uploadProgress.total > 0 && (

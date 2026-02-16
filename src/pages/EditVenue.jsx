@@ -467,8 +467,8 @@ export default function EditVenue() {
             <input
               type="file"
               accept="image/*,video/*"
-              multiple
-              id="edit-venue-cover-input"
+              capture="environment"
+              id="edit-venue-cover-camera"
               onChange={(e) => {
                 const files = Array.from(e.target.files || []);
                 setCoverImageFiles((prev) => [...prev, ...files]);
@@ -476,21 +476,50 @@ export default function EditVenue() {
               }}
               style={{ display: "none" }}
             />
-            <button
-              type="button"
-              onClick={() => document.getElementById("edit-venue-cover-input")?.click()}
-              style={{
-                padding: "0.5rem 1rem",
-                fontSize: "0.875rem",
-                backgroundColor: "rgba(41,37,36,0.8)",
-                border: "1px solid rgba(68,64,60,0.8)",
-                borderRadius: "0.5rem",
-                color: "#d6d3d1",
-                cursor: "pointer",
+            <input
+              type="file"
+              accept="image/*,video/*"
+              multiple
+              id="edit-venue-cover-gallery"
+              onChange={(e) => {
+                const files = Array.from(e.target.files || []);
+                setCoverImageFiles((prev) => [...prev, ...files]);
+                e.target.value = "";
               }}
-            >
-              {coverImageFiles.length > 0 ? `${coverImageFiles.length} file selezionati` : "Carica foto/video da cellulare o galleria"}
-            </button>
+              style={{ display: "none" }}
+            />
+            <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.5rem" }}>
+              <button
+                type="button"
+                onClick={() => document.getElementById("edit-venue-cover-camera")?.click()}
+                style={{
+                  padding: "0.5rem 1rem",
+                  fontSize: "0.875rem",
+                  backgroundColor: "rgba(41,37,36,0.8)",
+                  border: "1px solid rgba(68,64,60,0.8)",
+                  borderRadius: "0.5rem",
+                  color: "#d6d3d1",
+                  cursor: "pointer",
+                }}
+              >
+                Scatta foto
+              </button>
+              <button
+                type="button"
+                onClick={() => document.getElementById("edit-venue-cover-gallery")?.click()}
+                style={{
+                  padding: "0.5rem 1rem",
+                  fontSize: "0.875rem",
+                  backgroundColor: "rgba(41,37,36,0.8)",
+                  border: "1px solid rgba(68,64,60,0.8)",
+                  borderRadius: "0.5rem",
+                  color: "#d6d3d1",
+                  cursor: "pointer",
+                }}
+              >
+                Galleria
+              </button>
+            </div>
             <p style={{ fontSize: "0.75rem", color: "#78716c", marginTop: "0.5rem" }}>Fotocamera o galleria • max 5MB immagini, 10MB video</p>
             {uploadProgress.total > 0 && (
               <div style={{ marginTop: "0.5rem" }}>

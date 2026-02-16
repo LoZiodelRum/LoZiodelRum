@@ -497,8 +497,8 @@ export default function AddVenue() {
               <input
                 type="file"
                 accept="image/*,video/*"
-                multiple
-                id="cover-image-input"
+                capture="environment"
+                id="cover-image-camera"
                 onChange={(e) => {
                   const files = Array.from(e.target.files || []);
                   setCoverImageFiles(prev => [...prev, ...files]);
@@ -507,17 +507,39 @@ export default function AddVenue() {
                 }}
                 className="hidden"
               />
-              <Button
-                type="button"
-                variant="outline"
-                size="sm"
-                onClick={() => document.getElementById("cover-image-input")?.click()}
-                className="bg-stone-800 border-stone-600 text-stone-300 hover:bg-stone-700"
-              >
-                {coverImageFiles.length > 0
-                  ? `${coverImageFiles.length} file selezionati`
-                  : "Carica foto/video da cellulare o galleria"}
-              </Button>
+              <input
+                type="file"
+                accept="image/*,video/*"
+                multiple
+                id="cover-image-gallery"
+                onChange={(e) => {
+                  const files = Array.from(e.target.files || []);
+                  setCoverImageFiles(prev => [...prev, ...files]);
+                  if (files.length) setFormData(prev => ({ ...prev, cover_image: "" }));
+                  e.target.value = "";
+                }}
+                className="hidden"
+              />
+              <div className="flex gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => document.getElementById("cover-image-camera")?.click()}
+                  className="bg-stone-800 border-stone-600 text-stone-300 hover:bg-stone-700"
+                >
+                  Scatta foto
+                </Button>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => document.getElementById("cover-image-gallery")?.click()}
+                  className="bg-stone-800 border-stone-600 text-stone-300 hover:bg-stone-700"
+                >
+                  Galleria
+                </Button>
+              </div>
               <p className="text-xs text-stone-500">Fotocamera o galleria • max 5MB immagini, 10MB video</p>
               {uploadProgress.total > 0 && (
                 <div className="space-y-1">
@@ -562,20 +584,37 @@ export default function AddVenue() {
                 <input
                   type="file"
                   accept="image/*,video/*"
-                  id="venue-video-input"
+                  capture="environment"
+                  id="venue-video-camera"
                   onChange={(e) => setVideoFile(e.target.files?.[0] || null)}
-                className="hidden"
-              />
-              <div className="flex gap-2 items-center">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => document.getElementById("venue-video-input")?.click()}
-                  className="bg-stone-800 border-stone-600 text-stone-300 hover:bg-stone-700"
-                >
-                  {videoFile ? videoFile.name : "Carica video"}
-                </Button>
+                  className="hidden"
+                />
+                <input
+                  type="file"
+                  accept="image/*,video/*"
+                  id="venue-video-gallery"
+                  onChange={(e) => setVideoFile(e.target.files?.[0] || null)}
+                  className="hidden"
+                />
+                <div className="flex gap-2 items-center">
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => document.getElementById("venue-video-camera")?.click()}
+                    className="bg-stone-800 border-stone-600 text-stone-300 hover:bg-stone-700"
+                  >
+                    Registra video
+                  </Button>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => document.getElementById("venue-video-gallery")?.click()}
+                    className="bg-stone-800 border-stone-600 text-stone-300 hover:bg-stone-700"
+                  >
+                    Galleria
+                  </Button>
                 {videoFile && (
                   <button
                     type="button"
