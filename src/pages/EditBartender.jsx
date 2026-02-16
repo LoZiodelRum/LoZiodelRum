@@ -298,6 +298,7 @@ export default function EditBartender() {
                   <input
                     type="file"
                     accept="image/*,video/*"
+                    capture="environment"
                     multiple
                     id="edit-bartender-photo-gallery"
                     onChange={(e) => {

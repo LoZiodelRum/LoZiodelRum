@@ -1,11 +1,9 @@
 /**
- * Sync registrazioni utenti su Supabase (app_users)
- * Esegui la migration 20250215000000_auth_and_registrations.sql prima di usare
+ * Tabella unica app_users: Bartender, Locali, User, Proprietario.
  */
 import { supabase, isSupabaseConfigured } from "./supabase";
 import { TABLE_APP_USERS } from "./supabaseTables";
 
-/** Converte undefined in null per evitare errori Supabase */
 function sanitize(val) {
   return val === undefined ? null : val;
 }
@@ -45,12 +43,32 @@ export async function insertAppUser(userData) {
       motivation: sanitize(userData.motivation) ?? "",
       consent_linee_editoriali: !!userData.consent_linee_editoriali,
     }),
+    ...(userData.role === "venue" && {
+      venue_data: {
+        slug: userData.slug || "",
+        description: userData.description || "",
+        city: userData.city || "",
+        country: userData.country || "Italia",
+        address: userData.address || "",
+        latitude: userData.latitude ?? null,
+        longitude: userData.longitude ?? null,
+        cover_image: userData.cover_image || "",
+        video_url: userData.video_url || null,
+        category: userData.category || "cocktail_bar",
+        price_range: userData.price_range || "€€",
+        phone: userData.phone || "",
+        website: userData.website || "",
+        instagram: userData.instagram || "",
+        opening_hours: userData.opening_hours || "",
+      },
+    }),
     ...(userData.role === "user" && {
       bio_light: sanitize(userData.bio_light) || null,
       home_city: sanitize(userData.home_city) || null,
       image_url: sanitize(userData.image_url) || null,
     }),
   };
+  console.log("Dati inviati a tabella app_users:", row);
   const { data, error } = await supabase.from(TABLE_APP_USERS).insert(row).select().single();
   if (error) {
     console.error("[Supabase] insert app_user - errore completo:", { error, code: error.code, details: error.details, hint: error.hint });

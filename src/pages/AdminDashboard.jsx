@@ -9,7 +9,7 @@ import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { useAppData } from "@/lib/AppDataContext";
-import { TABLE_VENUES, TABLE_APP_USERS } from "@/lib/supabaseTables";
+import { TABLE_APP_USERS } from "@/lib/supabaseTables";
 import { MapPin, User, Wine, ChevronLeft, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AdminCard from "@/components/admin/AdminCard";
@@ -160,7 +160,7 @@ export default function AdminDashboard() {
               </h2>
               {pendingVenues.length === 0 ? (
                 <p className="text-stone-500">
-                  {!loadError ? `Database collegato, ma la tabella ${TABLE_VENUES} è vuota` : "Nessun locale"}
+                  {!loadError ? `Database collegato, ma la tabella ${TABLE_APP_USERS} (role=venue) è vuota` : "Nessun locale"}
                 </p>
               ) : (
                 <ul className="space-y-2">
