@@ -13,7 +13,9 @@ import {
   Clock,
   Send,
   Loader2,
-  Wine
+  Wine,
+  Image as ImageIcon,
+  Video as VideoIcon
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,6 +29,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { motion } from "framer-motion";
+import { uploadToSupabaseStorage } from "@/lib/supabaseStorage";
 
 const categories = [
   { value: "cocktail_bar", label: "Cocktail Bar" },
@@ -79,6 +82,8 @@ export default function AddVenue() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
+  const [coverImageFile, setCoverImageFile] = useState(null);
+  const [videoFile, setVideoFile] = useState(null);
 
   const createVenueMutation = useMutation({
     mutationFn: (venueData) => addVenue(venueData),
@@ -128,8 +133,24 @@ export default function AddVenue() {
     if (Object.keys(next).length > 0) return;
 
     setIsSubmitting(true);
-    
-    // Generate slug from name
+    let coverImageUrl = formData.cover_image || "";
+    let videoUrl = "";
+
+    if (hasSupabase) {
+      try {
+        if (coverImageFile) {
+          coverImageUrl = await uploadToSupabaseStorage(coverImageFile, "venues", "image");
+        }
+        if (videoFile) {
+          videoUrl = await uploadToSupabaseStorage(videoFile, "venues", "video");
+        }
+      } catch (err) {
+        setErrors((prev) => ({ ...prev, _form: err?.message || "Errore caricamento file" }));
+        setIsSubmitting(false);
+        return;
+      }
+    }
+
     const slug = formData.name.toLowerCase()
       .replace(/[^a-z0-9]+/g, '-')
       .replace(/(^-|-$)/g, '');
@@ -150,9 +171,10 @@ export default function AddVenue() {
       opening_hours: formData.opening_hours || "",
       latitude: formData.latitude ?? null,
       longitude: formData.longitude ?? null,
-      cover_image: formData.cover_image || "",
+      cover_image: coverImageUrl,
+      video_url: videoUrl || null,
       featured: false,
-      verified: hasSupabase, // senza Supabase: false → appare in "Locali in attesa"
+      verified: hasSupabase,
     });
   };
 
@@ -451,27 +473,94 @@ export default function AddVenue() {
             </div>
           </motion.div>
 
-          {/* Cover Image */}
+          {/* Cover Image e Video */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.4 }}
-            className="bg-stone-900/50 rounded-2xl border border-stone-800/50 p-6"
+            className="bg-stone-900/50 rounded-2xl border border-stone-800/50 p-6 space-y-6"
           >
-            <h2 className="text-lg font-semibold mb-4">Immagine di copertina</h2>
-            <Input
-              placeholder="URL dell'immagine..."
-              value={formData.cover_image}
-              onChange={(e) => setFormData(prev => ({ ...prev, cover_image: e.target.value }))}
-              className="bg-stone-800/50 border-stone-700"
-            />
-            {formData.cover_image && (
+            <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <ImageIcon className="w-5 h-5 text-amber-500" />
+              Immagine di copertina
+            </h2>
+            <div className="space-y-2">
+              <input
+                type="file"
+                accept="image/*"
+                id="cover-image-input"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  setCoverImageFile(f || null);
+                  if (f) setFormData(prev => ({ ...prev, cover_image: "" }));
+                }}
+                className="hidden"
+              />
+              <div className="flex flex-wrap gap-2 items-center">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => document.getElementById("cover-image-input")?.click()}
+                  className="bg-stone-800 border-stone-600 text-stone-300 hover:bg-stone-700"
+                >
+                  {coverImageFile ? coverImageFile.name : "Carica immagine"}
+                </Button>
+                <span className="text-stone-500 text-sm">oppure</span>
+                <Input
+                  placeholder="URL immagine..."
+                  value={formData.cover_image}
+                  onChange={(e) => {
+                    setFormData(prev => ({ ...prev, cover_image: e.target.value }));
+                    if (coverImageFile) setCoverImageFile(null);
+                  }}
+                  className="flex-1 min-w-[180px] bg-stone-800/50 border-stone-700"
+                />
+              </div>
+              <p className="text-xs text-stone-500">Fotocamera o galleria • max 5MB</p>
+            </div>
+            {(formData.cover_image || coverImageFile) && (
               <img 
-                src={formData.cover_image} 
+                src={coverImageFile ? URL.createObjectURL(coverImageFile) : formData.cover_image} 
                 alt="Preview" 
-                className="mt-4 h-40 w-full object-cover rounded-xl"
+                className="h-40 w-full object-cover rounded-xl"
               />
             )}
+
+            <div className="pt-4 border-t border-stone-700">
+              <h3 className="text-base font-semibold mb-3 flex items-center gap-2">
+                <VideoIcon className="w-4 h-4 text-amber-500" />
+                Video breve (opzionale)
+              </h3>
+              <input
+                type="file"
+                accept="video/*"
+                id="venue-video-input"
+                onChange={(e) => setVideoFile(e.target.files?.[0] || null)}
+                className="hidden"
+              />
+              <div className="flex gap-2 items-center">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => document.getElementById("venue-video-input")?.click()}
+                  className="bg-stone-800 border-stone-600 text-stone-300 hover:bg-stone-700"
+                >
+                  {videoFile ? videoFile.name : "Carica video"}
+                </Button>
+                {videoFile && (
+                  <button
+                    type="button"
+                    onClick={() => setVideoFile(null)}
+                    className="text-xs text-stone-500 hover:text-stone-300"
+                  >
+                    Rimuovi
+                  </button>
+                )}
+              </div>
+              <p className="text-xs text-stone-500 mt-1">max 10MB</p>
+            </div>
           </motion.div>
 
           {/* Submit */}

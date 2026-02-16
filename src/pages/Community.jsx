@@ -2,8 +2,8 @@
  * Registrazione community – Supabase (app_users). Nessun localStorage.
  * insertAppUser salva su Supabase. Inserimenti da mobile → cloud → visibili su Mac.
  */
-import { useState } from "react";
-import { UserPlus, Shield, Store, Wine, User, ChevronRight } from "lucide-react";
+import { useState, useRef } from "react";
+import { UserPlus, Shield, Store, Wine, User, ChevronRight, Image } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,6 +12,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { useAppData } from "@/lib/AppDataContext";
 import { insertAppUser } from "@/lib/supabaseUsers";
+import { uploadToSupabaseStorage } from "@/lib/supabaseStorage";
 import {
   Select,
   SelectContent,
@@ -52,8 +53,10 @@ export default function Community() {
   const [regVenueIds, setRegVenueIds] = useState([]);
   const [regBioLight, setRegBioLight] = useState("");
   const [regHomeCity, setRegHomeCity] = useState("");
+  const [regImageFile, setRegImageFile] = useState(null);
   const [regError, setRegError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const imageInputRef = useRef(null);
 
   const handleRegister = async (e) => {
     e.preventDefault();
@@ -71,13 +74,23 @@ export default function Community() {
     }
     const roleConfig = ROLES.find((r) => r.id === regRole);
     setIsSubmitting(true);
+    let imageUrl = null;
+    if (regImageFile && (regRole === "proprietario" || regRole === "user")) {
+      try {
+        imageUrl = await uploadToSupabaseStorage(regImageFile, "profiles", "image");
+      } catch (err) {
+        setRegError(err?.message || "Errore caricamento immagine.");
+        setIsSubmitting(false);
+        return;
+      }
+    }
     const userPayload = {
       name,
       email: regRole === "proprietario" ? (regEmail || "").trim() || null : "",
       role: regRole,
       roleLabel: roleConfig?.label || regRole,
-      ...(regRole === "proprietario" && { venue_ids: regVenueIds }),
-      ...(regRole === "user" && { bio_light: (regBioLight || "").trim() || null, home_city: (regHomeCity || "").trim() || null }),
+      ...(regRole === "proprietario" && { venue_ids: regVenueIds, image_url: imageUrl }),
+      ...(regRole === "user" && { bio_light: (regBioLight || "").trim() || null, home_city: (regHomeCity || "").trim() || null, image_url: imageUrl }),
     };
     setRegName("");
     setRegRole("");
@@ -86,6 +99,7 @@ export default function Community() {
     setRegVenueIds([]);
     setRegBioLight("");
     setRegHomeCity("");
+    setRegImageFile(null);
     try {
       if (regRole !== "bartender") {
         await insertAppUser(userPayload);
@@ -182,6 +196,42 @@ export default function Community() {
                   className="bg-stone-800 border-stone-600 text-stone-100 placeholder:text-stone-500"
                 />
               </div>
+              {(regRole === "proprietario" || regRole === "user") && (
+                <div>
+                  <Label className="block text-sm font-medium text-stone-200 mb-2 flex items-center gap-2">
+                    <Image className="w-4 h-4 text-amber-500" />
+                    Foto profilo (opzionale)
+                  </Label>
+                  <input
+                    ref={imageInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setRegImageFile(e.target.files?.[0] || null)}
+                    className="hidden"
+                  />
+                  <div className="flex gap-2 items-center">
+                    <Button
+                      type="button"
+                      variant="outline"
+                      size="sm"
+                      onClick={() => imageInputRef.current?.click()}
+                      className="bg-stone-800 border-stone-600 text-stone-300 hover:bg-stone-700"
+                    >
+                      {regImageFile ? regImageFile.name : "Scegli immagine"}
+                    </Button>
+                    {regImageFile && (
+                      <button
+                        type="button"
+                        onClick={() => { setRegImageFile(null); imageInputRef.current?.value = ""; }}
+                        className="text-xs text-stone-500 hover:text-stone-300"
+                      >
+                        Rimuovi
+                      </button>
+                    )}
+                  </div>
+                  <p className="text-xs text-stone-500 mt-1">Fotocamera o galleria • max 5MB</p>
+                </div>
+              )}
               <div>
                 <label className="block text-sm font-medium text-stone-200 mb-3">Categoria</label>
                 <div className="grid grid-cols-2 gap-3">

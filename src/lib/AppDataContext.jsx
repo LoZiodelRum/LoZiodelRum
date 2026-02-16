@@ -181,6 +181,7 @@ export function AppDataProvider({ children }) {
             latitude: venue.latitude ?? null,
             longitude: venue.longitude ?? null,
             cover_image: venue.cover_image || "",
+            video_url: venue.video_url || null,
             category: venue.category || "cocktail_bar",
             price_range: venue.price_range || "€€",
             phone: venue.phone || "",

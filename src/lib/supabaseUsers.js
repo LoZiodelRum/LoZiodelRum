@@ -22,6 +22,7 @@ export async function insertAppUser(userData) {
       venue_ids: Array.isArray(userData.venue_ids) && userData.venue_ids.length > 0
         ? userData.venue_ids.filter((id) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(id)))
         : null,
+      image_url: sanitize(userData.image_url) || null,
     }),
     ...(userData.role === "bartender" && {
       surname: sanitize(userData.surname) ?? "",
@@ -44,6 +45,7 @@ export async function insertAppUser(userData) {
     ...(userData.role === "user" && {
       bio_light: sanitize(userData.bio_light) || null,
       home_city: sanitize(userData.home_city) || null,
+      image_url: sanitize(userData.image_url) || null,
     }),
   };
   const { data, error } = await supabase.from("app_users").insert(row).select().single();
