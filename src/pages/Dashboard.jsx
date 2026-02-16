@@ -223,26 +223,27 @@ export default function Dashboard() {
             ) : pendingRegistrations.length === 0 ? (
               <div className="text-center py-8 text-stone-500">Nessun nuovo iscritto in attesa</div>
             ) : (
-              <div className="space-y-3">
-                {pendingRegistrations.map((r) => (
-                  <div
-                    key={r.id}
-                    role="button"
-                    tabIndex={0}
-                    onClick={() => setSelectedRegistration(r)}
-                    onKeyDown={(e) => e.key === "Enter" && setSelectedRegistration(r)}
-                    className="flex items-center justify-between p-4 bg-stone-800/30 rounded-xl border border-stone-700/50 cursor-pointer hover:bg-stone-800/50 transition-colors"
-                  >
-                    <div>
-                      <p className="font-medium">{r.name}</p>
-                      <p className="text-sm text-stone-500">{r.role_label || r.role} • {r.created_at ? new Date(r.created_at).toLocaleDateString("it-IT") : ""}</p>
+              <>
+                <div className="space-y-3">
+                  {pendingRegistrations.map((r) => (
+                    <div
+                      key={r.id}
+                      role="button"
+                      tabIndex={0}
+                      onClick={() => setSelectedRegistration(r)}
+                      onKeyDown={(e) => e.key === "Enter" && setSelectedRegistration(r)}
+                      className="flex items-center justify-between p-4 bg-stone-800/30 rounded-xl border border-stone-700/50 cursor-pointer hover:bg-stone-800/50 transition-colors"
+                    >
+                      <div>
+                        <p className="font-medium">{r.name}</p>
+                        <p className="text-sm text-stone-500">{r.role_label || r.role} • {r.created_at ? new Date(r.created_at).toLocaleDateString("it-IT") : ""}</p>
+                      </div>
+                      <Eye className="w-5 h-5 text-stone-500" />
                     </div>
-                    <Eye className="w-5 h-5 text-stone-500" />
-                  </div>
-                ))}
-              </div>
+                  ))}
+                </div>
 
-              {/* Modal dettagli iscritto */}
+                {/* Modal dettagli iscritto */}
               <Dialog open={!!selectedRegistration} onOpenChange={(open) => !open && setSelectedRegistration(null)}>
                 <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto bg-stone-900 border-stone-700">
                   <DialogHeader>
@@ -344,6 +345,7 @@ export default function Dashboard() {
                   </AlertDialogFooter>
                 </AlertDialogContent>
               </AlertDialog>
+              </>
             )}
           </div>
         )}
