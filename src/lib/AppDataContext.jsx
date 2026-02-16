@@ -192,8 +192,7 @@ export function AppDataProvider({ children }) {
           const { data: inserted, error } = await supabase.from("venues_cloud").insert(row).select().single();
           if (error) {
             console.error("Supabase insert venue:", error);
-            setVenues((prev) => [...prev, venue]);
-            return venue;
+            throw new Error(error.message || "Errore salvataggio locale su Supabase");
           }
           const cloudVenue = { ...venue, id: String(inserted.id), _cloudPending: true };
           setVenues((prev) => [...prev, cloudVenue]);

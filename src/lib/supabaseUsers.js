@@ -4,47 +4,52 @@
  */
 import { supabase, isSupabaseConfigured } from "./supabase";
 
+/** Converte undefined in null per evitare errori Supabase */
+function sanitize(val) {
+  return val === undefined ? null : val;
+}
+
 export async function insertAppUser(userData) {
   if (!isSupabaseConfigured()) return null;
   const row = {
-    name: userData.name || "",
-    email: userData.email || null,
+    name: String(userData.name || ""),
+    email: sanitize(userData.email) || null,
     role: userData.role || "user",
-    role_label: userData.roleLabel || userData.role,
+    role_label: userData.roleLabel || userData.role || userData.role,
     status: userData.role === "admin" ? "approved" : "pending",
     ...(userData.role === "proprietario" && {
-      email: userData.email || null,
+      email: sanitize(userData.email) || null,
       venue_ids: Array.isArray(userData.venue_ids) && userData.venue_ids.length > 0
         ? userData.venue_ids.filter((id) => /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(id)))
         : null,
     }),
     ...(userData.role === "bartender" && {
-      surname: userData.surname,
-      photo: userData.photo,
+      surname: sanitize(userData.surname) ?? "",
+      photo: sanitize(userData.photo) ?? "",
       venue_id: userData.venue_id || null,
-      custom_venue_name: userData.custom_venue_name || userData.venue_name || null,
-      city: userData.city,
-      specialization: userData.specialization,
-      years_experience: userData.years_experience,
-      philosophy: userData.philosophy,
-      distillati_preferiti: userData.distillati_preferiti,
-      approccio_degustazione: userData.approccio_degustazione,
-      consiglio_inizio: userData.consiglio_inizio,
-      signature_drinks: userData.signature_drinks,
-      percorso_esperienze: userData.percorso_esperienze,
-      bio: userData.bio,
-      motivation: userData.motivation,
-      consent_linee_editoriali: userData.consent_linee_editoriali,
+      custom_venue_name: sanitize(userData.custom_venue_name || userData.venue_name) || null,
+      city: sanitize(userData.city) ?? "",
+      specialization: sanitize(userData.specialization) ?? "",
+      years_experience: userData.years_experience != null ? String(userData.years_experience) : null,
+      philosophy: sanitize(userData.philosophy) ?? "",
+      distillati_preferiti: sanitize(userData.distillati_preferiti) ?? "",
+      approccio_degustazione: sanitize(userData.approccio_degustazione) ?? "",
+      consiglio_inizio: sanitize(userData.consiglio_inizio) ?? "",
+      signature_drinks: sanitize(userData.signature_drinks) ?? "",
+      percorso_esperienze: sanitize(userData.percorso_esperienze) ?? "",
+      bio: sanitize(userData.bio) ?? "",
+      motivation: sanitize(userData.motivation) ?? "",
+      consent_linee_editoriali: !!userData.consent_linee_editoriali,
     }),
     ...(userData.role === "user" && {
-      bio_light: userData.bio_light,
-      home_city: userData.home_city,
+      bio_light: sanitize(userData.bio_light) || null,
+      home_city: sanitize(userData.home_city) || null,
     }),
   };
   const { data, error } = await supabase.from("app_users").insert(row).select().single();
   if (error) {
     console.error("Supabase insert app_user:", error);
-    return null;
+    throw new Error(error.message || "Errore salvataggio su Supabase");
   }
   return data;
 }

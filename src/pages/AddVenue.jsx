@@ -83,6 +83,7 @@ export default function AddVenue() {
   const createVenueMutation = useMutation({
     mutationFn: (venueData) => addVenue(venueData),
     onSuccess: (data) => {
+      setIsSubmitting(false);
       if (data.pending) {
         toast({
           title: "Locale inviato!",
@@ -92,6 +93,10 @@ export default function AddVenue() {
       } else {
         navigate(createPageUrl(`VenueDetail?id=${data.id}`));
       }
+    },
+    onError: (err) => {
+      setIsSubmitting(false);
+      setErrors((prev) => ({ ...prev, _form: err?.message || "Errore di salvataggio" }));
     },
   });
 
@@ -195,7 +200,12 @@ export default function AddVenue() {
               </Button>
             </div>
           )}
-          {Object.keys(errors).length > 0 && (
+          {errors._form && (
+            <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
+              {errors._form}
+            </div>
+          )}
+          {Object.keys(errors).filter((k) => k !== "_form").length > 0 && (
             <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
               Correggi i campi indicati sotto prima di inviare.
             </div>

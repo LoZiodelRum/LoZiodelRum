@@ -79,7 +79,6 @@ export default function Community() {
       ...(regRole === "proprietario" && { venue_ids: regVenueIds }),
       ...(regRole === "user" && { bio_light: (regBioLight || "").trim() || null, home_city: (regHomeCity || "").trim() || null }),
     };
-    setUser(userPayload);
     setRegName("");
     setRegRole("");
     setRegPassword("");
@@ -91,7 +90,10 @@ export default function Community() {
       if (regRole !== "bartender") {
         await insertAppUser(userPayload);
       }
-    } catch (_) {}
+      setUser(userPayload);
+    } catch (err) {
+      setRegError(err?.message || "Errore durante la registrazione. Riprova.");
+    }
     setIsSubmitting(false);
     if (regRole === "bartender") {
       navigate(createPageUrl("AddBartender"));
