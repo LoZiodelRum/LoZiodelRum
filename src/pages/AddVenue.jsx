@@ -542,13 +542,19 @@ export default function AddVenue() {
               Immagine di copertina
             </h2>
             <div className="space-y-2">
-              <input
-                type="file"
-                accept="image/*"
-                capture="environment"
-                onChange={handleCoverInput}
-                className="w-full p-3 border rounded-lg bg-white"
-              />
+              <label className="relative block w-full cursor-pointer">
+                <span className="block px-4 py-3 rounded-lg bg-stone-800 border border-stone-700 text-stone-300 hover:bg-stone-700">
+                  carica una foto
+                </span>
+                <input
+                  type="file"
+                  accept="image/*"
+                  capture="environment"
+                  onChange={handleCoverInput}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  style={{ fontSize: 0 }}
+                />
+              </label>
               <p className="text-xs text-stone-500">Fotocamera, video o galleria • max 5MB foto, 10MB video</p>
               {uploadProgress.total > 0 && (
                 <div className="space-y-1">

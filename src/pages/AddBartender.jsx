@@ -291,13 +291,19 @@ export default function AddBartender() {
                     <ImageIcon className="w-4 h-4 text-amber-500" />
                     Foto e video
                   </Label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    capture="environment"
-                    onChange={handlePhotoInput}
-                    className="w-full p-3 border rounded-lg bg-white mt-1"
-                  />
+                  <label className="relative block w-full mt-1 cursor-pointer">
+                    <span className="block px-4 py-3 rounded-lg bg-stone-800 border border-stone-700 text-stone-300 hover:bg-stone-700">
+                      carica una foto
+                    </span>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      capture="environment"
+                      onChange={handlePhotoInput}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      style={{ fontSize: 0 }}
+                    />
+                  </label>
                   <p className="text-xs text-stone-500 mt-1">Foto, video o selfie • max 5MB foto, 10MB video</p>
                   {uploadProgress.total > 0 && (
                     <div className="mt-2 space-y-1">
