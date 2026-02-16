@@ -212,7 +212,7 @@ export default function AddBartender() {
         {/* Banner status - auto-close 5s */}
         {status === "success" && (
           <div className="mb-6 p-4 rounded-xl bg-green-500/20 border border-green-500/50 text-green-200 text-center font-medium">
-            Inviato con successo! Il profilo è in fase di revisione.
+            Registrazione inviata con successo!
           </div>
         )}
         {status === "error" && (
@@ -281,31 +281,29 @@ export default function AddBartender() {
                 <div>
                   <Label className="text-sm text-stone-300 flex items-center gap-2">
                     <ImageIcon className="w-4 h-4 text-amber-500" />
-                    Foto
+                    Foto e video
                   </Label>
+                  <label
+                    htmlFor="bartender-photo-input"
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-stone-800 border border-stone-600 text-stone-300 hover:bg-stone-700 cursor-pointer text-sm font-medium mt-1"
+                  >
+                    <ImageIcon className="w-4 h-4" />
+                    {photoFiles.length > 0 ? `${photoFiles.length} file selezionati` : "Scatta foto o carica da galleria"}
+                  </label>
                   <input
+                    id="bartender-photo-input"
                     type="file"
                     accept="image/*,video/*"
-                    multiple
                     capture="environment"
-                    id="bartender-photo-input"
+                    multiple
                     onChange={(e) => {
                       const files = Array.from(e.target.files || []);
                       setPhotoFiles((prev) => [...prev, ...files]);
                       if (files.length) updateField("photo", "");
                       e.target.value = "";
                     }}
-                    className="hidden"
+                    className="sr-only"
                   />
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => document.getElementById("bartender-photo-input")?.click()}
-                    className="mt-1 bg-stone-800 border-stone-600 text-stone-300 hover:bg-stone-700"
-                  >
-                    {photoFiles.length > 0 ? `${photoFiles.length} file` : "Carica foto"}
-                  </Button>
                   <p className="text-xs text-stone-500 mt-1">Scatta una foto o scegli dalla galleria • max 5MB immagini, 10MB video</p>
                   {uploadProgress.total > 0 && (
                     <div className="mt-2 space-y-1">
@@ -316,7 +314,8 @@ export default function AddBartender() {
                     </div>
                   )}
                   {photoFiles.length > 0 && (
-                    <div className="flex flex-wrap gap-2 mt-2">
+                    <div className="flex flex-wrap gap-2 mt-3">
+                      <p className="text-xs text-stone-500 w-full">Anteprima – clicca X per rimuovere</p>
                       {photoFiles.map((f, i) => (
                         <div key={`${f.name}-${i}`} className="relative group">
                           {f.type.startsWith("video/") ? (
@@ -324,8 +323,13 @@ export default function AddBartender() {
                           ) : (
                             <img src={URL.createObjectURL(f)} alt="" className="h-20 w-20 object-cover rounded-xl" />
                           )}
-                          <button type="button" onClick={() => setPhotoFiles((prev) => prev.filter((_, idx) => idx !== i))} className="absolute -top-1 -right-1 p-1 bg-red-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
-                            <X className="w-3 h-3" />
+                          <button
+                            type="button"
+                            onClick={() => setPhotoFiles((prev) => prev.filter((_, idx) => idx !== i))}
+                            className="absolute -top-1 -right-1 p-1.5 bg-red-600 rounded-full text-white hover:bg-red-700"
+                            aria-label="Rimuovi"
+                          >
+                            <X className="w-3.5 h-3.5" />
                           </button>
                         </div>
                       ))}
