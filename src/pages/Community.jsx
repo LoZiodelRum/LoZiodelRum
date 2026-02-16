@@ -174,20 +174,21 @@ export default function Community() {
                 Entrare significa accettare una responsabilità semplice: bere meno, ma bere meglio. Con attenzione. Con rispetto.
               </p>
               <div className="mt-8 flex justify-center">
-                <Link
-                  to={createPageUrl("CommunityFeed")}
+                <button
+                  type="button"
+                  onClick={() => document.getElementById("registrazione-community")?.scrollIntoView({ behavior: "smooth" })}
                   className="inline-flex items-center gap-2 px-6 py-3 bg-amber-500 hover:bg-amber-600 text-stone-950 font-semibold rounded-xl transition-colors"
                 >
-                  Scopri la Bacheca
+                  Registrati alla community
                   <ChevronRight className="w-5 h-5" />
-                </Link>
+                </button>
               </div>
             </div>
           </div>
         </section>
 
         {/* Registrazione con 4 categorie */}
-        <section className="px-4 md:px-6 py-12 pb-16 bg-stone-950 text-stone-100">
+        <section id="registrazione-community" className="px-4 md:px-6 py-12 pb-16 bg-stone-950 text-stone-100 scroll-mt-8">
           <div className="max-w-2xl mx-auto">
             <h2 className="text-2xl font-bold text-stone-100 mb-2 flex items-center gap-2">
               <UserPlus className="w-7 h-7 text-amber-500" />
@@ -450,16 +451,42 @@ export default function Community() {
               <br />
               Con rispetto.
             </p>
-            <div className="mt-8 flex justify-center">
+            <div className="mt-8 flex justify-center gap-4 flex-wrap">
               <Link
                 to={createPageUrl("CommunityFeed")}
                 className="inline-flex items-center gap-2 px-6 py-3 bg-amber-500 hover:bg-amber-600 text-stone-950 font-semibold rounded-xl transition-colors"
               >
-                Entra nella Community
+                Vai alla Bacheca
                 <ChevronRight className="w-5 h-5" />
               </Link>
+              <button
+                type="button"
+                onClick={() => document.getElementById("registrazione-community")?.scrollIntoView({ behavior: "smooth" })}
+                className="inline-flex items-center gap-2 px-6 py-3 bg-stone-700 hover:bg-stone-600 text-stone-100 font-semibold rounded-xl transition-colors border border-stone-600"
+              >
+                Registrati come bartender
+              </button>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Box registrazione sempre visibile per utenti registrati che vogliono aggiungere un bartender */}
+      <section id="registrazione-community" className="px-4 md:px-6 py-12 pb-16 bg-stone-950 text-stone-100 scroll-mt-8">
+        <div className="max-w-2xl mx-auto">
+          <h2 className="text-2xl font-bold text-stone-100 mb-2 flex items-center gap-2">
+            <UserPlus className="w-7 h-7 text-amber-500" />
+            Aggiungi un bartender
+          </h2>
+          <p className="text-stone-400 text-sm mb-6">
+            Hai un bartender nel tuo team? Compila la scheda per farlo entrare nella community.
+          </p>
+          <Link to={createPageUrl("AddBartender")}>
+            <Button className="bg-amber-500 hover:bg-amber-600 text-stone-950 font-semibold">
+              Compila scheda bartender
+              <ChevronRight className="w-4 h-4 ml-2" />
+            </Button>
+          </Link>
         </div>
       </section>
 
