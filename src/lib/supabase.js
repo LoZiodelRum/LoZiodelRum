@@ -1,9 +1,9 @@
 import { createClient } from "@supabase/supabase-js";
 
 /**
- * Supabase: legge VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY da .env
- * Vite carica automaticamente le variabili dal file .env nella root del progetto.
- * Su Vercel: imposta le stesse variabili in Environment Variables.
+ * Supabase: usa ESCLUSIVAMENTE import.meta.env (Vite).
+ * Nessun process.env per evitare errori API Key su Vercel.
+ * Variabili richieste: VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY
  */
 const url = import.meta.env.VITE_SUPABASE_URL?.trim();
 const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY?.trim();

@@ -520,10 +520,10 @@ export default function AddVenue() {
                 <VideoIcon className="w-4 h-4 text-amber-500" />
                 Video breve (opzionale)
               </h3>
-              <input
-                type="file"
-                accept="video/*"
-                id="venue-video-input"
+                <input
+                  type="file"
+                  accept="video/*"
+                  id="venue-video-input"
                 onChange={(e) => setVideoFile(e.target.files?.[0] || null)}
                 className="hidden"
               />
