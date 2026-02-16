@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/select";
 import { motion } from "framer-motion";
 import { uploadToSupabaseStorage, uploadMultipleToSupabaseStorage, urlsToDbString } from "@/lib/supabaseStorage";
+import CameraCapture from "@/components/CameraCapture";
 
 const categories = [
   { value: "cocktail_bar", label: "Cocktail Bar" },
@@ -87,18 +88,9 @@ export default function AddVenue() {
   const [coverImageFiles, setCoverImageFiles] = useState([]);
   const [videoFile, setVideoFile] = useState(null);
   const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
+  const [cameraOpen, setCameraOpen] = useState(false);
 
-  const coverInputRef = useRef(null);
   const videoInputRef = useRef(null);
-
-  const handleCoverCapture = (e) => {
-    const files = Array.from(e.target.files || []);
-    if (files.length > 0) {
-      setCoverImageFiles((prev) => [...prev, ...files]);
-      setFormData((prev) => ({ ...prev, cover_image: "" }));
-    }
-    e.target.value = "";
-  };
 
   useEffect(() => {
     if (!status) return;
@@ -549,22 +541,21 @@ export default function AddVenue() {
               Immagine di copertina
             </h2>
             <div className="space-y-2">
-              <label className="relative block w-full cursor-pointer">
-                <span className="block px-4 py-3 rounded-lg bg-stone-800 border border-stone-700 text-stone-300 hover:bg-stone-700">
-                  carica una foto
-                </span>
-                <input
-                  id="venue-cover-input"
-                  ref={coverInputRef}
-                  type="file"
-                  accept="image/*,video/*"
-                  capture="environment"
-                  multiple
-                  onChange={handleCoverCapture}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  style={{ fontSize: 0 }}
-                />
-              </label>
+              <button
+                type="button"
+                onClick={() => setCameraOpen(true)}
+                className="w-full px-4 py-3 rounded-lg bg-stone-800 border border-stone-700 text-stone-300 text-left hover:bg-stone-700 cursor-pointer"
+              >
+                carica una foto
+              </button>
+              <CameraCapture
+                open={cameraOpen}
+                onOpenChange={setCameraOpen}
+                onCapture={(file) => {
+                  setCoverImageFiles((prev) => [...prev, file]);
+                  setFormData((prev) => ({ ...prev, cover_image: "" }));
+                }}
+              />
               <p className="text-xs text-stone-500">Fotocamera, video o galleria • max 5MB foto, 10MB video</p>
               {uploadProgress.total > 0 && (
                 <div className="space-y-1">

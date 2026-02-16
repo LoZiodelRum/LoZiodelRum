@@ -25,6 +25,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import VenueCombobox from "@/components/venue/VenueCombobox";
+import CameraCapture from "@/components/CameraCapture";
 
 const SPECIALIZZAZIONI = [
   "Rum",
@@ -66,17 +67,8 @@ export default function AddBartender() {
   const [status, setStatus] = useState(null); // 'success' | 'error' | null
   const [photoFiles, setPhotoFiles] = useState([]);
   const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
+  const [cameraOpen, setCameraOpen] = useState(false);
 
-  const photoInputRef = useRef(null);
-
-  const handleCapture = (e) => {
-    const files = Array.from(e.target.files || []);
-    if (files.length > 0) {
-      setPhotoFiles((prev) => [...prev, ...files]);
-      if (files.length) updateField("photo", "");
-    }
-    e.target.value = "";
-  };
 
   useEffect(() => {
     if (!status) return;
@@ -299,23 +291,22 @@ export default function AddBartender() {
                     <ImageIcon className="w-4 h-4 text-amber-500" />
                     Foto e video
                   </Label>
-                  <label className="relative block w-full mt-1 cursor-pointer">
-                    <span className="block px-4 py-3 rounded-lg bg-stone-800 border border-stone-700 text-stone-300 hover:bg-stone-700">
-                      carica una foto
-                    </span>
-                    <input
-                      id="bartender-photo-input"
-                      ref={photoInputRef}
-                      type="file"
-                      accept="image/*,video/*"
-                      capture="environment"
-                      multiple
-                      onChange={handleCapture}
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                      style={{ fontSize: 0 }}
-                    />
-                  </label>
-                  <p className="text-xs text-stone-500 mt-1">Fotocamera, video o galleria • max 5MB foto, 10MB video</p>
+                  <button
+                    type="button"
+                    onClick={() => setCameraOpen(true)}
+                    className="w-full px-4 py-3 rounded-lg bg-stone-800 border border-stone-700 text-stone-300 text-left hover:bg-stone-700 cursor-pointer mt-1"
+                  >
+                    carica una foto
+                  </button>
+                  <CameraCapture
+                    open={cameraOpen}
+                    onOpenChange={setCameraOpen}
+                    onCapture={(file) => {
+                      setPhotoFiles((prev) => [...prev, file]);
+                      updateField("photo", "");
+                    }}
+                  />
+                  <p className="text-xs text-stone-500 mt-1">Fotocamera • max 5MB</p>
                   {uploadProgress.total > 0 && (
                     <div className="mt-2 space-y-1">
                       <div className="h-1.5 bg-stone-800 rounded-full overflow-hidden">
