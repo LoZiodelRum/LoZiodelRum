@@ -211,12 +211,12 @@ export default function AddBartender() {
 
         {/* Banner status - auto-close 5s */}
         {status === "success" && (
-          <div className="mb-6 p-4 rounded-xl bg-green-500/20 border border-green-500/50 text-green-200 text-center font-medium">
-            Registrazione inviata con successo!
+          <div className="mb-6 p-4 rounded-xl bg-green-600 border border-green-400 text-white text-center font-bold text-lg">
+            INVIO COMPLETATO
           </div>
         )}
         {status === "error" && (
-          <div className="mb-6 p-4 rounded-xl bg-red-500/20 border border-red-500/50 text-red-200 text-center font-medium">
+          <div className="mb-6 p-4 rounded-xl bg-red-600 border border-red-400 text-white text-center font-medium">
             {errors._form || "Errore durante l'invio. Riprova."}
           </div>
         )}
@@ -283,27 +283,26 @@ export default function AddBartender() {
                     <ImageIcon className="w-4 h-4 text-amber-500" />
                     Foto e video
                   </Label>
-                  <label
-                    htmlFor="bartender-photo-input"
-                    className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-stone-800 border border-stone-600 text-stone-300 hover:bg-stone-700 cursor-pointer text-sm font-medium mt-1"
-                  >
-                    <ImageIcon className="w-4 h-4" />
-                    {photoFiles.length > 0 ? `${photoFiles.length} file` : "carica una foto"}
-                  </label>
-                  <input
-                    id="bartender-photo-input"
-                    type="file"
-                    accept="image/*,video/*"
-                    capture="environment"
-                    multiple
-                    onChange={(e) => {
-                      const files = Array.from(e.target.files || []);
-                      setPhotoFiles((prev) => [...prev, ...files]);
-                      if (files.length) updateField("photo", "");
-                      e.target.value = "";
-                    }}
-                    className="sr-only"
-                  />
+                  <div className="relative inline-block mt-1">
+                    <div className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-stone-800 border border-stone-600 text-stone-300 hover:bg-stone-700 text-sm font-medium pointer-events-none">
+                      <ImageIcon className="w-4 h-4" />
+                      {photoFiles.length > 0 ? `${photoFiles.length} file` : "carica una foto"}
+                    </div>
+                    <input
+                      type="file"
+                      accept="image/*,video/*"
+                      capture="environment"
+                      multiple
+                      onChange={(e) => {
+                        const files = Array.from(e.target.files || []);
+                        setPhotoFiles((prev) => [...prev, ...files]);
+                        if (files.length) updateField("photo", "");
+                        e.target.value = "";
+                      }}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      style={{ fontSize: 0 }}
+                    />
+                  </div>
                   <p className="text-xs text-stone-500 mt-1">Fotocamera, video o galleria • max 5MB foto, 10MB video</p>
                   {uploadProgress.total > 0 && (
                     <div className="mt-2 space-y-1">

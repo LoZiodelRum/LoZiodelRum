@@ -221,12 +221,12 @@ export default function AddVenue() {
       <div className="max-w-2xl mx-auto">
         {/* Banner status - auto-close 5s */}
         {status === "success" && (
-          <div className="mb-6 p-4 rounded-xl bg-green-500/20 border border-green-500/50 text-green-200 text-center font-medium">
-            Registrazione inviata con successo!
+          <div className="mb-6 p-4 rounded-xl bg-green-600 border border-green-400 text-white text-center font-bold text-lg">
+            INVIO COMPLETATO
           </div>
         )}
         {status === "error" && (
-          <div className="mb-6 p-4 rounded-xl bg-red-500/20 border border-red-500/50 text-red-200 text-center font-medium">
+          <div className="mb-6 p-4 rounded-xl bg-red-600 border border-red-400 text-white text-center font-medium">
             {errors._form || "Errore durante l'invio. Riprova."}
           </div>
         )}
@@ -532,27 +532,26 @@ export default function AddVenue() {
               Immagine di copertina
             </h2>
             <div className="space-y-2">
-              <label
-                htmlFor="cover-image-input"
-                className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-stone-800 border border-stone-600 text-stone-300 hover:bg-stone-700 cursor-pointer text-sm font-medium"
-              >
-                <ImageIcon className="w-4 h-4" />
-                {coverImageFiles.length > 0 ? `${coverImageFiles.length} file` : "carica una foto"}
-              </label>
-              <input
-                id="cover-image-input"
-                type="file"
-                accept="image/*,video/*"
-                capture="environment"
-                multiple
-                onChange={(e) => {
-                  const files = Array.from(e.target.files || []);
-                  setCoverImageFiles((prev) => [...prev, ...files]);
-                  if (files.length) setFormData((prev) => ({ ...prev, cover_image: "" }));
-                  e.target.value = "";
-                }}
-                className="sr-only"
-              />
+              <div className="relative inline-block">
+                <div className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-stone-800 border border-stone-600 text-stone-300 hover:bg-stone-700 text-sm font-medium pointer-events-none">
+                  <ImageIcon className="w-4 h-4" />
+                  {coverImageFiles.length > 0 ? `${coverImageFiles.length} file` : "carica una foto"}
+                </div>
+                <input
+                  type="file"
+                  accept="image/*,video/*"
+                  capture="environment"
+                  multiple
+                  onChange={(e) => {
+                    const files = Array.from(e.target.files || []);
+                    setCoverImageFiles((prev) => [...prev, ...files]);
+                    if (files.length) setFormData((prev) => ({ ...prev, cover_image: "" }));
+                    e.target.value = "";
+                  }}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  style={{ fontSize: 0 }}
+                />
+              </div>
               <p className="text-xs text-stone-500">Fotocamera, video o galleria • max 5MB foto, 10MB video</p>
               {uploadProgress.total > 0 && (
                 <div className="space-y-1">
@@ -596,22 +595,21 @@ export default function AddVenue() {
                 <VideoIcon className="w-4 h-4 text-amber-500" />
                 Video breve (opzionale)
               </h3>
-              <label
-                htmlFor="venue-video-input"
-                className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-stone-800 border border-stone-600 text-stone-300 hover:bg-stone-700 cursor-pointer text-sm font-medium"
-              >
-                <VideoIcon className="w-4 h-4" />
-                {videoFile ? videoFile.name : "Scatta video o carica"}
-              </label>
-              <input
-                id="venue-video-input"
-                type="file"
-                accept="image/*,video/*"
-                capture="environment"
-                multiple
-                onChange={(e) => setVideoFile(e.target.files?.[0] || null)}
-                className="sr-only"
-              />
+              <div className="relative inline-block">
+                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-stone-800 border border-stone-600 text-stone-300 hover:bg-stone-700 text-sm font-medium pointer-events-none">
+                  <VideoIcon className="w-4 h-4" />
+                  {videoFile ? videoFile.name : "Scatta video o carica"}
+                </div>
+                <input
+                  type="file"
+                  accept="image/*,video/*"
+                  capture="environment"
+                  multiple
+                  onChange={(e) => setVideoFile(e.target.files?.[0] || null)}
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                  style={{ fontSize: 0 }}
+                />
+              </div>
                 <div className="flex gap-2 items-center mt-2">
                   {videoFile && (
                     <button
