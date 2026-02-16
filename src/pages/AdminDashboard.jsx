@@ -160,7 +160,7 @@ export default function AdminDashboard() {
               </h2>
               {pendingVenues.length === 0 ? (
                 <p className="text-stone-500">
-                  {!loadError ? `Database collegato, ma la tabella ${TABLE_APP_USERS} (role=venue) è vuota` : "Nessun locale"}
+                  {!loadError ? "Nessun utente in attesa trovato nella tabella app_users" : "Nessun locale"}
                 </p>
               ) : (
                 <ul className="space-y-2">
@@ -190,7 +190,7 @@ export default function AdminDashboard() {
               {pendingBartenders.length === 0 ? (
                 <p className="text-stone-500">
                   {!loadError && pendingRegistrations.length === 0
-                    ? `Database collegato, ma la tabella ${TABLE_APP_USERS} è vuota`
+                    ? "Nessun utente in attesa trovato nella tabella app_users"
                     : "Nessun bartender"}
                 </p>
               ) : (
@@ -201,7 +201,7 @@ export default function AdminDashboard() {
                         onClick={() => setSelected({ type: "bartender", item: r })}
                         className="w-full text-left p-3 rounded-xl bg-stone-800/50 hover:bg-stone-800 border border-stone-700/50 hover:border-amber-500/30 transition-colors"
                       >
-                        <span className="font-medium">{r.name} {r.surname || ""}</span>
+                        <span className="font-medium">{r.full_name || `${r.name || ""} ${r.surname || ""}`.trim()}</span>
                         <span className="text-stone-500 text-sm ml-2">{r.custom_venue_name || r.venue_name || ""}</span>
                       </button>
                     </li>
@@ -219,7 +219,7 @@ export default function AdminDashboard() {
               {pendingUsers.length === 0 ? (
                 <p className="text-stone-500">
                   {!loadError && pendingRegistrations.length === 0
-                    ? `Database collegato, ma la tabella ${TABLE_APP_USERS} è vuota`
+                    ? "Nessun utente in attesa trovato nella tabella app_users"
                     : "Nessun utente"}
                 </p>
               ) : (

@@ -115,14 +115,27 @@ export default function AddBartender() {
     if (!validate()) return;
     setIsSubmitting(true);
     try {
-      let photoUrl = formData.photo || "";
+      let imageUrl = formData.image_url || formData.photo || "";
+      let videoUrl = formData.video_url || null;
       if (photoFiles.length > 0) {
-        const urls = await uploadMultipleToSupabaseStorage(
-          photoFiles,
-          "bartenders",
-          (current, total) => setUploadProgress({ current, total })
-        );
-        photoUrl = urlsToDbString(urls);
+        const imageFiles = photoFiles.filter((f) => (f.type || "").startsWith("image/"));
+        const videoFiles = photoFiles.filter((f) => (f.type || "").startsWith("video/"));
+        if (imageFiles.length > 0) {
+          const urls = await uploadMultipleToSupabaseStorage(
+            imageFiles,
+            "bartenders",
+            (current, total) => setUploadProgress({ current, total })
+          );
+          imageUrl = urlsToDbString(urls);
+        }
+        if (videoFiles.length > 0) {
+          const urls = await uploadMultipleToSupabaseStorage(
+            videoFiles,
+            "bartenders",
+            (current, total) => setUploadProgress({ current, total })
+          );
+          videoUrl = urls[0] || urlsToDbString(urls) || null;
+        }
       }
       setUploadProgress({ current: 0, total: 0 });
       const selectedVenue = formData.venue_id ? venues.find((v) => v.id === formData.venue_id) : null;
@@ -132,8 +145,12 @@ export default function AddBartender() {
         : null;
       const payload = {
         ...formData,
-        photo: photoUrl,
-        city: formData.city || selectedVenue?.city || "",
+        full_name: [formData.name, formData.surname].filter(Boolean).join(" ").trim(),
+        image_url: imageUrl,
+        video_url: videoUrl,
+        status: "pending",
+        bio: formData.bio || "",
+        home_city: formData.city || selectedVenue?.city || "",
         venue_id: venueIdForDb,
         venue_name: formData.venue_name?.trim() || "",
       };
@@ -200,7 +217,7 @@ export default function AddBartender() {
         )}
         {status === "error" && (
           <div className="mb-6 p-4 rounded-xl bg-red-500/20 border border-red-500/50 text-red-200 text-center font-medium">
-            Errore durante l'invio. Riprova.
+            {errors._form || "Errore durante l'invio. Riprova."}
           </div>
         )}
 

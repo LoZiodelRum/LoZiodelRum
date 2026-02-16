@@ -26,22 +26,15 @@ export async function insertAppUser(userData) {
       image_url: sanitize(userData.image_url) || null,
     }),
     ...(userData.role === "bartender" && {
-      surname: sanitize(userData.surname) ?? "",
-      photo: sanitize(userData.photo) ?? "",
+      full_name: (sanitize(userData.full_name) ?? String((userData.name || "") + " " + (userData.surname || "")).trim()) || "",
+      image_url: sanitize(userData.image_url) || sanitize(userData.photo) || "",
+      video_url: sanitize(userData.video_url) ?? null,
+      status: "pending",
+      bio: sanitize(userData.bio) ?? "",
+      home_city: (sanitize(userData.home_city) ?? sanitize(userData.city)) ?? "",
       venue_id: userData.venue_id || null,
       custom_venue_name: sanitize(userData.custom_venue_name || userData.venue_name) || null,
-      city: sanitize(userData.city) ?? "",
-      specialization: sanitize(userData.specialization) ?? "",
-      years_experience: userData.years_experience != null ? String(userData.years_experience) : null,
-      philosophy: sanitize(userData.philosophy) ?? "",
-      distillati_preferiti: sanitize(userData.distillati_preferiti) ?? "",
-      approccio_degustazione: sanitize(userData.approccio_degustazione) ?? "",
-      consiglio_inizio: sanitize(userData.consiglio_inizio) ?? "",
-      signature_drinks: sanitize(userData.signature_drinks) ?? "",
-      percorso_esperienze: sanitize(userData.percorso_esperienze) ?? "",
-      bio: sanitize(userData.bio) ?? "",
-      motivation: sanitize(userData.motivation) ?? "",
-      consent_linee_editoriali: !!userData.consent_linee_editoriali,
+      name: (sanitize(userData.full_name) ?? String((userData.name || "") + " " + (userData.surname || "")).trim()) || "Bartender",
     }),
     ...(userData.role === "venue" && {
       venue_data: {
@@ -79,12 +72,12 @@ export async function insertAppUser(userData) {
   return data;
 }
 
-/** Query aggressiva: nessun filtro, mostra TUTTO per debug sync Invio/Database/Dashboard */
 export async function getPendingRegistrations() {
   if (!isSupabaseConfigured()) return [];
   const { data, error } = await supabase
     .from(TABLE_APP_USERS)
     .select("*")
+    .eq("status", "pending")
     .order("created_at", { ascending: false });
   if (error) {
     console.error("Supabase get registrations:", error);

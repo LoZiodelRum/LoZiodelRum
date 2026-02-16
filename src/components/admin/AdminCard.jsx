@@ -21,9 +21,9 @@ export default function AdminCard({ type, item, onApprove, onDelete, onClose, is
   const [imgIndex, setImgIndex] = useState(0);
   if (!item) return null;
 
-  const imgUrlRaw = type === "venue" ? item.cover_image : (item.photo || item.image_url);
+  const imgUrlRaw = type === "venue" ? item.cover_image : (item.image_url || item.photo);
   const imgUrls = dbStringToUrls(imgUrlRaw);
-  const videoUrl = type === "venue" ? item.video_url : null;
+  const videoUrl = type === "venue" ? item.video_url : (type === "bartender" ? item.video_url : null);
   const currentImg = imgUrls[imgIndex] || imgUrls[0];
 
   return (
@@ -110,13 +110,12 @@ export default function AdminCard({ type, item, onApprove, onDelete, onClose, is
           )}
           {(type === "bartender" || type === "user") && (
             <>
-              <FIELD label="Nome" value={item.name} />
-              {type === "bartender" && <FIELD label="Cognome" value={item.surname} />}
+              <FIELD label="Nome" value={item.full_name || item.name} />
               <FIELD label="Email" value={item.email} />
               {type === "bartender" && (
                 <>
                   <FIELD label="Locale" value={item.custom_venue_name || item.venue_name} />
-                  <FIELD label="Città" value={item.city} />
+                  <FIELD label="Città" value={item.home_city || item.city} />
                   <FIELD label="Specializzazione" value={item.specialization} />
                   <FIELD label="Bio" value={item.bio} />
                   <FIELD label="Motivazione" value={item.motivation} />

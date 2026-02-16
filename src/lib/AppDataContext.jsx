@@ -29,12 +29,14 @@ export function AppDataProvider({ children }) {
 
   const mapAppUserToBartender = useCallback((row) => ({
     id: String(row.id),
-    name: row.name || "",
+    name: row.full_name || [row.name, row.surname].filter(Boolean).join(" ") || "",
     surname: row.surname || "",
-    photo: row.photo || "",
+    photo: row.image_url || row.photo || "",
+    image_url: row.image_url || row.photo || "",
+    video_url: row.video_url || null,
     venue_id: row.venue_id ? String(row.venue_id) : "",
     venue_name: row.custom_venue_name || "",
-    city: row.city || "",
+    city: row.home_city || row.city || "",
     specialization: row.specialization || "",
     years_experience: row.years_experience || "",
     philosophy: row.philosophy || "",
@@ -559,24 +561,14 @@ export function AppDataProvider({ children }) {
         const customVenueName = data.venue_name?.trim() || null;
         const row = await insertAppUser({
           role: "bartender",
-          name: data.name || "",
-          surname: data.surname || "",
-          photo: data.photo || "",
+          full_name: [data.name, data.surname].filter(Boolean).join(" ").trim() || data.full_name || "",
+          image_url: data.image_url || data.photo || "",
+          video_url: data.video_url || null,
+          status: "pending",
+          bio: data.bio || "",
+          home_city: data.home_city || data.city || "",
           venue_id: venueId,
           custom_venue_name: customVenueName,
-          city: data.city || "",
-          specialization: data.specialization || "",
-          years_experience: data.years_experience || "",
-          philosophy: data.philosophy || "",
-          distillati_preferiti: data.distillati_preferiti || "",
-          approccio_degustazione: data.approccio_degustazione || "",
-          consiglio_inizio: data.consiglio_inizio || "",
-          signature_drinks: data.signature_drinks || "",
-          percorso_esperienze: data.percorso_esperienze || "",
-          bio: data.bio || "",
-          motivation: data.motivation || "",
-          consent_linee_editoriali: !!data.consent_linee_editoriali,
-          status: data.status || "pending",
         });
         if (!row) throw new Error("Errore salvataggio bartender");
         const b = mapAppUserToBartender(row);
