@@ -288,7 +288,7 @@ export default function AddBartender() {
                     className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-stone-800 border border-stone-600 text-stone-300 hover:bg-stone-700 cursor-pointer text-sm font-medium mt-1"
                   >
                     <ImageIcon className="w-4 h-4" />
-                    {photoFiles.length > 0 ? `${photoFiles.length} file selezionati` : "Scatta foto o carica da galleria"}
+                    {photoFiles.length > 0 ? `${photoFiles.length} file` : "carica una foto"}
                   </label>
                   <input
                     id="bartender-photo-input"
@@ -304,7 +304,7 @@ export default function AddBartender() {
                     }}
                     className="sr-only"
                   />
-                  <p className="text-xs text-stone-500 mt-1">Scatta una foto o scegli dalla galleria • max 5MB immagini, 10MB video</p>
+                  <p className="text-xs text-stone-500 mt-1">Fotocamera, video o galleria • max 5MB foto, 10MB video</p>
                   {uploadProgress.total > 0 && (
                     <div className="mt-2 space-y-1">
                       <div className="h-1.5 bg-stone-800 rounded-full overflow-hidden">

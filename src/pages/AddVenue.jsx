@@ -537,7 +537,7 @@ export default function AddVenue() {
                 className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-stone-800 border border-stone-600 text-stone-300 hover:bg-stone-700 cursor-pointer text-sm font-medium"
               >
                 <ImageIcon className="w-4 h-4" />
-                {coverImageFiles.length > 0 ? `${coverImageFiles.length} file selezionati` : "Scatta foto o carica da galleria"}
+                {coverImageFiles.length > 0 ? `${coverImageFiles.length} file` : "carica una foto"}
               </label>
               <input
                 id="cover-image-input"
@@ -553,7 +553,7 @@ export default function AddVenue() {
                 }}
                 className="sr-only"
               />
-              <p className="text-xs text-stone-500">Fotocamera o galleria • max 5MB immagini, 10MB video</p>
+              <p className="text-xs text-stone-500">Fotocamera, video o galleria • max 5MB foto, 10MB video</p>
               {uploadProgress.total > 0 && (
                 <div className="space-y-1">
                   <div className="h-1.5 bg-stone-800 rounded-full overflow-hidden">

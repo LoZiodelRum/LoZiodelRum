@@ -464,63 +464,38 @@ export default function EditVenue() {
             <h3 style={{ fontSize: "1.125rem", fontWeight: 600, marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
               <ImageIcon style={{ width: 20, height: 20, color: "#f59e0b" }} /> Immagine di copertina
             </h3>
-            <input
-              type="file"
-              accept="image/*,android/allowCamera"
-              capture="environment"
-              id="edit-venue-cover-camera"
-              onChange={(e) => {
-                const files = Array.from(e.target.files || []);
-                setCoverImageFiles((prev) => [...prev, ...files]);
-                e.target.value = "";
+            <label
+              htmlFor="edit-venue-cover-input"
+              style={{
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                gap: "0.5rem",
+                padding: "0.5rem 1rem",
+                fontSize: "0.875rem",
+                backgroundColor: "rgba(41,37,36,0.8)",
+                border: "1px solid rgba(68,64,60,0.8)",
+                borderRadius: "0.5rem",
+                color: "#d6d3d1",
+                cursor: "pointer",
               }}
-              style={{ display: "none" }}
-            />
+            >
+              {coverImageFiles.length > 0 ? `${coverImageFiles.length} file` : "carica una foto"}
+            </label>
             <input
+              id="edit-venue-cover-input"
               type="file"
               accept="image/*,video/*"
+              capture="environment"
               multiple
-              id="edit-venue-cover-gallery"
               onChange={(e) => {
                 const files = Array.from(e.target.files || []);
                 setCoverImageFiles((prev) => [...prev, ...files]);
                 e.target.value = "";
               }}
-              style={{ display: "none" }}
+              className="sr-only"
             />
-            <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.5rem" }}>
-              <button
-                type="button"
-                onClick={() => document.getElementById("edit-venue-cover-camera")?.click()}
-                style={{
-                  padding: "0.5rem 1rem",
-                  fontSize: "0.875rem",
-                  backgroundColor: "rgba(41,37,36,0.8)",
-                  border: "1px solid rgba(68,64,60,0.8)",
-                  borderRadius: "0.5rem",
-                  color: "#d6d3d1",
-                  cursor: "pointer",
-                }}
-              >
-                Scatta foto
-              </button>
-              <button
-                type="button"
-                onClick={() => document.getElementById("edit-venue-cover-gallery")?.click()}
-                style={{
-                  padding: "0.5rem 1rem",
-                  fontSize: "0.875rem",
-                  backgroundColor: "rgba(41,37,36,0.8)",
-                  border: "1px solid rgba(68,64,60,0.8)",
-                  borderRadius: "0.5rem",
-                  color: "#d6d3d1",
-                  cursor: "pointer",
-                }}
-              >
-                Galleria
-              </button>
-            </div>
-            <p style={{ fontSize: "0.75rem", color: "#78716c", marginTop: "0.5rem" }}>Fotocamera o galleria • max 5MB immagini, 10MB video</p>
+            <p style={{ fontSize: "0.75rem", color: "#78716c", marginTop: "0.5rem" }}>Fotocamera, video o galleria • max 5MB foto, 10MB video</p>
             {uploadProgress.total > 0 && (
               <div style={{ marginTop: "0.5rem" }}>
                 <div style={{ height: 6, backgroundColor: "rgba(68,64,60,0.8)", borderRadius: 9999, overflow: "hidden" }}>

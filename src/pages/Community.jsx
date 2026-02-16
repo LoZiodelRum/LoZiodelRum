@@ -232,7 +232,7 @@ export default function Community() {
                     onClick={() => document.getElementById("reg-image-input")?.click()}
                     className="bg-stone-800 border-stone-600 text-stone-300 hover:bg-stone-700"
                   >
-                    {regImageFiles.length > 0 ? `${regImageFiles.length} file` : "Scatta foto o scegli dalla galleria"}
+                    {regImageFiles.length > 0 ? `${regImageFiles.length} file` : "carica una foto"}
                   </Button>
                   {uploadProgress.total > 0 && (
                     <div className="mt-2 space-y-1">
@@ -262,7 +262,7 @@ export default function Community() {
                       ))}
                     </div>
                   )}
-                  <p className="text-xs text-stone-500 mt-1">Fotocamera o galleria • max 5MB immagini, 10MB video</p>
+                  <p className="text-xs text-stone-500 mt-1">Fotocamera, video o galleria • max 5MB foto, 10MB video</p>
                 </div>
               )}
               <div>

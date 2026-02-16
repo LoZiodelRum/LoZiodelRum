@@ -283,52 +283,26 @@ export default function EditBartender() {
                     <ImageIcon className="w-4 h-4 text-amber-500" />
                     Foto
                   </Label>
+                  <label
+                    htmlFor="edit-bartender-photo-input"
+                    className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-stone-800 border border-stone-600 text-stone-300 hover:bg-stone-700 cursor-pointer text-sm font-medium mt-1"
+                  >
+                    {photoFiles.length > 0 ? `${photoFiles.length} file` : "carica una foto"}
+                  </label>
                   <input
-                    type="file"
-                    accept="image/*,android/allowCamera"
-                    capture="environment"
-                    id="edit-bartender-photo-camera"
-                    onChange={(e) => {
-                      const files = Array.from(e.target.files || []);
-                      setPhotoFiles((prev) => [...prev, ...files]);
-                      e.target.value = "";
-                    }}
-                    className="hidden"
-                  />
-                  <input
+                    id="edit-bartender-photo-input"
                     type="file"
                     accept="image/*,video/*"
                     capture="environment"
                     multiple
-                    id="edit-bartender-photo-gallery"
                     onChange={(e) => {
                       const files = Array.from(e.target.files || []);
                       setPhotoFiles((prev) => [...prev, ...files]);
                       e.target.value = "";
                     }}
-                    className="hidden"
+                    className="sr-only"
                   />
-                  <div className="flex gap-2 mt-1">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => document.getElementById("edit-bartender-photo-camera")?.click()}
-                      className="bg-stone-800 border-stone-600 text-stone-300 hover:bg-stone-700"
-                    >
-                      Scatta foto
-                    </Button>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => document.getElementById("edit-bartender-photo-gallery")?.click()}
-                      className="bg-stone-800 border-stone-600 text-stone-300 hover:bg-stone-700"
-                    >
-                      Galleria
-                    </Button>
-                  </div>
-                  <p className="text-xs text-stone-500 mt-1">Scatta una foto o scegli dalla galleria • max 5MB immagini, 10MB video</p>
+                  <p className="text-xs text-stone-500 mt-1">Fotocamera, video o galleria • max 5MB foto, 10MB video</p>
                   {uploadProgress.total > 0 && (
                     <div className="mt-2 space-y-1">
                       <div className="h-1.5 bg-stone-800 rounded-full overflow-hidden">

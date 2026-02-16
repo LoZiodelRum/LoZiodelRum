@@ -577,56 +577,36 @@ export default function AddReview() {
               <Image className="w-5 h-5 text-amber-500" />
               Foto e video
             </Label>
-            <p className="text-sm text-stone-500 mb-4">Carica foto e video dal cellulare (fotocamera o galleria)</p>
+            <div className="space-y-4">
+              <div>
+                <Label className="text-sm text-stone-400 mb-2 block">Foto</Label>
+                <label
+                  htmlFor="review-photos-input"
+                  className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-stone-800 border border-stone-600 text-stone-300 hover:bg-stone-700 cursor-pointer text-sm font-medium"
+                >
+                  {photoFiles.length + videoFiles.length > 0 ? `${photoFiles.length + videoFiles.length} file` : "carica una foto"}
+                </label>
+                <input
+                  id="review-photos-input"
+                  type="file"
+                  accept="image/*,video/*"
+                  capture="environment"
+                  multiple
+                  onChange={(e) => {
+                    addPhotoFiles(e);
+                    e.target.value = "";
+                  }}
+                  className="sr-only"
+                />
+                <p className="text-xs text-stone-500 mt-1">Fotocamera, video o galleria • max 5MB foto, 10MB video</p>
             {uploadProgress.total > 0 && (
-              <div className="mb-4 space-y-1">
+              <div className="mt-2 space-y-1">
                 <div className="h-1.5 bg-stone-800 rounded-full overflow-hidden">
                   <div className="h-full bg-amber-500 transition-all duration-300" style={{ width: `${(uploadProgress.current / uploadProgress.total) * 100}%` }} />
                 </div>
                 <p className="text-xs text-stone-500">Caricamento {uploadProgress.current}/{uploadProgress.total}</p>
               </div>
             )}
-            <div className="space-y-4">
-              <div>
-                <Label className="text-sm text-stone-400 mb-2 block">Foto</Label>
-                <input
-                  type="file"
-                  accept="image/*,android/allowCamera"
-                  capture="environment"
-                  id="review-photos-camera"
-                  onChange={addPhotoFiles}
-                  className="hidden"
-                />
-                <input
-                  type="file"
-                  accept="image/*,video/*"
-                  id="review-photos-gallery"
-                  onChange={addPhotoFiles}
-                  multiple
-                  className="hidden"
-                />
-                <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => document.getElementById("review-photos-camera")?.click()}
-                    className="bg-stone-800 border-stone-600 text-stone-300 hover:bg-stone-700"
-                  >
-                    Scatta foto
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => document.getElementById("review-photos-gallery")?.click()}
-                    className="bg-stone-800 border-stone-600 text-stone-300 hover:bg-stone-700"
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Galleria
-                  </Button>
-                </div>
-                <p className="text-xs text-stone-500 mt-1">max 5MB per immagine</p>
                 {(formData.photos?.length > 0 || photoFiles.length > 0) && (
                   <div className="flex flex-wrap gap-2 mt-3">
                     {formData.photos?.map((url, i) => (
@@ -649,48 +629,6 @@ export default function AddReview() {
                 )}
               </div>
               <div>
-                <Label className="text-sm text-stone-400 mb-2 block flex items-center gap-2">
-                  <Video className="w-4 h-4" />
-                  Video
-                </Label>
-                <input
-                  type="file"
-                  accept="video/*,android/allowCamera"
-                  capture="environment"
-                  id="review-videos-camera"
-                  onChange={addVideoFiles}
-                  className="hidden"
-                />
-                <input
-                  type="file"
-                  accept="image/*,video/*"
-                  id="review-videos-gallery"
-                  onChange={addVideoFiles}
-                  multiple
-                  className="hidden"
-                />
-                <div className="flex gap-2">
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => document.getElementById("review-videos-camera")?.click()}
-                    className="bg-stone-800 border-stone-600 text-stone-300 hover:bg-stone-700"
-                  >
-                    Registra video
-                  </Button>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={() => document.getElementById("review-videos-gallery")?.click()}
-                    className="bg-stone-800 border-stone-600 text-stone-300 hover:bg-stone-700"
-                  >
-                    <Plus className="w-4 h-4 mr-2" />
-                    Galleria
-                  </Button>
-                </div>
-                <p className="text-xs text-stone-500 mt-1">max 10MB per video</p>
                 {(formData.videos?.length > 0 || videoFiles.length > 0) && (
                   <div className="flex flex-wrap gap-2 mt-3">
                     {formData.videos?.map((url, i) => (
