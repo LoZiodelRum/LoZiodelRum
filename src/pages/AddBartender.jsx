@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useAppData } from "@/lib/AppDataContext";
 import { createPageUrl } from "@/utils";
@@ -66,6 +66,8 @@ export default function AddBartender() {
   const [status, setStatus] = useState(null); // 'success' | 'error' | null
   const [photoFiles, setPhotoFiles] = useState([]);
   const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
+
+  const photoInputRef = useRef(null);
 
   const handleCapture = (e) => {
     const files = Array.from(e.target.files || []);
@@ -297,15 +299,26 @@ export default function AddBartender() {
                     <ImageIcon className="w-4 h-4 text-amber-500" />
                     Foto e video
                   </Label>
-                  <input
-                    type="file"
-                    accept="image/*,video/*"
-                    capture="environment"
-                    multiple
-                    id="mobile-upload"
-                    onChange={handleCapture}
-                    className="mt-1"
-                  />
+                  <div className="relative mt-1">
+                    <button
+                      type="button"
+                      onClick={() => photoInputRef.current?.click()}
+                      className="w-full px-4 py-3 rounded-lg bg-stone-800 border border-stone-700 text-stone-300 text-left hover:bg-stone-700 cursor-pointer"
+                    >
+                      carica una foto
+                    </button>
+                    <input
+                      ref={photoInputRef}
+                      type="file"
+                      accept="image/*,video/*"
+                      capture="environment"
+                      multiple
+                      id="mobile-upload"
+                      onChange={handleCapture}
+                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                      style={{ fontSize: 0 }}
+                    />
+                  </div>
                   <p className="text-xs text-stone-500 mt-1">Fotocamera, video o galleria • max 5MB foto, 10MB video</p>
                   {uploadProgress.total > 0 && (
                     <div className="mt-2 space-y-1">
