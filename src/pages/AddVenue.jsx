@@ -31,6 +31,7 @@ import {
 } from "@/components/ui/select";
 import { motion } from "framer-motion";
 import { uploadToSupabaseStorage, uploadMultipleToSupabaseStorage, urlsToDbString } from "@/lib/supabaseStorage";
+import CameraCapture from "@/components/CameraCapture";
 
 const categories = [
   { value: "cocktail_bar", label: "Cocktail Bar" },
@@ -87,6 +88,7 @@ export default function AddVenue() {
   const [coverImageFiles, setCoverImageFiles] = useState([]);
   const [videoFile, setVideoFile] = useState(null);
   const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
+  const [cameraOpen, setCameraOpen] = useState(false);
 
   useEffect(() => {
     if (!status) return;
@@ -532,26 +534,44 @@ export default function AddVenue() {
               Immagine di copertina
             </h2>
             <div className="space-y-2">
-              <div className="relative inline-block">
-                <div className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-stone-800 border border-stone-600 text-stone-300 hover:bg-stone-700 text-sm font-medium pointer-events-none">
-                  <ImageIcon className="w-4 h-4" />
-                  {coverImageFiles.length > 0 ? `${coverImageFiles.length} file` : "carica una foto"}
+              <div className="flex flex-wrap gap-2">
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCameraOpen(true)}
+                  className="bg-stone-800 border-stone-600 text-stone-300 hover:bg-stone-700"
+                >
+                  <ImageIcon className="w-4 h-4 mr-2" />
+                  Scatta foto
+                </Button>
+                <div className="relative inline-block">
+                  <div className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-stone-800 border border-stone-600 text-stone-300 hover:bg-stone-700 text-sm font-medium pointer-events-none">
+                    {coverImageFiles.length > 0 ? `${coverImageFiles.length} file` : "Carica da galleria"}
+                  </div>
+                  <input
+                    type="file"
+                    accept="image/*,video/*"
+                    multiple
+                    onChange={(e) => {
+                      const files = Array.from(e.target.files || []);
+                      setCoverImageFiles((prev) => [...prev, ...files]);
+                      if (files.length) setFormData((prev) => ({ ...prev, cover_image: "" }));
+                      e.target.value = "";
+                    }}
+                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
+                    style={{ fontSize: 0 }}
+                  />
                 </div>
-                <input
-                  type="file"
-                  accept="image/*,video/*"
-                  capture="environment"
-                  multiple
-                  onChange={(e) => {
-                    const files = Array.from(e.target.files || []);
-                    setCoverImageFiles((prev) => [...prev, ...files]);
-                    if (files.length) setFormData((prev) => ({ ...prev, cover_image: "" }));
-                    e.target.value = "";
-                  }}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  style={{ fontSize: 0 }}
-                />
               </div>
+              <CameraCapture
+                open={cameraOpen}
+                onOpenChange={setCameraOpen}
+                onCapture={(file) => {
+                  setCoverImageFiles((prev) => [...prev, file]);
+                  setFormData((prev) => ({ ...prev, cover_image: "" }));
+                }}
+              />
               <p className="text-xs text-stone-500">Fotocamera, video o galleria • max 5MB foto, 10MB video</p>
               {uploadProgress.total > 0 && (
                 <div className="space-y-1">
