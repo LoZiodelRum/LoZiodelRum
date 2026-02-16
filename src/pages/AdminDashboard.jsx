@@ -1,19 +1,22 @@
 /**
  * AdminDashboard – Tre sezioni: Locali, Bartender, Utenti.
- * Ogni sezione elenca i profili 'pending'. Clic su un nome → AdminCard per verifica.
+ * Query aggressiva: select('*') senza filtri per debug sync Invio/Database/Dashboard.
+ *
+ * RLS BYPASS (DEBUG): Se i dati non appaiono nonostante l'inserimento riuscito,
+ * disattiva temporaneamente l'RLS su Supabase: Table Editor → venues_cloud / app_users → RLS → Disable.
  */
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { useAppData } from "@/lib/AppDataContext";
-import { MapPin, User, Wine, ChevronLeft, Loader2 } from "lucide-react";
+import { TABLE_VENUES, TABLE_APP_USERS } from "@/lib/supabaseTables";
+import { MapPin, User, Wine, ChevronLeft, Loader2, AlertCircle } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AdminCard from "@/components/admin/AdminCard";
 import { toast } from "@/components/ui/use-toast";
 
 export default function AdminDashboard() {
   const {
-    user,
     isSupabaseConfigured,
     getPendingVenuesFromCloud,
     getPendingRegistrationsFromCloud,
@@ -28,10 +31,12 @@ export default function AdminDashboard() {
   const [pendingVenues, setPendingVenues] = useState([]);
   const [pendingRegistrations, setPendingRegistrations] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selected, setSelected] = useState(null); // { type, item }
+  const [loadError, setLoadError] = useState(null);
+  const [selected, setSelected] = useState(null);
 
   const loadData = async () => {
     setLoading(true);
+    setLoadError(null);
     try {
       const [venues, regs] = await Promise.all([
         getPendingVenuesFromCloud?.() ?? [],
@@ -41,6 +46,7 @@ export default function AdminDashboard() {
       setPendingRegistrations(Array.isArray(regs) ? regs : []);
     } catch (err) {
       console.error(err);
+      setLoadError(err?.message || "Errore di connessione al database");
       toast({ title: "Errore caricamento", description: err?.message, variant: "destructive" });
     } finally {
       setLoading(false);
@@ -114,6 +120,19 @@ export default function AdminDashboard() {
           </div>
         </div>
 
+        {loadError && (
+          <div className="mb-6 p-4 rounded-xl bg-red-500/20 border border-red-500/50 text-red-200 flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 flex-shrink-0 mt-0.5" />
+            <div className="flex-1">
+              <p className="font-medium">Errore di connessione</p>
+              <p className="text-sm mt-1">{loadError}</p>
+              <Button variant="outline" size="sm" onClick={loadData} className="mt-3 border-red-500/50 text-red-200 hover:bg-red-500/20">
+                Riprova
+              </Button>
+            </div>
+          </div>
+        )}
+
         {loading ? (
           <div className="flex items-center justify-center py-16">
             <Loader2 className="w-8 h-8 animate-spin text-amber-500" />
@@ -140,7 +159,9 @@ export default function AdminDashboard() {
                 Locali ({pendingVenues.length})
               </h2>
               {pendingVenues.length === 0 ? (
-                <p className="text-stone-500">Nessun locale in attesa</p>
+                <p className="text-stone-500">
+                  {!loadError ? `Database collegato, ma la tabella ${TABLE_VENUES} è vuota` : "Nessun locale"}
+                </p>
               ) : (
                 <ul className="space-y-2">
                   {pendingVenues.map((v) => (
@@ -167,7 +188,11 @@ export default function AdminDashboard() {
                 Bartender ({pendingBartenders.length})
               </h2>
               {pendingBartenders.length === 0 ? (
-                <p className="text-stone-500">Nessun bartender in attesa</p>
+                <p className="text-stone-500">
+                  {!loadError && pendingRegistrations.length === 0
+                    ? `Database collegato, ma la tabella ${TABLE_APP_USERS} è vuota`
+                    : "Nessun bartender"}
+                </p>
               ) : (
                 <ul className="space-y-2">
                   {pendingBartenders.map((r) => (
@@ -192,7 +217,11 @@ export default function AdminDashboard() {
                 Utenti ({pendingUsers.length})
               </h2>
               {pendingUsers.length === 0 ? (
-                <p className="text-stone-500">Nessun utente in attesa</p>
+                <p className="text-stone-500">
+                  {!loadError && pendingRegistrations.length === 0
+                    ? `Database collegato, ma la tabella ${TABLE_APP_USERS} è vuota`
+                    : "Nessun utente"}
+                </p>
               ) : (
                 <ul className="space-y-2">
                   {pendingUsers.map((r) => (

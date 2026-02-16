@@ -5,6 +5,7 @@ import { articlesData as initialArticles } from "@/data/articles";
 import { drinksData as initialDrinks } from "@/data/drinks";
 import { initialOwnerMessages, initialCommunityPosts, initialCommunityEvents } from "@/data/community";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
+import { TABLE_VENUES, TABLE_APP_USERS } from "@/lib/supabaseTables";
 import { getPendingRegistrations, updateAppUserStatus, insertAppUser, updateAppUser } from "@/lib/supabaseUsers";
 import { useVenuesRealtime } from "@/hooks/useSupabaseRealtime";
 
@@ -81,7 +82,7 @@ export function AppDataProvider({ children }) {
       setReviews([...initialReviews]);
       return;
     }
-    supabase.from("venues_cloud").select("*").eq("status", "approved").then(({ data }) => {
+    supabase.from(TABLE_VENUES).select("*").eq("status", "approved").then(({ data }) => {
       if (data && data.length > 0) {
         setVenues(data.map((row) => ({
           ...row,
@@ -101,7 +102,7 @@ export function AppDataProvider({ children }) {
       }
     }).catch(() => setReviews([...initialReviews]));
 
-    supabase.from("app_users").select("*").eq("role", "bartender").order("created_at", { ascending: false }).then(({ data, error }) => {
+    supabase.from(TABLE_APP_USERS).select("*").eq("role", "bartender").order("created_at", { ascending: false }).then(({ data, error }) => {
       if (!error && data && Array.isArray(data)) {
         setBartenders(data.map(mapAppUserToBartender));
       }
@@ -190,7 +191,7 @@ export function AppDataProvider({ children }) {
             opening_hours: venue.opening_hours || "",
             status: "pending",
           };
-          const { data: inserted, error } = await supabase.from("venues_cloud").insert(row).select().single();
+          const { data: inserted, error } = await supabase.from(TABLE_VENUES).insert(row).select().single();
           if (error) {
             console.error("Supabase insert venue:", error);
             throw new Error(error.message || "Errore salvataggio locale su Supabase");
@@ -256,7 +257,7 @@ export function AppDataProvider({ children }) {
             instagram: data.instagram,
             opening_hours: data.opening_hours,
           };
-          supabase.from("venues_cloud").update(row).eq("id", id).then(() => {}).catch(() => {});
+          supabase.from(TABLE_VENUES).update(row).eq("id", id).then(() => {}).catch(() => {});
         }
         return { id, ...data };
       },
@@ -278,7 +279,7 @@ export function AppDataProvider({ children }) {
           instagram: data.instagram,
           opening_hours: data.opening_hours,
         };
-        await supabase.from("venues_cloud").update(row).eq("id", id);
+        await supabase.from(TABLE_VENUES).update(row).eq("id", id);
         return { id, ...data };
       },
       deleteVenue: (id) => {
@@ -534,7 +535,7 @@ export function AppDataProvider({ children }) {
       getPendingBartenders: () => bartenders.filter((b) => b.status === "pending"),
       loadBartendersFromCloud: async () => {
         if (!isSupabaseConfigured()) return;
-        const { data, error } = await supabase.from("app_users").select("*").eq("role", "bartender").order("created_at", { ascending: false });
+        const { data, error } = await supabase.from(TABLE_APP_USERS).select("*").eq("role", "bartender").order("created_at", { ascending: false });
         if (!error && data && Array.isArray(data)) {
           setBartenders(data.map(mapAppUserToBartender));
         }
@@ -606,7 +607,7 @@ export function AppDataProvider({ children }) {
       },
       deleteBartender: async (id) => {
         if (!isSupabaseConfigured()) return;
-        const { error } = await supabase.from("app_users").delete().eq("id", id);
+        const { error } = await supabase.from(TABLE_APP_USERS).delete().eq("id", id);
         if (!error) {
           setBartenders((prev) => prev.filter((b) => b.id !== id));
         }
@@ -648,7 +649,7 @@ export function AppDataProvider({ children }) {
             opening_hours: v.opening_hours || "",
             status: "pending",
           };
-          const { data: inserted, error } = await supabase.from("venues_cloud").insert(row).select().single();
+          const { data: inserted, error } = await supabase.from(TABLE_VENUES).insert(row).select().single();
           if (!error && inserted) {
             const newId = String(inserted.id);
             setVenues((prev) => prev.filter((x) => x.id !== v.id).concat([{ ...v, id: newId, _cloudPending: true }]));
@@ -669,7 +670,7 @@ export function AppDataProvider({ children }) {
         };
         if (!isSupabaseConfigured()) return viaApi();
         const run = async () => {
-          const { data, error } = await supabase.from("venues_cloud").select("*").eq("status", "pending").order("created_at", { ascending: false });
+          const { data, error } = await supabase.from(TABLE_VENUES).select("*").order("created_at", { ascending: false });
           if (error) throw error;
           return (data || []).map((row) => ({ ...row, id: String(row.id) }));
         };
@@ -707,8 +708,8 @@ export function AppDataProvider({ children }) {
         const update = { status: "approved" };
         if (extra.latitude != null) update.latitude = extra.latitude;
         if (extra.longitude != null) update.longitude = extra.longitude;
-        await supabase.from("venues_cloud").update(update).eq("id", id);
-        const { data } = await supabase.from("venues_cloud").select("*").eq("status", "approved");
+        await supabase.from(TABLE_VENUES).update(update).eq("id", id);
+        const { data } = await supabase.from(TABLE_VENUES).select("*").eq("status", "approved");
         if (data && data.length > 0) {
           const mapped = data.map((row) => ({ ...row, id: row.external_id || String(row.id), supabase_id: String(row.id) }));
           setVenues(mapped);
@@ -728,16 +729,16 @@ export function AppDataProvider({ children }) {
           }
           return;
         }
-        await supabase.from("venues_cloud").update({ status: "rejected" }).eq("id", id);
+        await supabase.from(TABLE_VENUES).update({ status: "rejected" }).eq("id", id);
       },
       deleteVenueCloud: async (id) => {
         if (!isSupabaseConfigured()) return;
-        await supabase.from("venues_cloud").delete().eq("id", id);
+        await supabase.from(TABLE_VENUES).delete().eq("id", id);
         setVenues((prev) => prev.filter((v) => v.id !== id));
       },
       deleteAppUser: async (id) => {
         if (!isSupabaseConfigured()) return;
-        const { error } = await supabase.from("app_users").delete().eq("id", id);
+        const { error } = await supabase.from(TABLE_APP_USERS).delete().eq("id", id);
         if (!error) {
           setBartenders((prev) => prev.filter((b) => b.id !== id));
         }

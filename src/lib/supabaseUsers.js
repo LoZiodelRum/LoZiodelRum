@@ -3,6 +3,7 @@
  * Esegui la migration 20250215000000_auth_and_registrations.sql prima di usare
  */
 import { supabase, isSupabaseConfigured } from "./supabase";
+import { TABLE_APP_USERS } from "./supabaseTables";
 
 /** Converte undefined in null per evitare errori Supabase */
 function sanitize(val) {
@@ -18,7 +19,7 @@ export async function insertAppUser(userData) {
     email: sanitize(userData.email) || null,
     role: userData.role || "user",
     role_label: userData.roleLabel || userData.role || userData.role,
-    status: userData.role === "admin" ? "approved" : "pending",
+    status: userData.role === "admin" ? "approved" : (userData.status ?? "pending"),
     ...(userData.role === "proprietario" && {
       email: sanitize(userData.email) || null,
       venue_ids: Array.isArray(userData.venue_ids) && userData.venue_ids.length > 0
@@ -50,7 +51,7 @@ export async function insertAppUser(userData) {
       image_url: sanitize(userData.image_url) || null,
     }),
   };
-  const { data, error } = await supabase.from("app_users").insert(row).select().single();
+  const { data, error } = await supabase.from(TABLE_APP_USERS).insert(row).select().single();
   if (error) {
     console.error("[Supabase] insert app_user - errore completo:", { error, code: error.code, details: error.details, hint: error.hint });
     const err = new Error(error.message || "Errore salvataggio su Supabase");
@@ -60,23 +61,23 @@ export async function insertAppUser(userData) {
   return data;
 }
 
+/** Query aggressiva: nessun filtro, mostra TUTTO per debug sync Invio/Database/Dashboard */
 export async function getPendingRegistrations() {
   if (!isSupabaseConfigured()) return [];
   const { data, error } = await supabase
-    .from("app_users")
+    .from(TABLE_APP_USERS)
     .select("*")
-    .eq("status", "pending")
     .order("created_at", { ascending: false });
   if (error) {
-    console.error("Supabase get pending registrations:", error);
-    return [];
+    console.error("Supabase get registrations:", error);
+    throw error;
   }
   return data || [];
 }
 
 export async function updateAppUserStatus(id, status) {
   if (!isSupabaseConfigured()) return false;
-  const { error } = await supabase.from("app_users").update({ status }).eq("id", id);
+  const { error } = await supabase.from(TABLE_APP_USERS).update({ status }).eq("id", id);
   return !error;
 }
 
@@ -84,7 +85,7 @@ export async function updateAppUser(id, data) {
   if (!isSupabaseConfigured() || !supabase) {
     throw new Error("Supabase non configurato. Verifica VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.");
   }
-  const { data: updated, error } = await supabase.from("app_users").update(data).eq("id", id).select().single();
+  const { data: updated, error } = await supabase.from(TABLE_APP_USERS).update(data).eq("id", id).select().single();
   if (error) {
     console.error("[Supabase] update app_user - errore completo:", { error, code: error.code, details: error.details, hint: error.hint });
     const err = new Error(error.message || "Errore aggiornamento su Supabase");
