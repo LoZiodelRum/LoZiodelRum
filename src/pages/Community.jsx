@@ -1,3 +1,7 @@
+/**
+ * Registrazione community – Supabase (app_users).
+ * Nessun localStorage: insertAppUser salva su Supabase.
+ */
 import { useState } from "react";
 import { UserPlus, Shield, Store, Wine, User, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";

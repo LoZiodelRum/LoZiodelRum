@@ -1,3 +1,7 @@
+/**
+ * Modifica recensione – Supabase (reviews_cloud).
+ * Nessun localStorage: updateReview/deleteReview su Supabase.
+ */
 import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";

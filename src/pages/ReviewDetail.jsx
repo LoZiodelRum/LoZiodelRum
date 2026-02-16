@@ -1,3 +1,7 @@
+/**
+ * Dettaglio recensione – Supabase (reviews_cloud).
+ * Nessun localStorage: getReviewById/getVenueById da AppDataContext.
+ */
 import { useSearchParams, Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { ChevronLeft, Share2, Star, User, Wine, ThumbsUp } from "lucide-react";

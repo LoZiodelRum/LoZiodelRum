@@ -1,3 +1,7 @@
+/**
+ * Aggiungi recensione – Supabase (reviews_cloud).
+ * Nessun localStorage: addReview/addVenue scrivono su Supabase.
+ */
 import { useState, useEffect } from "react";
 import { Link, useNavigate, Navigate } from "react-router-dom";
 import { toast } from "@/components/ui/use-toast";

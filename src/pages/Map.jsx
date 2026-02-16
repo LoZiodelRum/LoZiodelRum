@@ -1,3 +1,7 @@
+/**
+ * Mappa locali – dati da Supabase (AppDataContext).
+ * Nessun localStorage: venues da venues_cloud via getVenues().
+ */
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";

@@ -1,3 +1,7 @@
+/**
+ * Card recensione – Supabase (reviews_cloud).
+ * Nessun localStorage: deleteReview su Supabase.
+ */
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAppData } from "@/lib/AppDataContext";
