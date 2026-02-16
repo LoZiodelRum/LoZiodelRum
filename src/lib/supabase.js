@@ -1,9 +1,25 @@
 import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL?.trim?.() ?? "";
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY?.trim?.() ?? "";
+function sanitizeEnv(val) {
+  if (val == null || typeof val !== "string") return "";
+  return val
+    .trim()
+    .replace(/^["']|["']$/g, "")
+    .replace(/[\r\n\s]+/g, "")
+    .trim();
+}
 
-export const supabase =
-  supabaseUrl && supabaseAnonKey ? createClient(supabaseUrl, supabaseAnonKey) : null;
+const supabaseUrl = sanitizeEnv(import.meta.env.VITE_SUPABASE_URL);
+const supabaseAnonKey = sanitizeEnv(import.meta.env.VITE_SUPABASE_ANON_KEY);
 
-export const isSupabaseConfigured = () => !!(supabaseUrl && supabaseAnonKey);
+let supabase = null;
+try {
+  if (supabaseUrl && supabaseAnonKey) {
+    supabase = createClient(supabaseUrl, supabaseAnonKey);
+  }
+} catch (err) {
+  console.error("[Supabase] Errore inizializzazione:", err?.message);
+}
+
+export { supabase };
+export const isSupabaseConfigured = () => !!supabase;
