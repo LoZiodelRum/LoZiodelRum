@@ -4,6 +4,7 @@ import { createPageUrl } from "@/utils";
 import { useMutation } from "@tanstack/react-query";
 import { useAppData } from "@/lib/AppDataContext";
 import { ChevronLeft, Save, Loader2, MapPin, Phone, Globe, Instagram, Clock, Image as ImageIcon, Trash2 } from "lucide-react";
+import { uploadToSupabaseStorage } from "@/lib/supabaseStorage";
 
 const categories = [
   { value: "cocktail_bar", label: "Cocktail Bar" },
@@ -45,7 +46,7 @@ export default function EditVenue() {
   const stateVenue = location.state?.fromCloud ? location.state?.venue : null;
 
   const navigate = useNavigate();
-  const { getVenueById, updateVenue, updateVenueCloud, deleteVenue, rejectVenueCloud } = useAppData();
+  const { getVenueById, updateVenue, updateVenueCloud, deleteVenue, rejectVenueCloud, isSupabaseConfigured } = useAppData();
   const venue = stateVenue || getVenueById(venueId);
 
   const [formData, setFormData] = useState({
@@ -68,6 +69,7 @@ export default function EditVenue() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [coverImageFile, setCoverImageFile] = useState(null);
 
   useEffect(() => {
     if (venue && venueId) {
@@ -108,14 +110,26 @@ export default function EditVenue() {
     onError: () => setIsSubmitting(false),
   });
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name || !formData.city || !formData.country || formData.categories.length === 0 || isSubmitting) return;
+    if (coverImageFile && !isSupabaseConfigured?.()) {
+      return;
+    }
     setIsSubmitting(true);
-    updateVenueMutation.mutate({
-      ...formData,
-      category: formData.categories[0] || "cocktail_bar",
-    });
+    try {
+      let coverImageUrl = formData.cover_image || "";
+      if (coverImageFile) {
+        coverImageUrl = await uploadToSupabaseStorage(coverImageFile, "venues", "image");
+      }
+      updateVenueMutation.mutate({
+        ...formData,
+        cover_image: coverImageUrl,
+        category: formData.categories[0] || "cocktail_bar",
+      });
+    } catch (err) {
+      setIsSubmitting(false);
+    }
   };
 
   const toggleCategory = (v) => {
@@ -442,8 +456,40 @@ export default function EditVenue() {
             <h3 style={{ fontSize: "1.125rem", fontWeight: 600, marginBottom: "1rem", display: "flex", alignItems: "center", gap: "0.5rem" }}>
               <ImageIcon style={{ width: 20, height: 20, color: "#f59e0b" }} /> Immagine di copertina
             </h3>
-            <input type="url" value={formData.cover_image} onChange={(e) => setFormData((p) => ({ ...p, cover_image: e.target.value }))} onPaste={(e) => handlePaste("cover_image", e)} placeholder="https://..." style={fieldStyle} />
-            {formData.cover_image && <img src={formData.cover_image} alt="Preview" style={{ marginTop: "0.75rem", width: "100%", height: 192, objectFit: "cover", borderRadius: "0.75rem" }} />}
+            <input
+              type="file"
+              accept="image/*"
+              id="edit-venue-cover-input"
+              onChange={(e) => {
+                const f = e.target.files?.[0];
+                setCoverImageFile(f || null);
+                if (f) setFormData((p) => ({ ...p, cover_image: "" }));
+              }}
+              style={{ display: "none" }}
+            />
+            <button
+              type="button"
+              onClick={() => document.getElementById("edit-venue-cover-input")?.click()}
+              style={{
+                padding: "0.5rem 1rem",
+                fontSize: "0.875rem",
+                backgroundColor: "rgba(41,37,36,0.8)",
+                border: "1px solid rgba(68,64,60,0.8)",
+                borderRadius: "0.5rem",
+                color: "#d6d3d1",
+                cursor: "pointer",
+              }}
+            >
+              {coverImageFile ? coverImageFile.name : "Carica immagine da cellulare o galleria"}
+            </button>
+            <p style={{ fontSize: "0.75rem", color: "#78716c", marginTop: "0.5rem" }}>Fotocamera o galleria • max 5MB</p>
+            {(formData.cover_image || coverImageFile) && (
+              <img
+                src={coverImageFile ? URL.createObjectURL(coverImageFile) : formData.cover_image}
+                alt="Preview"
+                style={{ marginTop: "0.75rem", width: "100%", height: 192, objectFit: "cover", borderRadius: "0.75rem" }}
+              />
+            )}
           </section>
 
           <button

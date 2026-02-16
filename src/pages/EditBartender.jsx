@@ -10,7 +10,9 @@ import {
   Send,
   Loader2,
   Trash2,
+  Image as ImageIcon,
 } from "lucide-react";
+import { uploadToSupabaseStorage } from "@/lib/supabaseStorage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -65,6 +67,7 @@ export default function EditBartender() {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [photoFile, setPhotoFile] = useState(null);
 
   useEffect(() => {
     if (bartender && bartenderId) {
@@ -110,8 +113,16 @@ export default function EditBartender() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
+    if (photoFile && !isSupabaseConfigured()) {
+      setErrors((prev) => ({ ...prev, _form: "Supabase non configurato. Per caricare la foto configura le variabili d'ambiente." }));
+      return;
+    }
     setIsSubmitting(true);
     try {
+      let photoUrl = formData.photo || "";
+      if (photoFile) {
+        photoUrl = await uploadToSupabaseStorage(photoFile, "bartenders", "image");
+      }
       const selectedVenue = formData.venue_id ? venues.find((v) => v.id === formData.venue_id) : null;
       const isValidUuid = (s) => s && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(s));
       const venueIdForDb = formData.venue_id && selectedVenue
@@ -119,6 +130,7 @@ export default function EditBartender() {
         : null;
       const payload = {
         ...formData,
+        photo: photoUrl,
         city: formData.city || selectedVenue?.city || "",
         venue_id: venueIdForDb,
         venue_name: formData.venue_name?.trim() || "",
@@ -261,13 +273,38 @@ export default function EditBartender() {
 
               <div className="grid md:grid-cols-2 gap-4">
                 <div>
-                  <Label className="text-sm text-stone-300">Foto (URL)</Label>
-                  <Input
-                    value={formData.photo}
-                    onChange={(e) => updateField("photo", e.target.value)}
-                    placeholder="https://..."
-                    className="mt-1 bg-stone-900 border-stone-700"
+                  <Label className="text-sm text-stone-300 flex items-center gap-2">
+                    <ImageIcon className="w-4 h-4 text-amber-500" />
+                    Foto
+                  </Label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    id="edit-bartender-photo-input"
+                    onChange={(e) => {
+                      const f = e.target.files?.[0];
+                      setPhotoFile(f || null);
+                      if (f) updateField("photo", "");
+                    }}
+                    className="hidden"
                   />
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => document.getElementById("edit-bartender-photo-input")?.click()}
+                    className="mt-1 bg-stone-800 border-stone-600 text-stone-300 hover:bg-stone-700"
+                  >
+                    {photoFile ? photoFile.name : "Carica foto da cellulare o galleria"}
+                  </Button>
+                  <p className="text-xs text-stone-500 mt-1">Fotocamera o galleria • max 5MB</p>
+                  {(formData.photo || photoFile) && (
+                    <img
+                      src={photoFile ? URL.createObjectURL(photoFile) : formData.photo}
+                      alt="Preview foto"
+                      className="mt-2 h-24 w-24 object-cover rounded-xl"
+                    />
+                  )}
                 </div>
                 <div>
                   <Label className="text-sm text-stone-300">Locale dove lavora</Label>

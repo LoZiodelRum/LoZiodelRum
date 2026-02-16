@@ -496,32 +496,20 @@ export default function AddVenue() {
                 }}
                 className="hidden"
               />
-              <div className="flex flex-wrap gap-2 items-center">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => document.getElementById("cover-image-input")?.click()}
-                  className="bg-stone-800 border-stone-600 text-stone-300 hover:bg-stone-700"
-                >
-                  {coverImageFile ? coverImageFile.name : "Carica immagine"}
-                </Button>
-                <span className="text-stone-500 text-sm">oppure</span>
-                <Input
-                  placeholder="URL immagine..."
-                  value={formData.cover_image}
-                  onChange={(e) => {
-                    setFormData(prev => ({ ...prev, cover_image: e.target.value }));
-                    if (coverImageFile) setCoverImageFile(null);
-                  }}
-                  className="flex-1 min-w-[180px] bg-stone-800/50 border-stone-700"
-                />
-              </div>
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => document.getElementById("cover-image-input")?.click()}
+                className="bg-stone-800 border-stone-600 text-stone-300 hover:bg-stone-700"
+              >
+                {coverImageFile ? coverImageFile.name : "Carica immagine da cellulare o galleria"}
+              </Button>
               <p className="text-xs text-stone-500">Fotocamera o galleria • max 5MB</p>
             </div>
-            {(formData.cover_image || coverImageFile) && (
+            {coverImageFile && (
               <img 
-                src={coverImageFile ? URL.createObjectURL(coverImageFile) : formData.cover_image} 
+                src={URL.createObjectURL(coverImageFile)} 
                 alt="Preview" 
                 className="h-40 w-full object-cover rounded-xl"
               />
