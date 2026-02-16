@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAppData } from "@/lib/AppDataContext";
 import { createPageUrl } from "@/utils";
@@ -67,12 +67,9 @@ export default function AddBartender() {
   const [photoFiles, setPhotoFiles] = useState([]);
   const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
 
-  const photoInputRef = useRef(null);
-
   const handleCapture = (e) => {
     const files = Array.from(e.target.files || []);
     if (files.length > 0) {
-      console.log("File catturati:", files);
       setPhotoFiles((prev) => [...prev, ...files]);
       if (files.length) updateField("photo", "");
     }
@@ -223,12 +220,12 @@ export default function AddBartender() {
 
         {/* Banner status - auto-close 5s */}
         {status === "success" && (
-          <div className="mb-6 p-4 rounded-xl bg-green-600 border border-green-400 text-white text-center font-bold text-lg">
+          <div className="mb-6 p-6 rounded-xl bg-green-600 border-2 border-green-400 text-white text-center font-bold text-xl">
             INVIO COMPLETATO
           </div>
         )}
         {status === "error" && (
-          <div className="mb-6 p-4 rounded-xl bg-red-600 border border-red-400 text-white text-center font-medium">
+          <div className="mb-6 p-6 rounded-xl bg-red-600 border-2 border-red-400 text-white text-center font-bold text-xl">
             {errors._form || "Errore durante l'invio. Riprova."}
           </div>
         )}
@@ -295,24 +292,15 @@ export default function AddBartender() {
                     <ImageIcon className="w-4 h-4 text-amber-500" />
                     Foto e video
                   </Label>
-                  <div className="upload-container mt-1">
-                    <button
-                      type="button"
-                      onClick={() => photoInputRef.current?.click()}
-                      className="w-full px-4 py-3 rounded-lg bg-stone-800 border border-stone-700 text-stone-300 text-left hover:bg-stone-700 cursor-pointer"
-                    >
-                      carica una foto
-                    </button>
-                    <input
-                      ref={photoInputRef}
-                      type="file"
-                      accept="image/*,video/*"
-                      capture="environment"
-                      multiple
-                      onChange={handleCapture}
-                      style={{ position: "absolute", width: 0, height: 0, opacity: 0, pointerEvents: "none" }}
-                    />
-                  </div>
+                  <input
+                    type="file"
+                    accept="image/*,video/*"
+                    capture="environment"
+                    multiple
+                    id="camera-input"
+                    onChange={handleCapture}
+                    className="w-full mt-1"
+                  />
                   <p className="text-xs text-stone-500 mt-1">Fotocamera, video o galleria • max 5MB foto, 10MB video</p>
                   {uploadProgress.total > 0 && (
                     <div className="mt-2 space-y-1">

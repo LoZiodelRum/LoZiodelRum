@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "@/components/ui/use-toast";
 import { createPageUrl } from "@/utils";
@@ -88,13 +88,9 @@ export default function AddVenue() {
   const [videoFile, setVideoFile] = useState(null);
   const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
 
-  const coverInputRef = useRef(null);
-  const videoInputRef = useRef(null);
-
   const handleCoverCapture = (e) => {
     const files = Array.from(e.target.files || []);
     if (files.length > 0) {
-      console.log("File catturati:", files);
       setCoverImageFiles((prev) => [...prev, ...files]);
       setFormData((prev) => ({ ...prev, cover_image: "" }));
     }
@@ -234,12 +230,12 @@ export default function AddVenue() {
       <div className="max-w-2xl mx-auto">
         {/* Banner status - auto-close 5s */}
         {status === "success" && (
-          <div className="mb-6 p-4 rounded-xl bg-green-600 border border-green-400 text-white text-center font-bold text-lg">
+          <div className="mb-6 p-6 rounded-xl bg-green-600 border-2 border-green-400 text-white text-center font-bold text-xl">
             INVIO COMPLETATO
           </div>
         )}
         {status === "error" && (
-          <div className="mb-6 p-4 rounded-xl bg-red-600 border border-red-400 text-white text-center font-medium">
+          <div className="mb-6 p-6 rounded-xl bg-red-600 border-2 border-red-400 text-white text-center font-bold text-xl">
             {errors._form || "Errore durante l'invio. Riprova."}
           </div>
         )}
@@ -545,24 +541,15 @@ export default function AddVenue() {
               Immagine di copertina
             </h2>
             <div className="space-y-2">
-              <div className="upload-container">
-                <button
-                  type="button"
-                  onClick={() => coverInputRef.current?.click()}
-                  className="w-full px-4 py-3 rounded-lg bg-stone-800 border border-stone-700 text-stone-300 text-left hover:bg-stone-700 cursor-pointer"
-                >
-                  carica una foto
-                </button>
-                <input
-                  ref={coverInputRef}
-                  type="file"
-                  accept="image/*,video/*"
-                  capture="environment"
-                  multiple
-                  onChange={handleCoverCapture}
-                  style={{ position: "absolute", width: 0, height: 0, opacity: 0, pointerEvents: "none" }}
-                />
-              </div>
+              <input
+                type="file"
+                accept="image/*,video/*"
+                capture="environment"
+                multiple
+                id="camera-input"
+                onChange={handleCoverCapture}
+                className="w-full"
+              />
               <p className="text-xs text-stone-500">Fotocamera, video o galleria • max 5MB foto, 10MB video</p>
               {uploadProgress.total > 0 && (
                 <div className="space-y-1">
@@ -606,28 +593,19 @@ export default function AddVenue() {
                 <VideoIcon className="w-4 h-4 text-amber-500" />
                 Video breve (opzionale)
               </h3>
-              <div className="upload-container" style={{ textAlign: "center", padding: "10px 0" }}>
-                <button
-                  type="button"
-                  onClick={() => videoInputRef.current?.click()}
-                  className="w-full px-4 py-3 rounded-lg bg-stone-800 border border-stone-700 text-stone-300 text-left hover:bg-stone-700 cursor-pointer"
-                >
-                  Video breve (opzionale)
-                </button>
-                <input
-                  ref={videoInputRef}
-                  type="file"
-                  accept="image/*,video/*"
-                  capture="environment"
-                  multiple
-                  onChange={(e) => {
-                    const f = e.target.files?.[0];
-                    if (f) setVideoFile(f);
-                    e.target.value = "";
-                  }}
-                  style={{ position: "absolute", width: 0, height: 0, opacity: 0, pointerEvents: "none" }}
-                />
-              </div>
+              <input
+                type="file"
+                accept="image/*,video/*"
+                capture="environment"
+                multiple
+                id="camera-input-video"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) setVideoFile(f);
+                  e.target.value = "";
+                }}
+                className="w-full"
+              />
                 <div className="flex gap-2 items-center mt-2">
                   {videoFile && (
                     <button
