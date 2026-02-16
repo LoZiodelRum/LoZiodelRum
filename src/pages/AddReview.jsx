@@ -40,6 +40,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { motion } from "framer-motion";
 import { ratingOptions } from "@/lib/reviewRatings";
 import { highlightOptions, improvementOptions } from "@/lib/highlightsImprovements";
+import { uploadToSupabaseStorage } from "@/lib/supabaseStorage";
 
 const ratingCategories = [
   { key: "drink_quality", label: "Qualità Drink", icon: Wine, description: "Gusto, presentazione, tecnica" },
@@ -72,8 +73,8 @@ export default function AddReview() {
     would_recommend: true
   });
   
-  const [newPhotoUrl, setNewPhotoUrl] = useState("");
-  const [newVideoUrl, setNewVideoUrl] = useState("");
+  const [photoFiles, setPhotoFiles] = useState([]);
+  const [videoFiles, setVideoFiles] = useState([]);
   const [newDrink, setNewDrink] = useState({ name: "", category: "cocktail", rating: 8, notes: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showNewVenueForm, setShowNewVenueForm] = useState(false);
@@ -90,7 +91,7 @@ export default function AddReview() {
     opening_hours: ""
   });
 
-  const { getVenues, addReview, addVenue, user } = useAppData();
+  const { getVenues, addReview, addVenue, user, isSupabaseConfigured } = useAppData();
   const venues = getVenues();
 
   if (!user || !user.role) {
@@ -205,34 +206,38 @@ export default function AddReview() {
     }));
   };
 
-  const addPhoto = () => {
-    const url = (newPhotoUrl || "").trim();
-    if (url && (url.startsWith("http://") || url.startsWith("https://"))) {
-      setFormData(prev => ({ ...prev, photos: [...(prev.photos || []), url] }));
-      setNewPhotoUrl("");
+  const addPhotoFiles = (e) => {
+    const files = Array.from(e.target.files || []);
+    setPhotoFiles(prev => [...prev, ...files]);
+    e.target.value = "";
+  };
+
+  const removePhoto = (index, isFile) => {
+    if (isFile) {
+      setPhotoFiles(prev => prev.filter((_, i) => i !== index));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        photos: (prev.photos || []).filter((_, i) => i !== index)
+      }));
     }
   };
 
-  const removePhoto = (index) => {
-    setFormData(prev => ({
-      ...prev,
-      photos: (prev.photos || []).filter((_, i) => i !== index)
-    }));
+  const addVideoFiles = (e) => {
+    const files = Array.from(e.target.files || []);
+    setVideoFiles(prev => [...prev, ...files]);
+    e.target.value = "";
   };
 
-  const addVideo = () => {
-    const url = (newVideoUrl || "").trim();
-    if (url && (url.startsWith("http://") || url.startsWith("https://"))) {
-      setFormData(prev => ({ ...prev, videos: [...(prev.videos || []), url] }));
-      setNewVideoUrl("");
+  const removeVideo = (index, isFile) => {
+    if (isFile) {
+      setVideoFiles(prev => prev.filter((_, i) => i !== index));
+    } else {
+      setFormData(prev => ({
+        ...prev,
+        videos: (prev.videos || []).filter((_, i) => i !== index)
+      }));
     }
-  };
-
-  const removeVideo = (index) => {
-    setFormData(prev => ({
-      ...prev,
-      videos: (prev.videos || []).filter((_, i) => i !== index)
-    }));
   };
 
   const toggleHighlight = (item) => {
@@ -262,14 +267,35 @@ export default function AddReview() {
     setErrors(next);
     if (Object.keys(next).length > 0) return;
 
+    if ((photoFiles.length > 0 || videoFiles.length > 0) && !isSupabaseConfigured?.()) {
+      setErrors(prev => ({ ...prev, _form: "Per caricare foto e video è necessario che Supabase sia configurato." }));
+      return;
+    }
     setIsSubmitting(true);
-    const reviewData = {
-      ...formData,
-      venue_id: selectedVenue,
-      author_name: user?.name || "Anonimo",
-      author_avatar: user?.avatar
-    };
-    createReviewMutation.mutate(reviewData);
+    try {
+      let photoUrls = [...(formData.photos || [])];
+      let videoUrls = [...(formData.videos || [])];
+      if (isSupabaseConfigured?.()) {
+        for (const f of photoFiles) {
+          photoUrls.push(await uploadToSupabaseStorage(f, "reviews", "image"));
+        }
+        for (const f of videoFiles) {
+          videoUrls.push(await uploadToSupabaseStorage(f, "reviews", "video"));
+        }
+      }
+      const reviewData = {
+        ...formData,
+        photos: photoUrls,
+        videos: videoUrls,
+        venue_id: selectedVenue,
+        author_name: user?.name || "Anonimo",
+        author_avatar: user?.avatar
+      };
+      createReviewMutation.mutate(reviewData);
+    } catch (err) {
+      setErrors(prev => ({ ...prev, _form: err?.message || "Errore caricamento file" }));
+      setIsSubmitting(false);
+    }
   };
 
   const isValid = selectedVenue && formData.overall_rating > 0;
@@ -294,7 +320,7 @@ export default function AddReview() {
         <div className="space-y-8">
           {Object.keys(errors).length > 0 && (
             <div className="p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm">
-              Correggi i campi indicati sotto prima di inviare.
+              {errors._form || "Correggi i campi indicati sotto prima di inviare."}
             </div>
           )}
           {/* Venue Selection */}
@@ -531,28 +557,44 @@ export default function AddReview() {
               <Image className="w-5 h-5 text-amber-500" />
               Foto e video
             </Label>
-            <p className="text-sm text-stone-500 mb-4">Aggiungi URL di foto o brevi video (YouTube, Vimeo, link diretti)</p>
+            <p className="text-sm text-stone-500 mb-4">Carica foto e video dal cellulare (fotocamera o galleria)</p>
             
             <div className="space-y-4">
               <div>
-                <Label className="text-sm text-stone-400 mb-2 block">Foto (URL)</Label>
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="https://..."
-                    value={newPhotoUrl}
-                    onChange={(e) => setNewPhotoUrl(e.target.value)}
-                    className="bg-stone-800/50 border-stone-700 flex-1"
-                  />
-                  <Button type="button" onClick={addPhoto} disabled={!newPhotoUrl?.trim()} className="bg-stone-800 hover:bg-stone-700">
-                    <Plus className="w-4 h-4" />
-                  </Button>
-                </div>
-                {formData.photos?.length > 0 && (
+                <Label className="text-sm text-stone-400 mb-2 block">Foto</Label>
+                <input
+                  type="file"
+                  accept="image/*"
+                  id="review-photos-input"
+                  onChange={addPhotoFiles}
+                  multiple
+                  className="hidden"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => document.getElementById("review-photos-input")?.click()}
+                  className="bg-stone-800 border-stone-600 text-stone-300 hover:bg-stone-700"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Aggiungi foto
+                </Button>
+                <p className="text-xs text-stone-500 mt-1">max 5MB per immagine</p>
+                {(formData.photos?.length > 0 || photoFiles.length > 0) && (
                   <div className="flex flex-wrap gap-2 mt-3">
-                    {formData.photos.map((url, i) => (
-                      <div key={i} className="relative group">
+                    {formData.photos?.map((url, i) => (
+                      <div key={`url-${i}`} className="relative group">
                         <img src={url} alt="" className="h-16 w-16 object-cover rounded-lg" onError={(e) => e.target.style.display = "none"} />
-                        <button type="button" onClick={() => removePhoto(i)} className="absolute -top-1 -right-1 p-1 bg-red-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button type="button" onClick={() => removePhoto(i, false)} className="absolute -top-1 -right-1 p-1 bg-red-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ))}
+                    {photoFiles.map((f, i) => (
+                      <div key={`file-${i}`} className="relative group">
+                        <img src={URL.createObjectURL(f)} alt="" className="h-16 w-16 object-cover rounded-lg" />
+                        <button type="button" onClick={() => removePhoto(i, true)} className="absolute -top-1 -right-1 p-1 bg-red-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
                           <X className="w-3 h-3" />
                         </button>
                       </div>
@@ -563,26 +605,43 @@ export default function AddReview() {
               <div>
                 <Label className="text-sm text-stone-400 mb-2 block flex items-center gap-2">
                   <Video className="w-4 h-4" />
-                  Video (URL)
+                  Video
                 </Label>
-                <div className="flex gap-2">
-                  <Input
-                    placeholder="https://youtube.com/... o https://..."
-                    value={newVideoUrl}
-                    onChange={(e) => setNewVideoUrl(e.target.value)}
-                    className="bg-stone-800/50 border-stone-700 flex-1"
-                  />
-                  <Button type="button" onClick={addVideo} disabled={!newVideoUrl?.trim()} className="bg-stone-800 hover:bg-stone-700">
-                    <Plus className="w-4 h-4" />
-                  </Button>
-                </div>
-                {formData.videos?.length > 0 && (
+                <input
+                  type="file"
+                  accept="video/*"
+                  id="review-videos-input"
+                  onChange={addVideoFiles}
+                  multiple
+                  className="hidden"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={() => document.getElementById("review-videos-input")?.click()}
+                  className="bg-stone-800 border-stone-600 text-stone-300 hover:bg-stone-700"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Aggiungi video
+                </Button>
+                <p className="text-xs text-stone-500 mt-1">max 10MB per video</p>
+                {(formData.videos?.length > 0 || videoFiles.length > 0) && (
                   <div className="flex flex-wrap gap-2 mt-3">
-                    {formData.videos.map((url, i) => (
-                      <div key={i} className="flex items-center gap-2 px-3 py-2 bg-stone-800/50 rounded-lg">
+                    {formData.videos?.map((url, i) => (
+                      <div key={`url-${i}`} className="flex items-center gap-2 px-3 py-2 bg-stone-800/50 rounded-lg">
                         <Video className="w-4 h-4 text-amber-500" />
                         <span className="text-sm text-stone-400 truncate max-w-[180px]">{url}</span>
-                        <button type="button" onClick={() => removeVideo(i)} className="p-1 hover:bg-stone-700 rounded">
+                        <button type="button" onClick={() => removeVideo(i, false)} className="p-1 hover:bg-stone-700 rounded">
+                          <X className="w-3 h-3" />
+                        </button>
+                      </div>
+                    ))}
+                    {videoFiles.map((f, i) => (
+                      <div key={`file-${i}`} className="flex items-center gap-2 px-3 py-2 bg-stone-800/50 rounded-lg">
+                        <Video className="w-4 h-4 text-amber-500" />
+                        <span className="text-sm text-stone-400 truncate max-w-[120px]">{f.name}</span>
+                        <button type="button" onClick={() => removeVideo(i, true)} className="p-1 hover:bg-stone-700 rounded">
                           <X className="w-3 h-3" />
                         </button>
                       </div>

@@ -229,31 +229,19 @@ export default function AddBartender() {
                     }}
                     className="hidden"
                   />
-                  <div className="flex flex-wrap gap-2 items-center mt-1">
-                    <Button
-                      type="button"
-                      variant="outline"
-                      size="sm"
-                      onClick={() => document.getElementById("bartender-photo-input")?.click()}
-                      className="bg-stone-800 border-stone-600 text-stone-300 hover:bg-stone-700"
-                    >
-                      {photoFile ? photoFile.name : "Carica foto"}
-                    </Button>
-                    <span className="text-stone-500 text-sm">oppure</span>
-                    <Input
-                      value={formData.photo}
-                      onChange={(e) => {
-                        updateField("photo", e.target.value);
-                        if (photoFile) setPhotoFile(null);
-                      }}
-                      placeholder="URL immagine..."
-                      className="flex-1 min-w-[140px] bg-stone-900 border-stone-700"
-                    />
-                  </div>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={() => document.getElementById("bartender-photo-input")?.click()}
+                    className="mt-1 bg-stone-800 border-stone-600 text-stone-300 hover:bg-stone-700"
+                  >
+                    {photoFile ? photoFile.name : "Carica foto da cellulare o galleria"}
+                  </Button>
                   <p className="text-xs text-stone-500 mt-1">Fotocamera o galleria • max 5MB</p>
-                  {(formData.photo || photoFile) && (
+                  {photoFile && (
                     <img
-                      src={photoFile ? URL.createObjectURL(photoFile) : formData.photo}
+                      src={URL.createObjectURL(photoFile)}
                       alt="Preview foto"
                       className="mt-2 h-24 w-24 object-cover rounded-xl"
                     />
