@@ -31,7 +31,6 @@ import {
 } from "@/components/ui/select";
 import { motion } from "framer-motion";
 import { uploadToSupabaseStorage, uploadMultipleToSupabaseStorage, urlsToDbString } from "@/lib/supabaseStorage";
-import CameraCapture from "@/components/CameraCapture";
 
 const categories = [
   { value: "cocktail_bar", label: "Cocktail Bar" },
@@ -88,7 +87,16 @@ export default function AddVenue() {
   const [coverImageFiles, setCoverImageFiles] = useState([]);
   const [videoFile, setVideoFile] = useState(null);
   const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
-  const [cameraOpen, setCameraOpen] = useState(false);
+
+  const handleCoverCapture = (e) => {
+    const files = Array.from(e.target.files || []);
+    if (files.length > 0) {
+      console.log("File catturati:", files);
+      setCoverImageFiles((prev) => [...prev, ...files]);
+      setFormData((prev) => ({ ...prev, cover_image: "" }));
+    }
+    e.target.value = "";
+  };
 
   useEffect(() => {
     if (!status) return;
@@ -534,44 +542,31 @@ export default function AddVenue() {
               Immagine di copertina
             </h2>
             <div className="space-y-2">
-              <div className="flex flex-wrap gap-2">
-                <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setCameraOpen(true)}
-                  className="bg-stone-800 border-stone-600 text-stone-300 hover:bg-stone-700"
+              <div className="upload-container" style={{ textAlign: "center", padding: "20px" }}>
+                <label
+                  htmlFor="mobile-capture-venue"
+                  style={{
+                    backgroundColor: "#007bff",
+                    color: "white",
+                    padding: "15px 25px",
+                    borderRadius: "8px",
+                    cursor: "pointer",
+                    display: "inline-block",
+                    fontWeight: "bold",
+                  }}
                 >
-                  <ImageIcon className="w-4 h-4 mr-2" />
-                  Scatta foto
-                </Button>
-                <div className="relative inline-block">
-                  <div className="inline-flex items-center justify-center gap-2 px-4 py-2 rounded-lg bg-stone-800 border border-stone-600 text-stone-300 hover:bg-stone-700 text-sm font-medium pointer-events-none">
-                    {coverImageFiles.length > 0 ? `${coverImageFiles.length} file` : "Carica da galleria"}
-                  </div>
-                  <input
-                    type="file"
-                    accept="image/*,video/*"
-                    multiple
-                    onChange={(e) => {
-                      const files = Array.from(e.target.files || []);
-                      setCoverImageFiles((prev) => [...prev, ...files]);
-                      if (files.length) setFormData((prev) => ({ ...prev, cover_image: "" }));
-                      e.target.value = "";
-                    }}
-                    className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                    style={{ fontSize: 0 }}
-                  />
-                </div>
+                  📸 SCATTA FOTO O REGISTRA VIDEO
+                </label>
+                <input
+                  id="mobile-capture-venue"
+                  type="file"
+                  accept="image/*,video/*"
+                  capture="environment"
+                  multiple
+                  onChange={handleCoverCapture}
+                  style={{ display: "none" }}
+                />
               </div>
-              <CameraCapture
-                open={cameraOpen}
-                onOpenChange={setCameraOpen}
-                onCapture={(file) => {
-                  setCoverImageFiles((prev) => [...prev, file]);
-                  setFormData((prev) => ({ ...prev, cover_image: "" }));
-                }}
-              />
               <p className="text-xs text-stone-500">Fotocamera, video o galleria • max 5MB foto, 10MB video</p>
               {uploadProgress.total > 0 && (
                 <div className="space-y-1">
@@ -615,19 +610,33 @@ export default function AddVenue() {
                 <VideoIcon className="w-4 h-4 text-amber-500" />
                 Video breve (opzionale)
               </h3>
-              <div className="relative inline-block">
-                <div className="inline-flex items-center gap-2 px-4 py-2 rounded-lg bg-stone-800 border border-stone-600 text-stone-300 hover:bg-stone-700 text-sm font-medium pointer-events-none">
-                  <VideoIcon className="w-4 h-4" />
-                  {videoFile ? videoFile.name : "Scatta video o carica"}
-                </div>
+              <div className="upload-container" style={{ textAlign: "center", padding: "10px 0" }}>
+                <label
+                  htmlFor="mobile-capture-video"
+                  style={{
+                    backgroundColor: "#007bff",
+                    color: "white",
+                    padding: "12px 20px",
+                    borderRadius: "8px",
+                    cursor: "pointer",
+                    display: "inline-block",
+                    fontWeight: "bold",
+                  }}
+                >
+                  🎬 Video breve (opzionale)
+                </label>
                 <input
+                  id="mobile-capture-video"
                   type="file"
                   accept="image/*,video/*"
                   capture="environment"
                   multiple
-                  onChange={(e) => setVideoFile(e.target.files?.[0] || null)}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  style={{ fontSize: 0 }}
+                  onChange={(e) => {
+                    const f = e.target.files?.[0];
+                    if (f) setVideoFile(f);
+                    e.target.value = "";
+                  }}
+                  style={{ display: "none" }}
                 />
               </div>
                 <div className="flex gap-2 items-center mt-2">
