@@ -90,11 +90,10 @@ export default function AdminDashboard() {
     }
   };
 
-  // Redirect admin: per ora disabilitato per test. Riattivare con: if (!user || user.role !== "admin") return <Navigate to={createPageUrl("Home")} replace />;
   if (!isSupabaseConfigured?.()) {
     return (
       <div className="min-h-screen bg-stone-950 text-stone-100 p-8">
-        <p className="text-amber-400">Supabase non configurato. Configura le variabili d'ambiente.</p>
+        <p className="text-amber-400">Supabase non configurato. Configura VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.</p>
       </div>
     );
   }

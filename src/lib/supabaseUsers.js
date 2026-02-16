@@ -2,7 +2,7 @@
  * Sync registrazioni utenti su Supabase (app_users)
  * Esegui la migration 20250215000000_auth_and_registrations.sql prima di usare
  */
-import { supabase, isSupabaseConfigured, getSupabaseEnvDebug } from "./supabase";
+import { supabase, isSupabaseConfigured } from "./supabase";
 
 /** Converte undefined in null per evitare errori Supabase */
 function sanitize(val) {
@@ -11,8 +11,7 @@ function sanitize(val) {
 
 export async function insertAppUser(userData) {
   if (!isSupabaseConfigured() || !supabase) {
-    const debug = getSupabaseEnvDebug?.() || {};
-    throw new Error(`Supabase non configurato. Verifica VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY in .env. Debug: ${JSON.stringify(debug)}`);
+    throw new Error("Supabase non configurato. Verifica VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.");
   }
   const row = {
     name: String(userData.name || ""),
@@ -83,8 +82,7 @@ export async function updateAppUserStatus(id, status) {
 
 export async function updateAppUser(id, data) {
   if (!isSupabaseConfigured() || !supabase) {
-    const debug = getSupabaseEnvDebug?.() || {};
-    throw new Error(`Supabase non configurato. Verifica VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY. Debug: ${JSON.stringify(debug)}`);
+    throw new Error("Supabase non configurato. Verifica VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.");
   }
   const { data: updated, error } = await supabase.from("app_users").update(data).eq("id", id).select().single();
   if (error) {

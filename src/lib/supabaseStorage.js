@@ -2,7 +2,7 @@
  * Upload file su Supabase Storage (bucket 'media').
  * Usa supabase.storage.from('media').upload() e getPublicUrl().
  */
-import { supabase, isSupabaseConfigured, getSupabaseEnvDebug } from "./supabase";
+import { supabase, isSupabaseConfigured } from "./supabase";
 
 const BUCKET = "media";
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
@@ -18,8 +18,7 @@ function getFileType(file) {
  */
 export async function uploadToSupabaseStorage(file, folder, type = "image") {
   if (!isSupabaseConfigured() || !supabase) {
-    const debug = getSupabaseEnvDebug?.() || {};
-    throw new Error(`Supabase non configurato per upload. Verifica VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY. Debug: ${JSON.stringify(debug)}`);
+    throw new Error("Supabase non configurato per upload. Verifica VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.");
   }
   const fileType = (type === "video" || type === "image") ? type : getFileType(file);
   const maxSize = fileType === "video" ? MAX_VIDEO_SIZE : MAX_IMAGE_SIZE;

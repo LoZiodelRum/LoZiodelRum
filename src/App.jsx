@@ -14,6 +14,7 @@ import DrinkDetail from "./pages/DrinkDetail";
 import CommunityPostDetail from "./pages/CommunityPostDetail";
 import CommunityEventDetail from "./pages/CommunityEventDetail";
 import EditVenue from "./pages/EditVenue";
+import AdminDashboard from "./pages/AdminDashboard";
 
 const { Pages, Layout, mainPage } = pagesConfig;
 const mainPageKey = mainPage ?? Object.keys(Pages)[0];
@@ -59,21 +60,14 @@ const AuthenticatedApp = () => {
 
   return (
     <Routes>
+      {/* Admin – PRIMA per evitare 404 */}
+      <Route path="/admin" element={<LayoutWrapper currentPageName="AdminDashboard"><AdminDashboard /></LayoutWrapper>} />
+
       <Route path="/" element={
         <LayoutWrapper currentPageName={mainPageKey}>
           <MainPage />
         </LayoutWrapper>
       } />
-
-      {/* Admin – verifica profili pending */}
-      <Route
-        path="/admin"
-        element={
-          <LayoutWrapper currentPageName="AdminDashboard">
-            {Pages.AdminDashboard && <Pages.AdminDashboard />}
-          </LayoutWrapper>
-        }
-      />
 
       {/* EditVenue: SENZA Layout - bypass completo per sbloccare la modifica */}
       <Route 
