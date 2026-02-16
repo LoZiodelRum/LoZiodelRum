@@ -3,8 +3,8 @@ import { Link, useNavigate, useLocation } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { useMutation } from "@tanstack/react-query";
 import { useAppData } from "@/lib/AppDataContext";
-import { ChevronLeft, Save, Loader2, MapPin, Phone, Globe, Instagram, Clock, Image as ImageIcon, Trash2 } from "lucide-react";
-import { uploadToSupabaseStorage } from "@/lib/supabaseStorage";
+import { ChevronLeft, Save, Loader2, MapPin, Phone, Globe, Instagram, Clock, Image as ImageIcon, Trash2, X } from "lucide-react";
+import { uploadToSupabaseStorage, uploadMultipleToSupabaseStorage, urlsToDbString, dbStringToUrls } from "@/lib/supabaseStorage";
 
 const categories = [
   { value: "cocktail_bar", label: "Cocktail Bar" },
@@ -69,7 +69,8 @@ export default function EditVenue() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [coverImageFile, setCoverImageFile] = useState(null);
+  const [coverImageFiles, setCoverImageFiles] = useState([]);
+  const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
 
   useEffect(() => {
     if (venue && venueId) {
@@ -113,15 +114,22 @@ export default function EditVenue() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.name || !formData.city || !formData.country || formData.categories.length === 0 || isSubmitting) return;
-    if (coverImageFile && !isSupabaseConfigured?.()) {
+    if (coverImageFiles.length > 0 && !isSupabaseConfigured?.()) {
       return;
     }
     setIsSubmitting(true);
     try {
       let coverImageUrl = formData.cover_image || "";
-      if (coverImageFile) {
-        coverImageUrl = await uploadToSupabaseStorage(coverImageFile, "venues", "image");
+      if (coverImageFiles.length > 0) {
+        const urls = await uploadMultipleToSupabaseStorage(
+          coverImageFiles,
+          "venues",
+          (current, total) => setUploadProgress({ current, total })
+        );
+        const existingUrls = dbStringToUrls(formData.cover_image);
+        coverImageUrl = urlsToDbString([...existingUrls, ...urls]);
       }
+      setUploadProgress({ current: 0, total: 0 });
       updateVenueMutation.mutate({
         ...formData,
         cover_image: coverImageUrl,
@@ -458,12 +466,13 @@ export default function EditVenue() {
             </h3>
             <input
               type="file"
-              accept="image/*"
+              accept="image/*,video/*"
+              multiple
               id="edit-venue-cover-input"
               onChange={(e) => {
-                const f = e.target.files?.[0];
-                setCoverImageFile(f || null);
-                if (f) setFormData((p) => ({ ...p, cover_image: "" }));
+                const files = Array.from(e.target.files || []);
+                setCoverImageFiles((prev) => [...prev, ...files]);
+                e.target.value = "";
               }}
               style={{ display: "none" }}
             />
@@ -480,15 +489,50 @@ export default function EditVenue() {
                 cursor: "pointer",
               }}
             >
-              {coverImageFile ? coverImageFile.name : "Carica immagine da cellulare o galleria"}
+              {coverImageFiles.length > 0 ? `${coverImageFiles.length} file selezionati` : "Carica foto/video da cellulare o galleria"}
             </button>
-            <p style={{ fontSize: "0.75rem", color: "#78716c", marginTop: "0.5rem" }}>Fotocamera o galleria • max 5MB</p>
-            {(formData.cover_image || coverImageFile) && (
-              <img
-                src={coverImageFile ? URL.createObjectURL(coverImageFile) : formData.cover_image}
-                alt="Preview"
-                style={{ marginTop: "0.75rem", width: "100%", height: 192, objectFit: "cover", borderRadius: "0.75rem" }}
-              />
+            <p style={{ fontSize: "0.75rem", color: "#78716c", marginTop: "0.5rem" }}>Fotocamera o galleria • max 5MB immagini, 10MB video</p>
+            {uploadProgress.total > 0 && (
+              <div style={{ marginTop: "0.5rem" }}>
+                <div style={{ height: 6, backgroundColor: "rgba(68,64,60,0.8)", borderRadius: 9999, overflow: "hidden" }}>
+                  <div
+                    style={{
+                      height: "100%",
+                      width: `${(uploadProgress.current / uploadProgress.total) * 100}%`,
+                      backgroundColor: "#f59e0b",
+                      transition: "width 0.3s",
+                    }}
+                  />
+                </div>
+                <p style={{ fontSize: "0.75rem", color: "#78716c", marginTop: "0.25rem" }}>
+                  Caricamento {uploadProgress.current}/{uploadProgress.total}
+                </p>
+              </div>
+            )}
+            {(formData.cover_image || coverImageFiles.length > 0) && (
+              <div style={{ marginTop: "0.75rem", display: "flex", flexWrap: "wrap", gap: "0.5rem" }}>
+                {dbStringToUrls(formData.cover_image).map((url, i) => (
+                  <div key={`url-${i}`} style={{ position: "relative" }}>
+                    <img src={url} alt="" style={{ width: 80, height: 80, objectFit: "cover", borderRadius: "0.5rem" }} onError={(e) => e.target.style.display = "none"} />
+                  </div>
+                ))}
+                {coverImageFiles.map((f, i) => (
+                  <div key={`file-${i}`} style={{ position: "relative" }} className="group">
+                    {f.type.startsWith("video/") ? (
+                      <video src={URL.createObjectURL(f)} style={{ width: 80, height: 80, objectFit: "cover", borderRadius: "0.5rem" }} muted playsInline />
+                    ) : (
+                      <img src={URL.createObjectURL(f)} alt="" style={{ width: 80, height: 80, objectFit: "cover", borderRadius: "0.5rem" }} />
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setCoverImageFiles((prev) => prev.filter((_, idx) => idx !== i))}
+                      style={{ position: "absolute", top: -4, right: -4, padding: 4, backgroundColor: "#dc2626", borderRadius: "9999px", border: "none", cursor: "pointer" }}
+                    >
+                      <X style={{ width: 12, height: 12, color: "white" }} />
+                    </button>
+                  </div>
+                ))}
+              </div>
             )}
           </section>
 

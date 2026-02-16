@@ -15,7 +15,8 @@ import {
   Loader2,
   Wine,
   Image as ImageIcon,
-  Video as VideoIcon
+  Video as VideoIcon,
+  X
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,7 +30,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { motion } from "framer-motion";
-import { uploadToSupabaseStorage } from "@/lib/supabaseStorage";
+import { uploadToSupabaseStorage, uploadMultipleToSupabaseStorage, urlsToDbString } from "@/lib/supabaseStorage";
 
 const categories = [
   { value: "cocktail_bar", label: "Cocktail Bar" },
@@ -82,8 +83,9 @@ export default function AddVenue() {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
-  const [coverImageFile, setCoverImageFile] = useState(null);
+  const [coverImageFiles, setCoverImageFiles] = useState([]);
   const [videoFile, setVideoFile] = useState(null);
+  const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
 
   const createVenueMutation = useMutation({
     mutationFn: (venueData) => addVenue(venueData),
@@ -138,15 +140,22 @@ export default function AddVenue() {
 
     if (hasSupabase) {
       try {
-        if (coverImageFile) {
-          coverImageUrl = await uploadToSupabaseStorage(coverImageFile, "venues", "image");
+        if (coverImageFiles.length > 0) {
+          const urls = await uploadMultipleToSupabaseStorage(
+            coverImageFiles,
+            "venues",
+            (current, total) => setUploadProgress({ current, total })
+          );
+          coverImageUrl = urlsToDbString(urls);
         }
+        setUploadProgress({ current: 0, total: 0 });
         if (videoFile) {
           videoUrl = await uploadToSupabaseStorage(videoFile, "venues", "video");
         }
       } catch (err) {
         setErrors((prev) => ({ ...prev, _form: err?.message || "Errore caricamento file" }));
         setIsSubmitting(false);
+        setUploadProgress({ current: 0, total: 0 });
         return;
       }
     }
@@ -487,12 +496,14 @@ export default function AddVenue() {
             <div className="space-y-2">
               <input
                 type="file"
-                accept="image/*"
+                accept="image/*,video/*"
+                multiple
                 id="cover-image-input"
                 onChange={(e) => {
-                  const f = e.target.files?.[0];
-                  setCoverImageFile(f || null);
-                  if (f) setFormData(prev => ({ ...prev, cover_image: "" }));
+                  const files = Array.from(e.target.files || []);
+                  setCoverImageFiles(prev => [...prev, ...files]);
+                  if (files.length) setFormData(prev => ({ ...prev, cover_image: "" }));
+                  e.target.value = "";
                 }}
                 className="hidden"
               />
@@ -503,16 +514,44 @@ export default function AddVenue() {
                 onClick={() => document.getElementById("cover-image-input")?.click()}
                 className="bg-stone-800 border-stone-600 text-stone-300 hover:bg-stone-700"
               >
-                {coverImageFile ? coverImageFile.name : "Carica immagine da cellulare o galleria"}
+                {coverImageFiles.length > 0
+                  ? `${coverImageFiles.length} file selezionati`
+                  : "Carica foto/video da cellulare o galleria"}
               </Button>
-              <p className="text-xs text-stone-500">Fotocamera o galleria • max 5MB</p>
+              <p className="text-xs text-stone-500">Fotocamera o galleria • max 5MB immagini, 10MB video</p>
+              {uploadProgress.total > 0 && (
+                <div className="space-y-1">
+                  <div className="h-1.5 bg-stone-800 rounded-full overflow-hidden">
+                    <div
+                      className="h-full bg-amber-500 transition-all duration-300"
+                      style={{ width: `${(uploadProgress.current / uploadProgress.total) * 100}%` }}
+                    />
+                  </div>
+                  <p className="text-xs text-stone-500">
+                    Caricamento {uploadProgress.current}/{uploadProgress.total}
+                  </p>
+                </div>
+              )}
             </div>
-            {coverImageFile && (
-              <img 
-                src={URL.createObjectURL(coverImageFile)} 
-                alt="Preview" 
-                className="h-40 w-full object-cover rounded-xl"
-              />
+            {coverImageFiles.length > 0 && (
+              <div className="flex flex-wrap gap-2">
+                {coverImageFiles.map((f, i) => (
+                  <div key={`${f.name}-${i}`} className="relative group">
+                    {f.type.startsWith("video/") ? (
+                      <video src={URL.createObjectURL(f)} className="h-20 w-20 object-cover rounded-lg" muted playsInline />
+                    ) : (
+                      <img src={URL.createObjectURL(f)} alt="" className="h-20 w-20 object-cover rounded-lg" />
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setCoverImageFiles(prev => prev.filter((_, idx) => idx !== i))}
+                      className="absolute -top-1 -right-1 p-1 bg-red-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                    >
+                      <X className="w-3 h-3" />
+                    </button>
+                  </div>
+                ))}
+              </div>
             )}
 
             <div className="pt-4 border-t border-stone-700">
@@ -522,9 +561,9 @@ export default function AddVenue() {
               </h3>
                 <input
                   type="file"
-                  accept="video/*"
+                  accept="image/*,video/*"
                   id="venue-video-input"
-                onChange={(e) => setVideoFile(e.target.files?.[0] || null)}
+                  onChange={(e) => setVideoFile(e.target.files?.[0] || null)}
                 className="hidden"
               />
               <div className="flex gap-2 items-center">

@@ -1,10 +1,13 @@
 /**
  * AdminCard – Visualizzatore universale per verifica profili pending.
  * Mostra campi testuali, foto profilo e video (solo locali).
+ * Supporta più immagini (cover_image, image_url, photo come stringa separata da virgole).
  * Pulsanti: APPROVA (status → approved) e ELIMINA (rimuove record).
  */
-import { MapPin, Phone, Globe, Instagram, Clock, User, Wine, X } from "lucide-react";
+import { useState } from "react";
+import { MapPin, Phone, Globe, Instagram, Clock, User, Wine, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { dbStringToUrls } from "@/lib/supabaseStorage";
 
 const FIELD = ({ label, value }) =>
   value != null && value !== "" ? (
@@ -15,10 +18,13 @@ const FIELD = ({ label, value }) =>
   ) : null;
 
 export default function AdminCard({ type, item, onApprove, onDelete, onClose, isPending }) {
+  const [imgIndex, setImgIndex] = useState(0);
   if (!item) return null;
 
-  const imgUrl = type === "venue" ? item.cover_image : (item.photo || item.image_url);
+  const imgUrlRaw = type === "venue" ? item.cover_image : (item.photo || item.image_url);
+  const imgUrls = dbStringToUrls(imgUrlRaw);
   const videoUrl = type === "venue" ? item.video_url : null;
+  const currentImg = imgUrls[imgIndex] || imgUrls[0];
 
   return (
     <div className="bg-stone-900 rounded-2xl border border-stone-800 overflow-hidden">
@@ -34,14 +40,43 @@ export default function AdminCard({ type, item, onApprove, onDelete, onClose, is
           )}
         </div>
 
-        {/* Foto profilo / cover */}
-        {imgUrl && (
+        {/* Foto profilo / cover – gallery se più immagini */}
+        {imgUrls.length > 0 && (
           <div className="mb-4">
-            <img
-              src={imgUrl}
-              alt={item.name || "Preview"}
-              className="w-full max-w-xs h-40 object-cover rounded-xl"
-            />
+            <div className="relative">
+              <img
+                src={currentImg}
+                alt={item.name || "Preview"}
+                className="w-full max-w-xs h-40 object-cover rounded-xl"
+                onError={(e) => e.target.style.display = "none"}
+              />
+              {imgUrls.length > 1 && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => setImgIndex((i) => (i - 1 + imgUrls.length) % imgUrls.length)}
+                    className="absolute left-0 top-1/2 -translate-y-1/2 p-1.5 bg-black/50 rounded-full text-white hover:bg-black/70"
+                  >
+                    <ChevronLeft className="w-4 h-4" />
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setImgIndex((i) => (i + 1) % imgUrls.length)}
+                    className="absolute right-0 top-1/2 -translate-y-1/2 p-1.5 bg-black/50 rounded-full text-white hover:bg-black/70"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </button>
+                  <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1">
+                    {imgUrls.map((_, i) => (
+                      <span
+                        key={i}
+                        className={`w-2 h-2 rounded-full ${i === imgIndex ? "bg-amber-500" : "bg-stone-500/60"}`}
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         )}
 

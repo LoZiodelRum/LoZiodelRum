@@ -11,8 +11,9 @@ import {
   Loader2,
   Trash2,
   Image as ImageIcon,
+  X,
 } from "lucide-react";
-import { uploadToSupabaseStorage } from "@/lib/supabaseStorage";
+import { uploadMultipleToSupabaseStorage, urlsToDbString, dbStringToUrls } from "@/lib/supabaseStorage";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -67,7 +68,8 @@ export default function EditBartender() {
   const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
-  const [photoFile, setPhotoFile] = useState(null);
+  const [photoFiles, setPhotoFiles] = useState([]);
+  const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
 
   useEffect(() => {
     if (bartender && bartenderId) {
@@ -113,16 +115,23 @@ export default function EditBartender() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
-    if (photoFile && !isSupabaseConfigured()) {
+    if (photoFiles.length > 0 && !isSupabaseConfigured()) {
       setErrors((prev) => ({ ...prev, _form: "Supabase non configurato. Per caricare la foto configura le variabili d'ambiente." }));
       return;
     }
     setIsSubmitting(true);
     try {
       let photoUrl = formData.photo || "";
-      if (photoFile) {
-        photoUrl = await uploadToSupabaseStorage(photoFile, "bartenders", "image");
+      if (photoFiles.length > 0) {
+        const urls = await uploadMultipleToSupabaseStorage(
+          photoFiles,
+          "bartenders",
+          (current, total) => setUploadProgress({ current, total })
+        );
+        const existingUrls = dbStringToUrls(formData.photo);
+        photoUrl = urlsToDbString([...existingUrls, ...urls]);
       }
+      setUploadProgress({ current: 0, total: 0 });
       const selectedVenue = formData.venue_id ? venues.find((v) => v.id === formData.venue_id) : null;
       const isValidUuid = (s) => s && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(s));
       const venueIdForDb = formData.venue_id && selectedVenue
@@ -279,12 +288,13 @@ export default function EditBartender() {
                   </Label>
                   <input
                     type="file"
-                    accept="image/*"
+                    accept="image/*,video/*"
+                    multiple
                     id="edit-bartender-photo-input"
                     onChange={(e) => {
-                      const f = e.target.files?.[0];
-                      setPhotoFile(f || null);
-                      if (f) updateField("photo", "");
+                      const files = Array.from(e.target.files || []);
+                      setPhotoFiles((prev) => [...prev, ...files]);
+                      e.target.value = "";
                     }}
                     className="hidden"
                   />
@@ -295,15 +305,37 @@ export default function EditBartender() {
                     onClick={() => document.getElementById("edit-bartender-photo-input")?.click()}
                     className="mt-1 bg-stone-800 border-stone-600 text-stone-300 hover:bg-stone-700"
                   >
-                    {photoFile ? photoFile.name : "Carica foto da cellulare o galleria"}
+                    {photoFiles.length > 0 ? `${photoFiles.length} file selezionati` : "Carica foto da cellulare o galleria"}
                   </Button>
-                  <p className="text-xs text-stone-500 mt-1">Fotocamera o galleria • max 5MB</p>
-                  {(formData.photo || photoFile) && (
-                    <img
-                      src={photoFile ? URL.createObjectURL(photoFile) : formData.photo}
-                      alt="Preview foto"
-                      className="mt-2 h-24 w-24 object-cover rounded-xl"
-                    />
+                  <p className="text-xs text-stone-500 mt-1">Fotocamera o galleria • max 5MB immagini, 10MB video</p>
+                  {uploadProgress.total > 0 && (
+                    <div className="mt-2 space-y-1">
+                      <div className="h-1.5 bg-stone-800 rounded-full overflow-hidden">
+                        <div className="h-full bg-amber-500 transition-all duration-300" style={{ width: `${(uploadProgress.current / uploadProgress.total) * 100}%` }} />
+                      </div>
+                      <p className="text-xs text-stone-500">Caricamento {uploadProgress.current}/{uploadProgress.total}</p>
+                    </div>
+                  )}
+                  {(formData.photo || photoFiles.length > 0) && (
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {dbStringToUrls(formData.photo).map((url, i) => (
+                        <div key={`url-${i}`} className="relative">
+                          <img src={url} alt="" className="h-20 w-20 object-cover rounded-xl" onError={(e) => e.target.style.display = "none"} />
+                        </div>
+                      ))}
+                      {photoFiles.map((f, i) => (
+                        <div key={`file-${i}`} className="relative group">
+                          {f.type.startsWith("video/") ? (
+                            <video src={URL.createObjectURL(f)} className="h-20 w-20 object-cover rounded-xl" muted playsInline />
+                          ) : (
+                            <img src={URL.createObjectURL(f)} alt="" className="h-20 w-20 object-cover rounded-xl" />
+                          )}
+                          <button type="button" onClick={() => setPhotoFiles((prev) => prev.filter((_, idx) => idx !== i))} className="absolute -top-1 -right-1 p-1 bg-red-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity">
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
                   )}
                 </div>
                 <div>

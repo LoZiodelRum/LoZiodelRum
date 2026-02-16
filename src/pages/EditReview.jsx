@@ -40,7 +40,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { motion } from "framer-motion";
 import { ratingOptions, getClosestValue } from "@/lib/reviewRatings";
 import { highlightOptions, improvementOptions, migrateHighlights, migrateImprovements } from "@/lib/highlightsImprovements";
-import { uploadToSupabaseStorage } from "@/lib/supabaseStorage";
+import { uploadMultipleToSupabaseStorage } from "@/lib/supabaseStorage";
 
 const ratingCategories = [
   { key: "drink_quality", label: "Qualità Drink", icon: Wine, description: "Gusto, presentazione, tecnica" },
@@ -76,6 +76,7 @@ export default function EditReview() {
   
   const [photoFiles, setPhotoFiles] = useState([]);
   const [videoFiles, setVideoFiles] = useState([]);
+  const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
   const [newDrink, setNewDrink] = useState({ name: "", category: "cocktail", rating: 8, notes: "" });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
@@ -163,7 +164,10 @@ export default function EditReview() {
 
   const addPhotoFiles = (e) => {
     const files = Array.from(e.target.files || []);
-    setPhotoFiles(prev => [...prev, ...files]);
+    const images = files.filter((f) => (f.type || "").startsWith("image/"));
+    const videos = files.filter((f) => (f.type || "").startsWith("video/"));
+    setPhotoFiles((prev) => [...prev, ...images]);
+    setVideoFiles((prev) => [...prev, ...videos]);
     e.target.value = "";
   };
 
@@ -180,7 +184,10 @@ export default function EditReview() {
 
   const addVideoFiles = (e) => {
     const files = Array.from(e.target.files || []);
-    setVideoFiles(prev => [...prev, ...files]);
+    const images = files.filter((f) => (f.type || "").startsWith("image/"));
+    const videos = files.filter((f) => (f.type || "").startsWith("video/"));
+    setPhotoFiles((prev) => [...prev, ...images]);
+    setVideoFiles((prev) => [...prev, ...videos]);
     e.target.value = "";
   };
 
@@ -223,17 +230,30 @@ export default function EditReview() {
       let photoUrls = [...(formData.photos || [])];
       let videoUrls = [...(formData.videos || [])];
       if (isSupabaseConfigured?.()) {
-        for (const f of photoFiles) {
-          photoUrls.push(await uploadToSupabaseStorage(f, "reviews", "image"));
+        const totalFiles = photoFiles.length + videoFiles.length;
+        if (photoFiles.length > 0) {
+          const urls = await uploadMultipleToSupabaseStorage(
+            photoFiles,
+            "reviews",
+            (current, total) => setUploadProgress({ current, total: totalFiles })
+          );
+          photoUrls.push(...urls);
         }
-        for (const f of videoFiles) {
-          videoUrls.push(await uploadToSupabaseStorage(f, "reviews", "video"));
+        if (videoFiles.length > 0) {
+          const urls = await uploadMultipleToSupabaseStorage(
+            videoFiles,
+            "reviews",
+            (current, total) => setUploadProgress({ current: photoFiles.length + current, total: totalFiles })
+          );
+          videoUrls.push(...urls);
         }
+        setUploadProgress({ current: 0, total: 0 });
       }
       updateReviewMutation.mutate({ ...formData, photos: photoUrls, videos: videoUrls });
     } catch (err) {
       setErrors(prev => ({ ...prev, _form: err?.message || "Errore caricamento file" }));
       setIsSubmitting(false);
+      setUploadProgress({ current: 0, total: 0 });
     }
   };
 
@@ -412,12 +432,20 @@ export default function EditReview() {
               Foto e video
             </Label>
             <p className="text-sm text-stone-500 mb-4">Carica foto e video dal cellulare (fotocamera o galleria)</p>
+            {uploadProgress.total > 0 && (
+              <div className="mb-4 space-y-1">
+                <div className="h-1.5 bg-stone-800 rounded-full overflow-hidden">
+                  <div className="h-full bg-amber-500 transition-all duration-300" style={{ width: `${(uploadProgress.current / uploadProgress.total) * 100}%` }} />
+                </div>
+                <p className="text-xs text-stone-500">Caricamento {uploadProgress.current}/{uploadProgress.total}</p>
+              </div>
+            )}
             <div className="space-y-4">
               <div>
                 <Label className="text-sm text-stone-400 mb-2 block">Foto</Label>
                 <input
                   type="file"
-                  accept="image/*"
+                  accept="image/*,video/*"
                   id="edit-review-photos-input"
                   onChange={addPhotoFiles}
                   multiple
@@ -462,7 +490,7 @@ export default function EditReview() {
                 </Label>
                 <input
                   type="file"
-                  accept="video/*"
+                  accept="image/*,video/*"
                   id="edit-review-videos-input"
                   onChange={addVideoFiles}
                   multiple

@@ -3,7 +3,7 @@
  * insertAppUser salva su Supabase. Inserimenti da mobile → cloud → visibili su Mac.
  */
 import { useState, useRef } from "react";
-import { UserPlus, Shield, Store, Wine, User, ChevronRight, Image } from "lucide-react";
+import { UserPlus, Shield, Store, Wine, User, ChevronRight, Image, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -12,7 +12,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { useAppData } from "@/lib/AppDataContext";
 import { insertAppUser } from "@/lib/supabaseUsers";
-import { uploadToSupabaseStorage } from "@/lib/supabaseStorage";
+import { uploadMultipleToSupabaseStorage, urlsToDbString } from "@/lib/supabaseStorage";
 import {
   Select,
   SelectContent,
@@ -53,9 +53,10 @@ export default function Community() {
   const [regVenueIds, setRegVenueIds] = useState([]);
   const [regBioLight, setRegBioLight] = useState("");
   const [regHomeCity, setRegHomeCity] = useState("");
-  const [regImageFile, setRegImageFile] = useState(null);
+  const [regImageFiles, setRegImageFiles] = useState([]);
   const [regError, setRegError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
   const imageInputRef = useRef(null);
 
   const handleRegister = async (e) => {
@@ -75,15 +76,22 @@ export default function Community() {
     const roleConfig = ROLES.find((r) => r.id === regRole);
     setIsSubmitting(true);
     let imageUrl = null;
-    if (regImageFile && (regRole === "proprietario" || regRole === "user")) {
+    if (regImageFiles.length > 0 && (regRole === "proprietario" || regRole === "user")) {
       try {
-        imageUrl = await uploadToSupabaseStorage(regImageFile, "profiles", "image");
+        const urls = await uploadMultipleToSupabaseStorage(
+          regImageFiles,
+          "profiles",
+          (current, total) => setUploadProgress({ current, total })
+        );
+        imageUrl = urlsToDbString(urls);
       } catch (err) {
         setRegError(err?.message || "Errore caricamento immagine.");
         setIsSubmitting(false);
+        setUploadProgress({ current: 0, total: 0 });
         return;
       }
     }
+    setUploadProgress({ current: 0, total: 0 });
     const userPayload = {
       name,
       email: regRole === "proprietario" ? (regEmail || "").trim() || null : "",
@@ -99,7 +107,7 @@ export default function Community() {
     setRegVenueIds([]);
     setRegBioLight("");
     setRegHomeCity("");
-    setRegImageFile(null);
+    setRegImageFiles([]);
     try {
       if (regRole !== "bartender") {
         await insertAppUser(userPayload);
@@ -205,8 +213,13 @@ export default function Community() {
                   <input
                     ref={imageInputRef}
                     type="file"
-                    accept="image/*"
-                    onChange={(e) => setRegImageFile(e.target.files?.[0] || null)}
+                    accept="image/*,video/*"
+                    multiple
+                    onChange={(e) => {
+                      const files = Array.from(e.target.files || []);
+                      setRegImageFiles((prev) => [...prev, ...files]);
+                      e.target.value = "";
+                    }}
                     className="hidden"
                   />
                   <div className="flex gap-2 items-center">
@@ -217,19 +230,38 @@ export default function Community() {
                       onClick={() => imageInputRef.current?.click()}
                       className="bg-stone-800 border-stone-600 text-stone-300 hover:bg-stone-700"
                     >
-                      {regImageFile ? regImageFile.name : "Scegli immagine"}
+                      {regImageFiles.length > 0 ? `${regImageFiles.length} file selezionati` : "Scegli immagine"}
                     </Button>
-                    {regImageFile && (
-                      <button
-                        type="button"
-                        onClick={() => { setRegImageFile(null); if (imageInputRef.current) { imageInputRef.current.value = ""; } }}
-                        className="text-xs text-stone-500 hover:text-stone-300"
-                      >
-                        Rimuovi
-                      </button>
-                    )}
                   </div>
-                  <p className="text-xs text-stone-500 mt-1">Fotocamera o galleria • max 5MB</p>
+                  {uploadProgress.total > 0 && (
+                    <div className="mt-2 space-y-1">
+                      <div className="h-1.5 bg-stone-800 rounded-full overflow-hidden">
+                        <div className="h-full bg-amber-500 transition-all duration-300" style={{ width: `${(uploadProgress.current / uploadProgress.total) * 100}%` }} />
+                      </div>
+                      <p className="text-xs text-stone-500">Caricamento {uploadProgress.current}/{uploadProgress.total}</p>
+                    </div>
+                  )}
+                  {regImageFiles.length > 0 && (
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {regImageFiles.map((f, i) => (
+                        <div key={`${f.name}-${i}`} className="relative group">
+                          {f.type.startsWith("video/") ? (
+                            <video src={URL.createObjectURL(f)} className="h-16 w-16 object-cover rounded-lg" muted playsInline />
+                          ) : (
+                            <img src={URL.createObjectURL(f)} alt="" className="h-16 w-16 object-cover rounded-lg" />
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => { setRegImageFiles((prev) => prev.filter((_, idx) => idx !== i)); if (imageInputRef.current) imageInputRef.current.value = ""; }}
+                            className="absolute -top-1 -right-1 p-1 bg-red-600 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+                          >
+                            <X className="w-3 h-3" />
+                          </button>
+                        </div>
+                      ))}
+                    </div>
+                  )}
+                  <p className="text-xs text-stone-500 mt-1">Fotocamera o galleria • max 5MB immagini, 10MB video</p>
                 </div>
               )}
               <div>
