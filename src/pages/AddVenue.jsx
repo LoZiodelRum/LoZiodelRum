@@ -240,11 +240,6 @@ export default function AddVenue() {
             {errors._form || "Errore durante l'invio. Riprova."}
           </div>
         )}
-        {!hasSupabase && (
-          <div className="mb-6 p-6 rounded-xl bg-red-600 border-2 border-red-400 text-white text-center font-bold text-xl">
-            Chiavi mancanti o invalide. Verifica VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY in .env
-          </div>
-        )}
         {/* Header - spazio extra per evitare sovrapposizione con menu */}
         <div className="flex items-center gap-4 mb-8 pt-6">
           <Link 
@@ -547,20 +542,13 @@ export default function AddVenue() {
               Immagine di copertina
             </h2>
             <div className="space-y-2">
-              <label className="relative block w-full cursor-pointer">
-                <span className="block px-4 py-3 rounded-lg bg-stone-800 border border-stone-700 text-stone-300 hover:bg-stone-700">
-                  carica una foto
-                </span>
-                <input
-                  type="file"
-                  accept="image/*,video/*"
-                  capture="user"
-                  multiple
-                  onChange={handleCoverInput}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  style={{ fontSize: 0 }}
-                />
-              </label>
+              <input
+                type="file"
+                accept="image/*"
+                capture="environment"
+                onChange={handleCoverInput}
+                className="w-full p-3 border rounded-lg bg-white"
+              />
               <p className="text-xs text-stone-500">Fotocamera, video o galleria • max 5MB foto, 10MB video</p>
               {uploadProgress.total > 0 && (
                 <div className="space-y-1">
