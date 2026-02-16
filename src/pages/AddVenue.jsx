@@ -549,15 +549,12 @@ export default function AddVenue() {
               Immagine di copertina
             </h2>
             <div className="space-y-2">
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={() => coverInputRef.current?.click()}
-                  className="w-full px-4 py-3 rounded-lg bg-stone-800 border border-stone-700 text-stone-300 text-left hover:bg-stone-700 cursor-pointer"
-                >
+              <label className="relative block w-full cursor-pointer">
+                <span className="block px-4 py-3 rounded-lg bg-stone-800 border border-stone-700 text-stone-300 hover:bg-stone-700">
                   carica una foto
-                </button>
+                </span>
                 <input
+                  id="venue-cover-input"
                   ref={coverInputRef}
                   type="file"
                   accept="image/*,video/*"
@@ -567,7 +564,7 @@ export default function AddVenue() {
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                   style={{ fontSize: 0 }}
                 />
-              </div>
+              </label>
               <p className="text-xs text-stone-500">Fotocamera, video o galleria • max 5MB foto, 10MB video</p>
               {uploadProgress.total > 0 && (
                 <div className="space-y-1">
@@ -611,15 +608,12 @@ export default function AddVenue() {
                 <VideoIcon className="w-4 h-4 text-amber-500" />
                 Video breve (opzionale)
               </h3>
-              <div className="relative">
-                <button
-                  type="button"
-                  onClick={() => videoInputRef.current?.click()}
-                  className="w-full px-4 py-3 rounded-lg bg-stone-800 border border-stone-700 text-stone-300 text-left hover:bg-stone-700 cursor-pointer"
-                >
+              <label className="relative block w-full cursor-pointer">
+                <span className="block px-4 py-3 rounded-lg bg-stone-800 border border-stone-700 text-stone-300 hover:bg-stone-700">
                   Video breve (opzionale)
-                </button>
+                </span>
                 <input
+                  id="venue-video-input"
                   ref={videoInputRef}
                   type="file"
                   accept="image/*,video/*"
@@ -633,7 +627,7 @@ export default function AddVenue() {
                   className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
                   style={{ fontSize: 0 }}
                 />
-              </div>
+              </label>
                 <div className="flex gap-2 items-center mt-2">
                   {videoFile && (
                     <button
