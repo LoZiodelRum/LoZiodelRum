@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { useAppData } from "@/lib/AppDataContext";
 import { createPageUrl } from "@/utils";
@@ -38,7 +38,7 @@ const SPECIALIZZAZIONI = [
 ];
 
 export default function AddBartender() {
-  const { addBartender, getVenues } = useAppData();
+  const { addBartender, getVenues, isSupabaseConfigured } = useAppData();
   const venues = getVenues();
 
   const [formData, setFormData] = useState({
@@ -66,8 +66,6 @@ export default function AddBartender() {
   const [status, setStatus] = useState(null); // 'success' | 'error' | null
   const [photoFiles, setPhotoFiles] = useState([]);
   const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
-
-  const photoInputRef = useRef(null);
 
   const handleCapture = (e) => {
     const files = Array.from(e.target.files || []);
@@ -231,6 +229,11 @@ export default function AddBartender() {
             {errors._form || "Errore durante l'invio. Riprova."}
           </div>
         )}
+        {!isSupabaseConfigured?.() && (
+          <div className="mb-6 p-6 rounded-xl bg-red-600 border-2 border-red-400 text-white text-center font-bold text-xl">
+            Chiavi mancanti o invalide. Verifica VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY in .env
+          </div>
+        )}
 
         <div className="grid lg:grid-cols-[2fr,1fr] gap-6 items-start">
           {/* Form principale */}
@@ -294,26 +297,15 @@ export default function AddBartender() {
                     <ImageIcon className="w-4 h-4 text-amber-500" />
                     Foto e video
                   </Label>
-                  <div className="relative mt-1">
-                    <button
-                      type="button"
-                      onClick={() => photoInputRef.current?.click()}
-                      className="w-full px-4 py-3 rounded-lg bg-stone-800 border border-stone-700 text-stone-300 text-left hover:bg-stone-700 cursor-pointer"
-                    >
-                      carica una foto
-                    </button>
-                    <input
-                      ref={photoInputRef}
-                      type="file"
-                      accept="image/*,video/*"
-                      capture="environment"
-                      multiple
-                      id="camera-input"
-                      onChange={handleCapture}
-                      className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                      style={{ fontSize: 0 }}
-                    />
-                  </div>
+                  <input
+                    type="file"
+                    accept="image/*,video/*"
+                    capture="environment"
+                    multiple
+                    id="mobile-upload"
+                    onChange={handleCapture}
+                    className="mt-1"
+                  />
                   <p className="text-xs text-stone-500 mt-1">Fotocamera, video o galleria • max 5MB foto, 10MB video</p>
                   {uploadProgress.total > 0 && (
                     <div className="mt-2 space-y-1">
