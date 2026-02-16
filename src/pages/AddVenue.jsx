@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "@/components/ui/use-toast";
 import { createPageUrl } from "@/utils";
@@ -87,6 +87,9 @@ export default function AddVenue() {
   const [coverImageFiles, setCoverImageFiles] = useState([]);
   const [videoFile, setVideoFile] = useState(null);
   const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
+
+  const coverInputRef = useRef(null);
+  const videoInputRef = useRef(null);
 
   const handleCoverCapture = (e) => {
     const files = Array.from(e.target.files || []);
@@ -543,8 +546,9 @@ export default function AddVenue() {
             </h2>
             <div className="space-y-2">
               <div className="upload-container" style={{ textAlign: "center", padding: "20px" }}>
-                <label
-                  htmlFor="mobile-capture-venue"
+                <button
+                  type="button"
+                  onClick={() => coverInputRef.current?.click()}
                   style={{
                     backgroundColor: "#007bff",
                     color: "white",
@@ -553,18 +557,19 @@ export default function AddVenue() {
                     cursor: "pointer",
                     display: "inline-block",
                     fontWeight: "bold",
+                    border: "none",
                   }}
                 >
                   📸 SCATTA FOTO O REGISTRA VIDEO
-                </label>
+                </button>
                 <input
-                  id="mobile-capture-venue"
+                  ref={coverInputRef}
                   type="file"
                   accept="image/*,video/*"
                   capture="environment"
                   multiple
                   onChange={handleCoverCapture}
-                  style={{ display: "none" }}
+                  style={{ position: "absolute", width: 0, height: 0, opacity: 0, pointerEvents: "none" }}
                 />
               </div>
               <p className="text-xs text-stone-500">Fotocamera, video o galleria • max 5MB foto, 10MB video</p>
@@ -611,8 +616,9 @@ export default function AddVenue() {
                 Video breve (opzionale)
               </h3>
               <div className="upload-container" style={{ textAlign: "center", padding: "10px 0" }}>
-                <label
-                  htmlFor="mobile-capture-video"
+                <button
+                  type="button"
+                  onClick={() => videoInputRef.current?.click()}
                   style={{
                     backgroundColor: "#007bff",
                     color: "white",
@@ -621,12 +627,13 @@ export default function AddVenue() {
                     cursor: "pointer",
                     display: "inline-block",
                     fontWeight: "bold",
+                    border: "none",
                   }}
                 >
                   🎬 Video breve (opzionale)
-                </label>
+                </button>
                 <input
-                  id="mobile-capture-video"
+                  ref={videoInputRef}
                   type="file"
                   accept="image/*,video/*"
                   capture="environment"
@@ -636,7 +643,7 @@ export default function AddVenue() {
                     if (f) setVideoFile(f);
                     e.target.value = "";
                   }}
-                  style={{ display: "none" }}
+                  style={{ position: "absolute", width: 0, height: 0, opacity: 0, pointerEvents: "none" }}
                 />
               </div>
                 <div className="flex gap-2 items-center mt-2">

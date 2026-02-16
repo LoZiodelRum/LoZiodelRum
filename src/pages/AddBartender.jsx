@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import { useAppData } from "@/lib/AppDataContext";
 import { createPageUrl } from "@/utils";
@@ -66,6 +66,8 @@ export default function AddBartender() {
   const [status, setStatus] = useState(null); // 'success' | 'error' | null
   const [photoFiles, setPhotoFiles] = useState([]);
   const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
+
+  const photoInputRef = useRef(null);
 
   const handleCapture = (e) => {
     const files = Array.from(e.target.files || []);
@@ -294,8 +296,9 @@ export default function AddBartender() {
                     Foto e video
                   </Label>
                   <div className="upload-container mt-1" style={{ textAlign: "center", padding: "20px" }}>
-                    <label
-                      htmlFor="mobile-capture-bartender"
+                    <button
+                      type="button"
+                      onClick={() => photoInputRef.current?.click()}
                       style={{
                         backgroundColor: "#007bff",
                         color: "white",
@@ -304,18 +307,19 @@ export default function AddBartender() {
                         cursor: "pointer",
                         display: "inline-block",
                         fontWeight: "bold",
+                        border: "none",
                       }}
                     >
                       📸 SCATTA FOTO O REGISTRA VIDEO
-                    </label>
+                    </button>
                     <input
-                      id="mobile-capture-bartender"
+                      ref={photoInputRef}
                       type="file"
                       accept="image/*,video/*"
                       capture="environment"
                       multiple
                       onChange={handleCapture}
-                      style={{ display: "none" }}
+                      style={{ position: "absolute", width: 0, height: 0, opacity: 0, pointerEvents: "none" }}
                     />
                   </div>
                   <p className="text-xs text-stone-500 mt-1">Fotocamera, video o galleria • max 5MB foto, 10MB video</p>
