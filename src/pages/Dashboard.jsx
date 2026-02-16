@@ -44,6 +44,16 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 const CATEGORY_LABELS = {
   cocktail_bar: "Cocktail Bar",
@@ -58,7 +68,7 @@ const CATEGORY_LABELS = {
 };
 
 export default function Dashboard() {
-  const { user, getVenues, getArticles, getDrinks, getBartenders, getPendingBartenders, loadBartendersFromCloud, updateVenue, deleteVenue, setBartenderStatus, deleteBartender, exportData, importData, restoreReviewsFromSeed, isSupabaseConfigured, getPendingVenuesFromCloud, getPendingLocalVenues, approveVenueCloud, rejectVenueCloud, getPendingRegistrationsFromCloud, updateAppUserStatus } = useAppData();
+  const { user, getVenues, getArticles, getDrinks, getBartenders, getPendingBartenders, loadBartendersFromCloud, updateVenue, deleteVenue, setBartenderStatus, deleteBartender, exportData, importData, restoreReviewsFromSeed, isSupabaseConfigured, getPendingVenuesFromCloud, getPendingLocalVenues, approveVenueCloud, rejectVenueCloud, getPendingRegistrationsFromCloud, updateAppUserStatus, deleteAppUser } = useAppData();
   const allVenues = getVenues();
   const allArticles = getArticles();
   const allDrinks = getDrinks();
@@ -74,6 +84,8 @@ export default function Dashboard() {
   const [venueCoords, setVenueCoords] = useState({});
   const [pendingRegistrations, setPendingRegistrations] = useState([]);
   const [loadingRegistrations, setLoadingRegistrations] = useState(false);
+  const [selectedRegistration, setSelectedRegistration] = useState(null);
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
   const [loadingBartenders, setLoadingBartenders] = useState(false);
   const [previewVenue, setPreviewVenue] = useState(null);
   const selectedArticle = selectedArticleId ? allArticles.find((a) => a.id === selectedArticleId) : null;
@@ -213,41 +225,125 @@ export default function Dashboard() {
             ) : (
               <div className="space-y-3">
                 {pendingRegistrations.map((r) => (
-                  <div key={r.id} className="flex items-center justify-between p-4 bg-stone-800/30 rounded-xl border border-stone-700/50">
+                  <div
+                    key={r.id}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => setSelectedRegistration(r)}
+                    onKeyDown={(e) => e.key === "Enter" && setSelectedRegistration(r)}
+                    className="flex items-center justify-between p-4 bg-stone-800/30 rounded-xl border border-stone-700/50 cursor-pointer hover:bg-stone-800/50 transition-colors"
+                  >
                     <div>
                       <p className="font-medium">{r.name}</p>
                       <p className="text-sm text-stone-500">{r.role_label || r.role} • {r.created_at ? new Date(r.created_at).toLocaleDateString("it-IT") : ""}</p>
                     </div>
-                    <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        className="bg-green-600 hover:bg-green-700"
-                        onClick={async () => {
-                          await updateAppUserStatus?.(r.id, "approved");
-                          loadPendingRegistrations();
-                          toast.success("Iscritto approvato");
-                        }}
-                      >
-                        <CheckCircle className="w-4 h-4 mr-1" />
-                        Approva
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        className="border-red-500/50 text-red-400"
-                        onClick={async () => {
-                          await updateAppUserStatus?.(r.id, "rejected");
-                          loadPendingRegistrations();
-                          toast.success("Iscritto rifiutato");
-                        }}
-                      >
-                        <XCircle className="w-4 h-4 mr-1" />
-                        Rifiuta
-                      </Button>
-                    </div>
+                    <Eye className="w-5 h-5 text-stone-500" />
                   </div>
                 ))}
               </div>
+
+              {/* Modal dettagli iscritto */}
+              <Dialog open={!!selectedRegistration} onOpenChange={(open) => !open && setSelectedRegistration(null)}>
+                <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto bg-stone-900 border-stone-700">
+                  <DialogHeader>
+                    <DialogTitle className="text-amber-500">Scheda iscritto</DialogTitle>
+                  </DialogHeader>
+                  {selectedRegistration && (
+                    <div className="space-y-4">
+                      {selectedRegistration.image_url && (
+                        <div className="flex justify-center">
+                          <img
+                            src={selectedRegistration.image_url}
+                            alt={selectedRegistration.name}
+                            className="w-24 h-24 rounded-full object-cover border-2 border-stone-600"
+                          />
+                        </div>
+                      )}
+                      <div className="grid gap-2 text-sm">
+                        {[
+                          { label: "Nome", val: selectedRegistration.name },
+                          { label: "Cognome", val: selectedRegistration.surname },
+                          { label: "Nome completo", val: selectedRegistration.full_name },
+                          { label: "Email", val: selectedRegistration.email },
+                          { label: "Ruolo", val: selectedRegistration.role_label || selectedRegistration.role },
+                          { label: "Città", val: selectedRegistration.home_city },
+                          { label: "Locale", val: selectedRegistration.custom_venue_name || selectedRegistration.venue_name },
+                          { label: "Bio", val: selectedRegistration.bio },
+                          { label: "Motivazione", val: selectedRegistration.motivation },
+                          { label: "Filosofia", val: selectedRegistration.philosophy },
+                          { label: "Bio breve", val: selectedRegistration.bio_light },
+                          { label: "Video", val: selectedRegistration.video_url },
+                          { label: "Data registrazione", val: selectedRegistration.created_at ? new Date(selectedRegistration.created_at).toLocaleString("it-IT") : null },
+                        ].filter(({ val }) => val != null && val !== "").map(({ label, val }) => (
+                          <div key={label} className="flex gap-2">
+                            <span className="text-stone-500 min-w-[120px]">{label}:</span>
+                            <span className="text-stone-200 break-words">{String(val)}</span>
+                          </div>
+                        ))}
+                        {selectedRegistration.venue_data && (
+                          <div className="mt-2 p-2 bg-stone-800/50 rounded-lg">
+                            <p className="text-stone-500 text-xs mb-1">Dati locale</p>
+                            <pre className="text-xs text-stone-300 overflow-auto">{JSON.stringify(selectedRegistration.venue_data, null, 2)}</pre>
+                          </div>
+                        )}
+                      </div>
+                      <div className="flex gap-2 pt-4 border-t border-stone-700">
+                        <Button
+                          size="sm"
+                          className="bg-green-600 hover:bg-green-700 flex-1"
+                          onClick={async () => {
+                            await updateAppUserStatus?.(selectedRegistration.id, "approved");
+                            setSelectedRegistration(null);
+                            loadPendingRegistrations();
+                            toast.success("Iscritto approvato");
+                          }}
+                        >
+                          <CheckCircle className="w-4 h-4 mr-1" />
+                          Approva
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="border-red-500/50 text-red-400 flex-1"
+                          onClick={() => setShowDeleteConfirm(true)}
+                        >
+                          <XCircle className="w-4 h-4 mr-1" />
+                          Rifiuta
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </DialogContent>
+              </Dialog>
+
+              {/* Conferma eliminazione */}
+              <AlertDialog open={showDeleteConfirm} onOpenChange={setShowDeleteConfirm}>
+                <AlertDialogContent className="bg-stone-900 border-stone-700">
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Conferma eliminazione</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Sei sicuro di voler eliminare definitivamente questo iscritto?
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Annulla</AlertDialogCancel>
+                    <AlertDialogAction
+                      className="bg-red-600 hover:bg-red-700"
+                      onClick={async () => {
+                        if (selectedRegistration) {
+                          await deleteAppUser?.(selectedRegistration.id);
+                          setShowDeleteConfirm(false);
+                          setSelectedRegistration(null);
+                          loadPendingRegistrations();
+                          toast.success("Iscritto eliminato");
+                        }
+                      }}
+                    >
+                      Elimina
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             )}
           </div>
         )}
