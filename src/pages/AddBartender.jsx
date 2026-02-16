@@ -295,22 +295,13 @@ export default function AddBartender() {
                     <ImageIcon className="w-4 h-4 text-amber-500" />
                     Foto e video
                   </Label>
-                  <div className="upload-container mt-1" style={{ textAlign: "center", padding: "20px" }}>
+                  <div className="upload-container mt-1">
                     <button
                       type="button"
                       onClick={() => photoInputRef.current?.click()}
-                      style={{
-                        backgroundColor: "#007bff",
-                        color: "white",
-                        padding: "15px 25px",
-                        borderRadius: "8px",
-                        cursor: "pointer",
-                        display: "inline-block",
-                        fontWeight: "bold",
-                        border: "none",
-                      }}
+                      className="w-full px-4 py-3 rounded-lg bg-stone-800 border border-stone-700 text-stone-300 text-left hover:bg-stone-700 cursor-pointer"
                     >
-                      📸 SCATTA FOTO O REGISTRA VIDEO
+                      carica una foto
                     </button>
                     <input
                       ref={photoInputRef}

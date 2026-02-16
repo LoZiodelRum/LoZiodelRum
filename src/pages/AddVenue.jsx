@@ -545,22 +545,13 @@ export default function AddVenue() {
               Immagine di copertina
             </h2>
             <div className="space-y-2">
-              <div className="upload-container" style={{ textAlign: "center", padding: "20px" }}>
+              <div className="upload-container">
                 <button
                   type="button"
                   onClick={() => coverInputRef.current?.click()}
-                  style={{
-                    backgroundColor: "#007bff",
-                    color: "white",
-                    padding: "15px 25px",
-                    borderRadius: "8px",
-                    cursor: "pointer",
-                    display: "inline-block",
-                    fontWeight: "bold",
-                    border: "none",
-                  }}
+                  className="w-full px-4 py-3 rounded-lg bg-stone-800 border border-stone-700 text-stone-300 text-left hover:bg-stone-700 cursor-pointer"
                 >
-                  📸 SCATTA FOTO O REGISTRA VIDEO
+                  carica una foto
                 </button>
                 <input
                   ref={coverInputRef}
@@ -619,18 +610,9 @@ export default function AddVenue() {
                 <button
                   type="button"
                   onClick={() => videoInputRef.current?.click()}
-                  style={{
-                    backgroundColor: "#007bff",
-                    color: "white",
-                    padding: "12px 20px",
-                    borderRadius: "8px",
-                    cursor: "pointer",
-                    display: "inline-block",
-                    fontWeight: "bold",
-                    border: "none",
-                  }}
+                  className="w-full px-4 py-3 rounded-lg bg-stone-800 border border-stone-700 text-stone-300 text-left hover:bg-stone-700 cursor-pointer"
                 >
-                  🎬 Video breve (opzionale)
+                  Video breve (opzionale)
                 </button>
                 <input
                   ref={videoInputRef}
