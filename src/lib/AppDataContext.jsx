@@ -540,7 +540,6 @@ export function AppDataProvider({ children }) {
         }
       },
       addBartender: async (data) => {
-        if (!isSupabaseConfigured()) throw new Error("Supabase non configurato");
         const isValidUuid = (s) => s && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(s));
         const venueId = data.venue_id && isValidUuid(data.venue_id) ? data.venue_id : null;
         const customVenueName = data.venue_name?.trim() || null;
@@ -571,7 +570,6 @@ export function AppDataProvider({ children }) {
         return b;
       },
       updateBartender: async (id, data) => {
-        if (!isSupabaseConfigured()) throw new Error("Supabase non configurato");
         const isValidUuid = (s) => s && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(s));
         const row = {
           ...(data.name !== undefined && { name: data.name }),

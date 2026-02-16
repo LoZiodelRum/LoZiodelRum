@@ -7,11 +7,19 @@ import { createClient } from "@supabase/supabase-js";
  */
 const rawUrl = (import.meta.env.VITE_SUPABASE_URL ?? "").toString().trim();
 const rawKey = (import.meta.env.VITE_SUPABASE_ANON_KEY ?? "").toString().trim();
-const url = rawUrl && rawUrl.startsWith("https://") ? rawUrl : "";
-const anonKey = rawKey && rawKey.length > 50 ? rawKey : "";
+const url = rawUrl && (rawUrl.startsWith("https://") || rawUrl.includes("supabase")) ? rawUrl : "";
+const anonKey = rawKey && rawKey.length >= 20 ? rawKey : "";
 
 export const supabase =
   url && anonKey ? createClient(url, anonKey) : null;
+
+/** Per debug: stato delle variabili env (senza esporre valori sensibili) */
+export const getSupabaseEnvDebug = () => ({
+  hasUrl: !!rawUrl,
+  hasKey: !!rawKey,
+  urlLength: rawUrl?.length ?? 0,
+  keyLength: rawKey?.length ?? 0,
+});
 
 export const isSupabaseConfigured = () => !!supabase;
 

@@ -2,7 +2,7 @@
  * Sync registrazioni utenti su Supabase (app_users)
  * Esegui la migration 20250215000000_auth_and_registrations.sql prima di usare
  */
-import { supabase, isSupabaseConfigured } from "./supabase";
+import { supabase, isSupabaseConfigured, getSupabaseEnvDebug } from "./supabase";
 
 /** Converte undefined in null per evitare errori Supabase */
 function sanitize(val) {
@@ -10,7 +10,10 @@ function sanitize(val) {
 }
 
 export async function insertAppUser(userData) {
-  if (!isSupabaseConfigured()) return null;
+  if (!isSupabaseConfigured() || !supabase) {
+    const debug = getSupabaseEnvDebug?.() || {};
+    throw new Error(`Supabase non configurato. Verifica VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY in .env. Debug: ${JSON.stringify(debug)}`);
+  }
   const row = {
     name: String(userData.name || ""),
     email: sanitize(userData.email) || null,
@@ -50,8 +53,10 @@ export async function insertAppUser(userData) {
   };
   const { data, error } = await supabase.from("app_users").insert(row).select().single();
   if (error) {
-    console.error("Supabase insert app_user:", error);
-    throw new Error(error.message || "Errore salvataggio su Supabase");
+    console.error("[Supabase] insert app_user - errore completo:", { error, code: error.code, details: error.details, hint: error.hint });
+    const err = new Error(error.message || "Errore salvataggio su Supabase");
+    err.originalError = error;
+    throw err;
   }
   return data;
 }
@@ -77,11 +82,16 @@ export async function updateAppUserStatus(id, status) {
 }
 
 export async function updateAppUser(id, data) {
-  if (!isSupabaseConfigured()) return null;
+  if (!isSupabaseConfigured() || !supabase) {
+    const debug = getSupabaseEnvDebug?.() || {};
+    throw new Error(`Supabase non configurato. Verifica VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY. Debug: ${JSON.stringify(debug)}`);
+  }
   const { data: updated, error } = await supabase.from("app_users").update(data).eq("id", id).select().single();
   if (error) {
-    console.error("Supabase update app_user:", error);
-    return null;
+    console.error("[Supabase] update app_user - errore completo:", { error, code: error.code, details: error.details, hint: error.hint });
+    const err = new Error(error.message || "Errore aggiornamento su Supabase");
+    err.originalError = error;
+    throw err;
   }
   return updated;
 }

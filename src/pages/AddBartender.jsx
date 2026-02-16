@@ -39,7 +39,7 @@ const SPECIALIZZAZIONI = [
 
 export default function AddBartender() {
   const navigate = useNavigate();
-  const { addBartender, getVenues, isSupabaseConfigured } = useAppData();
+  const { addBartender, getVenues } = useAppData();
   const venues = getVenues();
 
   const [formData, setFormData] = useState({
@@ -86,10 +86,6 @@ export default function AddBartender() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!isSupabaseConfigured()) {
-      setErrors((prev) => ({ ...prev, _form: "Supabase non configurato. Configura le variabili d'ambiente per salvare i bartender." }));
-      return;
-    }
     if (!validate()) return;
     setIsSubmitting(true);
     try {
@@ -118,7 +114,8 @@ export default function AddBartender() {
       await addBartender(payload);
       navigate(createPageUrl("Dashboard"));
     } catch (err) {
-      console.error(err);
+      console.error("[AddBartender] Errore salvataggio:", err);
+      if (err?.originalError) console.error("[AddBartender] Dettaglio Supabase (RLS/rete):", err.originalError);
       setErrors((prev) => ({ ...prev, _form: err?.message || "Errore durante il salvataggio" }));
     } finally {
       setIsSubmitting(false);

@@ -42,7 +42,7 @@ export default function EditBartender() {
   const urlParams = new URLSearchParams(window.location.search);
   const bartenderId = urlParams.get("id");
   const navigate = useNavigate();
-  const { getBartenderById, updateBartender, deleteBartender, getVenues, isSupabaseConfigured } = useAppData();
+  const { getBartenderById, updateBartender, deleteBartender, getVenues } = useAppData();
   const bartender = getBartenderById(bartenderId);
   const venues = getVenues();
 
@@ -115,10 +115,6 @@ export default function EditBartender() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!validate()) return;
-    if (photoFiles.length > 0 && !isSupabaseConfigured()) {
-      setErrors((prev) => ({ ...prev, _form: "Supabase non configurato. Per caricare la foto configura le variabili d'ambiente." }));
-      return;
-    }
     setIsSubmitting(true);
     try {
       let photoUrl = formData.photo || "";
@@ -147,7 +143,8 @@ export default function EditBartender() {
       await updateBartender(bartenderId, payload);
       navigate(createPageUrl("Dashboard"));
     } catch (err) {
-      console.error(err);
+      console.error("[EditBartender] Errore salvataggio:", err);
+      if (err?.originalError) console.error("[EditBartender] Dettaglio Supabase (RLS/rete):", err.originalError);
       setErrors((prev) => ({ ...prev, _form: err?.message || "Errore durante il salvataggio" }));
     } finally {
       setIsSubmitting(false);
