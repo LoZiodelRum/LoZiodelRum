@@ -229,7 +229,7 @@ export default function AddBartender() {
           </div>
         )}
 
-        <div className="grid lg:grid-cols-[2fr,1fr] gap-6 items-start">
+        <div>
           {/* Form principale */}
           <form
             onSubmit={handleSubmit}
@@ -592,43 +592,6 @@ export default function AddBartender() {
               </Button>
             </div>
           </form>
-
-          {/* Regole e linee guida */}
-          <aside className="bg-stone-900/60 border border-stone-800 rounded-3xl p-6 space-y-4 text-sm text-stone-300">
-            <h3 className="text-base font-semibold mb-2">
-              Ruolo del bartender nel progetto
-            </h3>
-            <ul className="list-disc list-inside space-y-1 text-stone-400">
-              <li>Bartender come voce editoriale con interviste e racconti.</li>
-              <li>
-                Contributi lenti e qualificati, non conversazione da social.
-              </li>
-              <li>
-                Può proporre temi (es. come leggere una bottigliera) e rispondere
-                a domande selezionate.
-              </li>
-            </ul>
-
-            <h4 className="text-sm font-semibold mt-4">
-              Regole della community per i bartender
-            </h4>
-            <ul className="list-disc list-inside space-y-1 text-stone-400">
-              <li>Niente autopromozione aggressiva.</li>
-              <li>Risposte solo se portano reale valore.</li>
-              <li>Linguaggio accessibile e chiaro.</li>
-              <li>Trasparenza su collaborazioni e partnership.</li>
-            </ul>
-
-            <h4 className="text-sm font-semibold mt-4">Benefici</h4>
-            <ul className="list-disc list-inside space-y-1 text-stone-400">
-              <li>Utenti: imparano da persone reali.</li>
-              <li>Proprietari: vedono valorizzato il proprio team.</li>
-              <li>
-                Bartender: visibilità professionale seria, non solo social.
-              </li>
-              <li>Piattaforma: aumenta autorevolezza nel mondo del bere.</li>
-            </ul>
-          </aside>
         </div>
       </div>
     </div>
