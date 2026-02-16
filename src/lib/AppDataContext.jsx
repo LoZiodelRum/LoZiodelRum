@@ -215,6 +215,8 @@ export function AppDataProvider({ children }) {
                 latitude: venue.latitude ?? null,
                 longitude: venue.longitude ?? null,
                 cover_image: venue.cover_image || "",
+                video_url: venue.video_url || null,
+                status: "pending",
                 category: venue.category || "cocktail_bar",
                 price_range: venue.price_range || "€€",
                 phone: venue.phone || "",
@@ -729,6 +731,18 @@ export function AppDataProvider({ children }) {
           return;
         }
         await supabase.from("venues_cloud").update({ status: "rejected" }).eq("id", id);
+      },
+      deleteVenueCloud: async (id) => {
+        if (!isSupabaseConfigured()) return;
+        await supabase.from("venues_cloud").delete().eq("id", id);
+        setVenues((prev) => prev.filter((v) => v.id !== id));
+      },
+      deleteAppUser: async (id) => {
+        if (!isSupabaseConfigured()) return;
+        const { error } = await supabase.from("app_users").delete().eq("id", id);
+        if (!error) {
+          setBartenders((prev) => prev.filter((b) => b.id !== id));
+        }
       },
       getPendingRegistrationsFromCloud: () => getPendingRegistrations(),
       updateAppUserStatus: (id, status) => updateAppUserStatus(id, status),

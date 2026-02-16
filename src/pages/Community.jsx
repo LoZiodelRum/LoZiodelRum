@@ -222,7 +222,7 @@ export default function Community() {
                     {regImageFile && (
                       <button
                         type="button"
-                        onClick={() => { setRegImageFile(null); imageInputRef.current?.value = ""; }}
+                        onClick={() => { setRegImageFile(null); if (imageInputRef.current) { imageInputRef.current.value = ""; } }}
                         className="text-xs text-stone-500 hover:text-stone-300"
                       >
                         Rimuovi

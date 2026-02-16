@@ -65,6 +65,16 @@ const AuthenticatedApp = () => {
         </LayoutWrapper>
       } />
 
+      {/* Admin – verifica profili pending */}
+      <Route
+        path="/admin"
+        element={
+          <LayoutWrapper currentPageName="AdminDashboard">
+            {Pages.AdminDashboard && <Pages.AdminDashboard />}
+          </LayoutWrapper>
+        }
+      />
+
       {/* EditVenue: SENZA Layout - bypass completo per sbloccare la modifica */}
       <Route 
         path="/EditVenue" 
