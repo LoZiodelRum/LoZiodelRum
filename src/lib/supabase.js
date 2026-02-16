@@ -2,11 +2,13 @@ import { createClient } from "@supabase/supabase-js";
 
 /**
  * Supabase: usa ESCLUSIVAMENTE import.meta.env (Vite).
- * Nessun process.env per evitare errori API Key su Vercel.
- * Variabili richieste: VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY
+ * Su Vercel: imposta VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY in Environment Variables.
+ * Il prefisso VITE_ è obbligatorio per esporre le variabili al client.
  */
-const url = import.meta.env.VITE_SUPABASE_URL?.trim();
-const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY?.trim();
+const rawUrl = (import.meta.env.VITE_SUPABASE_URL ?? "").toString().trim();
+const rawKey = (import.meta.env.VITE_SUPABASE_ANON_KEY ?? "").toString().trim();
+const url = rawUrl && rawUrl.startsWith("https://") ? rawUrl : "";
+const anonKey = rawKey && rawKey.length > 50 ? rawKey : "";
 
 export const supabase =
   url && anonKey ? createClient(url, anonKey) : null;
