@@ -8,7 +8,7 @@ import { createClient } from "@supabase/supabase-js";
 const rawUrl = (import.meta.env.VITE_SUPABASE_URL ?? "").toString().trim();
 const rawKey = (import.meta.env.VITE_SUPABASE_ANON_KEY ?? "").toString().trim();
 const url = rawUrl && (rawUrl.startsWith("https://") || rawUrl.includes("supabase")) ? rawUrl : "";
-const anonKey = rawKey && rawKey.length >= 20 ? rawKey : "";
+const anonKey = rawKey && rawKey.length >= 10 ? rawKey : "";
 
 export const supabase =
   url && anonKey ? createClient(url, anonKey) : null;
