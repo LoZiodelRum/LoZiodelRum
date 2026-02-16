@@ -496,7 +496,7 @@ export default function AddVenue() {
             <div className="space-y-2">
               <input
                 type="file"
-                accept="image/*,video/*"
+                accept="image/*,android/allowCamera"
                 capture="environment"
                 id="cover-image-camera"
                 onChange={(e) => {
@@ -583,7 +583,7 @@ export default function AddVenue() {
               </h3>
                 <input
                   type="file"
-                  accept="image/*,video/*"
+                  accept="video/*,android/allowCamera"
                   capture="environment"
                   id="venue-video-camera"
                   onChange={(e) => setVideoFile(e.target.files?.[0] || null)}

@@ -288,7 +288,7 @@ export default function EditBartender() {
                   </Label>
                   <input
                     type="file"
-                    accept="image/*,video/*"
+                    accept="image/*,android/allowCamera"
                     capture="environment"
                     id="edit-bartender-photo-camera"
                     onChange={(e) => {

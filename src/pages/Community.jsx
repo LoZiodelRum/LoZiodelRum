@@ -212,7 +212,7 @@ export default function Community() {
                   </Label>
                   <input
                     type="file"
-                    accept="image/*,video/*"
+                    accept="image/*,android/allowCamera"
                     capture="environment"
                     id="reg-image-camera"
                     onChange={(e) => {

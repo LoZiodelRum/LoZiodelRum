@@ -591,7 +591,7 @@ export default function AddReview() {
                 <Label className="text-sm text-stone-400 mb-2 block">Foto</Label>
                 <input
                   type="file"
-                  accept="image/*,video/*"
+                  accept="image/*,android/allowCamera"
                   capture="environment"
                   id="review-photos-camera"
                   onChange={addPhotoFiles}
@@ -655,7 +655,7 @@ export default function AddReview() {
                 </Label>
                 <input
                   type="file"
-                  accept="image/*,video/*"
+                  accept="video/*,android/allowCamera"
                   capture="environment"
                   id="review-videos-camera"
                   onChange={addVideoFiles}

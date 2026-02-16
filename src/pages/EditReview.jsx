@@ -445,7 +445,7 @@ export default function EditReview() {
                 <Label className="text-sm text-stone-400 mb-2 block">Foto</Label>
                 <input
                   type="file"
-                  accept="image/*,video/*"
+                  accept="image/*,android/allowCamera"
                   capture="environment"
                   id="edit-review-photos-camera"
                   onChange={addPhotoFiles}
@@ -509,7 +509,7 @@ export default function EditReview() {
                 </Label>
                 <input
                   type="file"
-                  accept="image/*,video/*"
+                  accept="video/*,android/allowCamera"
                   capture="environment"
                   id="edit-review-videos-camera"
                   onChange={addVideoFiles}

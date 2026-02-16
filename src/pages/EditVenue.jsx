@@ -466,7 +466,7 @@ export default function EditVenue() {
             </h3>
             <input
               type="file"
-              accept="image/*,video/*"
+              accept="image/*,android/allowCamera"
               capture="environment"
               id="edit-venue-cover-camera"
               onChange={(e) => {
