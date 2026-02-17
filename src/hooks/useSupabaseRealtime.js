@@ -5,6 +5,7 @@
 import { useEffect } from "react";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
+/** Mapping completo: nome, citta, provincia, paese, latitudine, longitudine, status */
 function mapLocaliRow(row) {
   const catRaw = row.categoria || "cocktail_bar";
   const categories = catRaw ? catRaw.split(",").map((s) => s.trim()).filter(Boolean) : ["cocktail_bar"];
@@ -30,6 +31,8 @@ function mapLocaliRow(row) {
     longitude: row.longitudine != null ? parseFloat(row.longitudine) : null,
     status: row.status || "pending",
     _cloudPending: row.status === "pending",
+    created_at: row.created_at || null,
+    slug: row.slug || null,
   };
 }
 
@@ -54,16 +57,17 @@ export function useVenuesRealtime(onInsert, onUpdate, onDelete) {
   }, [onInsert, onUpdate, onDelete]);
 }
 
-export function useReviewsRealtime(onInsert, onUpdate, onDelete) {
+export function useReviewsRealtime(mapReview, onInsert, onUpdate, onDelete) {
   useEffect(() => {
     if (!isSupabaseConfigured() || !supabase) return;
+    const map = mapReview || ((r) => r);
     const channel = supabase
       .channel("reviews-changes")
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "reviews_cloud" }, (payload) => {
-        onInsert?.(payload.new);
+        onInsert?.(map(payload.new));
       })
       .on("postgres_changes", { event: "UPDATE", schema: "public", table: "reviews_cloud" }, (payload) => {
-        onUpdate?.(payload.new);
+        onUpdate?.(map(payload.new));
       })
       .on("postgres_changes", { event: "DELETE", schema: "public", table: "reviews_cloud" }, (payload) => {
         onDelete?.(payload.old);
@@ -72,5 +76,28 @@ export function useReviewsRealtime(onInsert, onUpdate, onDelete) {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [onInsert, onUpdate, onDelete]);
+  }, [mapReview, onInsert, onUpdate, onDelete]);
+}
+
+/** Realtime per app_users (Bartender e Users) */
+export function useAppUsersRealtime(mapUser, onInsert, onUpdate, onDelete) {
+  useEffect(() => {
+    if (!isSupabaseConfigured() || !supabase) return;
+    const map = mapUser || ((r) => r);
+    const channel = supabase
+      .channel("app_users-changes")
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "app_users" }, (payload) => {
+        onInsert?.(map(payload.new));
+      })
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "app_users" }, (payload) => {
+        onUpdate?.(map(payload.new));
+      })
+      .on("postgres_changes", { event: "DELETE", schema: "public", table: "app_users" }, (payload) => {
+        onDelete?.(payload.old);
+      })
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [mapUser, onInsert, onUpdate, onDelete]);
 }

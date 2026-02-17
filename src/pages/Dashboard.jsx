@@ -69,7 +69,7 @@ const CATEGORY_LABELS = {
 };
 
 export default function Dashboard() {
-  const { user, getVenues, getArticles, getDrinks, getBartenders, getPendingBartenders, loadBartendersFromCloud, updateVenue, deleteVenue, deleteVenueCloud, setBartenderStatus, deleteBartender, exportData, importData, restoreReviewsFromSeed, isSupabaseConfigured, getPendingVenuesFromCloud, getPendingLocalVenues, approveVenueCloud, rejectVenueCloud, getPendingRegistrationsFromCloud, updateAppUserStatus, deleteAppUser } = useAppData();
+  const { user, getVenues, getArticles, getDrinks, getBartenders, getPendingBartenders, loadBartendersFromCloud, updateVenue, deleteVenue, deleteVenueCloud, setBartenderStatus, deleteBartender, exportData, importData, reloadReviewsFromSupabase, isSupabaseConfigured, getPendingVenuesFromCloud, getPendingLocalVenues, approveVenueCloud, rejectVenueCloud, getPendingRegistrationsFromCloud, updateAppUserStatus, deleteAppUser } = useAppData();
   const allVenues = getVenues();
   const allArticles = getArticles();
   const allDrinks = getDrinks();
@@ -1193,9 +1193,9 @@ export default function Dashboard() {
             <Button
               variant="outline"
               className="border-amber-500/50 text-amber-400 hover:bg-amber-500/10"
-              onClick={() => {
-                restoreReviewsFromSeed();
-                toast.success("Recensioni ripristinate dal seed");
+              onClick={async () => {
+                await reloadReviewsFromSupabase();
+                toast.success("Recensioni ricaricate da Supabase");
               }}
             >
               <RefreshCw className="w-4 h-4 mr-2" />

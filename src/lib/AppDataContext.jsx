@@ -1,12 +1,12 @@
 import React, { createContext, useContext, useMemo, useState, useEffect, useCallback } from "react";
-import { reviewsData as initialReviews } from "@/data/reviews";
 import { articlesData as initialArticles } from "@/data/articles";
 import { drinksData as initialDrinks } from "@/data/drinks";
 import { initialOwnerMessages, initialCommunityPosts, initialCommunityEvents } from "@/data/community";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { TABLE_APP_USERS, TABLE_LOCALI } from "@/lib/supabaseTables";
 import { getPendingRegistrations, updateAppUserStatus, insertAppUser, updateAppUser, insertLocali } from "@/lib/supabaseUsers";
-import { useVenuesRealtime } from "@/hooks/useSupabaseRealtime";
+import { useVenuesRealtime, useReviewsRealtime, useAppUsersRealtime } from "@/hooks/useSupabaseRealtime";
+import { reloadPgrstSchema } from "@/lib/supabaseSchemaReload";
 
 function generateId() {
   return Date.now().toString(36) + Math.random().toString(36).slice(2, 9);
@@ -27,6 +27,7 @@ export function AppDataProvider({ children }) {
 
   const mapAppUserToBartender = useCallback((row) => ({
     id: String(row.id),
+    role: row.role || "bartender",
     name: row.full_name || [row.name, row.surname].filter(Boolean).join(" ") || "",
     surname: row.surname || "",
     photo: row.image_url || row.photo || "",
@@ -105,11 +106,17 @@ export function AppDataProvider({ children }) {
     status: row.status || "approved",
   }), []);
 
-  // Fetch iniziale: venues da Locali (Supabase), reviews, bartenders
+  // Reload schema PostgREST all'avvio (evita "Could not find column")
+  useEffect(() => {
+    if (isSupabaseConfigured()) reloadPgrstSchema();
+  }, []);
+
+  // Fetch iniziale: venues da Locali (Supabase), reviews, bartenders – SORGENTE UNICA
   useEffect(() => {
     if (!isSupabaseConfigured()) {
       setVenues([]);
       setReviews([]);
+      setBartenders([]);
       return;
     }
     supabase.from(TABLE_LOCALI).select("*").eq("status", "approved").then(({ data }) => {
@@ -153,6 +160,31 @@ export function AppDataProvider({ children }) {
     setVenues((prev) => prev.filter((v) => v.supabase_id !== old?.id && v.id !== old?.id));
   }, []);
   useVenuesRealtime(onInsert, onUpdate, onDelete);
+
+  // Realtime recensioni
+  const onReviewInsert = useCallback((review) => {
+    if (review?.status === "approved") setReviews((prev) => [review, ...prev]);
+  }, []);
+  const onReviewUpdate = useCallback((review) => {
+    setReviews((prev) => prev.map((r) => (r.id === review?.id ? review : r)));
+  }, []);
+  const onReviewDelete = useCallback((old) => {
+    if (old?.id) setReviews((prev) => prev.filter((r) => r.id !== old.id));
+  }, []);
+  useReviewsRealtime(mapReviewCloudToLocal, onReviewInsert, onReviewUpdate, onReviewDelete);
+
+  // Realtime app_users (bartender)
+  const onBartenderInsert = useCallback((b) => {
+    if (b?.role === "bartender") setBartenders((prev) => [b, ...prev]);
+  }, []);
+  const onBartenderUpdate = useCallback((b) => {
+    if (b?.role === "bartender") setBartenders((prev) => prev.map((x) => (x.id === b.id ? b : x)));
+    else setBartenders((prev) => prev.filter((x) => x.id !== b?.id));
+  }, []);
+  const onBartenderDelete = useCallback((old) => {
+    if (old?.id) setBartenders((prev) => prev.filter((b) => b.id !== old.id));
+  }, []);
+  useAppUsersRealtime(mapAppUserToBartender, onBartenderInsert, onBartenderUpdate, onBartenderDelete);
 
 
   const api = useMemo(() => {
@@ -361,8 +393,10 @@ export function AppDataProvider({ children }) {
         if (updated) setReviews((prev) => prev.map((r) => (r.id === id ? mapReviewCloudToLocal(updated) : r)));
         return { id, ...data };
       },
-      restoreReviewsFromSeed: () => {
-        setReviews([...initialReviews]);
+      reloadReviewsFromSupabase: async () => {
+        if (!isSupabaseConfigured()) return;
+        const { data, error } = await supabase.from("reviews_cloud").select("*").eq("status", "approved").order("created_at", { ascending: false });
+        if (!error && data) setReviews(data.map(mapReviewCloudToLocal));
       },
       deleteReview: async (id) => {
         if (!isSupabaseConfigured()) return;

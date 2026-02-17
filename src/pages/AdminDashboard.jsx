@@ -8,6 +8,7 @@ import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
+import { useVenuesRealtime, useAppUsersRealtime } from "@/hooks/useSupabaseRealtime";
 import { TABLE_APP_USERS, TABLE_LOCALI } from "@/lib/supabaseTables";
 import { MapPin, User, Wine, ChevronLeft, Loader2, AlertCircle, Edit3, Trash2, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -111,6 +112,14 @@ export default function AdminDashboard() {
   useEffect(() => {
     loadData();
   }, [loadData]);
+
+  // Realtime: aggiornamento istantaneo su insert/update/delete Locali e app_users
+  const refreshOnChange = useCallback(() => {
+    fetchLocali().then(setLocali).catch(() => {});
+    fetchRegistrations().then((r) => setPendingRegistrations(Array.isArray(r) ? r : [])).catch(() => {});
+  }, [fetchLocali, fetchRegistrations]);
+  useVenuesRealtime(refreshOnChange, refreshOnChange, refreshOnChange);
+  useAppUsersRealtime(null, refreshOnChange, refreshOnChange, refreshOnChange);
 
   const handleStatusToggle = async (venue) => {
     const newStatus = venue.status === "approved" ? "pending" : "approved";
