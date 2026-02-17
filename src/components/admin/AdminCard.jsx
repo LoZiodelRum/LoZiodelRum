@@ -11,13 +11,22 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { dbStringToUrls } from "@/lib/supabaseStorage";
 
-const FIELD = ({ label, value }) =>
-  value != null && value !== "" ? (
+const FIELD = ({ label, value, alwaysShow = false }) => {
+  const display = value != null && value !== "" ? String(value) : "—";
+  if (!alwaysShow && (value == null || value === "")) return null;
+  return (
     <div className="mb-3">
       <p className="text-xs text-stone-500 font-medium mb-0.5">{label}</p>
-      <p className="text-sm text-stone-200">{String(value)}</p>
+      <p className="text-sm text-stone-200 whitespace-pre-wrap">{display}</p>
     </div>
-  ) : null;
+  );
+};
+const FIELD_ALWAYS = ({ label, value }) => (
+  <div className="mb-3">
+    <p className="text-xs text-stone-500 font-medium mb-0.5">{label}</p>
+    <p className="text-sm text-stone-200 whitespace-pre-wrap break-words">{value != null && value !== "" ? String(value) : "—"}</p>
+  </div>
+);
 
 export default function AdminCard({ type, item, onApprove, onDelete, onClose, isPending }) {
   const [imgIndex, setImgIndex] = useState(0);
@@ -102,24 +111,29 @@ export default function AdminCard({ type, item, onApprove, onDelete, onClose, is
           </div>
         )}
 
-        {/* Campi testuali */}
+        {/* Campi testuali – locali: tutti i campi sempre visibili */}
         <div className="space-y-1">
           {type === "venue" && (
             <>
-              <FIELD label="Nome" value={item.name} />
-              <FIELD label="Città" value={item.city} />
-              <FIELD label="Provincia" value={item.province} />
-              <FIELD label="Indirizzo" value={item.address} />
-              <FIELD label="Descrizione" value={item.description} />
-              <FIELD label="Telefono" value={item.phone} />
-              <FIELD label="Sito web" value={item.website} />
-              <FIELD label="Instagram" value={item.instagram} />
-              <FIELD label="Orari" value={item.opening_hours} />
-              <FIELD
+              <FIELD_ALWAYS label="Nome" value={item.name} />
+              <FIELD_ALWAYS label="Descrizione" value={item.description} />
+              <FIELD_ALWAYS label="Indirizzo" value={item.address} />
+              <FIELD_ALWAYS label="Città" value={item.city} />
+              <FIELD_ALWAYS label="Provincia" value={item.province} />
+              <FIELD_ALWAYS label="Nazione" value={item.country} />
+              <FIELD_ALWAYS
                 label="Categoria"
                 value={(item.categories || (item.category ? [item.category] : [])).filter(Boolean).join(", ")}
               />
-              <FIELD label="Fascia prezzo" value={item.price_range} />
+              <FIELD_ALWAYS label="Fascia prezzo" value={item.price_range} />
+              <FIELD_ALWAYS label="Telefono" value={item.phone} />
+              <FIELD_ALWAYS label="Sito web" value={item.website} />
+              <FIELD_ALWAYS label="Instagram" value={item.instagram} />
+              <FIELD_ALWAYS label="Orari" value={item.opening_hours} />
+              <FIELD_ALWAYS label="Slug" value={item.slug} />
+              <FIELD_ALWAYS label="Video URL" value={item.video_url} />
+              <FIELD_ALWAYS label="Latitudine" value={item.latitude != null ? String(item.latitude) : null} />
+              <FIELD_ALWAYS label="Longitudine" value={item.longitude != null ? String(item.longitude) : null} />
               <div className="grid grid-cols-2 gap-3 mt-4">
                 <div>
                   <Label className="text-xs text-stone-500 mb-1 block">Latitudine (per mappa)</Label>

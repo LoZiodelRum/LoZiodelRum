@@ -678,16 +678,16 @@ export default function Dashboard() {
           )}
         </div>
 
-        {/* Dialog Anteprima locale */}
+        {/* Dialog Anteprima locale – scheda completa con tutti i dati */}
         <Dialog open={!!previewVenue} onOpenChange={(open) => !open && setPreviewVenue(null)}>
           <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-stone-900 border-stone-800 text-stone-100">
             <DialogHeader>
               <DialogTitle className="text-xl font-bold text-amber-400">
-                Anteprima scheda locale – dati da Supabase
+                Anteprima scheda locale – tutti i dati
               </DialogTitle>
             </DialogHeader>
             {previewVenue && (
-              <div className="space-y-6">
+              <div className="space-y-5">
                 <div className="flex gap-4">
                   <img
                     src={previewVenue.cover_image || "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=400"}
@@ -695,96 +695,137 @@ export default function Dashboard() {
                     className="w-32 h-32 object-cover rounded-lg flex-shrink-0"
                   />
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-lg font-bold mb-1">{previewVenue.name}</h3>
-                    <div className="flex items-center gap-2 text-stone-400 text-sm mb-2">
-                      <MapPin className="w-4 h-4 flex-shrink-0" />
-                      <span>
-                        {previewVenue.city || "—"}
-                        {previewVenue.province ? ` (${previewVenue.province})` : ""}
-                        {previewVenue.country ? `, ${previewVenue.country}` : ""}
-                      </span>
+                    <h3 className="text-lg font-bold mb-1">{previewVenue.name || "—"}</h3>
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {(previewVenue.categories || (previewVenue.category ? [previewVenue.category] : [])).filter(Boolean).map((cat, i) => (
+                        <Badge key={i} variant="outline" className="text-xs border-stone-600 text-stone-400">
+                          {CATEGORY_LABELS[cat] || cat}
+                        </Badge>
+                      ))}
+                      {previewVenue.price_range && (
+                        <Badge variant="outline" className="text-xs border-stone-600 text-stone-400">
+                          {previewVenue.price_range}
+                        </Badge>
+                      )}
                     </div>
-                    {previewVenue.address && (
-                      <p className="text-stone-400 text-sm">{previewVenue.address}</p>
-                    )}
-                    {((previewVenue.categories?.length) || previewVenue.category || previewVenue.price_range) && (
-                      <div className="flex flex-wrap gap-2 mt-2">
-                        {(previewVenue.categories || (previewVenue.category ? [previewVenue.category] : [])).filter(Boolean).map((cat, i) => (
-                          <Badge key={i} variant="outline" className="text-xs border-stone-600 text-stone-400">
-                            {CATEGORY_LABELS[cat] || cat}
-                          </Badge>
-                        ))}
-                        {previewVenue.price_range && (
-                          <Badge variant="outline" className="text-xs border-stone-600 text-stone-400">
-                            {previewVenue.price_range}
-                          </Badge>
-                        )}
-                      </div>
-                    )}
                   </div>
                 </div>
-                {previewVenue.description && (
+
+                {previewVenue.video_url && (
                   <div>
-                    <p className="text-xs text-stone-500 font-medium mb-1">Descrizione</p>
-                    <p className="text-stone-300 text-sm leading-relaxed whitespace-pre-wrap">{previewVenue.description}</p>
+                    <p className="text-xs text-stone-500 font-medium mb-1">Video</p>
+                    <video src={previewVenue.video_url} controls className="w-full max-w-md rounded-xl" />
                   </div>
                 )}
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm">
+                  <div>
+                    <p className="text-xs text-stone-500 font-medium mb-0.5">Nome</p>
+                    <p className="text-stone-200">{previewVenue.name || "—"}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-stone-500 font-medium mb-0.5">Indirizzo</p>
+                    <p className="text-stone-200 whitespace-pre-wrap">{previewVenue.address || "—"}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-stone-500 font-medium mb-0.5">Città</p>
+                    <p className="text-stone-200">{previewVenue.city || "—"}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-stone-500 font-medium mb-0.5">Provincia</p>
+                    <p className="text-stone-200">{previewVenue.province || "—"}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-stone-500 font-medium mb-0.5">Nazione</p>
+                    <p className="text-stone-200">{previewVenue.country || "—"}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-stone-500 font-medium mb-0.5">Categoria</p>
+                    <p className="text-stone-200">{(previewVenue.categories || (previewVenue.category ? [previewVenue.category] : [])).filter(Boolean).join(", ") || "—"}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-stone-500 font-medium mb-0.5">Fascia prezzo</p>
+                    <p className="text-stone-200">{previewVenue.price_range || "—"}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-stone-500 font-medium mb-0.5">Slug</p>
+                    <p className="text-stone-200">{previewVenue.slug || "—"}</p>
+                  </div>
+                </div>
+
+                <div>
+                  <p className="text-xs text-stone-500 font-medium mb-1">Descrizione</p>
+                  <p className="text-stone-300 text-sm leading-relaxed whitespace-pre-wrap">{previewVenue.description || "—"}</p>
+                </div>
+
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {previewVenue.phone && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <Phone className="w-4 h-4 text-amber-500" />
-                      <a href={`tel:${previewVenue.phone}`} className="text-amber-400 hover:underline">{previewVenue.phone}</a>
-                    </div>
-                  )}
-                  {previewVenue.website && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <Globe className="w-4 h-4 text-amber-500" />
-                      <a href={previewVenue.website} target="_blank" rel="noopener noreferrer" className="text-amber-400 hover:underline truncate">{previewVenue.website}</a>
-                    </div>
-                  )}
-                  {previewVenue.instagram && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <Instagram className="w-4 h-4 text-amber-500" />
-                      <a href={`https://instagram.com/${previewVenue.instagram}`} target="_blank" rel="noopener noreferrer" className="text-amber-400 hover:underline">@{previewVenue.instagram}</a>
-                    </div>
-                  )}
-                  {previewVenue.opening_hours && (
-                    <div className="flex items-center gap-2 text-sm">
-                      <Clock className="w-4 h-4 text-amber-500" />
-                      <span className="text-stone-300">{previewVenue.opening_hours}</span>
-                    </div>
-                  )}
-                </div>
-                <div className="grid grid-cols-2 gap-3">
-                  {previewVenue.latitude != null && (
+                  <div className="flex items-center gap-2 text-sm">
+                    <Phone className="w-4 h-4 text-amber-500 flex-shrink-0" />
                     <div>
-                      <p className="text-xs text-stone-500 mb-0.5">Latitudine</p>
-                      <p className="text-sm text-stone-300">{previewVenue.latitude}</p>
+                      <p className="text-xs text-stone-500 mb-0.5">Telefono</p>
+                      {previewVenue.phone ? (
+                        <a href={`tel:${previewVenue.phone}`} className="text-amber-400 hover:underline">{previewVenue.phone}</a>
+                      ) : (
+                        <span className="text-stone-400">—</span>
+                      )}
                     </div>
-                  )}
-                  {previewVenue.longitude != null && (
-                    <div>
-                      <p className="text-xs text-stone-500 mb-0.5">Longitudine</p>
-                      <p className="text-sm text-stone-300">{previewVenue.longitude}</p>
-                    </div>
-                  )}
-                </div>
-                {(previewVenue.created_at || previewVenue.created_date || previewVenue.created_by) && (
-                  <div className="flex items-center gap-4 text-xs text-stone-500 pt-2 border-t border-stone-800">
-                    {(previewVenue.created_at || previewVenue.created_date) && (
-                      <div className="flex items-center gap-1">
-                        <Calendar className="w-3 h-3" />
-                        {new Date(previewVenue.created_at || previewVenue.created_date).toLocaleString("it-IT")}
-                      </div>
-                    )}
-                    {previewVenue.created_by && (
-                      <div className="flex items-center gap-1">
-                        <User className="w-3 h-3" />
-                        {previewVenue.created_by}
-                      </div>
-                    )}
                   </div>
-                )}
+                  <div className="flex items-center gap-2 text-sm">
+                    <Globe className="w-4 h-4 text-amber-500 flex-shrink-0" />
+                    <div>
+                      <p className="text-xs text-stone-500 mb-0.5">Sito web</p>
+                      {previewVenue.website ? (
+                        <a href={previewVenue.website} target="_blank" rel="noopener noreferrer" className="text-amber-400 hover:underline break-all">{previewVenue.website}</a>
+                      ) : (
+                        <span className="text-stone-400">—</span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <Instagram className="w-4 h-4 text-amber-500 flex-shrink-0" />
+                    <div>
+                      <p className="text-xs text-stone-500 mb-0.5">Instagram</p>
+                      {previewVenue.instagram ? (
+                        <a href={`https://instagram.com/${previewVenue.instagram}`} target="_blank" rel="noopener noreferrer" className="text-amber-400 hover:underline">@{previewVenue.instagram}</a>
+                      ) : (
+                        <span className="text-stone-400">—</span>
+                      )}
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <Clock className="w-4 h-4 text-amber-500 flex-shrink-0" />
+                    <div>
+                      <p className="text-xs text-stone-500 mb-0.5">Orari</p>
+                      <span className="text-stone-300">{previewVenue.opening_hours || "—"}</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <p className="text-xs text-stone-500 mb-0.5">Latitudine</p>
+                    <p className="text-sm text-stone-300">{previewVenue.latitude != null ? String(previewVenue.latitude) : "—"}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-stone-500 mb-0.5">Longitudine</p>
+                    <p className="text-sm text-stone-300">{previewVenue.longitude != null ? String(previewVenue.longitude) : "—"}</p>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-4 text-xs text-stone-500 pt-4 border-t border-stone-800">
+                  {(previewVenue.created_at || previewVenue.created_date) && (
+                    <div className="flex items-center gap-1">
+                      <Calendar className="w-3 h-3" />
+                      Inviato il {new Date(previewVenue.created_at || previewVenue.created_date).toLocaleString("it-IT")}
+                    </div>
+                  )}
+                  {previewVenue.created_by && (
+                    <div className="flex items-center gap-1">
+                      <User className="w-3 h-3" />
+                      {previewVenue.created_by}
+                    </div>
+                  )}
+                </div>
               </div>
             )}
           </DialogContent>

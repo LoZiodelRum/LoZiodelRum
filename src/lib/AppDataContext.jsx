@@ -77,6 +77,8 @@ export function AppDataProvider({ children }) {
     longitude: row.longitudine != null ? parseFloat(row.longitudine) : null,
     status: row.status || "pending",
     _cloudPending: row.status === "pending",
+    created_at: row.created_at || null,
+    slug: row.slug || null,
   };
   }, []);
 

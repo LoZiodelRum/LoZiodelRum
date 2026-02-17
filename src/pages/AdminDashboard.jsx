@@ -48,6 +48,7 @@ function mapLocaliToVenue(row) {
     website: row.sito || "",
     instagram: row.instagram || "",
     opening_hours: row.orari || "",
+    slug: row.slug || null,
     latitude: row.latitudine ?? null,
     longitude: row.longitudine ?? null,
     status: row.status || "pending",
