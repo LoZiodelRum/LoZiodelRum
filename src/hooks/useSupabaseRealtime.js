@@ -55,7 +55,7 @@ export function useVenuesRealtime(onInsert, onUpdate, onDelete) {
       else onDelete?.({ id: payload.old?.id });
     };
     const channel = supabase
-      .channel("Locali-changes")
+      .channel("Locali-realtime")
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "Locali" }, (p) => handleLocali(p, "INSERT"))
       .on("postgres_changes", { event: "UPDATE", schema: "public", table: "Locali" }, (p) => handleLocali(p, "UPDATE"))
       .on("postgres_changes", { event: "DELETE", schema: "public", table: "Locali" }, (p) => handleLocali(p, "DELETE"))
@@ -63,9 +63,7 @@ export function useVenuesRealtime(onInsert, onUpdate, onDelete) {
       .on("postgres_changes", { event: "UPDATE", schema: "public", table: "venues_cloud" }, (p) => handleVenuesCloud(p, "UPDATE"))
       .on("postgres_changes", { event: "DELETE", schema: "public", table: "venues_cloud" }, (p) => handleVenuesCloud(p, "DELETE"))
       .subscribe();
-    return () => {
-      supabase.removeChannel(channel);
-    };
+    return () => supabase.removeChannel(channel);
   }, [onInsert, onUpdate, onDelete]);
 }
 
