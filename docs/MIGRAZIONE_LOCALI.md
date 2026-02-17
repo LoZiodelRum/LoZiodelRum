@@ -23,6 +23,22 @@ Lo script:
 - **AddVenue**: inserisce direttamente in Locali
 - **venues.js**: usato solo dallo script di migrazione; l'app non lo legge più
 
+## Coordinate sulla mappa
+
+Per mostrare i marker sulla mappa, la tabella `Locali` deve avere le colonne `latitudine` e `longitudine`.
+Se non esistono, esegui nel SQL Editor di Supabase:
+
+```sql
+alter table public."Locali" add column if not exists latitudine double precision;
+alter table public."Locali" add column if not exists longitudine double precision;
+```
+
+Poi aggiorna i 19 locali esistenti con le coordinate da venues.js:
+
+```bash
+npm run update:coordinates
+```
+
 ## Fonte unica
 
 Tutti i locali (19 originali + nuovi come "Il Cantiere") provengono dalla tabella `Locali` di Supabase.

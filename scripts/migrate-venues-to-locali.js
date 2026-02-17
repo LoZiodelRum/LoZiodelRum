@@ -52,10 +52,10 @@ function parseCityProvince(cityStr) {
   return { citta: cityStr, provincia: null };
 }
 
-/** Mappa un venue da venues.js al formato Locali (solo colonne garantite) */
+/** Mappa un venue da venues.js al formato Locali */
 function mapToLocali(v) {
   const { citta, provincia } = parseCityProvince(v.city || "");
-  return {
+  const row = {
     nome: v.name || "",
     descrizione: v.description || "",
     indirizzo: v.address || "",
@@ -67,6 +67,11 @@ function mapToLocali(v) {
     status: "approved",
     image_url: v.cover_image || null,
   };
+  if (v.latitude != null && v.longitude != null) {
+    row.latitudine = v.latitude;
+    row.longitudine = v.longitude;
+  }
+  return row;
 }
 
 async function run() {

@@ -12,13 +12,31 @@ import { toast } from "@/components/ui/use-toast";
 import { createPageUrl } from "@/utils";
 import { useAppData } from "@/lib/AppDataContext";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
-import { ChevronLeft, MapPin, Phone, Clock, Send, Loader2, Wine, Image as ImageIcon, X } from "lucide-react";
+import { ChevronLeft, MapPin, Phone, Clock, Send, Loader2, Wine, Image as ImageIcon, X, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { motion } from "framer-motion";
 import { uploadMultipleToSupabaseStorage, urlsToDbString } from "@/lib/supabaseStorage";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+
+const CATEGORY_LABELS = {
+  cocktail_bar: "Cocktail Bar",
+  rum_bar: "Rum Bar",
+  wine_bar: "Wine Bar",
+  speakeasy: "Speakeasy",
+  distillery: "Distilleria",
+  enoteca: "Enoteca",
+  pub: "Pub",
+  rooftop: "Rooftop Bar",
+  hotel_bar: "Hotel Bar",
+};
 
 const categories = [
   { value: "cocktail_bar", label: "Cocktail Bar" },
@@ -56,6 +74,7 @@ export default function AddVenue() {
   const [status, setStatus] = useState(null);
   const [coverImageFiles, setCoverImageFiles] = useState([]);
   const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
+  const [showPreview, setShowPreview] = useState(false);
 
   const handleCoverInput = (e) => {
     const files = Array.from(e.target.files || []);
@@ -385,6 +404,24 @@ export default function AddVenue() {
             </div>
           </motion.div>
 
+          {/* Anteprima */}
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.15 }}
+            className="bg-stone-900/50 rounded-2xl border border-stone-800/50 p-6"
+          >
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => setShowPreview(true)}
+              className="w-full border-amber-500/50 text-amber-400 hover:bg-amber-500/10"
+            >
+              <Eye className="w-5 h-5 mr-2" />
+              Anteprima scheda
+            </Button>
+          </motion.div>
+
           {/* Media: bucket images → image_url */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -443,6 +480,68 @@ export default function AddVenue() {
               </div>
             )}
           </motion.div>
+
+          <Dialog open={showPreview} onOpenChange={setShowPreview}>
+            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto bg-stone-900 border-stone-800 text-stone-100">
+              <DialogHeader>
+                <DialogTitle className="text-xl font-bold text-amber-400">
+                  Anteprima – tutti i dati inseriti
+                </DialogTitle>
+              </DialogHeader>
+              <div className="space-y-4">
+                <div>
+                  <p className="text-xs text-stone-500 mb-0.5">Nome</p>
+                  <p className="font-semibold">{formData.nome || "—"}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-stone-500 mb-0.5">Descrizione</p>
+                  <p className="text-sm text-stone-300 whitespace-pre-wrap">{formData.descrizione || "—"}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-stone-500 mb-0.5">Indirizzo</p>
+                  <p className="text-sm">{formData.indirizzo || "—"}</p>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <p className="text-xs text-stone-500 mb-0.5">Città</p>
+                    <p className="text-sm">{formData.citta || "—"}</p>
+                  </div>
+                  <div>
+                    <p className="text-xs text-stone-500 mb-0.5">Provincia</p>
+                    <p className="text-sm">{formData.provincia || "—"}</p>
+                  </div>
+                </div>
+                <div>
+                  <p className="text-xs text-stone-500 mb-0.5">Categoria</p>
+                  <p className="text-sm">
+                    {(formData.categorie || []).length > 0
+                      ? formData.categorie.map((c) => CATEGORY_LABELS[c] || c).join(", ")
+                      : "—"}
+                  </p>
+                </div>
+                <div>
+                  <p className="text-xs text-stone-500 mb-0.5">Orari</p>
+                  <p className="text-sm">{formData.orari || "—"}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-stone-500 mb-0.5">Telefono</p>
+                  <p className="text-sm">{formData.telefono || "—"}</p>
+                </div>
+                <div>
+                  <p className="text-xs text-stone-500 mb-0.5">Foto</p>
+                  {coverImageFiles.length > 0 ? (
+                    <div className="flex flex-wrap gap-2 mt-2">
+                      {coverImageFiles.map((f, i) => (
+                        <img key={i} src={URL.createObjectURL(f)} alt="" className="h-20 w-20 object-cover rounded-lg" />
+                      ))}
+                    </div>
+                  ) : (
+                    <p className="text-sm text-stone-500">Nessuna foto caricata</p>
+                  )}
+                </div>
+              </div>
+            </DialogContent>
+          </Dialog>
 
           <Button
             onClick={handleSubmit}

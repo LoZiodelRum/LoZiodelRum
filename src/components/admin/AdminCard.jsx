@@ -108,6 +108,7 @@ export default function AdminCard({ type, item, onApprove, onDelete, onClose, is
             <>
               <FIELD label="Nome" value={item.name} />
               <FIELD label="Città" value={item.city} />
+              <FIELD label="Provincia" value={item.province} />
               <FIELD label="Indirizzo" value={item.address} />
               <FIELD label="Descrizione" value={item.description} />
               <FIELD label="Telefono" value={item.phone} />
