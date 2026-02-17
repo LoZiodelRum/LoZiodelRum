@@ -3,10 +3,11 @@
  * Colonne: nome, descrizione, indirizzo, citta, provincia, categoria, orari, telefono, status, image_url, approvato.
  * NO ACCENTI: citta (senza accento) nel codice.
  * Valori predefiniti: status='pending', approvato=false.
+ * SUCCESSO: nessun redirect; alert + reset form.
  */
 import { useState, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { toast } from "@/components/ui/use-toast";
 import { createPageUrl } from "@/utils";
 import { useAppData } from "@/lib/AppDataContext";
@@ -31,25 +32,25 @@ const categories = [
   { value: "hotel_bar", label: "Hotel Bar" },
 ];
 
+const initialFormData = {
+  nome: "",
+  descrizione: "",
+  indirizzo: "",
+  citta: "",
+  provincia: "",
+  categorie: [],
+  orari: "",
+  telefono: "",
+  image_url: "",
+};
+
 export default function AddVenue() {
-  const navigate = useNavigate();
   const { addVenue, getLocalVenuesToSync, syncLocalVenuesToCloud, isSupabaseConfigured } = useAppData();
   const hasSupabase = isSupabaseConfigured?.() ?? false;
   const [syncing, setSyncing] = useState(false);
   const localToSync = getLocalVenuesToSync?.() ?? [];
 
-  const [formData, setFormData] = useState({
-    nome: "",
-    descrizione: "",
-    indirizzo: "",
-    citta: "",
-    provincia: "",
-    categorie: [],
-    orari: "",
-    telefono: "",
-    image_url: "",
-  });
-
+  const [formData, setFormData] = useState(initialFormData);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
   const [status, setStatus] = useState(null);
@@ -71,30 +72,16 @@ export default function AddVenue() {
     return () => clearTimeout(t);
   }, [status]);
 
-  const initialFormData = {
-    nome: "",
-    descrizione: "",
-    indirizzo: "",
-    citta: "",
-    provincia: "",
-    categorie: [],
-    orari: "",
-    telefono: "",
-    image_url: "",
-  };
-
   const createVenueMutation = useMutation({
     mutationFn: (venueData) => addVenue(venueData),
-    onSuccess: (data) => {
+    onSuccess: () => {
       setIsSubmitting(false);
       setStatus("success");
       setFormData(initialFormData);
       setCoverImageFiles([]);
       setErrors({});
       setUploadProgress({ current: 0, total: 0 });
-      if (!data.pending) {
-        navigate(createPageUrl(`VenueDetail?id=${data.id}`));
-      }
+      alert("Locale salvato con successo!");
     },
     onError: (err) => {
       setIsSubmitting(false);
@@ -163,7 +150,7 @@ export default function AddVenue() {
     if (hasSupabase && isSupabaseConfigured?.()) {
       try {
         console.log("Dati inviati:", venueData);
-        const { data, error } = await supabase.from("Locali").insert([venueData]).select().single();
+        const { error } = await supabase.from("Locali").insert([venueData]);
         if (error) {
           const msg = error.message || error.details || JSON.stringify(error);
           console.error("[AddVenue] Supabase error:", error);
@@ -179,9 +166,7 @@ export default function AddVenue() {
         setCoverImageFiles([]);
         setErrors({});
         setUploadProgress({ current: 0, total: 0 });
-        if (data?.id) {
-          navigate(createPageUrl(`VenueDetail?id=${data.id}`));
-        }
+        alert("Locale salvato con successo!");
       } catch (err) {
         const msg = err?.message || err?.error_description || String(err);
         console.error("[AddVenue] Errore:", err);
@@ -214,7 +199,7 @@ export default function AddVenue() {
       <div className="max-w-2xl mx-auto">
         {status === "success" && (
           <div className="mb-6 p-6 rounded-xl bg-green-600 border-2 border-green-400 text-white text-center font-bold text-xl">
-            INVIO COMPLETATO
+            Locale salvato con successo!
           </div>
         )}
         {status === "error" && (
