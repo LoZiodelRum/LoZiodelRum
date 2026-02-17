@@ -82,6 +82,7 @@ export async function insertLocali(venueData) {
     telefono: venueData.phone || venueData.telefono || "",
     image_url: venueData.cover_image || venueData.image_url || null,
     status: venueData.status || "pending",
+    approvato: venueData.status === "approved" || venueData.approvato === true,
   };
   const { data, error } = await supabase.from(TABLE_LOCALI).insert(row).select().single();
   if (error) {

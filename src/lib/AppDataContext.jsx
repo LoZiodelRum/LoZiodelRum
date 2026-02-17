@@ -62,23 +62,23 @@ export function AppDataProvider({ children }) {
     return {
     id: String(row.id),
     supabase_id: String(row.id),
-    name: row.nome || "",
-    city: row.citta || "",
+    name: row.nome || row.name || "",
+    city: row.citta || row.city || "",
     province: row.provincia || "",
-    country: row.paese || "Italia",
-    address: row.indirizzo || "",
-    description: row.descrizione || "",
-    cover_image: row.image_url || "",
+    country: row.paese || row.country || "Italia",
+    address: row.indirizzo || row.address || "",
+    description: row.descrizione || row.description || "",
+    cover_image: row.image_url || row.cover_image || "",
     video_url: row.video_url || null,
     category: categories[0] || "cocktail_bar",
     categories,
     price_range: row.price_range || "€€",
-    phone: row.telefono || "",
-    website: row.sito || "",
+    phone: row.telefono || row.phone || "",
+    website: row.sito || row.website || "",
     instagram: row.instagram || "",
-    opening_hours: row.orari || "",
-    latitude: row.latitudine != null ? parseFloat(row.latitudine) : null,
-    longitude: row.longitudine != null ? parseFloat(row.longitudine) : null,
+    opening_hours: row.orari || row.opening_hours || "",
+    latitude: (row.latitudine ?? row.latitude) != null ? parseFloat(row.latitudine ?? row.latitude) : null,
+    longitude: (row.longitudine ?? row.longitude) != null ? parseFloat(row.longitudine ?? row.longitude) : null,
     status,
     approvato,
     _cloudPending: !isApproved,
@@ -115,7 +115,7 @@ export function AppDataProvider({ children }) {
     if (isSupabaseConfigured()) reloadPgrstSchema();
   }, []);
 
-  // Fetch iniziale: venues da Locali (Supabase), reviews, bartenders – SORGENTE UNICA
+  // Fetch iniziale: venues da Locali E venues_cloud (Il Cantiere da mobile può essere in venues_cloud)
   useEffect(() => {
     if (!isSupabaseConfigured()) {
       setVenues([]);
@@ -123,9 +123,15 @@ export function AppDataProvider({ children }) {
       setBartenders([]);
       return;
     }
-    supabase.from(TABLE_LOCALI).select("*").or("status.eq.approved,approvato.eq.true").then(({ data }) => {
-      const list = (data || []).map((r) => mapLocaliToVenue(r));
-      setVenues(list);
+    Promise.all([
+      supabase.from(TABLE_LOCALI).select("*").or("status.eq.approved,approvato.eq.true"),
+      supabase.from("venues_cloud").select("*").eq("status", "approved"),
+    ]).then(([localiRes, vcRes]) => {
+      const locali = (localiRes.data || []).map((r) => mapLocaliToVenue(r));
+      const vc = (vcRes.data || []).map((r) => mapLocaliToVenue(r));
+      const ids = new Set(locali.map((v) => v.id));
+      const merged = [...locali, ...vc.filter((v) => !ids.has(v.id))];
+      setVenues(merged);
     }).catch(() => setVenues([]));
 
     supabase.from("reviews_cloud").select("*").eq("status", "approved").order("created_at", { ascending: false }).then(({ data, error }) => {
@@ -734,25 +740,45 @@ export function AppDataProvider({ children }) {
       },
       getPendingVenuesFromCloud: async () => {
         if (!isSupabaseConfigured()) return [];
-        const { data } = await supabase.from(TABLE_LOCALI).select("*").eq("status", "pending").order("created_at", { ascending: false });
-        return (data || []).map(mapLocaliToVenue);
+        const [localiRes, vcRes] = await Promise.all([
+          supabase.from(TABLE_LOCALI).select("*").eq("status", "pending").order("created_at", { ascending: false }),
+          supabase.from("venues_cloud").select("*").eq("status", "pending").order("created_at", { ascending: false }),
+        ]);
+        const locali = (localiRes.data || []).map(mapLocaliToVenue);
+        const vc = (vcRes.data || []).map(mapLocaliToVenue);
+        const ids = new Set(locali.map((v) => v.id));
+        return [...locali, ...vc.filter((v) => !ids.has(v.id))];
       },
       approveVenueCloud: async (id, extra = {}) => {
         if (!isSupabaseConfigured()) return;
-        const update = { approvato: true, status: "approved", ...(extra.latitude != null && { latitudine: extra.latitude }), ...(extra.longitude != null && { longitudine: extra.longitude }) };
-        await supabase.from(TABLE_LOCALI).update(update).eq("id", id);
-        const { data } = await supabase.from(TABLE_LOCALI).select("*").or("status.eq.approved,approvato.eq.true");
-        const list = (data || []).map(mapLocaliToVenue);
+        await Promise.all([
+          supabase.from(TABLE_LOCALI).update({ approvato: true, status: "approved", ...(extra.latitude != null && { latitudine: extra.latitude }), ...(extra.longitude != null && { longitudine: extra.longitude }) }).eq("id", id),
+          supabase.from("venues_cloud").update({ status: "approved", ...(extra.latitude != null && { latitude: extra.latitude }), ...(extra.longitude != null && { longitude: extra.longitude }) }).eq("id", id),
+        ]);
+        const [localiRes, vcRes] = await Promise.all([
+          supabase.from(TABLE_LOCALI).select("*").or("status.eq.approved,approvato.eq.true"),
+          supabase.from("venues_cloud").select("*").eq("status", "approved"),
+        ]);
+        const locali = (localiRes.data || []).map(mapLocaliToVenue);
+        const vc = (vcRes.data || []).map(mapLocaliToVenue);
+        const ids = new Set(locali.map((v) => v.id));
+        const list = [...locali, ...vc.filter((v) => !ids.has(v.id))];
         setVenues((prev) => list.length > 0 ? list : prev.filter((v) => v.id !== id));
       },
       rejectVenueCloud: async (id) => {
         if (!isSupabaseConfigured()) return;
-        await supabase.from(TABLE_LOCALI).update({ status: "rejected" }).eq("id", id);
+        const [r1, r2] = await Promise.all([
+          supabase.from(TABLE_LOCALI).update({ status: "rejected" }).eq("id", id),
+          supabase.from("venues_cloud").update({ status: "rejected" }).eq("id", id),
+        ]);
         setVenues((prev) => prev.filter((v) => v.id !== id));
       },
       deleteVenueCloud: async (id) => {
         if (!isSupabaseConfigured()) return;
-        await supabase.from(TABLE_LOCALI).delete().eq("id", id);
+        await Promise.all([
+          supabase.from(TABLE_LOCALI).delete().eq("id", id),
+          supabase.from("venues_cloud").delete().eq("id", id),
+        ]);
         setVenues((prev) => prev.filter((v) => v.id !== id));
       },
       deleteAppUser: async (id) => {

@@ -1,7 +1,6 @@
 /**
- * AdminDashboard – ZERO dati statici. NESSUN import da venues.js o file locali.
- * Stato iniziale: useState([]). Fetch SOLO da supabase.from('Locali').select('*').
- * approvato: letto dal DB, mai sovrascritto.
+ * AdminDashboard – Legge da Locali E venues_cloud (Il Cantiere da mobile può essere in venues_cloud).
+ * approvato/status: letto dal DB, mai sovrascritto. Persistenza su update.
  */
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
@@ -26,9 +25,38 @@ const CATEGORY_LABELS = {
   hotel_bar: "Hotel Bar",
 };
 
+/** Normalizza riga Locali (nome, citta) o venues_cloud (name, city) in formato unico */
+function normalizeRow(row, source) {
+  const isLocali = source === "Locali";
+  return {
+    id: String(row.id),
+    nome: isLocali ? (row.nome || "") : (row.name || ""),
+    citta: isLocali ? (row.citta || "") : (row.city || ""),
+    provincia: row.provincia || null,
+    paese: isLocali ? (row.paese || "Italia") : (row.country || "Italia"),
+    indirizzo: isLocali ? (row.indirizzo || "") : (row.address || ""),
+    descrizione: isLocali ? (row.descrizione || "") : (row.description || ""),
+    categoria: row.categoria || row.category || "cocktail_bar",
+    image_url: row.image_url || row.cover_image || "",
+    telefono: row.telefono || row.phone || "",
+    orari: row.orari || row.opening_hours || "",
+    sito: row.sito || row.website || "",
+    instagram: row.instagram || "",
+    price_range: row.price_range || "€€",
+    latitudine: row.latitudine ?? row.latitude ?? null,
+    longitudine: row.longitudine ?? row.longitude ?? null,
+    video_url: row.video_url || null,
+    slug: row.slug || null,
+    status: row.status || "pending",
+    approvato: row.approvato === true || String(row.status || "").toLowerCase() === "approved",
+    created_at: row.created_at,
+    _source: source,
+  };
+}
+
 function rowToDisplay(row) {
   const catRaw = row.categoria || "cocktail_bar";
-  const categories = catRaw ? catRaw.split(",").map((s) => s.trim()).filter(Boolean) : ["cocktail_bar"];
+  const categories = catRaw ? String(catRaw).split(",").map((s) => s.trim()).filter(Boolean) : ["cocktail_bar"];
   return {
     id: String(row.id),
     name: row.nome || "",
@@ -55,9 +83,12 @@ function rowToDisplay(row) {
   };
 }
 
-/** Legge approvato dal DB. NON sovrascrive. Se DB dice true → locale approvato. */
 function isApprovedFromDb(row) {
   return row.approvato === true || String(row.status || "").toLowerCase() === "approved";
+}
+
+function getTable(row) {
+  return row._source === "venues_cloud" ? "venues_cloud" : "Locali";
 }
 
 export default function AdminDashboard() {
@@ -73,21 +104,33 @@ export default function AdminDashboard() {
     setLoading(true);
     setLoadError(null);
     try {
-      const { data, error } = await supabase.from("Locali").select("*").order("created_at", { ascending: false });
+      const [localiRes, venuesCloudRes] = await Promise.all([
+        supabase.from("Locali").select("*").order("created_at", { ascending: false }),
+        supabase.from("venues_cloud").select("*").order("created_at", { ascending: false }),
+      ]);
 
-      if (error) {
-        console.error("[AdminDashboard] Errore Supabase:", error);
-        throw error;
+      if (localiRes.error) {
+        console.error("[AdminDashboard] Errore Locali:", localiRes.error);
+        throw localiRes.error;
       }
 
-      console.log("DATI DA SUPABASE:", data);
+      const localiList = Array.isArray(localiRes.data) ? localiRes.data : [];
+      const vcList = Array.isArray(venuesCloudRes?.data) ? venuesCloudRes.data : [];
+      if (venuesCloudRes?.error) {
+        console.warn("[AdminDashboard] venues_cloud non disponibile:", venuesCloudRes.error);
+      }
 
-      const list = Array.isArray(data) ? data : [];
-      setVenues(list);
+      const localiNorm = localiList.map((r) => normalizeRow(r, "Locali"));
+      const vcNorm = vcList.map((r) => normalizeRow(r, "venues_cloud"));
+      const localiIds = new Set(localiNorm.map((r) => r.id));
+      const merged = [...localiNorm, ...vcNorm.filter((r) => !localiIds.has(r.id))];
 
-      const hasIlCantiere = list.some((r) => String(r.nome || "").toLowerCase().includes("cantiere"));
-      if (!hasIlCantiere && list.length > 0) {
-        console.error("[AdminDashboard] 'Il Cantiere' NON in lista. Totale:", list.length, "| Nomi:", list.map((r) => r.nome));
+      setVenues(merged);
+
+      console.log("DATI DA SUPABASE Locali:", localiList.length, "venues_cloud:", vcList.length, "totale:", merged.length);
+      const hasIlCantiere = merged.some((r) => String(r.nome || "").toLowerCase().includes("cantiere"));
+      if (!hasIlCantiere && merged.length > 0) {
+        console.warn("[AdminDashboard] 'Il Cantiere' non in lista. Nomi:", merged.map((r) => r.nome));
       }
 
       const { data: regs, error: errRegs } = await supabase.from(TABLE_APP_USERS).select("*").eq("status", "pending").order("created_at", { ascending: false });
@@ -109,13 +152,27 @@ export default function AdminDashboard() {
   useVenuesRealtime(loadData, loadData, loadData);
   useAppUsersRealtime(null, loadData, loadData, loadData);
 
+  const updateVenue = async (row, update) => {
+    const table = getTable(row);
+    const payload = table === "Locali"
+      ? { ...update, approvato: update.status === "approved", status: update.status }
+      : { status: update.status };
+    const { error } = await supabase.from(table).update(payload).eq("id", row.id);
+    if (error) throw error;
+  };
+
+  const deleteVenue = async (row) => {
+    const table = getTable(row);
+    const { error } = await supabase.from(table).delete().eq("id", row.id);
+    if (error) throw error;
+  };
+
   const handleStatusToggle = async (row) => {
     const currentlyApproved = isApprovedFromDb(row);
-    const update = currentlyApproved ? { approvato: false, status: "pending" } : { approvato: true, status: "approved" };
+    const update = currentlyApproved ? { status: "pending" } : { status: "approved" };
     setUpdatingId(row.id);
     try {
-      const { error } = await supabase.from("Locali").update(update).eq("id", row.id);
-      if (error) throw error;
+      await updateVenue(row, update);
       toast({ title: update.status === "approved" ? "Locale approvato" : "Locale in attesa" });
       await loadData();
     } catch (err) {
@@ -129,8 +186,7 @@ export default function AdminDashboard() {
     if (!confirm(`Eliminare definitivamente "${row.nome}"?`)) return;
     setUpdatingId(row.id);
     try {
-      const { error } = await supabase.from("Locali").delete().eq("id", row.id);
-      if (error) throw error;
+      await deleteVenue(row);
       toast({ title: "Locale eliminato" });
       setSelected(null);
       await loadData();
@@ -144,14 +200,15 @@ export default function AdminDashboard() {
   const handleApprove = async (item, extra = {}) => {
     try {
       if (selected?.type === "venue") {
-        const update = {
-          approvato: true,
-          status: "approved",
-          ...(extra.latitude != null && { latitudine: extra.latitude }),
-          ...(extra.longitude != null && { longitudine: extra.longitude }),
-        };
-        const { error } = await supabase.from("Locali").update(update).eq("id", item.id);
-        if (error) throw error;
+        const row = venues.find((r) => String(r.id) === String(item.id));
+        if (row) {
+          const table = getTable(row);
+          const payload = table === "Locali"
+            ? { approvato: true, status: "approved", ...(extra.latitude != null && { latitudine: extra.latitude }), ...(extra.longitude != null && { longitudine: extra.longitude }) }
+            : { status: "approved", ...(extra.latitude != null && { latitude: extra.latitude }), ...(extra.longitude != null && { longitude: extra.longitude }) };
+          const { error } = await supabase.from(table).update(payload).eq("id", item.id);
+          if (error) throw error;
+        }
         toast({ title: "Locale approvato" });
       } else {
         const { error } = await supabase.from(TABLE_APP_USERS).update({ status: "approved" }).eq("id", item.id);
@@ -169,8 +226,8 @@ export default function AdminDashboard() {
     if (!confirm("Eliminare definitivamente questo record?")) return;
     try {
       if (selected?.type === "venue") {
-        const { error } = await supabase.from("Locali").delete().eq("id", item.id);
-        if (error) throw error;
+        const row = venues.find((r) => String(r.id) === String(item.id));
+        if (row) await deleteVenue(row);
         toast({ title: "Locale eliminato" });
       } else if (selected?.type === "bartender" || selected?.type === "user") {
         const { error } = await supabase.from(TABLE_APP_USERS).delete().eq("id", item.id);
@@ -208,7 +265,7 @@ export default function AdminDashboard() {
           </Link>
           <div>
             <h1 className="text-2xl md:text-3xl font-bold">Admin – Verifica profili</h1>
-            <p className="text-stone-500">Solo Supabase · Tabella: Locali · Nessun dato statico</p>
+            <p className="text-stone-500">Locali + venues_cloud · approvato persistente</p>
           </div>
           <Button variant="outline" size="sm" onClick={loadData} disabled={loading} className="ml-auto">
             <RefreshCw className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`} />
@@ -258,7 +315,7 @@ export default function AdminDashboard() {
               </p>
               {venues.length === 0 ? (
                 <p className="text-stone-500 py-4">
-                  {!loadError ? "Nessun locale nella tabella Locali." : "Impossibile caricare."}
+                  {!loadError ? "Nessun locale." : "Impossibile caricare."}
                 </p>
               ) : (
                 <div className="space-y-3">
@@ -269,14 +326,14 @@ export default function AdminDashboard() {
                     const catLabel = (d.categories || [d.category]).filter(Boolean).map((c) => CATEGORY_LABELS[c] || c).join(", ") || "—";
                     return (
                       <div
-                        key={row.id}
+                        key={`${row._source}-${row.id}`}
                         className="p-4 rounded-xl bg-stone-800/30 border border-stone-700/50 flex flex-col sm:flex-row sm:items-center gap-4"
                       >
                         <div className="flex-1 min-w-0">
                           <p className="font-semibold truncate">{row.nome || "—"}</p>
                           <p className="text-sm text-stone-500">{row.citta || "—"}{row.provincia ? ` (${row.provincia})` : ""}</p>
                           {row.indirizzo && <p className="text-xs text-stone-500 truncate">{row.indirizzo}</p>}
-                          <p className="text-xs text-stone-500 mt-0.5">{catLabel}</p>
+                          <p className="text-xs text-stone-500 mt-0.5">{catLabel} {row._source === "venues_cloud" && <span className="text-amber-400">(mobile)</span>}</p>
                         </div>
                         <div className="flex items-center gap-2 flex-shrink-0">
                           <span
