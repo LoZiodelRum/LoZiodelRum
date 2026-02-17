@@ -11,15 +11,8 @@ import { Textarea } from "@/components/ui/textarea";
 import { Link, useNavigate } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { useAppData } from "@/lib/AppDataContext";
-import { insertAppUser } from "@/lib/supabaseUsers";
+import { insertAppUser, insertLocali } from "@/lib/supabaseUsers";
 import { uploadMultipleToSupabaseStorage, urlsToDbString } from "@/lib/supabaseStorage";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 
 // Sfondi in tema rum/cocktail/bar
 const BG = {
@@ -43,14 +36,17 @@ const isAdminPasswordOk = (p) => {
 };
 
 export default function Community() {
-  const { user, setUser, getVenues } = useAppData();
+  const { user, setUser } = useAppData();
   const navigate = useNavigate();
-  const venues = getVenues();
   const [regName, setRegName] = useState("");
   const [regRole, setRegRole] = useState("");
   const [regPassword, setRegPassword] = useState("");
   const [regEmail, setRegEmail] = useState("");
-  const [regVenueIds, setRegVenueIds] = useState([]);
+  const [regVenueName, setRegVenueName] = useState("");
+  const [regVenueAddress, setRegVenueAddress] = useState("");
+  const [regVenueCity, setRegVenueCity] = useState("");
+  const [regVenueProvince, setRegVenueProvince] = useState("");
+  const [regVenueCountry, setRegVenueCountry] = useState("");
   const [regBioLight, setRegBioLight] = useState("");
   const [regHomeCity, setRegHomeCity] = useState("");
   const [regImageFiles, setRegImageFiles] = useState([]);
@@ -92,19 +88,41 @@ export default function Community() {
       }
     }
     setUploadProgress({ current: 0, total: 0 });
+    let venueIds = null;
+    if (regRole === "proprietario" && (regVenueName || "").trim()) {
+      try {
+        const inserted = await insertLocali({
+          name: (regVenueName || "").trim(),
+          address: (regVenueAddress || "").trim() || null,
+          city: (regVenueCity || "").trim() || null,
+          province: (regVenueProvince || "").trim() || null,
+          country: (regVenueCountry || "").trim() || "Italia",
+          status: "pending",
+        });
+        venueIds = inserted?.id ? [inserted.id] : null;
+      } catch (err) {
+        setRegError(err?.message || "Errore creazione locale. Riprova.");
+        setIsSubmitting(false);
+        return;
+      }
+    }
     const userPayload = {
       name,
       email: regRole === "proprietario" ? (regEmail || "").trim() || null : "",
       role: regRole,
       roleLabel: roleConfig?.label || regRole,
-      ...(regRole === "proprietario" && { venue_ids: regVenueIds, image_url: imageUrl }),
+      ...(regRole === "proprietario" && { venue_ids: venueIds, image_url: imageUrl }),
       ...(regRole === "user" && { bio_light: (regBioLight || "").trim() || null, home_city: (regHomeCity || "").trim() || null, image_url: imageUrl }),
     };
     setRegName("");
     setRegRole("");
     setRegPassword("");
     setRegEmail("");
-    setRegVenueIds([]);
+    setRegVenueName("");
+    setRegVenueAddress("");
+    setRegVenueCity("");
+    setRegVenueProvince("");
+    setRegVenueCountry("");
     setRegBioLight("");
     setRegHomeCity("");
     setRegImageFiles([]);
@@ -299,23 +317,40 @@ export default function Community() {
                     />
                   </div>
                   <div>
-                    <Label className="block text-sm font-medium text-stone-200 mb-2">Locali di cui sei proprietario</Label>
-                    <Select
-                      value={regVenueIds[0] || ""}
-                      onValueChange={(v) => setRegVenueIds(v ? [v] : [])}
-                    >
-                      <SelectTrigger className="bg-stone-800 border-stone-600 text-stone-100">
-                        <SelectValue placeholder="Seleziona un locale (opzionale)" />
-                      </SelectTrigger>
-                      <SelectContent className="bg-stone-900 border-stone-800">
-                        {venues.map((v) => (
-                          <SelectItem key={v.id} value={v.id}>
-                            {v.name} - {v.city}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                    <p className="text-xs text-stone-500 mt-1">Associa il tuo profilo a un locale</p>
+                    <Label className="block text-sm font-medium text-stone-200 mb-2">Il tuo locale</Label>
+                    <p className="text-xs text-stone-500 mb-2">Nome locale, indirizzo, città, provincia e nazione</p>
+                    <Input
+                      value={regVenueName}
+                      onChange={(e) => setRegVenueName(e.target.value)}
+                      placeholder="Nome locale *"
+                      className="bg-stone-800 border-stone-600 text-stone-100 placeholder:text-stone-500 mb-2"
+                    />
+                    <Input
+                      value={regVenueAddress}
+                      onChange={(e) => setRegVenueAddress(e.target.value)}
+                      placeholder="Indirizzo"
+                      className="bg-stone-800 border-stone-600 text-stone-100 placeholder:text-stone-500 mb-2"
+                    />
+                    <div className="grid grid-cols-2 gap-2">
+                      <Input
+                        value={regVenueCity}
+                        onChange={(e) => setRegVenueCity(e.target.value)}
+                        placeholder="Città"
+                        className="bg-stone-800 border-stone-600 text-stone-100 placeholder:text-stone-500"
+                      />
+                      <Input
+                        value={regVenueProvince}
+                        onChange={(e) => setRegVenueProvince(e.target.value)}
+                        placeholder="Provincia"
+                        className="bg-stone-800 border-stone-600 text-stone-100 placeholder:text-stone-500"
+                      />
+                    </div>
+                    <Input
+                      value={regVenueCountry}
+                      onChange={(e) => setRegVenueCountry(e.target.value)}
+                      placeholder="Nazione"
+                      className="bg-stone-800 border-stone-600 text-stone-100 placeholder:text-stone-500 mt-2"
+                    />
                   </div>
                 </div>
               )}

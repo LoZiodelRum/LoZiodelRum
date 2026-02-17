@@ -76,6 +76,7 @@ export async function insertLocali(venueData) {
     indirizzo: venueData.address || venueData.indirizzo || "",
     citta: venueData.city || venueData.citta || "",
     provincia: venueData.province || venueData.provincia || null,
+    paese: venueData.country || venueData.paese || "Italia",
     categoria: venueData.category || venueData.categoria || "cocktail_bar",
     orari: venueData.opening_hours || venueData.orari || "",
     telefono: venueData.phone || venueData.telefono || "",
