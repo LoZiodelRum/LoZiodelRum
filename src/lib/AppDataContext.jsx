@@ -115,7 +115,7 @@ export function AppDataProvider({ children }) {
     if (isSupabaseConfigured()) reloadPgrstSchema();
   }, []);
 
-  // Fetch iniziale: venues da Locali E venues_cloud (Il Cantiere da mobile può essere in venues_cloud)
+  // Fetch iniziale: venues solo da Locali (approvati)
   useEffect(() => {
     if (!isSupabaseConfigured()) {
       setVenues([]);
@@ -123,16 +123,13 @@ export function AppDataProvider({ children }) {
       setBartenders([]);
       return;
     }
-    Promise.all([
-      supabase.from(TABLE_LOCALI).select("*").or("status.eq.approved,approvato.eq.true"),
-      supabase.from("venues_cloud").select("*").eq("status", "approved"),
-    ]).then(([localiRes, vcRes]) => {
-      const locali = (localiRes.data || []).map((r) => mapLocaliToVenue(r));
-      const vc = (vcRes.data || []).map((r) => mapLocaliToVenue(r));
-      const ids = new Set(locali.map((v) => v.id));
-      const merged = [...locali, ...vc.filter((v) => !ids.has(v.id))];
-      setVenues(merged);
-    }).catch(() => setVenues([]));
+    supabase.from(TABLE_LOCALI).select("*").or("status.eq.approved,approvato.eq.true")
+      .then(({ data, error }) => {
+        if (error) throw error;
+        const list = (data || []).map((r) => mapLocaliToVenue(r));
+        setVenues(list);
+      })
+      .catch(() => setVenues([]));
 
     supabase.from("reviews_cloud").select("*").eq("status", "approved").order("created_at", { ascending: false }).then(({ data, error }) => {
       if (!error && data && Array.isArray(data)) {
@@ -740,45 +737,30 @@ export function AppDataProvider({ children }) {
       },
       getPendingVenuesFromCloud: async () => {
         if (!isSupabaseConfigured()) return [];
-        const [localiRes, vcRes] = await Promise.all([
-          supabase.from(TABLE_LOCALI).select("*").eq("status", "pending").order("created_at", { ascending: false }),
-          supabase.from("venues_cloud").select("*").eq("status", "pending").order("created_at", { ascending: false }),
-        ]);
-        const locali = (localiRes.data || []).map(mapLocaliToVenue);
-        const vc = (vcRes.data || []).map(mapLocaliToVenue);
-        const ids = new Set(locali.map((v) => v.id));
-        return [...locali, ...vc.filter((v) => !ids.has(v.id))];
+        const { data, error } = await supabase.from(TABLE_LOCALI).select("*").eq("status", "pending").order("created_at", { ascending: false });
+        if (error) return [];
+        return (data || []).map(mapLocaliToVenue);
       },
       approveVenueCloud: async (id, extra = {}) => {
         if (!isSupabaseConfigured()) return;
-        await Promise.all([
-          supabase.from(TABLE_LOCALI).update({ approvato: true, status: "approved", ...(extra.latitude != null && { latitudine: extra.latitude }), ...(extra.longitude != null && { longitudine: extra.longitude }) }).eq("id", id),
-          supabase.from("venues_cloud").update({ status: "approved", ...(extra.latitude != null && { latitude: extra.latitude }), ...(extra.longitude != null && { longitude: extra.longitude }) }).eq("id", id),
-        ]);
-        const [localiRes, vcRes] = await Promise.all([
-          supabase.from(TABLE_LOCALI).select("*").or("status.eq.approved,approvato.eq.true"),
-          supabase.from("venues_cloud").select("*").eq("status", "approved"),
-        ]);
-        const locali = (localiRes.data || []).map(mapLocaliToVenue);
-        const vc = (vcRes.data || []).map(mapLocaliToVenue);
-        const ids = new Set(locali.map((v) => v.id));
-        const list = [...locali, ...vc.filter((v) => !ids.has(v.id))];
+        await supabase.from(TABLE_LOCALI).update({
+          approvato: true,
+          status: "approved",
+          ...(extra.latitude != null && { latitudine: extra.latitude }),
+          ...(extra.longitude != null && { longitudine: extra.longitude }),
+        }).eq("id", id);
+        const { data } = await supabase.from(TABLE_LOCALI).select("*").or("status.eq.approved,approvato.eq.true");
+        const list = (data || []).map(mapLocaliToVenue);
         setVenues((prev) => list.length > 0 ? list : prev.filter((v) => v.id !== id));
       },
       rejectVenueCloud: async (id) => {
         if (!isSupabaseConfigured()) return;
-        const [r1, r2] = await Promise.all([
-          supabase.from(TABLE_LOCALI).update({ status: "rejected" }).eq("id", id),
-          supabase.from("venues_cloud").update({ status: "rejected" }).eq("id", id),
-        ]);
+        await supabase.from(TABLE_LOCALI).update({ status: "rejected" }).eq("id", id);
         setVenues((prev) => prev.filter((v) => v.id !== id));
       },
       deleteVenueCloud: async (id) => {
         if (!isSupabaseConfigured()) return;
-        await Promise.all([
-          supabase.from(TABLE_LOCALI).delete().eq("id", id),
-          supabase.from("venues_cloud").delete().eq("id", id),
-        ]);
+        await supabase.from(TABLE_LOCALI).delete().eq("id", id);
         setVenues((prev) => prev.filter((v) => v.id !== id));
       },
       deleteAppUser: async (id) => {
