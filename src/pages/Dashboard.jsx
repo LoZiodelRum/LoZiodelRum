@@ -614,7 +614,7 @@ export default function Dashboard() {
                             const extra = {};
                             if (lat != null && !isNaN(lat)) extra.latitude = lat;
                             if (lng != null && !isNaN(lng)) extra.longitude = lng;
-                            await approveVenueCloud(venue.id, extra);
+                            await approveVenueCloud(venue.id, extra, venue._source);
                             loadCloudPending();
                             toast.success("Locale approvato: ora è visibile a tutti");
                           }}
@@ -628,7 +628,7 @@ export default function Dashboard() {
                           className="border-red-500/50 text-red-400 hover:bg-red-500/10"
                           onClick={async () => {
                             if (confirm("Rifiutare questo locale? Non sarà visibile in app.")) {
-                              await rejectVenueCloud(venue.id);
+                              await rejectVenueCloud(venue.id, venue._source);
                               loadCloudPending();
                               toast.success("Locale rifiutato");
                             }
@@ -801,7 +801,7 @@ export default function Dashboard() {
                       onClick={async () => {
                         if (!confirm(`Eliminare "${venue.name}"?`)) return;
                         if (venue.supabase_id && isSupabaseConfigured()) {
-                          await rejectVenueCloud(venue.supabase_id);
+                          await rejectVenueCloud(venue.supabase_id, venue._source);
                           toast.success("Locale eliminato");
                         } else {
                           deleteVenue(venue.id);

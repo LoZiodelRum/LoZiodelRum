@@ -63,7 +63,7 @@ export default function AdminDashboard() {
   const handleApprove = async (item) => {
     try {
       if (selected?.type === "venue") {
-        await approveVenueCloud?.(item.id);
+        await approveVenueCloud?.(item.id, {}, item._source);
         toast({ title: "Locale approvato" });
       } else {
         await updateAppUserStatus?.(item.id, "approved");
@@ -80,7 +80,7 @@ export default function AdminDashboard() {
     if (!confirm("Eliminare definitivamente questo record?")) return;
     try {
       if (selected?.type === "venue") {
-        await deleteVenueCloud?.(item.id);
+        await deleteVenueCloud?.(item.id, item._source);
         toast({ title: "Locale eliminato" });
       } else if (selected?.type === "bartender") {
         await deleteBartender?.(item.id);

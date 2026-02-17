@@ -4,3 +4,4 @@
  */
 export const TABLE_APP_USERS = "app_users";
 export const TABLE_VENUES_CLOUD = "venues_cloud";
+export const TABLE_LOCALI = "Locali";

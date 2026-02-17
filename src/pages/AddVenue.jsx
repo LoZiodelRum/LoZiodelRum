@@ -2,8 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "@/components/ui/use-toast";
 import { createPageUrl } from "@/utils";
-import { useMutation } from "@tanstack/react-query";
 import { useAppData } from "@/lib/AppDataContext";
+import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { 
   ChevronLeft, 
   MapPin, 
@@ -171,7 +171,7 @@ export default function AddVenue() {
     if (Object.keys(next).length > 0) return;
 
     setIsSubmitting(true);
-    let coverImageUrl = formData.cover_image || "";
+    let imageUrl = formData.cover_image || "";
     let videoUrl = "";
 
     if (hasSupabase) {
@@ -182,7 +182,7 @@ export default function AddVenue() {
             "",
             (current, total) => setUploadProgress({ current, total })
           );
-          coverImageUrl = urlsToDbString(urls);
+          imageUrl = urlsToDbString(urls) || (urls[0] ?? "");
         }
         setUploadProgress({ current: 0, total: 0 });
         if (videoFile) {
@@ -190,7 +190,9 @@ export default function AddVenue() {
         }
       } catch (err) {
         setStatus("error");
-        setErrors((prev) => ({ ...prev, _form: err?.message || "Errore caricamento file" }));
+        const msg = err?.message || err?.error_description || "Errore caricamento file";
+        setErrors((prev) => ({ ...prev, _form: msg }));
+        alert(`Errore upload: ${msg}`);
         setIsSubmitting(false);
         setUploadProgress({ current: 0, total: 0 });
         return;
@@ -198,30 +200,81 @@ export default function AddVenue() {
     }
 
     const slug = formData.name.toLowerCase()
-      .replace(/[^a-z0-9]+/g, '-')
-      .replace(/(^-|-$)/g, '');
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/(^-|-$)/g, "");
 
-    createVenueMutation.mutate({
-      name: formData.name,
-      slug,
-      description: formData.description || "",
-      city: formData.city,
-      country: formData.country || "Italia",
-      address: formData.address || "",
-      categories: formData.categories,
-      category: formData.categories?.[0] || "cocktail_bar",
-      price_range: formData.price_range || "€€",
-      phone: formData.phone || "",
-      website: formData.website || "",
-      instagram: formData.instagram || "",
-      opening_hours: formData.opening_hours || "",
-      latitude: formData.latitude ?? null,
-      longitude: formData.longitude ?? null,
-      cover_image: coverImageUrl,
-      video_url: videoUrl || null,
-      featured: false,
-      verified: hasSupabase,
-    });
+    if (hasSupabase && isSupabaseConfigured?.()) {
+      try {
+        const row = {
+          nome: formData.name?.trim() || "",
+          indirizzo: formData.address || "",
+          descrizione: formData.description || "",
+          categoria: formData.categories?.[0] || "cocktail_bar",
+          image_url: imageUrl || null,
+          telefono: formData.phone || "",
+          orari: formData.opening_hours || "",
+          citta: formData.city || "",
+          paese: formData.country || "Italia",
+          sito: formData.website || "",
+          instagram: formData.instagram || "",
+          slug: slug || null,
+          price_range: formData.price_range || "€€",
+          latitudine: formData.latitude ?? null,
+          longitudine: formData.longitude ?? null,
+          video_url: videoUrl || null,
+          status: "pending",
+        };
+        const { data, error } = await supabase.from("Locali").insert([row]).select().single();
+        if (error) {
+          const msg = error.message || error.details || JSON.stringify(error);
+          console.error("[AddVenue] Supabase error:", error);
+          setStatus("error");
+          setErrors((prev) => ({ ...prev, _form: msg }));
+          alert(`Errore Supabase: ${msg}`);
+          setIsSubmitting(false);
+          return;
+        }
+        setIsSubmitting(false);
+        setStatus("success");
+        setFormData(initialFormData);
+        setCoverImageFiles([]);
+        setVideoFile(null);
+        setErrors({});
+        setUploadProgress({ current: 0, total: 0 });
+        if (data?.id) {
+          navigate(createPageUrl(`VenueDetail?id=${data.id}`));
+        }
+      } catch (err) {
+        const msg = err?.message || err?.error_description || String(err);
+        console.error("[AddVenue] Errore:", err);
+        setStatus("error");
+        setErrors((prev) => ({ ...prev, _form: msg }));
+        alert(`Errore invio: ${msg}`);
+        setIsSubmitting(false);
+      }
+    } else {
+      createVenueMutation.mutate({
+        name: formData.name,
+        slug,
+        description: formData.description || "",
+        city: formData.city,
+        country: formData.country || "Italia",
+        address: formData.address || "",
+        categories: formData.categories,
+        category: formData.categories?.[0] || "cocktail_bar",
+        price_range: formData.price_range || "€€",
+        phone: formData.phone || "",
+        website: formData.website || "",
+        instagram: formData.instagram || "",
+        opening_hours: formData.opening_hours || "",
+        latitude: formData.latitude ?? null,
+        longitude: formData.longitude ?? null,
+        cover_image: imageUrl,
+        video_url: videoUrl || null,
+        featured: false,
+        verified: false,
+      });
+    }
   };
 
   const isValid = formData.name && formData.city && formData.categories.length > 0;
