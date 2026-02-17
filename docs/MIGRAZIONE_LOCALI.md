@@ -23,17 +23,23 @@ Lo script:
 - **AddVenue**: inserisce direttamente in Locali
 - **venues.js**: usato solo dallo script di migrazione; l'app non lo legge più
 
-## Coordinate sulla mappa
+## Coordinate sulla mappa e sincronizzazione Base44
 
-Per mostrare i marker sulla mappa, la tabella `Locali` deve avere le colonne `latitudine` e `longitudine`.
+Per i marker sulla mappa servono le colonne `latitudine` e `longitudine` (tipo text).
 Se non esistono, esegui nel SQL Editor di Supabase:
 
 ```sql
-alter table public."Locali" add column if not exists latitudine double precision;
-alter table public."Locali" add column if not exists longitudine double precision;
+alter table public."Locali" add column if not exists latitudine text;
+alter table public."Locali" add column if not exists longitudine text;
 ```
 
-Poi aggiorna i 19 locali esistenti con le coordinate da venues.js:
+**Sincronizzazione massiva** (upsert dei 19 locali Base44 con dati completi):
+
+```bash
+npm run sync:base44
+```
+
+Oppure solo aggiornamento coordinate per locali già presenti:
 
 ```bash
 npm run update:coordinates

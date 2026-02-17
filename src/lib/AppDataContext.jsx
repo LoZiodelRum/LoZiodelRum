@@ -73,8 +73,8 @@ export function AppDataProvider({ children }) {
     website: row.sito || "",
     instagram: row.instagram || "",
     opening_hours: row.orari || "",
-    latitude: row.latitudine ?? null,
-    longitude: row.longitudine ?? null,
+    latitude: row.latitudine != null ? parseFloat(row.latitudine) : null,
+    longitude: row.longitudine != null ? parseFloat(row.longitudine) : null,
     status: row.status || "pending",
     _cloudPending: row.status === "pending",
   };

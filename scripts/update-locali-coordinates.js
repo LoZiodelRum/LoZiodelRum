@@ -74,7 +74,7 @@ async function run() {
 
     const { error } = await supabase
       .from("Locali")
-      .update({ latitudine: v.latitude, longitudine: v.longitude })
+      .update({ latitudine: String(v.latitude), longitudine: String(v.longitude) })
       .eq("id", rows[0].id);
 
     if (error) {

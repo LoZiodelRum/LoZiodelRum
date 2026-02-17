@@ -1,3 +1,3 @@
--- Aggiunge latitudine e longitudine alla tabella Locali (se non esistono)
-alter table public."Locali" add column if not exists latitudine double precision;
-alter table public."Locali" add column if not exists longitudine double precision;
+-- Aggiunge latitudine e longitudine alla tabella Locali (tipo text per compatibilità)
+alter table public."Locali" add column if not exists latitudine text;
+alter table public."Locali" add column if not exists longitudine text;

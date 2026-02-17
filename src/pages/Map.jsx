@@ -45,8 +45,16 @@ export default function MapPage() {
   const { getVenues } = useAppData();
   const venues = getVenues();
 
-  // Filter venues with coordinates
-  const mappableVenues = venues.filter(v => v.latitude && v.longitude);
+  // Marker: solo locali con latitudine e longitudine (colonne Locali)
+  const mappableVenues = venues.filter(v => {
+    const lat = v.latitude != null ? (typeof v.latitude === "string" ? parseFloat(v.latitude) : Number(v.latitude)) : NaN;
+    const lng = v.longitude != null ? (typeof v.longitude === "string" ? parseFloat(v.longitude) : Number(v.longitude)) : NaN;
+    return !isNaN(lat) && !isNaN(lng);
+  }).map(v => ({
+    ...v,
+    latitude: typeof v.latitude === "string" ? parseFloat(v.latitude) : Number(v.latitude),
+    longitude: typeof v.longitude === "string" ? parseFloat(v.longitude) : Number(v.longitude),
+  }));
   
   // Filter by search
   const filteredVenues = mappableVenues.filter(v => 
