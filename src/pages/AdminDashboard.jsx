@@ -14,7 +14,19 @@ const TABELLA = "Locali";
 export default function AdminDashboard() {
   const [locali, setLocali] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [selected, setSelected] = useState(null); 
+  const [selected, setSelected] = useState(null);
+  const [revisionImageUrl, setRevisionImageUrl] = useState("");
+  const [revisionLat, setRevisionLat] = useState("");
+  const [revisionLng, setRevisionLng] = useState("");
+
+  useEffect(() => {
+    if (selected) {
+      const urls = (selected.image_url || "").split(",").map((s) => s.trim()).filter(Boolean);
+      setRevisionImageUrl(urls[0] || "");
+      setRevisionLat(selected.latitudine != null ? String(selected.latitudine) : "");
+      setRevisionLng(selected.longitudine != null ? String(selected.longitudine) : "");
+    }
+  }, [selected?.id]);
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -31,9 +43,15 @@ export default function AdminDashboard() {
 
   useEffect(() => { loadData(); }, [loadData]);
 
-  const handleApprove = async (id) => {
+  const handleApprove = async (id, extra = {}) => {
     try {
-      const { error } = await supabase.from(TABELLA).update({ approvato: true, status: 'approved' }).eq('id', id);
+      const update = { approvato: true, status: "approved" };
+      if (extra.image_url != null && extra.image_url !== "") update.image_url = extra.image_url;
+      const lat = parseFloat(extra.latitudine ?? extra.latitude);
+      const lng = parseFloat(extra.longitudine ?? extra.longitude);
+      if (!isNaN(lat)) update.latitudine = lat;
+      if (!isNaN(lng)) update.longitudine = lng;
+      const { error } = await supabase.from(TABELLA).update(update).eq("id", id);
       if (error) throw error;
       toast({ title: "Locale approvato!" });
       setSelected(null);
@@ -88,11 +106,26 @@ export default function AdminDashboard() {
                 <X className="w-6 h-6" />
               </button>
 
-              <div className="space-y-6">
-                {selected.image_url && (
-                  <img src={selected.image_url} alt="Cover" className="w-full h-48 object-cover rounded-2xl border border-stone-800" />
-                )}
-                
+              <div className="space-y-6 overflow-y-auto max-h-[85vh] pr-2">
+                <div>
+                  <label className="block text-xs uppercase text-stone-500 font-bold mb-2">Foto di copertina (URL)</label>
+                  <input
+                    type="text"
+                    value={revisionImageUrl}
+                    onChange={(e) => setRevisionImageUrl(e.target.value)}
+                    placeholder="https://..."
+                    className="w-full px-4 py-2 bg-stone-800/50 border border-stone-700 rounded-xl text-stone-200 text-sm mb-2"
+                  />
+                  {(revisionImageUrl || selected.image_url) && (
+                    <img
+                      src={revisionImageUrl || (selected.image_url || "").split(",")[0]?.trim()}
+                      alt="Cover"
+                      className="w-full h-40 object-cover rounded-xl border border-stone-800"
+                      onError={(e) => e.target.style.display = "none"}
+                    />
+                  )}
+                </div>
+
                 <div>
                   <h2 className="text-3xl font-bold text-white mb-2">{selected.nome}</h2>
                   <p className="text-amber-500 flex items-center gap-2 font-medium">
@@ -105,8 +138,41 @@ export default function AdminDashboard() {
                   <p className="text-stone-300 text-sm leading-relaxed">{selected.descrizione || "Nessuna descrizione fornita."}</p>
                 </div>
 
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-xs uppercase text-stone-500 font-bold mb-2">Latitudine (per marker mappa)</label>
+                    <input
+                      type="number"
+                      step="any"
+                      value={revisionLat}
+                      onChange={(e) => setRevisionLat(e.target.value)}
+                      placeholder="45.4642"
+                      className="w-full px-4 py-2 bg-stone-800/50 border border-stone-700 rounded-xl text-stone-200 text-sm"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-xs uppercase text-stone-500 font-bold mb-2">Longitudine (per marker mappa)</label>
+                    <input
+                      type="number"
+                      step="any"
+                      value={revisionLng}
+                      onChange={(e) => setRevisionLng(e.target.value)}
+                      placeholder="9.1900"
+                      className="w-full px-4 py-2 bg-stone-800/50 border border-stone-700 rounded-xl text-stone-200 text-sm"
+                    />
+                  </div>
+                </div>
+                <p className="text-xs text-stone-500">Foto e coordinate inserite qui verranno salvate al momento dell&apos;approvazione.</p>
+
                 <div className="flex gap-4 pt-4">
-                  <Button onClick={() => handleApprove(selected.id)} className="flex-1 bg-green-600 hover:bg-green-700 h-14 text-lg font-bold">
+                  <Button
+                    onClick={() => handleApprove(selected.id, {
+                      image_url: revisionImageUrl.trim() || undefined,
+                      latitudine: revisionLat.trim() || undefined,
+                      longitudine: revisionLng.trim() || undefined,
+                    })}
+                    className="flex-1 bg-green-600 hover:bg-green-700 h-14 text-lg font-bold"
+                  >
                     <Check className="mr-2" /> Approva Locale
                   </Button>
                   <Button onClick={() => handleDelete(selected.id)} variant="destructive" className="h-14 px-6">
@@ -129,8 +195,7 @@ export default function AdminDashboard() {
                   <div className="text-stone-500 text-sm">{l.citta}</div>
                 </div>
                 <div className="flex gap-2">
-                  <Button size="sm" variant="outline" onClick={() => setSelected(l)}><Eye className="mr-2 h-4 w-4" /> Vedi</Button>
-                  <Button size="sm" className="bg-green-600" onClick={() => handleApprove(l.id)}>Approva</Button>
+                  <Button size="sm" variant="outline" onClick={() => setSelected(l)}><Eye className="mr-2 h-4 w-4" /> Vedi / Approva</Button>
                 </div>
               </div>
             ))}
