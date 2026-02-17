@@ -707,13 +707,13 @@ export default function Dashboard() {
                     {previewVenue.address && (
                       <p className="text-stone-400 text-sm">{previewVenue.address}</p>
                     )}
-                    {(previewVenue.category || previewVenue.price_range) && (
-                      <div className="flex gap-2 mt-2">
-                        {previewVenue.category && (
-                          <Badge variant="outline" className="text-xs border-stone-600 text-stone-400">
-                            {CATEGORY_LABELS[previewVenue.category] || previewVenue.category}
+                    {((previewVenue.categories?.length) || previewVenue.category || previewVenue.price_range) && (
+                      <div className="flex flex-wrap gap-2 mt-2">
+                        {(previewVenue.categories || (previewVenue.category ? [previewVenue.category] : [])).filter(Boolean).map((cat, i) => (
+                          <Badge key={i} variant="outline" className="text-xs border-stone-600 text-stone-400">
+                            {CATEGORY_LABELS[cat] || cat}
                           </Badge>
-                        )}
+                        ))}
                         {previewVenue.price_range && (
                           <Badge variant="outline" className="text-xs border-stone-600 text-stone-400">
                             {previewVenue.price_range}

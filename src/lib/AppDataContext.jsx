@@ -54,7 +54,10 @@ export function AppDataProvider({ children }) {
     qa_links: Array.isArray(row.qa_links) ? row.qa_links : [],
   }), []);
 
-  const mapLocaliToVenue = useCallback((row) => ({
+  const mapLocaliToVenue = useCallback((row) => {
+    const catRaw = row.categoria || "cocktail_bar";
+    const categories = catRaw ? catRaw.split(",").map((s) => s.trim()).filter(Boolean) : ["cocktail_bar"];
+    return {
     id: String(row.id),
     supabase_id: String(row.id),
     name: row.nome || "",
@@ -65,7 +68,8 @@ export function AppDataProvider({ children }) {
     description: row.descrizione || "",
     cover_image: row.image_url || "",
     video_url: row.video_url || null,
-    category: row.categoria || "cocktail_bar",
+    category: categories[0] || "cocktail_bar",
+    categories,
     price_range: row.price_range || "€€",
     phone: row.telefono || "",
     website: row.sito || "",
@@ -75,7 +79,8 @@ export function AppDataProvider({ children }) {
     longitude: row.longitudine ?? null,
     status: row.status || "pending",
     _cloudPending: row.status === "pending",
-  }), []);
+  };
+  }, []);
 
   const mapReviewCloudToLocal = useCallback((row) => ({
     id: String(row.id),
@@ -263,7 +268,7 @@ export function AppDataProvider({ children }) {
             latitudine: data.latitude ?? null,
             longitudine: data.longitude ?? null,
             image_url: data.cover_image,
-            categoria: data.categories?.[0] ?? data.category ?? "cocktail_bar",
+            categoria: (data.categories?.length ? data.categories : (data.category ? [data.category] : ["cocktail_bar"])).join(","),
             price_range: data.price_range,
             telefono: data.phone,
             sito: data.website,

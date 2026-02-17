@@ -44,7 +44,7 @@ export default function AddVenue() {
     indirizzo: "",
     citta: "",
     provincia: "",
-    categoria: "cocktail_bar",
+    categorie: [],
     orari: "",
     telefono: "",
     image_url: "",
@@ -77,7 +77,7 @@ export default function AddVenue() {
     indirizzo: "",
     citta: "",
     provincia: "",
-    categoria: "cocktail_bar",
+    categorie: [],
     orari: "",
     telefono: "",
     image_url: "",
@@ -104,17 +104,20 @@ export default function AddVenue() {
   });
 
   const toggleCategory = (category) => {
-    setFormData((prev) => ({
-      ...prev,
-      categoria: category,
-    }));
-    if (errors.categoria) setErrors((prev) => ({ ...prev, categoria: undefined }));
+    setFormData((prev) => {
+      const list = prev.categorie || [];
+      const has = list.includes(category);
+      const next = has ? list.filter((c) => c !== category) : [...list, category];
+      return { ...prev, categorie: next };
+    });
+    if (errors.categorie) setErrors((prev) => ({ ...prev, categorie: undefined }));
   };
 
   const handleSubmit = async () => {
     const next = {};
     if (!formData.nome?.trim()) next.nome = "Inserisci il nome del locale.";
     if (!formData.citta?.trim()) next.citta = "Inserisci la citta.";
+    if (!formData.categorie?.length) next.categorie = "Seleziona almeno una categoria.";
     setErrors(next);
     if (Object.keys(next).length > 0) return;
 
@@ -149,7 +152,7 @@ export default function AddVenue() {
       indirizzo: formData.indirizzo || "",
       citta: formData.citta || "",
       provincia: formData.provincia || null,
-      categoria: formData.categoria || "cocktail_bar",
+      categoria: (formData.categorie?.length ? formData.categorie : ["cocktail_bar"]).join(","),
       orari: formData.orari || "",
       telefono: formData.telefono || "",
       status: "pending",
@@ -194,7 +197,7 @@ export default function AddVenue() {
         city: formData.citta,
         province: formData.provincia || "",
         address: formData.indirizzo || "",
-        category: formData.categoria || "cocktail_bar",
+        category: (formData.categorie?.length ? formData.categorie : ["cocktail_bar"]).join(","),
         opening_hours: formData.orari || "",
         phone: formData.telefono || "",
         cover_image: imageUrl,
@@ -204,7 +207,7 @@ export default function AddVenue() {
     }
   };
 
-  const isValid = formData.nome && formData.citta;
+  const isValid = formData.nome && formData.citta && (formData.categorie?.length ?? 0) > 0;
 
   return (
     <div className="min-h-screen px-4 md:px-6 pt-8 pb-28 lg:pb-12">
@@ -348,23 +351,27 @@ export default function AddVenue() {
             </h2>
             <div className="space-y-4">
               <div>
-                <Label className="mb-2 block">Categoria *</Label>
+                <Label className="mb-2 block">Categoria * (multiscelta)</Label>
                 <div className="flex flex-wrap gap-2">
-                  {categories.map((cat) => (
-                    <button
-                      key={cat.value}
-                      type="button"
-                      onClick={() => toggleCategory(cat.value)}
-                      className={`px-3 py-2 rounded-lg text-sm transition-all cursor-pointer ${
-                        formData.categoria === cat.value
-                          ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
-                          : "bg-stone-800 text-stone-400 border border-stone-700 hover:border-stone-600"
-                      }`}
-                    >
-                      {cat.label}
-                    </button>
-                  ))}
+                  {categories.map((cat) => {
+                    const selected = (formData.categorie || []).includes(cat.value);
+                    return (
+                      <button
+                        key={cat.value}
+                        type="button"
+                        onClick={() => toggleCategory(cat.value)}
+                        className={`px-3 py-2 rounded-lg text-sm transition-all cursor-pointer ${
+                          selected
+                            ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
+                            : "bg-stone-800 text-stone-400 border border-stone-700 hover:border-stone-600"
+                        }`}
+                      >
+                        {cat.label}
+                      </button>
+                    );
+                  })}
                 </div>
+                {errors.categorie && <p className="mt-1.5 text-sm text-red-400">{errors.categorie}</p>}
               </div>
               <div>
                 <Label className="mb-2 block flex items-center gap-2">

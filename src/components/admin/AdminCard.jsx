@@ -114,7 +114,10 @@ export default function AdminCard({ type, item, onApprove, onDelete, onClose, is
               <FIELD label="Sito web" value={item.website} />
               <FIELD label="Instagram" value={item.instagram} />
               <FIELD label="Orari" value={item.opening_hours} />
-              <FIELD label="Categoria" value={item.category} />
+              <FIELD
+                label="Categoria"
+                value={(item.categories || (item.category ? [item.category] : [])).filter(Boolean).join(", ")}
+              />
               <FIELD label="Fascia prezzo" value={item.price_range} />
               <div className="grid grid-cols-2 gap-3 mt-4">
                 <div>

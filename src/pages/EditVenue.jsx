@@ -135,7 +135,7 @@ export default function EditVenue() {
       updateVenueMutation.mutate({
         ...formData,
         cover_image: coverImageUrl,
-        category: formData.categories[0] || "cocktail_bar",
+        categories: formData.categories?.length ? formData.categories : ["cocktail_bar"],
       });
     } catch (err) {
       setIsSubmitting(false);
