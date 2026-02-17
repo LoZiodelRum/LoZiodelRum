@@ -10,7 +10,8 @@ import { createClient } from "@supabase/supabase-js";
 import { readFileSync } from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
-import { venuesData } from "../src/data/venues.js";
+// Nessun dato locale: la Dashboard usa SOLO Supabase tabella Locali
+const venuesData = [];
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 

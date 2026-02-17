@@ -10,7 +10,8 @@ import { readFileSync } from "fs";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { reviewsData } from "../src/data/reviews.js";
-import { venuesData } from "../src/data/venues.js";
+// Nessun dato locale: la Dashboard usa SOLO Supabase tabella Locali
+const venuesData = [];
 
 const __dirname = dirname(fileURLToPath(import.meta.url));
 
