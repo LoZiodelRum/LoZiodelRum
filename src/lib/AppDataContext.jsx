@@ -115,7 +115,7 @@ export function AppDataProvider({ children }) {
     if (isSupabaseConfigured()) reloadPgrstSchema();
   }, []);
 
-  // Fetch iniziale: venues SOLO da Locali (approvati)
+  // Fetch iniziale: venues da Locali + venues_cloud (approvati)
   useEffect(() => {
     if (!isSupabaseConfigured()) {
       setVenues([]);
@@ -123,13 +123,16 @@ export function AppDataProvider({ children }) {
       setBartenders([]);
       return;
     }
-    supabase.from(TABLE_LOCALI).select("*").or("status.eq.approved,approvato.eq.true")
-      .then(({ data, error }) => {
-        if (error) throw error;
-        const list = (data || []).map((r) => mapLocaliToVenue(r));
-        setVenues(list);
-      })
-      .catch(() => setVenues([]));
+    Promise.all([
+      supabase.from(TABLE_LOCALI).select("*").or("status.eq.approved,approvato.eq.true"),
+      supabase.from("venues_cloud").select("*").eq("status", "approved").then((r) => r).catch(() => ({ data: [] })),
+    ]).then(([localiRes, vcRes]) => {
+      const locali = (localiRes.data || []).map((r) => mapLocaliToVenue(r));
+      const vc = (vcRes?.data || []).map((r) => mapLocaliToVenue(r));
+      const ids = new Set(locali.map((v) => v.id));
+      const merged = [...locali, ...vc.filter((v) => !ids.has(v.id))];
+      setVenues(merged);
+    }).catch(() => setVenues([]));
 
     supabase.from("reviews_cloud").select("*").eq("status", "approved").order("created_at", { ascending: false }).then(({ data, error }) => {
       if (!error && data && Array.isArray(data)) {
@@ -743,24 +746,34 @@ export function AppDataProvider({ children }) {
       },
       approveVenueCloud: async (id, extra = {}) => {
         if (!isSupabaseConfigured()) return;
-        await supabase.from(TABLE_LOCALI).update({
-          approvato: true,
-          status: "approved",
-          ...(extra.latitude != null && { latitudine: extra.latitude }),
-          ...(extra.longitude != null && { longitudine: extra.longitude }),
-        }).eq("id", id);
-        const { data } = await supabase.from(TABLE_LOCALI).select("*").or("status.eq.approved,approvato.eq.true");
-        const list = (data || []).map(mapLocaliToVenue);
+        await Promise.all([
+          supabase.from(TABLE_LOCALI).update({ approvato: true, status: "approved", ...(extra.latitude != null && { latitudine: extra.latitude }), ...(extra.longitude != null && { longitudine: extra.longitude }) }).eq("id", id),
+          supabase.from("venues_cloud").update({ status: "approved", ...(extra.latitude != null && { latitude: extra.latitude }), ...(extra.longitude != null && { longitude: extra.longitude }) }).eq("id", id),
+        ]);
+        const [localiRes, vcRes] = await Promise.all([
+          supabase.from(TABLE_LOCALI).select("*").or("status.eq.approved,approvato.eq.true"),
+          supabase.from("venues_cloud").select("*").eq("status", "approved").catch(() => ({ data: [] })),
+        ]);
+        const locali = (localiRes.data || []).map(mapLocaliToVenue);
+        const vc = (vcRes?.data || []).map((r) => mapLocaliToVenue(r));
+        const ids = new Set(locali.map((v) => v.id));
+        const list = [...locali, ...vc.filter((v) => !ids.has(v.id))];
         setVenues((prev) => list.length > 0 ? list : prev.filter((v) => v.id !== id));
       },
       rejectVenueCloud: async (id) => {
         if (!isSupabaseConfigured()) return;
-        await supabase.from(TABLE_LOCALI).update({ status: "rejected" }).eq("id", id);
+        await Promise.all([
+          supabase.from(TABLE_LOCALI).update({ status: "rejected" }).eq("id", id),
+          supabase.from("venues_cloud").update({ status: "rejected" }).eq("id", id).catch(() => {}),
+        ]);
         setVenues((prev) => prev.filter((v) => v.id !== id));
       },
       deleteVenueCloud: async (id) => {
         if (!isSupabaseConfigured()) return;
-        await supabase.from(TABLE_LOCALI).delete().eq("id", id);
+        await Promise.all([
+          supabase.from(TABLE_LOCALI).delete().eq("id", id),
+          supabase.from("venues_cloud").delete().eq("id", id).catch(() => {}),
+        ]);
         setVenues((prev) => prev.filter((v) => v.id !== id));
       },
       deleteAppUser: async (id) => {

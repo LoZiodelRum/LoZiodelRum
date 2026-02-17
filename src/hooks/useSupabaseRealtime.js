@@ -5,7 +5,7 @@
 import { useEffect } from "react";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 
-/** Mapping: tabella Locali (nome, citta, indirizzo, ecc.) */
+/** Mapping: tabella Locali */
 function mapVenueRow(row) {
   const catRaw = row.categoria || row.category || "cocktail_bar";
   const categories = catRaw ? String(catRaw).split(",").map((s) => s.trim()).filter(Boolean) : ["cocktail_bar"];

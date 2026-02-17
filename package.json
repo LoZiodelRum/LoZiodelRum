@@ -4,11 +4,6 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "migrate:venues": "node scripts/migrate-venues-to-locali.js",
-    "update:coordinates": "node scripts/update-locali-coordinates.js",
-    "sync:base44": "node scripts/sync-base44-to-locali.js",
-    "sync:reviews": "node scripts/sync-reviews-to-supabase.js",
-    "migration:all": "node scripts/sync-base44-to-locali.js && node scripts/sync-reviews-to-supabase.js",
     "supabase:setup": "node scripts/setup-supabase.js",
     "supabase:auto": "node scripts/supabase-auto-config.js",
     "supabase:config": "node scripts/add-supabase-key.js",
