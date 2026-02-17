@@ -2,7 +2,7 @@
  * Tabella unica app_users: Bartender, Locali, User, Proprietario.
  */
 import { supabase, isSupabaseConfigured } from "./supabase";
-import { TABLE_APP_USERS } from "./supabaseTables";
+import { TABLE_APP_USERS, TABLE_VENUES_CLOUD } from "./supabaseTables";
 
 function sanitize(val) {
   return val === undefined ? null : val;
@@ -49,25 +49,6 @@ export async function insertAppUser(userData) {
       percorso_esperienze: sanitize(userData.percorso_esperienze) || null,
       consent_linee_editoriali: userData.consent_linee_editoriali === true,
     }),
-    ...(userData.role === "venue" && {
-      venue_data: {
-        slug: userData.slug || "",
-        description: userData.description || "",
-        city: userData.city || "",
-        country: userData.country || "Italia",
-        address: userData.address || "",
-        latitude: userData.latitude ?? null,
-        longitude: userData.longitude ?? null,
-        cover_image: userData.cover_image || "",
-        video_url: userData.video_url || null,
-        category: userData.category || "cocktail_bar",
-        price_range: userData.price_range || "€€",
-        phone: userData.phone || "",
-        website: userData.website || "",
-        instagram: userData.instagram || "",
-        opening_hours: userData.opening_hours || "",
-      },
-    }),
     ...(userData.role === "user" && {
       bio_light: sanitize(userData.bio_light) || null,
       home_city: sanitize(userData.home_city) || null,
@@ -81,6 +62,37 @@ export async function insertAppUser(userData) {
     const err = new Error(error.message || "Errore salvataggio su Supabase");
     err.originalError = error;
     throw err;
+  }
+  return data;
+}
+
+export async function insertVenueCloud(venueData) {
+  if (!isSupabaseConfigured() || !supabase) {
+    throw new Error("Supabase non configurato. Verifica VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.");
+  }
+  const row = {
+    name: String(venueData.name || ""),
+    slug: venueData.slug || (venueData.name || "").toLowerCase().replace(/\s+/g, "-"),
+    description: venueData.description || "",
+    address: venueData.address || "",
+    city: venueData.city || "",
+    country: venueData.country || "Italia",
+    latitude: venueData.latitude ?? null,
+    longitude: venueData.longitude ?? null,
+    cover_image: venueData.cover_image || venueData.image_url || "",
+    video_url: venueData.video_url ?? null,
+    category: venueData.category || "cocktail_bar",
+    price_range: venueData.price_range || "€€",
+    phone: venueData.phone || "",
+    website: venueData.website || "",
+    instagram: venueData.instagram || "",
+    opening_hours: venueData.opening_hours || "",
+    status: venueData.status || "pending",
+  };
+  const { data, error } = await supabase.from(TABLE_VENUES_CLOUD).insert(row).select().single();
+  if (error) {
+    console.error("[Supabase] insert venue - errore:", error);
+    throw error;
   }
   return data;
 }

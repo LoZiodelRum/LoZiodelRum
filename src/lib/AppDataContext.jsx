@@ -5,8 +5,8 @@ import { articlesData as initialArticles } from "@/data/articles";
 import { drinksData as initialDrinks } from "@/data/drinks";
 import { initialOwnerMessages, initialCommunityPosts, initialCommunityEvents } from "@/data/community";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
-import { TABLE_APP_USERS } from "@/lib/supabaseTables";
-import { getPendingRegistrations, updateAppUserStatus, insertAppUser, updateAppUser } from "@/lib/supabaseUsers";
+import { TABLE_APP_USERS, TABLE_VENUES_CLOUD } from "@/lib/supabaseTables";
+import { getPendingRegistrations, updateAppUserStatus, insertAppUser, updateAppUser, insertVenueCloud } from "@/lib/supabaseUsers";
 import { useVenuesRealtime } from "@/hooks/useSupabaseRealtime";
 
 function generateId() {
@@ -54,30 +54,27 @@ export function AppDataProvider({ children }) {
     qa_links: Array.isArray(row.qa_links) ? row.qa_links : [],
   }), []);
 
-  const mapAppUserToVenue = useCallback((row) => {
-    const vd = row.venue_data || {};
-    return {
-      id: String(row.id),
-      supabase_id: String(row.id),
-      name: row.name,
-      city: vd.city || "",
-      country: vd.country || "Italia",
-      address: vd.address || "",
-      description: vd.description || "",
-      cover_image: vd.cover_image || "",
-      video_url: vd.video_url || null,
-      category: vd.category || "cocktail_bar",
-      price_range: vd.price_range || "€€",
-      phone: vd.phone || "",
-      website: vd.website || "",
-      instagram: vd.instagram || "",
-      opening_hours: vd.opening_hours || "",
-      latitude: vd.latitude ?? null,
-      longitude: vd.longitude ?? null,
-      status: row.status || "pending",
-      _cloudPending: row.status === "pending",
-    };
-  }, []);
+  const mapVenueCloudToLocal = useCallback((row) => ({
+    id: String(row.id),
+    supabase_id: String(row.id),
+    name: row.name,
+    city: row.city || "",
+    country: row.country || "Italia",
+    address: row.address || "",
+    description: row.description || "",
+    cover_image: row.cover_image || "",
+    video_url: row.video_url || null,
+    category: row.category || "cocktail_bar",
+    price_range: row.price_range || "€€",
+    phone: row.phone || "",
+    website: row.website || "",
+    instagram: row.instagram || "",
+    opening_hours: row.opening_hours || "",
+    latitude: row.latitude ?? null,
+    longitude: row.longitude ?? null,
+    status: row.status || "pending",
+    _cloudPending: row.status === "pending",
+  }), []);
 
   const mapReviewCloudToLocal = useCallback((row) => ({
     id: String(row.id),
@@ -109,9 +106,9 @@ export function AppDataProvider({ children }) {
       setReviews([...initialReviews]);
       return;
     }
-    supabase.from(TABLE_APP_USERS).select("*").eq("role", "venue").eq("status", "approved").then(({ data }) => {
+    supabase.from(TABLE_VENUES_CLOUD).select("*").eq("status", "approved").then(({ data }) => {
       if (data && data.length > 0) {
-        setVenues(data.map(mapAppUserToVenue));
+        setVenues(data.map(mapVenueCloudToLocal));
       } else {
         setVenues([...initialVenues]);
       }
@@ -130,7 +127,7 @@ export function AppDataProvider({ children }) {
         setBartenders(data.map(mapAppUserToBartender));
       }
     }).catch(() => {});
-  }, [mapAppUserToBartender, mapAppUserToVenue, mapReviewCloudToLocal]);
+  }, [mapAppUserToBartender, mapVenueCloudToLocal, mapReviewCloudToLocal]);
 
   // Real-time: aggiornamenti live da Supabase
   const onInsert = useCallback((venue) => {
@@ -193,8 +190,7 @@ export function AppDataProvider({ children }) {
         const id = data.id || generateId();
         const venue = { ...data, id, review_count: 0, overall_rating: null, verified: data.verified ?? false };
         if (isSupabaseConfigured()) {
-          const inserted = await insertAppUser({
-            role: "venue",
+          const inserted = await insertVenueCloud({
             name: venue.name,
             slug: venue.slug || (venue.name || "").toLowerCase().replace(/\s+/g, "-"),
             description: venue.description || "",
@@ -213,7 +209,7 @@ export function AppDataProvider({ children }) {
             opening_hours: venue.opening_hours || "",
             status: "pending",
           });
-          const cloudVenue = { ...venue, id: String(inserted.id), _cloudPending: true };
+          const cloudVenue = mapVenueCloudToLocal(inserted);
           setVenues((prev) => [...prev, cloudVenue]);
           return { ...cloudVenue, pending: true };
         }
@@ -258,7 +254,8 @@ export function AppDataProvider({ children }) {
         );
         const isCloud = cloudVenues.some((v) => v.id === id) || venues.some((v) => v.id === id && v._cloudPending);
         if (isCloud && isSupabaseConfigured()) {
-          const venueData = {
+          const row = {
+            name: data.name,
             description: data.description,
             city: data.city,
             country: data.country,
@@ -273,13 +270,14 @@ export function AppDataProvider({ children }) {
             instagram: data.instagram,
             opening_hours: data.opening_hours,
           };
-          supabase.from(TABLE_APP_USERS).update({ name: data.name, venue_data: venueData }).eq("id", id).then(() => {}).catch(() => {});
+          supabase.from(TABLE_VENUES_CLOUD).update(row).eq("id", id).then(() => {}).catch(() => {});
         }
         return { id, ...data };
       },
       updateVenueCloud: async (id, data) => {
         if (!isSupabaseConfigured()) return { id, ...data };
-        const venueData = {
+        const row = {
+          name: data.name,
           description: data.description,
           city: data.city,
           country: data.country,
@@ -294,7 +292,7 @@ export function AppDataProvider({ children }) {
           instagram: data.instagram,
           opening_hours: data.opening_hours,
         };
-        await supabase.from(TABLE_APP_USERS).update({ name: data.name, venue_data: venueData }).eq("id", id);
+        await supabase.from(TABLE_VENUES_CLOUD).update(row).eq("id", id);
         return { id, ...data };
       },
       deleteVenue: (id) => {
@@ -634,8 +632,8 @@ export function AppDataProvider({ children }) {
 
       resetToDefaults: () => {
         if (!isSupabaseConfigured()) setVenues(initialVenues);
-        else supabase?.from(TABLE_APP_USERS).select("*").eq("role", "venue").eq("status", "approved").then(({ data }) => {
-          if (data?.length) setVenues(data.map(mapAppUserToVenue));
+        else supabase?.from(TABLE_VENUES_CLOUD).select("*").eq("status", "approved").then(({ data }) => {
+          if (data?.length) setVenues(data.map(mapVenueCloudToLocal));
         });
         setReviews(initialReviews);
         setArticles(initialArticles);
@@ -651,8 +649,7 @@ export function AppDataProvider({ children }) {
         let synced = 0;
         for (const v of toSync) {
           try {
-            const inserted = await insertAppUser({
-              role: "venue",
+            const inserted = await insertVenueCloud({
               name: v.name,
               slug: v.slug || (v.name || "").toLowerCase().replace(/\s+/g, "-"),
               description: v.description || "",
@@ -682,35 +679,28 @@ export function AppDataProvider({ children }) {
       },
       getPendingVenuesFromCloud: async () => {
         if (!isSupabaseConfigured()) return [];
-        const { data, error } = await supabase.from(TABLE_APP_USERS).select("*").eq("role", "venue").order("created_at", { ascending: false });
+        const { data, error } = await supabase.from(TABLE_VENUES_CLOUD).select("*").eq("status", "pending").order("created_at", { ascending: false });
         if (error) throw error;
-        return (data || []).map(mapAppUserToVenue);
+        return (data || []).map(mapVenueCloudToLocal);
       },
       approveVenueCloud: async (id, extra = {}) => {
         if (!isSupabaseConfigured()) return;
-        let update = { status: "approved" };
-        if (extra.latitude != null || extra.longitude != null) {
-          const { data: row } = await supabase.from(TABLE_APP_USERS).select("venue_data").eq("id", id).single();
-          const vd = { ...(row?.venue_data || {}) };
-          if (extra.latitude != null) vd.latitude = extra.latitude;
-          if (extra.longitude != null) vd.longitude = extra.longitude;
-          update = { ...update, venue_data: vd };
-        }
-        await supabase.from(TABLE_APP_USERS).update(update).eq("id", id);
-        const { data } = await supabase.from(TABLE_APP_USERS).select("*").eq("role", "venue").eq("status", "approved");
+        const update = { status: "approved", ...(extra.latitude != null && { latitude: extra.latitude }), ...(extra.longitude != null && { longitude: extra.longitude }) };
+        await supabase.from(TABLE_VENUES_CLOUD).update(update).eq("id", id);
+        const { data } = await supabase.from(TABLE_VENUES_CLOUD).select("*").eq("status", "approved");
         if (data && data.length > 0) {
-          setVenues(data.map(mapAppUserToVenue));
+          setVenues(data.map(mapVenueCloudToLocal));
         } else {
           setVenues((prev) => prev.filter((v) => v.id !== id || !v._cloudPending));
         }
       },
       rejectVenueCloud: async (id) => {
         if (!isSupabaseConfigured()) return;
-        await supabase.from(TABLE_APP_USERS).update({ status: "rejected" }).eq("id", id);
+        await supabase.from(TABLE_VENUES_CLOUD).update({ status: "rejected" }).eq("id", id);
       },
       deleteVenueCloud: async (id) => {
         if (!isSupabaseConfigured()) return;
-        await supabase.from(TABLE_APP_USERS).delete().eq("id", id);
+        await supabase.from(TABLE_VENUES_CLOUD).delete().eq("id", id);
         setVenues((prev) => prev.filter((v) => v.id !== id));
       },
       deleteAppUser: async (id) => {

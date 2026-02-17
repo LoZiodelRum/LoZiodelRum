@@ -179,14 +179,14 @@ export default function AddVenue() {
         if (coverImageFiles.length > 0) {
           const urls = await uploadMultipleToSupabaseStorage(
             coverImageFiles,
-            "venues",
+            "",
             (current, total) => setUploadProgress({ current, total })
           );
           coverImageUrl = urlsToDbString(urls);
         }
         setUploadProgress({ current: 0, total: 0 });
         if (videoFile) {
-          videoUrl = await uploadToSupabaseStorage(videoFile, "venues", "video");
+          videoUrl = await uploadToSupabaseStorage(videoFile, "", "video");
         }
       } catch (err) {
         setStatus("error");

@@ -310,12 +310,6 @@ export default function Dashboard() {
                             <span className="text-stone-200 break-words">{String(val)}</span>
                           </div>
                         ))}
-                        {selectedRegistration.venue_data && (
-                          <div className="mt-2 p-2 bg-stone-800/50 rounded-lg">
-                            <p className="text-stone-500 text-xs mb-1">Dati locale</p>
-                            <pre className="text-xs text-stone-300 overflow-auto">{JSON.stringify(selectedRegistration.venue_data, null, 2)}</pre>
-                          </div>
-                        )}
                       </div>
                       <div className="flex gap-2 pt-4 border-t border-stone-700">
                         <Button
