@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
-import { MapPin, Star, BadgeCheck, Wine } from "lucide-react";
+import { MapPin, Star, BadgeCheck, Wine, Phone } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { cn } from "@/lib/utils";
 import { motion } from "framer-motion";
@@ -60,6 +60,7 @@ export default function VenueCard({ venue, index = 0, compact = false }) {
             <p className="text-stone-400 text-xs mt-1 flex items-center gap-1">
               <MapPin className="w-3 h-3" />
               {venue.city}
+              {venue.province ? ` (${venue.province})` : ""}
             </p>
           </div>
         </Link>
@@ -117,7 +118,11 @@ export default function VenueCard({ venue, index = 0, compact = false }) {
               <div className="flex items-center justify-between gap-3 mb-3">
                 <div className="flex items-center gap-1.5 text-stone-400 text-sm flex-1 min-w-0">
                   <MapPin className="w-3.5 h-3.5 flex-shrink-0" />
-                  <span className="truncate">{venue.city}, {venue.country}</span>
+                  <span className="truncate">
+                    {venue.city}
+                    {venue.province ? ` (${venue.province})` : ""}
+                    {venue.country ? `, ${venue.country}` : ""}
+                  </span>
                 </div>
                 
                 {venue.overall_rating && (
@@ -131,6 +136,12 @@ export default function VenueCard({ venue, index = 0, compact = false }) {
               </div>
             </div>
 
+            {venue.phone && (
+              <p className="text-stone-400 text-sm flex items-center gap-1.5 mb-2">
+                <Phone className="w-3.5 h-3.5" />
+                {venue.phone}
+              </p>
+            )}
             <div className="flex flex-wrap gap-1.5">
               {(venue.categories || [venue.category]).filter(Boolean).map((cat, i) => (
                 <Badge key={i} className={cn("border text-xs", categoryColors[cat])}>

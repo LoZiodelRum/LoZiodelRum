@@ -454,9 +454,19 @@ export default function Dashboard() {
                           <h3 className="text-xl font-bold mb-1">{venue.name}</h3>
                           <div className="flex items-center gap-2 text-stone-400 text-sm mb-2">
                             <MapPin className="w-4 h-4" />
-                            <span>{venue.city}, {venue.country}</span>
+                            <span>
+                              {venue.city}
+                              {venue.province ? ` (${venue.province})` : ""}
+                              {venue.country ? `, ${venue.country}` : ""}
+                            </span>
                           </div>
-                          <p className="text-stone-400 text-sm mb-3">{venue.address}</p>
+                          {venue.address && <p className="text-stone-400 text-sm mb-2">{venue.address}</p>}
+                          {venue.phone && (
+                            <p className="text-stone-400 text-sm flex items-center gap-1">
+                              <Phone className="w-3.5 h-3.5" />
+                              {venue.phone}
+                            </p>
+                          )}
                         </div>
                         <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30">In attesa</Badge>
                       </div>
@@ -564,9 +574,19 @@ export default function Dashboard() {
                           <h3 className="text-xl font-bold mb-1">{venue.name}</h3>
                           <div className="flex items-center gap-2 text-stone-400 text-sm mb-2">
                             <MapPin className="w-4 h-4" />
-                            <span>{venue.city || ""}, {venue.country || "Italia"}</span>
+                            <span>
+                              {venue.city}
+                              {venue.province ? ` (${venue.province})` : ""}
+                              {venue.country ? `, ${venue.country}` : ""}
+                            </span>
                           </div>
-                          {venue.address && <p className="text-stone-400 text-sm mb-3">{venue.address}</p>}
+                          {venue.address && <p className="text-stone-400 text-sm mb-2">{venue.address}</p>}
+                          {venue.phone && (
+                            <p className="text-stone-400 text-sm flex items-center gap-1">
+                              <Phone className="w-3.5 h-3.5" />
+                              {venue.phone}
+                            </p>
+                          )}
                         </div>
                         <Badge className="bg-amber-500/20 text-amber-400 border-amber-500/30">In attesa</Badge>
                       </div>
@@ -672,7 +692,11 @@ export default function Dashboard() {
                     <h3 className="text-lg font-bold mb-1">{previewVenue.name}</h3>
                     <div className="flex items-center gap-2 text-stone-400 text-sm mb-2">
                       <MapPin className="w-4 h-4 flex-shrink-0" />
-                      <span>{previewVenue.city || "—"}, {previewVenue.country || "Italia"}</span>
+                      <span>
+                        {previewVenue.city || "—"}
+                        {previewVenue.province ? ` (${previewVenue.province})` : ""}
+                        {previewVenue.country ? `, ${previewVenue.country}` : ""}
+                      </span>
                     </div>
                     {previewVenue.address && (
                       <p className="text-stone-400 text-sm">{previewVenue.address}</p>

@@ -72,22 +72,14 @@ export async function insertLocali(venueData) {
   }
   const row = {
     nome: String(venueData.name || venueData.nome || ""),
-    indirizzo: venueData.address || venueData.indirizzo || "",
     descrizione: venueData.description || venueData.descrizione || "",
-    categoria: venueData.category || venueData.categoria || "cocktail_bar",
-    image_url: venueData.cover_image || venueData.image_url || null,
-    telefono: venueData.phone || venueData.telefono || "",
-    orari: venueData.opening_hours || venueData.orari || "",
+    indirizzo: venueData.address || venueData.indirizzo || "",
     citta: venueData.city || venueData.citta || "",
     provincia: venueData.province || venueData.provincia || null,
-    paese: venueData.country || venueData.paese || "Italia",
-    sito: venueData.website || venueData.sito || "",
-    instagram: venueData.instagram || "",
-    slug: venueData.slug || (venueData.name || venueData.nome || "").toLowerCase().replace(/\s+/g, "-"),
-    price_range: venueData.price_range || "€€",
-    latitudine: venueData.latitude ?? venueData.latitudine ?? null,
-    longitudine: venueData.longitude ?? venueData.longitudine ?? null,
-    video_url: venueData.video_url ?? null,
+    categoria: venueData.category || venueData.categoria || "cocktail_bar",
+    orari: venueData.opening_hours || venueData.orari || "",
+    telefono: venueData.phone || venueData.telefono || "",
+    image_url: venueData.cover_image || venueData.image_url || null,
     status: venueData.status || "pending",
   };
   const { data, error } = await supabase.from(TABLE_LOCALI).insert(row).select().single();

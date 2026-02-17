@@ -1,37 +1,24 @@
-import { useState, useEffect, useRef } from "react";
+/**
+ * Aggiungi Locale – mapping esatto colonne Supabase (Locali).
+ * DATI BASE: nome, descrizione, indirizzo, citta, provincia.
+ * DETTAGLI: categoria, orari, telefono.
+ * MEDIA: bucket 'images' → image_url.
+ * status: pending (approvato false) di default.
+ */
+import { useState, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "@/components/ui/use-toast";
 import { createPageUrl } from "@/utils";
 import { useAppData } from "@/lib/AppDataContext";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
-import { 
-  ChevronLeft, 
-  MapPin, 
-  Phone, 
-  Globe, 
-  Instagram,
-  Clock,
-  Send,
-  Loader2,
-  Wine,
-  Image as ImageIcon,
-  Video as VideoIcon,
-  X
-} from "lucide-react";
+import { ChevronLeft, MapPin, Phone, Clock, Send, Loader2, Wine, Image as ImageIcon, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
 import { motion } from "framer-motion";
-import { uploadToSupabaseStorage, uploadMultipleToSupabaseStorage, urlsToDbString } from "@/lib/supabaseStorage";
+import { uploadMultipleToSupabaseStorage, urlsToDbString } from "@/lib/supabaseStorage";
 
 const categories = [
   { value: "cocktail_bar", label: "Cocktail Bar" },
@@ -42,19 +29,7 @@ const categories = [
   { value: "enoteca", label: "Enoteca" },
   { value: "pub", label: "Pub" },
   { value: "rooftop", label: "Rooftop Bar" },
-  { value: "hotel_bar", label: "Hotel Bar" }
-];
-
-const priceRanges = [
-  { value: "€", label: "€ - Economico" },
-  { value: "€€", label: "€€ - Medio" },
-  { value: "€€€", label: "€€€ - Alto" },
-  { value: "€€€€", label: "€€€€ - Premium" },
-];
-
-const specialtyOptions = [
-  "Rum", "Whisky", "Gin", "Cocktail d'autore", "Tiki", 
-  "Vini naturali", "Champagne", "Mezcal", "Vermouth", "Amari"
+  { value: "hotel_bar", label: "Hotel Bar" },
 ];
 
 export default function AddVenue() {
@@ -63,39 +38,30 @@ export default function AddVenue() {
   const hasSupabase = isSupabaseConfigured?.() ?? false;
   const [syncing, setSyncing] = useState(false);
   const localToSync = getLocalVenuesToSync?.() ?? [];
-  
+
   const [formData, setFormData] = useState({
-    name: "",
-    description: "",
-    city: "",
-    province: "",
-    country: "Italia",
-    address: "",
-    categories: [],
-    price_range: "€€",
-    specialties: [],
-    phone: "",
-    website: "",
-    instagram: "",
-    opening_hours: "",
-    latitude: null,
-    longitude: null,
-    cover_image: ""
+    nome: "",
+    descrizione: "",
+    indirizzo: "",
+    citta: "",
+    provincia: "",
+    categoria: "cocktail_bar",
+    orari: "",
+    telefono: "",
+    image_url: "",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [errors, setErrors] = useState({});
-  const [status, setStatus] = useState(null); // 'success' | 'error' | null
+  const [status, setStatus] = useState(null);
   const [coverImageFiles, setCoverImageFiles] = useState([]);
-  const [videoFile, setVideoFile] = useState(null);
   const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
-  const videoInputRef = useRef(null);
 
   const handleCoverInput = (e) => {
     const files = Array.from(e.target.files || []);
     if (files.length > 0) {
       setCoverImageFiles((prev) => [...prev, ...files]);
-      setFormData((prev) => ({ ...prev, cover_image: "" }));
+      setFormData((prev) => ({ ...prev, image_url: "" }));
     }
     e.target.value = "";
   };
@@ -107,22 +73,15 @@ export default function AddVenue() {
   }, [status]);
 
   const initialFormData = {
-    name: "",
-    description: "",
-    city: "",
-    province: "",
-    country: "Italia",
-    address: "",
-    categories: [],
-    price_range: "€€",
-    specialties: [],
-    phone: "",
-    website: "",
-    instagram: "",
-    opening_hours: "",
-    latitude: null,
-    longitude: null,
-    cover_image: "",
+    nome: "",
+    descrizione: "",
+    indirizzo: "",
+    citta: "",
+    provincia: "",
+    categoria: "cocktail_bar",
+    orari: "",
+    telefono: "",
+    image_url: "",
   };
 
   const createVenueMutation = useMutation({
@@ -132,7 +91,6 @@ export default function AddVenue() {
       setStatus("success");
       setFormData(initialFormData);
       setCoverImageFiles([]);
-      setVideoFile(null);
       setErrors({});
       setUploadProgress({ current: 0, total: 0 });
       if (!data.pending) {
@@ -146,36 +104,23 @@ export default function AddVenue() {
     },
   });
 
-  const toggleSpecialty = (specialty) => {
-    setFormData(prev => ({
-      ...prev,
-      specialties: prev.specialties.includes(specialty)
-        ? prev.specialties.filter(s => s !== specialty)
-        : [...prev.specialties, specialty]
-    }));
-  };
-
   const toggleCategory = (category) => {
-    setFormData(prev => ({
+    setFormData((prev) => ({
       ...prev,
-      categories: prev.categories.includes(category)
-        ? prev.categories.filter(c => c !== category)
-        : [...prev.categories, category]
+      categoria: category,
     }));
-    if (errors.categories) setErrors(prev => ({ ...prev, categories: undefined }));
+    if (errors.categoria) setErrors((prev) => ({ ...prev, categoria: undefined }));
   };
 
   const handleSubmit = async () => {
     const next = {};
-    if (!formData.name?.trim()) next.name = "Inserisci il nome del locale.";
-    if (!formData.city?.trim()) next.city = "Inserisci la città.";
-    if (!formData.categories?.length) next.categories = "Seleziona almeno una categoria.";
+    if (!formData.nome?.trim()) next.nome = "Inserisci il nome del locale.";
+    if (!formData.citta?.trim()) next.citta = "Inserisci la citta.";
     setErrors(next);
     if (Object.keys(next).length > 0) return;
 
     setIsSubmitting(true);
-    let imageUrl = formData.cover_image || "";
-    let videoUrl = "";
+    let imageUrl = formData.image_url || "";
 
     if (hasSupabase) {
       try {
@@ -188,9 +133,6 @@ export default function AddVenue() {
           imageUrl = urlsToDbString(urls) || (urls[0] ?? "");
         }
         setUploadProgress({ current: 0, total: 0 });
-        if (videoFile) {
-          videoUrl = await uploadToSupabaseStorage(videoFile, "", "video");
-        }
       } catch (err) {
         setStatus("error");
         const msg = err?.message || err?.error_description || "Errore caricamento file";
@@ -202,32 +144,21 @@ export default function AddVenue() {
       }
     }
 
-    const slug = formData.name.toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "");
+    const row = {
+      nome: formData.nome?.trim() || "",
+      descrizione: formData.descrizione || "",
+      indirizzo: formData.indirizzo || "",
+      citta: formData.citta || "",
+      provincia: formData.provincia || null,
+      categoria: formData.categoria || "cocktail_bar",
+      orari: formData.orari || "",
+      telefono: formData.telefono || "",
+      image_url: imageUrl || null,
+      status: "pending",
+    };
 
     if (hasSupabase && isSupabaseConfigured?.()) {
       try {
-        const row = {
-          nome: formData.name?.trim() || "",
-          indirizzo: formData.address || "",
-          descrizione: formData.description || "",
-          categoria: formData.categories?.[0] || "cocktail_bar",
-          image_url: imageUrl || null,
-          telefono: formData.phone || "",
-          orari: formData.opening_hours || "",
-          citta: formData.city || "",
-          provincia: formData.province || null,
-          paese: formData.country || "Italia",
-          sito: formData.website || "",
-          instagram: formData.instagram || "",
-          slug: slug || null,
-          price_range: formData.price_range || "€€",
-          latitudine: formData.latitude ?? null,
-          longitudine: formData.longitude ?? null,
-          video_url: videoUrl || null,
-          status: "pending",
-        };
         const { data, error } = await supabase.from("Locali").insert([row]).select().single();
         if (error) {
           const msg = error.message || error.details || JSON.stringify(error);
@@ -242,7 +173,6 @@ export default function AddVenue() {
         setStatus("success");
         setFormData(initialFormData);
         setCoverImageFiles([]);
-        setVideoFile(null);
         setErrors({});
         setUploadProgress({ current: 0, total: 0 });
         if (data?.id) {
@@ -258,36 +188,25 @@ export default function AddVenue() {
       }
     } else {
       createVenueMutation.mutate({
-        name: formData.name,
-        slug,
-        description: formData.description || "",
-        city: formData.city,
-        province: formData.province || "",
-        country: formData.country || "Italia",
-        address: formData.address || "",
-        categories: formData.categories,
-        category: formData.categories?.[0] || "cocktail_bar",
-        price_range: formData.price_range || "€€",
-        phone: formData.phone || "",
-        website: formData.website || "",
-        instagram: formData.instagram || "",
-        opening_hours: formData.opening_hours || "",
-        latitude: formData.latitude ?? null,
-        longitude: formData.longitude ?? null,
+        name: formData.nome,
+        description: formData.descrizione || "",
+        city: formData.citta,
+        province: formData.provincia || "",
+        address: formData.indirizzo || "",
+        category: formData.categoria || "cocktail_bar",
+        opening_hours: formData.orari || "",
+        phone: formData.telefono || "",
         cover_image: imageUrl,
-        video_url: videoUrl || null,
-        featured: false,
-        verified: false,
+        status: "pending",
       });
     }
   };
 
-  const isValid = formData.name && formData.city && formData.categories.length > 0;
+  const isValid = formData.nome && formData.citta;
 
   return (
     <div className="min-h-screen px-4 md:px-6 pt-8 pb-28 lg:pb-12">
       <div className="max-w-2xl mx-auto">
-        {/* Banner status - auto-close 5s */}
         {status === "success" && (
           <div className="mb-6 p-6 rounded-xl bg-green-600 border-2 border-green-400 text-white text-center font-bold text-xl">
             INVIO COMPLETATO
@@ -298,12 +217,8 @@ export default function AddVenue() {
             {errors._form || "Errore durante l'invio. Riprova."}
           </div>
         )}
-        {/* Header - spazio extra per evitare sovrapposizione con menu */}
         <div className="flex items-center gap-4 mb-8 pt-6">
-          <Link 
-            to={createPageUrl("Explore")}
-            className="p-2 hover:bg-stone-800 rounded-xl transition-colors"
-          >
+          <Link to={createPageUrl("Explore")} className="p-2 hover:bg-stone-800 rounded-xl transition-colors">
             <ChevronLeft className="w-6 h-6" />
           </Link>
           <div>
@@ -316,7 +231,8 @@ export default function AddVenue() {
           {isSupabaseConfigured?.() && localToSync.length > 0 && (
             <div className="p-4 rounded-2xl bg-amber-500/10 border border-amber-500/30">
               <p className="text-amber-400 font-medium mb-2">
-                Hai {localToSync.length} locale{localToSync.length > 1 ? "i" : ""} salvato{localToSync.length > 1 ? "i" : ""} solo su questo dispositivo
+                Hai {localToSync.length} locale{localToSync.length > 1 ? "i" : ""} salvato
+                {localToSync.length > 1 ? "i" : ""} solo su questo dispositivo
               </p>
               <p className="text-stone-400 text-sm mb-3">
                 {localToSync.map((v) => v.name).join(", ")}. Invia alla Dashboard per l&apos;approvazione.
@@ -347,7 +263,8 @@ export default function AddVenue() {
               Correggi i campi indicati sotto prima di inviare.
             </div>
           )}
-          {/* Basic Info */}
+
+          {/* Dati base: nome, descrizione, indirizzo, citta, provincia */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -355,75 +272,68 @@ export default function AddVenue() {
           >
             <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
               <Wine className="w-5 h-5 text-amber-500" />
-              Informazioni Base
+              Dati base
             </h2>
-            
             <div className="space-y-4">
               <div>
                 <Label className="mb-2 block">Nome del locale *</Label>
                 <Input
                   placeholder="Es. Bar Basso"
-                  value={formData.name}
+                  value={formData.nome}
                   onChange={(e) => {
-                    setFormData(prev => ({ ...prev, name: e.target.value }));
-                    if (errors.name) setErrors(prev => ({ ...prev, name: undefined }));
+                    setFormData((prev) => ({ ...prev, nome: e.target.value }));
+                    if (errors.nome) setErrors((prev) => ({ ...prev, nome: undefined }));
                   }}
-                  className={`bg-stone-800/50 border-stone-700 ${errors.name ? "border-red-500/50" : ""}`}
+                  className={`bg-stone-800/50 border-stone-700 ${errors.nome ? "border-red-500/50" : ""}`}
                 />
-                {errors.name && <p className="mt-1.5 text-sm text-red-400">{errors.name}</p>}
+                {errors.nome && <p className="mt-1.5 text-sm text-red-400">{errors.nome}</p>}
               </div>
-
               <div>
                 <Label className="mb-2 block">Descrizione</Label>
                 <Textarea
-                  placeholder="Descrivi il locale: storia, atmosfera, cosa lo rende speciale..."
-                  value={formData.description}
-                  onChange={(e) => setFormData(prev => ({ ...prev, description: e.target.value }))}
+                  placeholder="Descrivi il locale..."
+                  value={formData.descrizione}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, descrizione: e.target.value }))}
                   className="bg-stone-800/50 border-stone-700 min-h-[100px]"
                 />
               </div>
-
               <div>
-                <Label className="mb-2 block">Categorie * (seleziona tutte quelle applicabili)</Label>
-                <div className={`flex flex-wrap gap-2 ${errors.categories ? "rounded-lg ring-1 ring-red-500/50 p-2" : ""}`}>
-                  {categories.map((cat) => (
-                    <button
-                      key={cat.value}
-                      type="button"
-                      onClick={() => toggleCategory(cat.value)}
-                      className={`px-3 py-2 rounded-lg text-sm transition-all cursor-pointer touch-manipulation ${
-                        formData.categories.includes(cat.value)
-                          ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
-                          : "bg-stone-800 text-stone-400 border border-stone-700 hover:border-stone-600 active:bg-stone-700"
-                      }`}
-                    >
-                      {cat.label}
-                    </button>
-                  ))}
-                </div>
-                {errors.categories && <p className="mt-1.5 text-sm text-red-400">{errors.categories}</p>}
+                <Label className="mb-2 block">Indirizzo</Label>
+                <Input
+                  placeholder="Via, numero civico, CAP"
+                  value={formData.indirizzo}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, indirizzo: e.target.value }))}
+                  className="bg-stone-800/50 border-stone-700"
+                />
               </div>
-
-              <div>
-                <Label className="mb-2 block">Fascia di prezzo</Label>
-                <Select 
-                  value={formData.price_range} 
-                  onValueChange={(v) => setFormData(prev => ({ ...prev, price_range: v }))}
-                >
-                  <SelectTrigger className="bg-stone-800/50 border-stone-700">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent className="bg-stone-900 border-stone-800">
-                    {priceRanges.map(price => (
-                      <SelectItem key={price.value} value={price.value}>{price.label}</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label className="mb-2 block">Città *</Label>
+                  <Input
+                    placeholder="Es. Milano"
+                    value={formData.citta}
+                    onChange={(e) => {
+                      setFormData((prev) => ({ ...prev, citta: e.target.value }));
+                      if (errors.citta) setErrors((prev) => ({ ...prev, citta: undefined }));
+                    }}
+                    className={`bg-stone-800/50 border-stone-700 ${errors.citta ? "border-red-500/50" : ""}`}
+                  />
+                  {errors.citta && <p className="mt-1.5 text-sm text-red-400">{errors.citta}</p>}
+                </div>
+                <div>
+                  <Label className="mb-2 block">Provincia</Label>
+                  <Input
+                    placeholder="Es. MI"
+                    value={formData.provincia}
+                    onChange={(e) => setFormData((prev) => ({ ...prev, provincia: e.target.value }))}
+                    className="bg-stone-800/50 border-stone-700"
+                  />
+                </div>
               </div>
             </div>
           </motion.div>
 
-          {/* Location */}
+          {/* Dettagli: categoria, orari, telefono */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -432,186 +342,70 @@ export default function AddVenue() {
           >
             <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
               <MapPin className="w-5 h-5 text-amber-500" />
-              Posizione
+              Dettagli
             </h2>
-            
             <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label className="mb-2 block">Città *</Label>
-                  <Input
-                    placeholder="Es. Milano"
-                    value={formData.city}
-                    onChange={(e) => {
-                      setFormData(prev => ({ ...prev, city: e.target.value }));
-                      if (errors.city) setErrors(prev => ({ ...prev, city: undefined }));
-                    }}
-                    className={`bg-stone-800/50 border-stone-700 ${errors.city ? "border-red-500/50" : ""}`}
-                  />
-                  {errors.city && <p className="mt-1.5 text-sm text-red-400">{errors.city}</p>}
-                </div>
-                <div>
-                  <Label className="mb-2 block">Provincia</Label>
-                  <Input
-                    placeholder="Es. MI"
-                    value={formData.province}
-                    onChange={(e) => setFormData(prev => ({ ...prev, province: e.target.value }))}
-                    className="bg-stone-800/50 border-stone-700"
-                  />
+              <div>
+                <Label className="mb-2 block">Categoria *</Label>
+                <div className="flex flex-wrap gap-2">
+                  {categories.map((cat) => (
+                    <button
+                      key={cat.value}
+                      type="button"
+                      onClick={() => toggleCategory(cat.value)}
+                      className={`px-3 py-2 rounded-lg text-sm transition-all cursor-pointer ${
+                        formData.categoria === cat.value
+                          ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
+                          : "bg-stone-800 text-stone-400 border border-stone-700 hover:border-stone-600"
+                      }`}
+                    >
+                      {cat.label}
+                    </button>
+                  ))}
                 </div>
               </div>
               <div>
-                <Label className="mb-2 block">Paese</Label>
+                <Label className="mb-2 block flex items-center gap-2">
+                  <Clock className="w-4 h-4 text-stone-500" />
+                  Orari
+                </Label>
                 <Input
-                  placeholder="Es. Italia"
-                  value={formData.country}
-                  onChange={(e) => setFormData(prev => ({ ...prev, country: e.target.value }))}
+                  placeholder="Es. Lun-Sab 18:00-02:00"
+                  value={formData.orari}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, orari: e.target.value }))}
                   className="bg-stone-800/50 border-stone-700"
                 />
               </div>
-
               <div>
-                <Label className="mb-2 block">Indirizzo completo</Label>
+                <Label className="mb-2 block flex items-center gap-2">
+                  <Phone className="w-4 h-4 text-stone-500" />
+                  Telefono
+                </Label>
                 <Input
-                  placeholder="Via, numero civico, CAP"
-                  value={formData.address}
-                  onChange={(e) => setFormData(prev => ({ ...prev, address: e.target.value }))}
+                  placeholder="+39 02 1234567"
+                  value={formData.telefono}
+                  onChange={(e) => setFormData((prev) => ({ ...prev, telefono: e.target.value }))}
                   className="bg-stone-800/50 border-stone-700"
                 />
-              </div>
-
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label className="mb-2 block">Latitudine</Label>
-                  <Input
-                    type="number"
-                    step="any"
-                    placeholder="45.4642"
-                    value={formData.latitude || ""}
-                    onChange={(e) => setFormData(prev => ({ ...prev, latitude: parseFloat(e.target.value) || null }))}
-                    className="bg-stone-800/50 border-stone-700"
-                  />
-                </div>
-                <div>
-                  <Label className="mb-2 block">Longitudine</Label>
-                  <Input
-                    type="number"
-                    step="any"
-                    placeholder="9.1900"
-                    value={formData.longitude || ""}
-                    onChange={(e) => setFormData(prev => ({ ...prev, longitude: parseFloat(e.target.value) || null }))}
-                    className="bg-stone-800/50 border-stone-700"
-                  />
-                </div>
               </div>
             </div>
           </motion.div>
 
-          {/* Specialties */}
+          {/* Media: bucket images → image_url */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
             className="bg-stone-900/50 rounded-2xl border border-stone-800/50 p-6"
           >
-            <h2 className="text-lg font-semibold mb-4">Specialità</h2>
-            <div className="flex flex-wrap gap-2">
-              {specialtyOptions.map((specialty) => (
-                <button
-                  key={specialty}
-                  onClick={() => toggleSpecialty(specialty)}
-                  className={`px-3 py-1.5 rounded-full text-sm transition-all ${
-                    formData.specialties.includes(specialty)
-                      ? "bg-amber-500/20 text-amber-400 border border-amber-500/30"
-                      : "bg-stone-800 text-stone-400 border border-stone-700 hover:border-stone-600"
-                  }`}
-                >
-                  {specialty}
-                </button>
-              ))}
-            </div>
-          </motion.div>
-
-          {/* Contact */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="bg-stone-900/50 rounded-2xl border border-stone-800/50 p-6"
-          >
-            <h2 className="text-lg font-semibold mb-4">Contatti</h2>
-            
-            <div className="space-y-4">
-              <div className="grid grid-cols-2 gap-4">
-                <div>
-                  <Label className="mb-2 block flex items-center gap-2">
-                    <Phone className="w-4 h-4 text-stone-500" />
-                    Telefono
-                  </Label>
-                  <Input
-                    placeholder="+39 02 1234567"
-                    value={formData.phone}
-                    onChange={(e) => setFormData(prev => ({ ...prev, phone: e.target.value }))}
-                    className="bg-stone-800/50 border-stone-700"
-                  />
-                </div>
-                <div>
-                  <Label className="mb-2 block flex items-center gap-2">
-                    <Instagram className="w-4 h-4 text-stone-500" />
-                    Instagram
-                  </Label>
-                  <Input
-                    placeholder="@username"
-                    value={formData.instagram}
-                    onChange={(e) => setFormData(prev => ({ ...prev, instagram: e.target.value }))}
-                    className="bg-stone-800/50 border-stone-700"
-                  />
-                </div>
-              </div>
-
-              <div>
-                <Label className="mb-2 block flex items-center gap-2">
-                  <Globe className="w-4 h-4 text-stone-500" />
-                  Sito web
-                </Label>
-                <Input
-                  placeholder="https://..."
-                  value={formData.website}
-                  onChange={(e) => setFormData(prev => ({ ...prev, website: e.target.value }))}
-                  className="bg-stone-800/50 border-stone-700"
-                />
-              </div>
-
-              <div>
-                <Label className="mb-2 block flex items-center gap-2">
-                  <Clock className="w-4 h-4 text-stone-500" />
-                  Orari di apertura
-                </Label>
-                <Input
-                  placeholder="Es. Lun-Sab 18:00-02:00"
-                  value={formData.opening_hours}
-                  onChange={(e) => setFormData(prev => ({ ...prev, opening_hours: e.target.value }))}
-                  className="bg-stone-800/50 border-stone-700"
-                />
-              </div>
-            </div>
-          </motion.div>
-
-          {/* Cover Image e Video */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4 }}
-            className="bg-stone-900/50 rounded-2xl border border-stone-800/50 p-6 space-y-6"
-          >
             <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
               <ImageIcon className="w-5 h-5 text-amber-500" />
-              Immagine di copertina
+              Foto (bucket images)
             </h2>
             <div className="space-y-2">
               <label className="relative block w-full cursor-pointer">
                 <span className="block px-4 py-3 rounded-lg bg-stone-800 border border-stone-700 text-stone-300 hover:bg-stone-700">
-                  carica una foto
+                  Carica una foto
                 </span>
                 <input
                   type="file"
@@ -622,7 +416,7 @@ export default function AddVenue() {
                   style={{ fontSize: 0 }}
                 />
               </label>
-              <p className="text-xs text-stone-500">Fotocamera, video o galleria • max 5MB foto, 10MB video</p>
+              <p className="text-xs text-stone-500">max 5MB</p>
               {uploadProgress.total > 0 && (
                 <div className="space-y-1">
                   <div className="h-1.5 bg-stone-800 rounded-full overflow-hidden">
@@ -639,14 +433,9 @@ export default function AddVenue() {
             </div>
             {coverImageFiles.length > 0 && (
               <div className="flex flex-wrap gap-2 mt-3">
-                <p className="text-xs text-stone-500 w-full">Anteprima – clicca X per rimuovere</p>
                 {coverImageFiles.map((f, i) => (
                   <div key={`${f.name}-${i}`} className="relative group">
-                    {f.type.startsWith("video/") ? (
-                      <video src={URL.createObjectURL(f)} className="h-20 w-20 object-cover rounded-lg" muted playsInline />
-                    ) : (
-                      <img src={URL.createObjectURL(f)} alt="" className="h-20 w-20 object-cover rounded-lg" />
-                    )}
+                    <img src={URL.createObjectURL(f)} alt="" className="h-20 w-20 object-cover rounded-lg" />
                     <button
                       type="button"
                       onClick={() => setCoverImageFiles((prev) => prev.filter((_, idx) => idx !== i))}
@@ -659,48 +448,8 @@ export default function AddVenue() {
                 ))}
               </div>
             )}
-
-            <div className="pt-4 border-t border-stone-700">
-              <h3 className="text-base font-semibold mb-3 flex items-center gap-2">
-                <VideoIcon className="w-4 h-4 text-amber-500" />
-                Video breve (opzionale)
-              </h3>
-              <label className="relative block w-full cursor-pointer">
-                <span className="block px-4 py-3 rounded-lg bg-stone-800 border border-stone-700 text-stone-300 hover:bg-stone-700">
-                  Video breve (opzionale)
-                </span>
-                <input
-                  id="venue-video-input"
-                  ref={videoInputRef}
-                  type="file"
-                  accept="image/*,video/*"
-                  capture="environment"
-                  multiple
-                  onChange={(e) => {
-                    const f = e.target.files?.[0];
-                    if (f) setVideoFile(f);
-                    e.target.value = "";
-                  }}
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer"
-                  style={{ fontSize: 0 }}
-                />
-              </label>
-                <div className="flex gap-2 items-center mt-2">
-                  {videoFile && (
-                    <button
-                      type="button"
-                      onClick={() => setVideoFile(null)}
-                      className="text-xs text-stone-500 hover:text-stone-300"
-                    >
-                      Rimuovi
-                    </button>
-                  )}
-                </div>
-              <p className="text-xs text-stone-500 mt-1">max 10MB</p>
-            </div>
           </motion.div>
 
-          {/* Submit */}
           <Button
             onClick={handleSubmit}
             disabled={!isValid || isSubmitting}
