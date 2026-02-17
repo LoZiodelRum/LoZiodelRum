@@ -51,8 +51,10 @@ export default function AdminDashboard() {
   const [selected, setSelected] = useState(null);
   const [editForm, setEditForm] = useState({});
   const [uploadingImage, setUploadingImage] = useState(false);
+  const [uploadingMedia, setUploadingMedia] = useState(false);
   const [imagePreview, setImagePreview] = useState(null);
   const photoInputRef = useRef(null);
+  const mediaInputRef = useRef(null);
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -208,6 +210,35 @@ export default function AdminDashboard() {
     }
   };
 
+  const handleVideoOrPhotoUpload = async (e) => {
+    const file = e.target?.files?.[0];
+    if (!file) return;
+    const isVideo = file.type.startsWith("video/");
+    const isImage = file.type.startsWith("image/");
+    if (!isVideo && !isImage) {
+      toast({ title: "Seleziona un video o un'immagine", variant: "destructive" });
+      return;
+    }
+    setUploadingMedia(true);
+    try {
+      const url = await uploadToSupabaseStorage(file, "venues", isVideo ? "video" : "image");
+      if (isVideo) {
+        setEditForm((p) => ({ ...p, video_url: url }));
+        toast({ title: "Video caricato" });
+      } else {
+        const existing = (editForm.image_url || "").split(",").map((s) => s.trim()).filter(Boolean);
+        setEditForm((p) => ({ ...p, image_url: [...existing, url].join(",") }));
+        setImagePreview(URL.createObjectURL(file));
+        toast({ title: "Foto aggiunta" });
+      }
+    } catch (err) {
+      toast({ title: "Errore upload", description: err?.message, variant: "destructive" });
+    } finally {
+      setUploadingMedia(false);
+      e.target.value = "";
+    }
+  };
+
   const localiInAttesa = locali.filter((l) => l.approvato !== true);
   const localiOnline = locali.filter((l) => l.approvato === true);
   const usersPending = users.filter((u) => u.status === "pending");
@@ -306,7 +337,15 @@ export default function AdminDashboard() {
                       <div><label className={labelClass}>Fascia prezzo</label><select value={editForm.price_range} onChange={(e) => setEditForm((p) => ({ ...p, price_range: e.target.value }))} className={inputClass}><option value="€">€</option><option value="€€">€€</option><option value="€€€">€€€</option><option value="€€€€">€€€€</option></select></div>
                     </div>
                     <div><label className={labelClass}>Slug</label><input type="text" value={editForm.slug} onChange={(e) => setEditForm((p) => ({ ...p, slug: e.target.value }))} className={inputClass} placeholder="nome-locale" /></div>
-                    <div><label className={labelClass}>Video URL</label><input type="text" value={editForm.video_url} onChange={(e) => setEditForm((p) => ({ ...p, video_url: e.target.value }))} className={inputClass} placeholder="https://..." /></div>
+                    <div>
+                      <label className={labelClass}>Video o foto</label>
+                      <input ref={mediaInputRef} type="file" accept="image/*,video/*" className="hidden" onChange={handleVideoOrPhotoUpload} />
+                      <button type="button" onClick={() => mediaInputRef.current?.click()} disabled={uploadingMedia} className="flex items-center gap-2 px-4 py-2 bg-stone-800 hover:bg-stone-700 disabled:opacity-50 border border-stone-700 rounded-xl text-stone-300 text-sm transition-colors">
+                        {uploadingMedia ? <Loader2 className="w-4 h-4 animate-spin" /> : <ImagePlus className="w-4 h-4" />}
+                        Allega video o foto
+                      </button>
+                      {editForm.video_url && <p className="text-xs text-stone-500 mt-1 truncate">Video: {editForm.video_url}</p>}
+                    </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div><label className={labelClass}>Latitudine</label><input type="number" step="any" value={editForm.latitudine} onChange={(e) => setEditForm((p) => ({ ...p, latitudine: e.target.value }))} className={inputClass} placeholder="45.46" /></div>
                       <div><label className={labelClass}>Longitudine</label><input type="number" step="any" value={editForm.longitudine} onChange={(e) => setEditForm((p) => ({ ...p, longitudine: e.target.value }))} className={inputClass} placeholder="9.19" /></div>
