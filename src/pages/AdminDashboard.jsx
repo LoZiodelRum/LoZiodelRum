@@ -9,7 +9,7 @@ import { supabase } from "@/lib/supabase";
 import { createPageUrl } from "@/utils";
 import {
   MapPin, ChevronLeft, Loader2, RefreshCw, X, Save, Trash2,
-  CheckCircle, Clock, User, MessageSquare, Store, ImagePlus, Edit3
+  CheckCircle, Clock, User, MessageSquare, Store, ImagePlus
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
@@ -88,6 +88,15 @@ export default function AdminDashboard() {
         latitudine: item.latitudine != null ? String(item.latitudine) : "",
         longitudine: item.longitudine != null ? String(item.longitudine) : "",
         approvato: item.approvato === true,
+        telefono: safeStr(item.telefono),
+        orari: safeStr(item.orari),
+        paese: safeStr(item.paese),
+        sito: safeStr(item.sito),
+        instagram: safeStr(item.instagram),
+        categoria: safeStr(item.categoria) || "cocktail_bar",
+        price_range: safeStr(item.price_range) || "€€",
+        slug: safeStr(item.slug),
+        video_url: safeStr(item.video_url),
       });
     } else if (type === "user") {
       setEditForm({
@@ -112,15 +121,24 @@ export default function AdminDashboard() {
       const { item, type } = selected;
       if (type === "locale") {
         const payload = {
-          nome: item.nome || editForm.nome || null,
-          indirizzo: item.indirizzo || editForm.indirizzo || null,
-          citta: item.citta || editForm.citta || null,
-          descrizione: item.descrizione || editForm.descrizione || null,
-          image_url: editForm.image_url || item.image_url || null,
-          latitudine: safeNum(editForm.latitudine) ?? item.latitudine,
-          longitudine: safeNum(editForm.longitudine) ?? item.longitudine,
+          nome: editForm.nome || null,
+          indirizzo: editForm.indirizzo || null,
+          citta: editForm.citta || null,
+          descrizione: editForm.descrizione || null,
+          image_url: editForm.image_url || null,
+          latitudine: safeNum(editForm.latitudine),
+          longitudine: safeNum(editForm.longitudine),
           approvato: !!editForm.approvato,
           status: editForm.approvato ? "approved" : (item.status || "pending"),
+          telefono: editForm.telefono || null,
+          orari: editForm.orari || null,
+          paese: editForm.paese || null,
+          sito: editForm.sito || null,
+          instagram: editForm.instagram || null,
+          categoria: editForm.categoria || "cocktail_bar",
+          price_range: editForm.price_range || "€€",
+          slug: editForm.slug || null,
+          video_url: editForm.video_url || null,
         };
         const { error } = await supabase.from(TABLE_LOCALI).update(payload).eq("id", item.id);
         if (error) throw error;
@@ -239,10 +257,10 @@ export default function AdminDashboard() {
               </h2>
 
               {selected.type === "locale" && (
-                <div className="space-y-6">
-                  {/* SCHEDA FINITA – Hero + dati */}
+                <div className="space-y-6 overflow-y-auto max-h-[85vh] pr-2">
+                  {/* Hero + Allega foto */}
                   <div className="rounded-2xl overflow-hidden border border-stone-800">
-                    <div className="relative h-48 bg-stone-800">
+                    <div className="relative h-40 bg-stone-800">
                       <img
                         src={imagePreview || (editForm.image_url ? (editForm.image_url || "").split(",")[0]?.trim() : null) || "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800"}
                         alt={editForm.nome}
@@ -250,32 +268,49 @@ export default function AdminDashboard() {
                         onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800"; }}
                       />
                       <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-transparent to-transparent" />
-                      <input
-                        ref={photoInputRef}
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={handlePhotoUpload}
-                      />
+                      <input ref={photoInputRef} type="file" accept="image/*" className="hidden" onChange={handlePhotoUpload} />
                       <button
                         type="button"
                         onClick={() => photoInputRef.current?.click()}
                         disabled={uploadingImage}
-                        className="absolute bottom-3 left-3 flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-stone-950 font-bold rounded-xl transition-colors"
+                        className="absolute bottom-3 left-3 flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-stone-950 font-bold rounded-xl"
                       >
                         {uploadingImage ? <Loader2 className="w-4 h-4 animate-spin" /> : <ImagePlus className="w-4 h-4" />}
                         Allega foto
                       </button>
                     </div>
-                    <div className="p-4 bg-stone-900/90">
-                      <h3 className="text-xl font-bold text-white mb-1">{editForm.nome || "Senza nome"}</h3>
-                      <p className="text-amber-500 flex items-center gap-2 text-sm">
-                        <MapPin className="w-4 h-4 shrink-0" />
-                        {editForm.indirizzo || "—"}, {editForm.citta || "—"}
-                      </p>
-                      {editForm.descrizione && (
-                        <p className="text-stone-400 text-sm mt-3 leading-relaxed">{editForm.descrizione}</p>
-                      )}
+                  </div>
+
+                  {/* Tutti i campi modificabili */}
+                  <div className="grid gap-4">
+                    <div><label className={labelClass}>Nome *</label><input type="text" value={editForm.nome} onChange={(e) => setEditForm((p) => ({ ...p, nome: e.target.value }))} className={inputClass} placeholder="Nome locale" /></div>
+                    <div><label className={labelClass}>Indirizzo</label><input type="text" value={editForm.indirizzo} onChange={(e) => setEditForm((p) => ({ ...p, indirizzo: e.target.value }))} className={inputClass} placeholder="Via Roma 1" /></div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div><label className={labelClass}>Città</label><input type="text" value={editForm.citta} onChange={(e) => setEditForm((p) => ({ ...p, citta: e.target.value }))} className={inputClass} placeholder="Milano" /></div>
+                      <div><label className={labelClass}>Paese</label><input type="text" value={editForm.paese} onChange={(e) => setEditForm((p) => ({ ...p, paese: e.target.value }))} className={inputClass} placeholder="Italia" /></div>
+                    </div>
+                    <div><label className={labelClass}>Descrizione</label><textarea value={editForm.descrizione} onChange={(e) => setEditForm((p) => ({ ...p, descrizione: e.target.value }))} className={inputClass + " min-h-[80px]"} rows={4} placeholder="Descrizione" /></div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div><label className={labelClass}>Telefono</label><input type="text" value={editForm.telefono} onChange={(e) => setEditForm((p) => ({ ...p, telefono: e.target.value }))} className={inputClass} placeholder="+39 02 1234567" /></div>
+                      <div><label className={labelClass}>Orari</label><input type="text" value={editForm.orari} onChange={(e) => setEditForm((p) => ({ ...p, orari: e.target.value }))} className={inputClass} placeholder="Mar-Dom 18:00-02:00" /></div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div><label className={labelClass}>Sito web</label><input type="text" value={editForm.sito} onChange={(e) => setEditForm((p) => ({ ...p, sito: e.target.value }))} className={inputClass} placeholder="https://..." /></div>
+                      <div><label className={labelClass}>Instagram</label><input type="text" value={editForm.instagram} onChange={(e) => setEditForm((p) => ({ ...p, instagram: e.target.value }))} className={inputClass} placeholder="@nomelocale" /></div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div><label className={labelClass}>Categoria</label><input type="text" value={editForm.categoria} onChange={(e) => setEditForm((p) => ({ ...p, categoria: e.target.value }))} className={inputClass} placeholder="cocktail_bar" /></div>
+                      <div><label className={labelClass}>Fascia prezzo</label><select value={editForm.price_range} onChange={(e) => setEditForm((p) => ({ ...p, price_range: e.target.value }))} className={inputClass}><option value="€">€</option><option value="€€">€€</option><option value="€€€">€€€</option><option value="€€€€">€€€€</option></select></div>
+                    </div>
+                    <div><label className={labelClass}>Slug</label><input type="text" value={editForm.slug} onChange={(e) => setEditForm((p) => ({ ...p, slug: e.target.value }))} className={inputClass} placeholder="nome-locale" /></div>
+                    <div><label className={labelClass}>Video URL</label><input type="text" value={editForm.video_url} onChange={(e) => setEditForm((p) => ({ ...p, video_url: e.target.value }))} className={inputClass} placeholder="https://..." /></div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div><label className={labelClass}>Latitudine</label><input type="number" step="any" value={editForm.latitudine} onChange={(e) => setEditForm((p) => ({ ...p, latitudine: e.target.value }))} className={inputClass} placeholder="45.46" /></div>
+                      <div><label className={labelClass}>Longitudine</label><input type="number" step="any" value={editForm.longitudine} onChange={(e) => setEditForm((p) => ({ ...p, longitudine: e.target.value }))} className={inputClass} placeholder="9.19" /></div>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <input type="checkbox" id="approvato" checked={editForm.approvato} onChange={(e) => setEditForm((p) => ({ ...p, approvato: e.target.checked }))} className="w-4 h-4 rounded border-stone-600 bg-stone-800 text-amber-500" />
+                      <label htmlFor="approvato" className="text-sm font-medium">Approvato</label>
                     </div>
                   </div>
 
@@ -283,49 +318,16 @@ export default function AdminDashboard() {
                   <div>
                     <p className="text-xs uppercase text-stone-500 font-bold mb-2">Posizione sulla mappa</p>
                     {editForm.latitudine && editForm.longitudine && !isNaN(parseFloat(editForm.latitudine)) && !isNaN(parseFloat(editForm.longitudine)) ? (
-                      <div className="h-[240px] rounded-xl overflow-hidden border border-stone-800">
-                        <MapContainer
-                          center={[parseFloat(editForm.latitudine), parseFloat(editForm.longitudine)]}
-                          zoom={15}
-                          className="h-full w-full"
-                          style={{ background: "#1c1917" }}
-                          zoomControl={false}
-                        >
-                          <TileLayer
-                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                            url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
-                          />
-                          <Marker
-                            position={[parseFloat(editForm.latitudine), parseFloat(editForm.longitudine)]}
-                            icon={adminPinIcon}
-                          />
+                      <div className="h-[220px] rounded-xl overflow-hidden border border-stone-800">
+                        <MapContainer center={[parseFloat(editForm.latitudine), parseFloat(editForm.longitudine)]} zoom={15} className="h-full w-full" style={{ background: "#1c1917" }} zoomControl={false}>
+                          <TileLayer attribution='&copy; OpenStreetMap' url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png" />
+                          <Marker position={[parseFloat(editForm.latitudine), parseFloat(editForm.longitudine)]} icon={adminPinIcon} />
                           <MapCenterUpdater center={[parseFloat(editForm.latitudine), parseFloat(editForm.longitudine)]} />
                         </MapContainer>
                       </div>
                     ) : (
-                      <div className="h-[120px] rounded-xl border border-stone-800 bg-stone-800/50 flex items-center justify-center text-stone-500 text-sm">
-                        Inserisci latitudine e longitudine in Modifica dettagli per vedere il marker
-                      </div>
+                      <div className="h-[100px] rounded-xl border border-stone-800 bg-stone-800/50 flex items-center justify-center text-stone-500 text-sm">Inserisci latitudine e longitudine per vedere il marker</div>
                     )}
-                  </div>
-
-                  {/* Approvato + link Modifica */}
-                  <div className="flex flex-wrap items-center gap-4">
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="checkbox"
-                        id="approvato"
-                        checked={editForm.approvato}
-                        onChange={(e) => setEditForm((p) => ({ ...p, approvato: e.target.checked }))}
-                        className="w-4 h-4 rounded border-stone-600 bg-stone-800 text-amber-500"
-                      />
-                      <label htmlFor="approvato" className="text-sm font-medium">Approvato</label>
-                    </div>
-                    <Link to={createPageUrl(`EditVenue?id=${selected.item.id}`)} onClick={() => setSelected(null)}>
-                      <Button variant="outline" size="sm" className="border-stone-600 text-stone-300">
-                        <Edit3 className="w-4 h-4 mr-2" /> Modifica dettagli (nome, indirizzo, coordinate…)
-                      </Button>
-                    </Link>
                   </div>
                 </div>
               )}
