@@ -46,8 +46,19 @@ export default function EditVenue() {
   const stateVenue = location.state?.fromCloud ? location.state?.venue : null;
 
   const navigate = useNavigate();
-  const { getVenueById, updateVenue, updateVenueCloud, deleteVenue, rejectVenueCloud, isSupabaseConfigured } = useAppData();
-  const venue = stateVenue || getVenueById(venueId);
+  const { getVenueById, fetchVenueByIdFromSupabase, updateVenue, updateVenueCloud, deleteVenue, deleteVenueCloud, isSupabaseConfigured } = useAppData();
+  const [fetchedVenue, setFetchedVenue] = useState(null);
+  const [fetchingVenue, setFetchingVenue] = useState(false);
+  const venue = stateVenue || getVenueById(venueId) || fetchedVenue;
+
+  useEffect(() => {
+    if (!venueId || stateVenue || getVenueById(venueId) || fetchedVenue) return;
+    setFetchingVenue(true);
+    fetchVenueByIdFromSupabase(venueId).then((v) => {
+      setFetchedVenue(v);
+      setFetchingVenue(false);
+    }).catch(() => setFetchingVenue(false));
+  }, [venueId, stateVenue, fetchedVenue, fetchVenueByIdFromSupabase]);
 
   const [formData, setFormData] = useState({
     name: "",
@@ -74,7 +85,7 @@ export default function EditVenue() {
   const [uploadProgress, setUploadProgress] = useState({ current: 0, total: 0 });
 
   useEffect(() => {
-    if (venue && venueId) {
+    if (venue && venueId && venue.id === venueId) {
       setFormData({
         name: venue.name || "",
         description: venue.description || "",
@@ -94,10 +105,9 @@ export default function EditVenue() {
         cover_image: venue.cover_image || "",
       });
     }
-  // venue non in deps: getVenueById restituisce nuovo oggetto ogni render, causava reset continuo e blocco modifica
-  }, [venueId]);
+  }, [venue, venueId]);
 
-  const isCloudVenue = !!location.state?.fromCloud;
+  const isCloudVenue = !!location.state?.fromCloud || !!fetchedVenue;
   const updateVenueMutation = useMutation({
     mutationFn: async (venueData) => {
       return isCloudVenue ? updateVenueCloud(venueId, venueData) : updateVenue(venueId, venueData);
@@ -105,7 +115,7 @@ export default function EditVenue() {
     onSuccess: () => {
       setIsSubmitting(false);
       if (isCloudVenue) {
-        navigate(createPageUrl("Dashboard"));
+        navigate(createPageUrl("AdminDashboard"));
       } else {
         navigate(createPageUrl(`VenueDetail?id=${venueId}`));
       }
@@ -160,8 +170,8 @@ export default function EditVenue() {
     if (!venueId || !venue) return;
     if (isCloudVenue) {
       const supabaseId = venue.supabase_id || venueId;
-      await rejectVenueCloud(supabaseId);
-      navigate(createPageUrl("Dashboard"));
+      await deleteVenueCloud(supabaseId);
+      navigate(createPageUrl("AdminDashboard"));
     } else {
       deleteVenue(venueId);
       navigate(createPageUrl("Explore"));
@@ -185,6 +195,13 @@ export default function EditVenue() {
   };
 
   if (venueId && !venue) {
+    if (fetchingVenue) {
+      return (
+        <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "1rem" }}>
+          <Loader2 className="w-12 h-12 text-amber-500 animate-spin" />
+        </div>
+      );
+    }
     return (
       <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", padding: "1rem" }}>
         <div style={{ textAlign: "center" }}>

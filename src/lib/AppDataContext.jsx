@@ -233,6 +233,12 @@ export function AppDataProvider({ children }) {
         const v = venues.find((x) => x.id === id);
         return v ? enrichVenueWithRealCount(v) : null;
       },
+      fetchVenueByIdFromSupabase: async (id) => {
+        if (!isSupabaseConfigured() || !id) return null;
+        const { data, error } = await supabase.from(TABLE_LOCALI).select("*").eq("id", id).maybeSingle();
+        if (error || !data) return null;
+        return mapLocaliToVenue(data);
+      },
       addVenue: async (data) => {
         const id = data.id || generateId();
         const venue = { ...data, id, review_count: 0, overall_rating: null, verified: data.verified ?? false };
