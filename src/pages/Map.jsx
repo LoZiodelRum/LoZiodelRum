@@ -15,25 +15,40 @@ import VenueCard from "@/components/venue/VenueCard";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 
-// Pin arancione con icona bicchiere/lampada (come nell'immagine)
+// Pin arancione: iconAnchor alla punta per posizionamento preciso a ogni livello di zoom
 const pinIcon = new L.DivIcon({
   className: "custom-pin",
   html: `<div style="
-    width: 36px; height: 36px;
-    background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
-    border-radius: 50% 50% 50% 0;
-    transform: rotate(-45deg);
-    display: flex; align-items: center; justify-content: center;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-    border: 2px solid white;
-  "><div style="transform: rotate(45deg); color: #1c1917;">
-    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
-      <path d="M8 2h8l4 10H4l4-10zm2 2l-2 6h8l-2-6h-4zM4 14h16v2H4v-2zm5 4h6v4H9v-4z"/>
-    </svg>
-  </div></div>`,
-  iconSize: [36, 36],
-  iconAnchor: [18, 36],
-  popupAnchor: [0, -36],
+    width: 36px; height: 48px;
+    position: relative;
+    display: flex; align-items: flex-start; justify-content: center;
+  ">
+    <div style="
+      width: 36px; height: 36px;
+      background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+      border-radius: 50% 50% 50% 0;
+      transform: rotate(-45deg);
+      display: flex; align-items: center; justify-content: center;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+      border: 2px solid white;
+    "><div style="transform: rotate(45deg); color: #1c1917;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M8 2h8l4 10H4l4-10zm2 2l-2 6h8l-2-6h-4zM4 14h16v2H4v-2zm5 4h6v4H9v-4z"/>
+      </svg>
+    </div>
+    <div style="
+      position: absolute; left: 50%; bottom: 0;
+      width: 0; height: 0;
+      margin-left: -6px;
+      border-left: 6px solid transparent;
+      border-right: 6px solid transparent;
+      border-top: 12px solid #b45309;
+      filter: drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+    "></div>
+  </div>`,
+  iconSize: [36, 48],
+  iconAnchor: [18, 48],
+  popupAnchor: [0, -48],
 });
 
 export default function MapPage() {
