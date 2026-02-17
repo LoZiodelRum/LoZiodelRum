@@ -102,8 +102,13 @@ export default function AdminDashboard() {
                   <h3 className="text-xs uppercase text-stone-500 font-bold mb-2">Descrizione</h3>
                   <p className="text-stone-300 text-sm leading-relaxed">{selected.descrizione || "Nessuna descrizione fornita."}</p>
                 </div>
-                <div className="flex gap-4 pt-4">
-                  <Button onClick={() => handleApprove(selected.id)} className="flex-1 bg-green-600 hover:bg-green-700 h-14 text-lg font-bold">
+                <div className="flex gap-4 pt-4 flex-wrap">
+                  <Link to={createPageUrl(`EditVenue?id=${selected.id}`)} onClick={() => setSelected(null)} className="flex-1 min-w-[140px]">
+                    <Button variant="outline" className="w-full h-14 border-stone-600 text-stone-300 hover:bg-stone-800">
+                      <Edit3 className="mr-2" /> Modifica tutti i campi
+                    </Button>
+                  </Link>
+                  <Button onClick={() => handleApprove(selected.id)} className="flex-1 min-w-[140px] bg-green-600 hover:bg-green-700 h-14 text-lg font-bold">
                     <Check className="mr-2" /> Approva Locale
                   </Button>
                   <Button onClick={() => handleDelete(selected.id)} variant="destructive" className="h-14 px-6">
@@ -126,6 +131,9 @@ export default function AdminDashboard() {
                   <div className="text-stone-500 text-sm">{l.citta}</div>
                 </div>
                 <div className="flex gap-2">
+                  <Link to={createPageUrl(`EditVenue?id=${l.id}`)} onClick={(e) => e.stopPropagation()}>
+                    <Button size="sm" variant="outline"><Edit3 className="mr-2 h-4 w-4" /> Modifica</Button>
+                  </Link>
                   <Button size="sm" variant="outline" onClick={() => setSelected(l)}><Eye className="mr-2 h-4 w-4" /> Vedi</Button>
                   <Button size="sm" className="bg-green-600" onClick={() => handleApprove(l.id)}>Approva</Button>
                 </div>

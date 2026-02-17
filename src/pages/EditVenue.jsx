@@ -77,6 +77,8 @@ export default function EditVenue() {
     instagram: "",
     opening_hours: "",
     cover_image: "",
+    slug: "",
+    video_url: "",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -103,6 +105,8 @@ export default function EditVenue() {
         instagram: venue.instagram || "",
         opening_hours: venue.opening_hours || "",
         cover_image: venue.cover_image || "",
+        slug: venue.slug || "",
+        video_url: venue.video_url || "",
       });
     }
   }, [venue, venueId]);
@@ -479,6 +483,14 @@ export default function EditVenue() {
               <div>
                 <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem", fontSize: "0.875rem" }}><Clock style={{ width: 16, height: 16, color: "#f59e0b" }} /> Orari</label>
                 <input type="text" value={formData.opening_hours} onChange={(e) => setFormData((p) => ({ ...p, opening_hours: e.target.value }))} onPaste={(e) => handlePaste("opening_hours", e)} placeholder="Mar-Dom 18:00-02:00" style={fieldStyle} />
+              </div>
+              <div>
+                <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.875rem" }}>Slug (URL amichevole)</label>
+                <input type="text" value={formData.slug} onChange={(e) => setFormData((p) => ({ ...p, slug: e.target.value }))} placeholder="nome-locale" style={fieldStyle} />
+              </div>
+              <div>
+                <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.875rem" }}>Video URL</label>
+                <input type="text" value={formData.video_url} onChange={(e) => setFormData((p) => ({ ...p, video_url: e.target.value }))} placeholder="https://..." style={fieldStyle} />
               </div>
             </div>
           </section>

@@ -324,6 +324,8 @@ export function AppDataProvider({ children }) {
             sito: data.website,
             instagram: data.instagram,
             orari: data.opening_hours,
+            slug: data.slug || null,
+            video_url: data.video_url || null,
           };
           supabase.from(TABLE_LOCALI).update(row).eq("id", id).then(() => {}).catch(() => {});
         }
@@ -347,6 +349,8 @@ export function AppDataProvider({ children }) {
           sito: data.website,
           instagram: data.instagram,
           orari: data.opening_hours,
+          slug: data.slug || null,
+          video_url: data.video_url || null,
         };
         await supabase.from(TABLE_LOCALI).update(row).eq("id", id);
         return { id, ...data };
