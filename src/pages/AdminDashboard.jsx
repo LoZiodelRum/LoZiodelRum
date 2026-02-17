@@ -1,7 +1,7 @@
 /**
- * AdminDashboard – ZERO dati statici. Solo Supabase tabella Locali.
- * Stato iniziale: []. Nessun import da data/venues.js o file locali.
- * Approvato da DB = verde. Elimina/Rifiuta = .delete() permanente.
+ * AdminDashboard – ZERO dati statici. NESSUN import da venues.js o file locali.
+ * Stato iniziale: useState([]). Fetch SOLO da supabase.from('Locali').select('*').
+ * approvato: letto dal DB, mai sovrascritto.
  */
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
@@ -55,12 +55,13 @@ function rowToDisplay(row) {
   };
 }
 
+/** Legge approvato dal DB. NON sovrascrive. Se DB dice true → locale approvato. */
 function isApprovedFromDb(row) {
   return row.approvato === true || String(row.status || "").toLowerCase() === "approved";
 }
 
 export default function AdminDashboard() {
-  const [locali, setLocali] = useState([]);
+  const [venues, setVenues] = useState([]);
   const [pendingRegistrations, setPendingRegistrations] = useState([]);
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(null);
@@ -75,18 +76,18 @@ export default function AdminDashboard() {
       const { data, error } = await supabase.from("Locali").select("*").order("created_at", { ascending: false });
 
       if (error) {
-        console.error("[AdminDashboard] Errore Supabase esatto:", error);
+        console.error("[AdminDashboard] Errore Supabase:", error);
         throw error;
       }
 
-      const list = Array.isArray(data) ? data : [];
-      setLocali(list);
+      console.log("DATI DA SUPABASE:", data);
 
-      console.table(list.map((r) => ({ id: r.id, nome: r.nome, citta: r.citta, status: r.status, approvato: r.approvato })));
+      const list = Array.isArray(data) ? data : [];
+      setVenues(list);
 
       const hasIlCantiere = list.some((r) => String(r.nome || "").toLowerCase().includes("cantiere"));
       if (!hasIlCantiere && list.length > 0) {
-        console.error("[AdminDashboard] 'Il Cantiere' NON in lista. Righe:", list.length, "| Nomi:", list.map((r) => r.nome));
+        console.error("[AdminDashboard] 'Il Cantiere' NON in lista. Totale:", list.length, "| Nomi:", list.map((r) => r.nome));
       }
 
       const { data: regs, error: errRegs } = await supabase.from(TABLE_APP_USERS).select("*").eq("status", "pending").order("created_at", { ascending: false });
@@ -125,7 +126,7 @@ export default function AdminDashboard() {
   };
 
   const handleDeleteLocale = async (row) => {
-    if (!confirm(`Eliminare definitivamente "${row.nome}"? Il locale sparirà per sempre.`)) return;
+    if (!confirm(`Eliminare definitivamente "${row.nome}"?`)) return;
     setUpdatingId(row.id);
     try {
       const { error } = await supabase.from("Locali").delete().eq("id", row.id);
@@ -186,9 +187,9 @@ export default function AdminDashboard() {
   const pendingBartenders = pendingRegistrations.filter((r) => r.role === "bartender");
   const pendingUsers = pendingRegistrations.filter((r) => r.role === "user" || r.role === "proprietario");
 
-  const daRevisionare = locali.filter((r) => !isApprovedFromDb(r));
-  const approvati = locali.filter((r) => isApprovedFromDb(r));
-  const localiOrdinati = [...daRevisionare, ...approvati];
+  const daRevisionare = venues.filter((r) => !isApprovedFromDb(r));
+  const approvati = venues.filter((r) => isApprovedFromDb(r));
+  const venuesOrdinati = [...daRevisionare, ...approvati];
 
   if (!isSupabaseConfigured?.()) {
     return (
@@ -207,7 +208,7 @@ export default function AdminDashboard() {
           </Link>
           <div>
             <h1 className="text-2xl md:text-3xl font-bold">Admin – Verifica profili</h1>
-            <p className="text-stone-500">Solo Supabase · Tabella: Locali</p>
+            <p className="text-stone-500">Solo Supabase · Tabella: Locali · Nessun dato statico</p>
           </div>
           <Button variant="outline" size="sm" onClick={loadData} disabled={loading} className="ml-auto">
             <RefreshCw className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`} />
@@ -255,13 +256,13 @@ export default function AdminDashboard() {
               <p className="text-sm text-stone-500 mb-4">
                 In attesa: {daRevisionare.length} · Approvati: {approvati.length}
               </p>
-              {locali.length === 0 ? (
+              {venues.length === 0 ? (
                 <p className="text-stone-500 py-4">
                   {!loadError ? "Nessun locale nella tabella Locali." : "Impossibile caricare."}
                 </p>
               ) : (
                 <div className="space-y-3">
-                  {localiOrdinati.map((row) => {
+                  {venuesOrdinati.map((row) => {
                     const d = rowToDisplay(row);
                     const isUpdating = updatingId === row.id;
                     const isApproved = isApprovedFromDb(row);
