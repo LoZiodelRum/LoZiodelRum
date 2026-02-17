@@ -131,7 +131,7 @@ export default function AddBartender() {
         if (imageFiles.length > 0) {
           const urls = await uploadMultipleToSupabaseStorage(
             imageFiles,
-            "bartenders",
+            "",
             (current, total) => setUploadProgress({ current, total })
           );
           imageUrl = urlsToDbString(urls);
@@ -139,7 +139,7 @@ export default function AddBartender() {
         if (videoFiles.length > 0) {
           const urls = await uploadMultipleToSupabaseStorage(
             videoFiles,
-            "bartenders",
+            "",
             (current, total) => setUploadProgress({ current, total })
           );
           videoUrl = urls[0] || urlsToDbString(urls) || null;

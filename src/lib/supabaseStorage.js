@@ -28,7 +28,7 @@ export async function uploadToSupabaseStorage(file, folder, type = "image") {
   }
   const ext = file.name.split(".").pop() || (fileType === "video" ? "mp4" : "jpg");
   const safeName = (file.name || "").replace(/[^a-zA-Z0-9.-]/g, "_").slice(0, 50);
-  const path = `public/${folder}/${Date.now()}_${safeName || Math.random().toString(36).slice(2)}.${ext}`;
+  const path = folder ? `public/${folder}/${Date.now()}_${safeName || Math.random().toString(36).slice(2)}.${ext}` : `${Date.now()}_${safeName || Math.random().toString(36).slice(2)}.${ext}`;
   const { error } = await supabase.storage.from(BUCKET).upload(path, file, {
     cacheControl: "3600",
     upsert: false,
