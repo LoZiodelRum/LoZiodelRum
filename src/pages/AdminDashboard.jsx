@@ -95,6 +95,33 @@ export default function AdminDashboard() {
 
   useEffect(() => { loadData(); }, [loadData]);
 
+  // Ripristino temporaneo: inserisce Shibuya Izakaya (rimuovere dopo l'uso)
+  const insertShibuyaIzakaya = async () => {
+    setSaving(true);
+    try {
+      const payload = {
+        nome: "Shibuya Izakaya",
+        citta: "Napoli",
+        indirizzo: "Napoli, Italia",
+        descrizione: "Izakaya tradizionale con un'ampia selezione di cocktail e piatti tipici giapponesi in un'atmosfera ricercata.",
+        categoria: "cocktail_bar",
+        image_url: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b",
+        approvato: true,
+        status: "approved",
+        paese: "Italia",
+      };
+      const { data, error } = await supabase.from(TABLE_LOCALI).insert(payload).select().single();
+      if (error) throw error;
+      toast({ title: "Locale inserito", description: `${data.nome} aggiunto con successo.` });
+      loadData();
+      reloadVenuesFromSupabase?.();
+    } catch (err) {
+      toast({ title: "Errore inserimento", description: err?.message, variant: "destructive" });
+    } finally {
+      setSaving(false);
+    }
+  };
+
   const openModal = (item, type) => {
     setSelected({ item, type });
     setImagePreview(null);
@@ -509,9 +536,21 @@ export default function AdminDashboard() {
 
         {/* LOCALI */}
         <section className="mb-12">
-          <h2 className="text-amber-500 font-bold mb-4 flex items-center gap-2 text-xl">
-            <Store className="w-5 h-5" /> Locali
-          </h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-amber-500 font-bold flex items-center gap-2 text-xl">
+              <Store className="w-5 h-5" /> Locali
+            </h2>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={insertShibuyaIzakaya}
+              disabled={saving}
+              className="text-xs border-amber-500/50 text-amber-500 hover:bg-amber-500/10"
+              title="Ripristino temporaneo: inserisce Shibuya Izakaya"
+            >
+              {saving ? <Loader2 className="w-3 h-3 animate-spin" /> : "+ Shibuya Izakaya"}
+            </Button>
+          </div>
           <div className="mb-4">
             <h3 className="text-amber-400/80 font-semibold mb-2 flex items-center gap-2">
               <Clock className="w-4 h-4" /> Da approvare ({localiInAttesa.length})
