@@ -1,10 +1,10 @@
 /**
- * Upload file su Supabase Storage (bucket 'media').
- * Usa supabase.storage.from('media').upload() e getPublicUrl().
+ * Upload file su Supabase Storage (bucket 'images').
+ * Usa supabase.storage.from('images').upload() e getPublicUrl().
  */
 import { supabase, isSupabaseConfigured } from "./supabase";
 
-const BUCKET = "media";
+const BUCKET = "images";
 const MAX_IMAGE_SIZE = 5 * 1024 * 1024; // 5MB
 const MAX_VIDEO_SIZE = 10 * 1024 * 1024; // 10MB
 
@@ -34,7 +34,14 @@ export async function uploadToSupabaseStorage(file, folder, type = "image") {
     upsert: false,
   });
   if (error) {
-    console.error("[Supabase] storage upload - errore completo:", { error, message: error.message, statusCode: error.statusCode });
+    console.error("[Supabase] storage upload - errore completo:", {
+      error,
+      message: error.message,
+      statusCode: error.statusCode,
+      errorDetails: error.error,
+      name: error.name,
+      hint: "Se statusCode 403 o 'new row violates row-level security', verifica RLS sul bucket 'images' in Supabase Dashboard → Storage → images → Policies",
+    });
     throw new Error(error.message || "Errore caricamento file");
   }
   const { data } = supabase.storage.from(BUCKET).getPublicUrl(path);
@@ -69,4 +76,48 @@ export function urlsToDbString(urls) {
 export function dbStringToUrls(str) {
   if (!str || typeof str !== "string") return [];
   return str.split(",").map((s) => s.trim()).filter(Boolean);
+}
+
+/**
+ * Estrae bucket e path da un URL pubblico Supabase.
+ * Es: .../public/images/bartenders/123.jpg → { bucket: "images", path: "bartenders/123.jpg" }
+ */
+export function extractStoragePathFromUrl(url) {
+  if (!url || typeof url !== "string") return null;
+  const match = url.match(/\/storage\/v1\/object\/public\/([^/]+)\/(.+)$/);
+  return match ? { bucket: match[1], path: match[2] } : null;
+}
+
+/**
+ * Rimuove uno o più file dal bucket 'images' (e da 'media' per retrocompatibilità).
+ * @param {string|string[]} urlOrUrls - URL pubblico o array di URL separati da virgola
+ * @returns {Promise<{ removed: string[], errors: string[] }>}
+ */
+export async function removeFromImagesStorage(urlOrUrls) {
+  if (!isSupabaseConfigured() || !supabase) return { removed: [], errors: [] };
+  const urls = Array.isArray(urlOrUrls)
+    ? urlOrUrls
+    : typeof urlOrUrls === "string"
+      ? urlOrUrls.split(",").map((s) => s.trim()).filter(Boolean)
+      : [];
+  const byBucket = {};
+  for (const u of urls) {
+    const parsed = extractStoragePathFromUrl(u);
+    if (parsed && ["images", "media"].includes(parsed.bucket)) {
+      if (!byBucket[parsed.bucket]) byBucket[parsed.bucket] = [];
+      byBucket[parsed.bucket].push(parsed.path);
+    }
+  }
+  const removed = [];
+  const errors = [];
+  for (const [bucket, paths] of Object.entries(byBucket)) {
+    const { error } = await supabase.storage.from(bucket).remove(paths);
+    if (error) {
+      console.error("[Supabase] storage remove - errore:", { error, message: error.message, bucket, paths });
+      errors.push(error.message);
+    } else {
+      removed.push(...paths);
+    }
+  }
+  return { removed, errors };
 }

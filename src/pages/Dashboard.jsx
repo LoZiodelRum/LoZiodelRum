@@ -38,6 +38,7 @@ import { motion } from "framer-motion";
 import { toast } from "sonner";
 import { useAppData } from "@/lib/AppDataContext";
 import { exportAsFile } from "@/utils/mobileExport";
+import { removeFromImagesStorage } from "@/lib/supabaseStorage";
 import {
   Dialog,
   DialogContent,
@@ -348,6 +349,18 @@ export default function Dashboard() {
                       className="bg-red-600 hover:bg-red-700"
                       onClick={async () => {
                         if (selectedRegistration) {
+                          const urlsToRemove = [
+                            selectedRegistration.image_url,
+                            selectedRegistration.photo,
+                            selectedRegistration.video_url,
+                          ].filter(Boolean).join(",");
+                          if (urlsToRemove) {
+                            try {
+                              await removeFromImagesStorage(urlsToRemove);
+                            } catch (e) {
+                              console.warn("[Dashboard] Rimozione file da storage fallita:", e);
+                            }
+                          }
                           await deleteAppUser?.(selectedRegistration.id);
                           setShowDeleteConfirm(false);
                           setSelectedRegistration(null);
