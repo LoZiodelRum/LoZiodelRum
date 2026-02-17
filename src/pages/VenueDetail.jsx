@@ -245,7 +245,7 @@ export default function VenueDetail() {
                   </a>
                 )}
                 {venue.website && (
-                  <a href={venue.website} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-stone-400 hover:text-amber-400 transition-colors">
+                  <a href={venue.website.startsWith("http") ? venue.website : `https://${venue.website}`} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 text-stone-400 hover:text-amber-400 transition-colors">
                     <Globe className="w-4 h-4" />
                     Sito web
                     <ExternalLink className="w-3 h-3" />

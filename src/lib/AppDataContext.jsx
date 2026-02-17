@@ -420,6 +420,18 @@ export function AppDataProvider({ children }) {
         const { data, error } = await supabase.from("reviews_cloud").select("*").eq("status", "approved").order("created_at", { ascending: false });
         if (!error && data) setReviews(data.map(mapReviewCloudToLocal));
       },
+      reloadVenuesFromSupabase: async () => {
+        if (!isSupabaseConfigured()) return;
+        const [localiRes, vcRes] = await Promise.all([
+          supabase.from(TABLE_LOCALI).select("*").or("status.eq.approved,approvato.eq.true"),
+          supabase.from("venues_cloud").select("*").eq("status", "approved").catch(() => ({ data: [] })),
+        ]);
+        const locali = (localiRes.data || []).map(mapLocaliToVenue);
+        const vc = (vcRes?.data || []).map((r) => mapLocaliToVenue(r));
+        const ids = new Set(locali.map((v) => v.id));
+        const merged = [...locali, ...vc.filter((v) => !ids.has(v.id))];
+        setVenues(merged);
+      },
       deleteReview: async (id) => {
         if (!isSupabaseConfigured()) return;
         const { error } = await supabase.from("reviews_cloud").delete().eq("id", id);

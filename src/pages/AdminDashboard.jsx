@@ -6,6 +6,7 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
+import { useAppData } from "@/lib/AppDataContext";
 import { createPageUrl } from "@/utils";
 import {
   MapPin, ChevronLeft, Loader2, RefreshCw, X, Save, Trash2,
@@ -41,6 +42,7 @@ const safeStr = (v) => (v == null ? "" : String(v));
 const safeNum = (v) => (v == null || v === "" ? null : parseFloat(v));
 
 export default function AdminDashboard() {
+  const { reloadVenuesFromSupabase } = useAppData();
   const [locali, setLocali] = useState([]);
   const [users, setUsers] = useState([]);
   const [reviews, setReviews] = useState([]);
@@ -142,6 +144,7 @@ export default function AdminDashboard() {
         };
         const { error } = await supabase.from(TABLE_LOCALI).update(payload).eq("id", item.id);
         if (error) throw error;
+        await reloadVenuesFromSupabase?.();
         toast({ title: "Locale aggiornato" });
       } else if (type === "user") {
         const payload = {
