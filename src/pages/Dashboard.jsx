@@ -248,27 +248,40 @@ export default function Dashboard() {
 
                 {/* Modal dettagli iscritto */}
               <Dialog open={!!selectedRegistration} onOpenChange={(open) => !open && setSelectedRegistration(null)}>
-                <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto bg-stone-900 border-stone-700">
-                  <DialogHeader>
-                    <DialogTitle className="text-amber-500">Scheda iscritto</DialogTitle>
+                <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto bg-stone-900 border-stone-700 rounded-2xl sm:rounded-2xl p-4 sm:p-6 w-[95vw] sm:w-full max-w-[calc(100vw-2rem)]">
+                  <DialogHeader className="text-left">
+                    <DialogTitle className="text-amber-500 text-xl">Scheda iscritto</DialogTitle>
                   </DialogHeader>
                   {selectedRegistration && (
                     <div className="space-y-4">
-                      {(selectedRegistration.image_url || selectedRegistration.photo) && (
-                        <div className="flex justify-center gap-2 flex-wrap">
-                          {(typeof (selectedRegistration.image_url || selectedRegistration.photo) === "string"
-                            ? (selectedRegistration.image_url || selectedRegistration.photo).split(",").map((u) => u.trim()).filter(Boolean)
-                            : [selectedRegistration.image_url || selectedRegistration.photo]
-                          ).map((url, i) => (
-                            <img
-                              key={i}
-                              src={url}
-                              alt={`${selectedRegistration.name} ${i + 1}`}
-                              className="w-24 h-24 rounded-full object-cover border-2 border-stone-600"
-                            />
-                          ))}
-                        </div>
-                      )}
+                      {/* Foto Profilo: immagine da bucket images o icona utente */}
+                      <div className="flex justify-center">
+                        {(selectedRegistration.image_url || selectedRegistration.photo) ? (
+                          <div className="flex gap-2 flex-wrap justify-center">
+                            {(typeof (selectedRegistration.image_url || selectedRegistration.photo) === "string"
+                              ? (selectedRegistration.image_url || selectedRegistration.photo).split(",").map((u) => u.trim()).filter(Boolean)
+                              : [selectedRegistration.image_url || selectedRegistration.photo]
+                            ).map((url, i) => (
+                              <img
+                                key={i}
+                                src={url}
+                                alt={`${selectedRegistration.name} ${i + 1}`}
+                                className="w-24 h-24 rounded-full object-cover border-2 border-stone-600"
+                              />
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="w-24 h-24 rounded-full bg-stone-800 border-2 border-stone-600 flex items-center justify-center">
+                            <User className="w-12 h-12 text-stone-500" />
+                          </div>
+                        )}
+                      </div>
+                      {/* Dati principali: Nome, Ruolo, Data iscrizione */}
+                      <div className="text-center space-y-1 pb-4 border-b border-stone-700">
+                        <p className="font-semibold text-lg text-stone-100">{selectedRegistration.full_name || selectedRegistration.name || "—"}</p>
+                        <p className="text-amber-500">{(selectedRegistration.role_label || selectedRegistration.role) || "—"}</p>
+                        <p className="text-sm text-stone-500">{selectedRegistration.created_at ? new Date(selectedRegistration.created_at).toLocaleString("it-IT") : ""}</p>
+                      </div>
                       <div className="grid gap-2 text-sm">
                         {[
                           { label: "Nome", val: selectedRegistration.name },
@@ -291,7 +304,6 @@ export default function Dashboard() {
                           { label: "Bio breve", val: selectedRegistration.bio_light },
                           { label: "Video", val: selectedRegistration.video_url },
                           { label: "Consenso linee editoriali", val: selectedRegistration.consent_linee_editoriali === true ? "Sì" : null },
-                          { label: "Data registrazione", val: selectedRegistration.created_at ? new Date(selectedRegistration.created_at).toLocaleString("it-IT") : null },
                         ].filter(({ val }) => val != null && val !== "").map(({ label, val }) => (
                           <div key={label} className="flex gap-2">
                             <span className="text-stone-500 min-w-[120px]">{label}:</span>
