@@ -1,9 +1,8 @@
 /**
- * Aggiungi Locale – mapping esatto colonne Supabase (Locali).
- * DATI BASE: nome, descrizione, indirizzo, citta, provincia.
- * DETTAGLI: categoria, orari, telefono.
- * MEDIA: bucket 'images' → image_url.
- * status: pending (approvato false) di default.
+ * Aggiungi Locale – mapping definitivo colonne Locali.
+ * Colonne: nome, descrizione, indirizzo, citta, provincia, categoria, orari, telefono, status, image_url, approvato.
+ * NO ACCENTI: citta (senza accento) nel codice.
+ * Valori predefiniti: status='pending', approvato=false.
  */
 import { useState, useEffect } from "react";
 import { useMutation } from "@tanstack/react-query";
@@ -144,7 +143,7 @@ export default function AddVenue() {
       }
     }
 
-    const row = {
+    const venueData = {
       nome: formData.nome?.trim() || "",
       descrizione: formData.descrizione || "",
       indirizzo: formData.indirizzo || "",
@@ -153,13 +152,15 @@ export default function AddVenue() {
       categoria: formData.categoria || "cocktail_bar",
       orari: formData.orari || "",
       telefono: formData.telefono || "",
-      image_url: imageUrl || null,
       status: "pending",
+      image_url: imageUrl || null,
+      approvato: false,
     };
 
     if (hasSupabase && isSupabaseConfigured?.()) {
       try {
-        const { data, error } = await supabase.from("Locali").insert([row]).select().single();
+        console.log("Dati inviati:", venueData);
+        const { data, error } = await supabase.from("Locali").insert([venueData]).select().single();
         if (error) {
           const msg = error.message || error.details || JSON.stringify(error);
           console.error("[AddVenue] Supabase error:", error);
@@ -198,6 +199,7 @@ export default function AddVenue() {
         phone: formData.telefono || "",
         cover_image: imageUrl,
         status: "pending",
+        approvato: false,
       });
     }
   };
