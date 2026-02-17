@@ -19,11 +19,11 @@ import L from "leaflet";
 import { uploadToSupabaseStorage } from "@/lib/supabaseStorage";
 import "leaflet/dist/leaflet.css";
 
-const adminPinIcon = new L.DivIcon({
-  className: "admin-pin",
-  html: `<div style="width:36px;height:36px;display:flex;align-items:center;justify-content:center"><div style="width:36px;height:36px;background:linear-gradient(135deg,#f59e0b 0%,#d97706 100%);border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.3);border:2px solid white"><div style="color:#1c1917"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M8 2h8l4 10H4l4-10zm2 2l-2 6h8l-2-6h-4zM4 14h16v2H4v-2zm5 4h6v4H9v-4z"/></svg></div></div></div>`,
-  iconSize: [36, 36],
-  iconAnchor: [18, 18],
+const adminPinIcon = new L.Icon({
+  iconUrl: "/marker-pin.png",
+  iconRetinaUrl: "/marker-pin.png",
+  iconSize: [36, 42],
+  iconAnchor: [18, 42],
 });
 
 function MapCenterUpdater({ center }) {
