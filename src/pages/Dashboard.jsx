@@ -86,6 +86,8 @@ export default function Dashboard() {
   const [loadingRegistrations, setLoadingRegistrations] = useState(false);
   const [selectedRegistration, setSelectedRegistration] = useState(null);
   const [showDeleteConfirm, setShowDeleteConfirm] = useState(false);
+  const [selectedPendingBartender, setSelectedPendingBartender] = useState(null);
+  const [showBartenderDeleteConfirm, setShowBartenderDeleteConfirm] = useState(false);
   const [loadingBartenders, setLoadingBartenders] = useState(false);
   const [previewVenue, setPreviewVenue] = useState(null);
   const selectedArticle = selectedArticleId ? allArticles.find((a) => a.id === selectedArticleId) : null;
@@ -908,9 +910,16 @@ export default function Dashboard() {
               <h3 className="text-sm font-medium text-stone-400 mb-3">In attesa di approvazione</h3>
               <div className="space-y-3">
                 {pendingBartenders.map((b) => (
-                  <div key={b.id} className="flex flex-wrap items-center gap-4 p-4 rounded-xl bg-stone-800/30 border border-stone-700/50">
-                    {b.photo ? (
-                      <img src={b.photo} alt="" className="w-14 h-14 rounded-xl object-cover" />
+                  <div
+                    key={b.id}
+                    role="button"
+                    tabIndex={0}
+                    onClick={() => setSelectedPendingBartender(b)}
+                    onKeyDown={(e) => e.key === "Enter" && setSelectedPendingBartender(b)}
+                    className="flex flex-wrap items-center gap-4 p-4 rounded-xl bg-stone-800/30 border border-stone-700/50 cursor-pointer hover:bg-stone-800/50 transition-colors"
+                  >
+                    {b.photo || b.image_url ? (
+                      <img src={(b.photo || b.image_url)?.split?.(",")?.[0]?.trim() || b.photo || b.image_url} alt="" className="w-14 h-14 rounded-xl object-cover" />
                     ) : (
                       <div className="w-14 h-14 rounded-xl bg-amber-500/20 flex items-center justify-center">
                         <BartenderIcon className="w-7 h-7 text-amber-500" />
@@ -918,19 +927,110 @@ export default function Dashboard() {
                     )}
                     <div className="min-w-0 flex-1">
                       <p className="font-semibold">{b.name} {b.surname}</p>
-                      <p className="text-sm text-stone-500">{b.specialization} · {b.city}</p>
+                      <p className="text-sm text-stone-500">{b.specialization || b.city ? [b.specialization, b.city].filter(Boolean).join(" · ") : "-"}</p>
                     </div>
-                    <div className="flex gap-2">
-                      <Button size="sm" className="bg-amber-500 hover:bg-amber-600 text-stone-950" onClick={() => { setBartenderStatus(b.id, "approved"); toast.success("Bartender approvato"); }}>
-                        <CheckCircle className="w-4 h-4 mr-1" /> Approva
-                      </Button>
-                      <Button size="sm" variant="outline" className="border-red-500/50 text-red-400" onClick={() => { deleteBartender(b.id); toast.success("Rifiutato"); }}>
-                        <XCircle className="w-4 h-4 mr-1" /> Rifiuta
-                      </Button>
-                    </div>
+                    <Eye className="w-5 h-5 text-stone-500" />
                   </div>
                 ))}
               </div>
+
+              {/* Modal scheda bartender in attesa */}
+              <Dialog open={!!selectedPendingBartender} onOpenChange={(open) => !open && (setSelectedPendingBartender(null), setShowBartenderDeleteConfirm(false))}>
+                <DialogContent className="max-w-lg max-h-[90vh] overflow-y-auto bg-stone-900 border-stone-700">
+                  <DialogHeader>
+                    <DialogTitle className="text-amber-500">Scheda bartender</DialogTitle>
+                  </DialogHeader>
+                  {selectedPendingBartender && (
+                    <div className="space-y-4">
+                      {(selectedPendingBartender.photo || selectedPendingBartender.image_url) && (
+                        <div className="flex justify-center gap-2 flex-wrap">
+                          {(typeof (selectedPendingBartender.photo || selectedPendingBartender.image_url) === "string"
+                            ? (selectedPendingBartender.photo || selectedPendingBartender.image_url).split(",").map((u) => u.trim()).filter(Boolean)
+                            : [selectedPendingBartender.photo || selectedPendingBartender.image_url]
+                          ).map((url, i) => (
+                            <img key={i} src={url} alt="" className="w-24 h-24 rounded-full object-cover border-2 border-stone-600" />
+                          ))}
+                        </div>
+                      )}
+                      <div className="grid gap-2 text-sm">
+                        {[
+                          { label: "Nome", val: selectedPendingBartender.name },
+                          { label: "Cognome", val: selectedPendingBartender.surname },
+                          { label: "Città", val: selectedPendingBartender.city },
+                          { label: "Locale", val: selectedPendingBartender.venue_name },
+                          { label: "Specializzazione", val: selectedPendingBartender.specialization },
+                          { label: "Anni di esperienza", val: selectedPendingBartender.years_experience },
+                          { label: "Bio", val: selectedPendingBartender.bio },
+                          { label: "Motivazione", val: selectedPendingBartender.motivation },
+                          { label: "Filosofia", val: selectedPendingBartender.philosophy },
+                          { label: "Distillati preferiti", val: selectedPendingBartender.distillati_preferiti },
+                          { label: "Approccio alla degustazione", val: selectedPendingBartender.approccio_degustazione },
+                          { label: "Consiglio per chi inizia", val: selectedPendingBartender.consiglio_inizio },
+                          { label: "Signature drink / Selezioni", val: selectedPendingBartender.signature_drinks },
+                          { label: "Percorso esperienze", val: selectedPendingBartender.percorso_esperienze },
+                          { label: "Video", val: selectedPendingBartender.video_url },
+                          { label: "Data registrazione", val: selectedPendingBartender.created_at ? new Date(selectedPendingBartender.created_at).toLocaleString("it-IT") : null },
+                        ].filter(({ val }) => val != null && val !== "").map(({ label, val }) => (
+                          <div key={label} className="flex gap-2">
+                            <span className="text-stone-500 min-w-[120px]">{label}:</span>
+                            <span className="text-stone-200 break-words">{String(val)}</span>
+                          </div>
+                        ))}
+                      </div>
+                      <div className="flex gap-2 pt-4 border-t border-stone-700">
+                        <Button
+                          size="sm"
+                          className="bg-green-600 hover:bg-green-700 flex-1"
+                          onClick={async () => {
+                            await setBartenderStatus(selectedPendingBartender.id, "approved");
+                            setSelectedPendingBartender(null);
+                            toast.success("Bartender approvato");
+                          }}
+                        >
+                          <CheckCircle className="w-4 h-4 mr-1" />
+                          Approva
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          className="border-red-500/50 text-red-400 flex-1"
+                          onClick={() => setShowBartenderDeleteConfirm(true)}
+                        >
+                          <XCircle className="w-4 h-4 mr-1" />
+                          Rifiuta
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </DialogContent>
+              </Dialog>
+
+              <AlertDialog open={showBartenderDeleteConfirm} onOpenChange={setShowBartenderDeleteConfirm}>
+                <AlertDialogContent className="bg-stone-900 border-stone-700">
+                  <AlertDialogHeader>
+                    <AlertDialogTitle>Conferma eliminazione</AlertDialogTitle>
+                    <AlertDialogDescription>
+                      Sei sicuro di voler eliminare definitivamente questo bartender?
+                    </AlertDialogDescription>
+                  </AlertDialogHeader>
+                  <AlertDialogFooter>
+                    <AlertDialogCancel>Annulla</AlertDialogCancel>
+                    <AlertDialogAction
+                      className="bg-red-600 hover:bg-red-700"
+                      onClick={async () => {
+                        if (selectedPendingBartender) {
+                          await deleteBartender(selectedPendingBartender.id);
+                          setShowBartenderDeleteConfirm(false);
+                          setSelectedPendingBartender(null);
+                          toast.success("Bartender eliminato");
+                        }
+                      }}
+                    >
+                      Elimina
+                    </AlertDialogAction>
+                  </AlertDialogFooter>
+                </AlertDialogContent>
+              </AlertDialog>
             </div>
           )}
           <div className="flex flex-wrap items-center gap-3 mb-4">
