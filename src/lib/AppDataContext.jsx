@@ -562,13 +562,27 @@ export function AppDataProvider({ children }) {
         const row = await insertAppUser({
           role: "bartender",
           full_name: [data.name, data.surname].filter(Boolean).join(" ").trim() || data.full_name || "",
+          name: data.name || "",
+          surname: data.surname || "",
           image_url: data.image_url || data.photo || "",
           video_url: data.video_url || null,
           status: "pending",
           bio: data.bio || "",
           home_city: data.home_city || data.city || "",
+          city: data.city || "",
           venue_id: venueId,
           custom_venue_name: customVenueName,
+          venue_name: data.venue_name || "",
+          specialization: data.specialization || "",
+          years_experience: data.years_experience || "",
+          philosophy: data.philosophy || "",
+          motivation: data.motivation || "",
+          distillati_preferiti: data.distillati_preferiti || "",
+          approccio_degustazione: data.approccio_degustazione || "",
+          consiglio_inizio: data.consiglio_inizio || "",
+          signature_drinks: data.signature_drinks || "",
+          percorso_esperienze: data.percorso_esperienze || "",
+          consent_linee_editoriali: data.consent_linee_editoriali === true,
         });
         if (!row) throw new Error("Errore salvataggio bartender");
         const b = mapAppUserToBartender(row);

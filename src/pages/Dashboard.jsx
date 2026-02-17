@@ -251,13 +251,19 @@ export default function Dashboard() {
                   </DialogHeader>
                   {selectedRegistration && (
                     <div className="space-y-4">
-                      {selectedRegistration.image_url && (
-                        <div className="flex justify-center">
-                          <img
-                            src={selectedRegistration.image_url}
-                            alt={selectedRegistration.name}
-                            className="w-24 h-24 rounded-full object-cover border-2 border-stone-600"
-                          />
+                      {(selectedRegistration.image_url || selectedRegistration.photo) && (
+                        <div className="flex justify-center gap-2 flex-wrap">
+                          {(typeof (selectedRegistration.image_url || selectedRegistration.photo) === "string"
+                            ? (selectedRegistration.image_url || selectedRegistration.photo).split(",").map((u) => u.trim()).filter(Boolean)
+                            : [selectedRegistration.image_url || selectedRegistration.photo]
+                          ).map((url, i) => (
+                            <img
+                              key={i}
+                              src={url}
+                              alt={`${selectedRegistration.name} ${i + 1}`}
+                              className="w-24 h-24 rounded-full object-cover border-2 border-stone-600"
+                            />
+                          ))}
                         </div>
                       )}
                       <div className="grid gap-2 text-sm">
@@ -267,13 +273,21 @@ export default function Dashboard() {
                           { label: "Nome completo", val: selectedRegistration.full_name },
                           { label: "Email", val: selectedRegistration.email },
                           { label: "Ruolo", val: selectedRegistration.role_label || selectedRegistration.role },
-                          { label: "Città", val: selectedRegistration.home_city },
+                          { label: "Città", val: selectedRegistration.home_city || selectedRegistration.city },
                           { label: "Locale", val: selectedRegistration.custom_venue_name || selectedRegistration.venue_name },
+                          { label: "Specializzazione", val: selectedRegistration.specialization },
+                          { label: "Anni di esperienza", val: selectedRegistration.years_experience },
                           { label: "Bio", val: selectedRegistration.bio },
                           { label: "Motivazione", val: selectedRegistration.motivation },
                           { label: "Filosofia", val: selectedRegistration.philosophy },
+                          { label: "Distillati preferiti", val: selectedRegistration.distillati_preferiti },
+                          { label: "Approccio alla degustazione", val: selectedRegistration.approccio_degustazione },
+                          { label: "Consiglio per chi inizia", val: selectedRegistration.consiglio_inizio },
+                          { label: "Signature drink / Selezioni", val: selectedRegistration.signature_drinks },
+                          { label: "Percorso esperienze", val: selectedRegistration.percorso_esperienze },
                           { label: "Bio breve", val: selectedRegistration.bio_light },
                           { label: "Video", val: selectedRegistration.video_url },
+                          { label: "Consenso linee editoriali", val: selectedRegistration.consent_linee_editoriali === true ? "Sì" : null },
                           { label: "Data registrazione", val: selectedRegistration.created_at ? new Date(selectedRegistration.created_at).toLocaleString("it-IT") : null },
                         ].filter(({ val }) => val != null && val !== "").map(({ label, val }) => (
                           <div key={label} className="flex gap-2">
