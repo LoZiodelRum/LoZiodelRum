@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "migrate:venues": "node scripts/migrate-venues-to-locali.js",
     "supabase:setup": "node scripts/setup-supabase.js",
     "supabase:auto": "node scripts/supabase-auto-config.js",
     "supabase:config": "node scripts/add-supabase-key.js",

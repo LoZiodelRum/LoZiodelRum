@@ -1,5 +1,4 @@
 import React, { createContext, useContext, useMemo, useState, useEffect, useCallback } from "react";
-import { venuesData as initialVenues } from "@/data/venues";
 import { reviewsData as initialReviews } from "@/data/reviews";
 import { articlesData as initialArticles } from "@/data/articles";
 import { drinksData as initialDrinks } from "@/data/drinks";
@@ -25,7 +24,6 @@ export function AppDataProvider({ children }) {
   const [communityEvents, setCommunityEvents] = useState(initialCommunityEvents || []);
   const [communityPosts, setCommunityPosts] = useState(initialCommunityPosts || []);
   const [bartenders, setBartenders] = useState([]);
-  const [cloudVenues, setCloudVenues] = useState([]);
 
   const mapAppUserToBartender = useCallback((row) => ({
     id: String(row.id),
@@ -105,17 +103,17 @@ export function AppDataProvider({ children }) {
     status: row.status || "approved",
   }), []);
 
-  // Fetch iniziale: venues, reviews, bartenders da Supabase
+  // Fetch iniziale: venues da Locali (Supabase), reviews, bartenders
   useEffect(() => {
     if (!isSupabaseConfigured()) {
-      setVenues([...initialVenues]);
+      setVenues([]);
       setReviews([...initialReviews]);
       return;
     }
     supabase.from(TABLE_LOCALI).select("*").eq("status", "approved").then(({ data }) => {
       const list = (data || []).map((r) => mapLocaliToVenue(r));
-      setVenues(list.length > 0 ? list : [...initialVenues]);
-    }).catch(() => setVenues([...initialVenues]));
+      setVenues(list);
+    }).catch(() => setVenues([]));
 
     supabase.from("reviews_cloud").select("*").eq("status", "approved").order("created_at", { ascending: false }).then(({ data, error }) => {
       if (!error && data && Array.isArray(data)) {
@@ -174,7 +172,7 @@ export function AppDataProvider({ children }) {
       };
     };
 
-    const baseVenues = [...venues.filter((v) => !v._cloudPending && v.verified !== false), ...cloudVenues];
+    const baseVenues = venues.filter((v) => !v._cloudPending && v.verified !== false);
     return {
       venues,
       reviews,
@@ -186,7 +184,7 @@ export function AppDataProvider({ children }) {
       getVenues: () => baseVenues.map(enrichVenueWithRealCount),
       getPendingLocalVenues: () => venues.filter((v) => !v.verified && !v._cloudPending),
       getVenueById: (id) => {
-        const v = venues.find((x) => x.id === id) || cloudVenues.find((x) => x.id === id);
+        const v = venues.find((x) => x.id === id);
         return v ? enrichVenueWithRealCount(v) : null;
       },
       addVenue: async (data) => {
@@ -256,7 +254,7 @@ export function AppDataProvider({ children }) {
         setVenues((prev) =>
           prev.map((v) => (v.id === id ? { ...v, ...data } : v))
         );
-        const isCloud = cloudVenues.some((v) => v.id === id) || venues.some((v) => v.id === id && v._cloudPending);
+        const isCloud = venues.some((v) => v.id === id && v._cloudPending);
         if (isCloud && isSupabaseConfigured()) {
           const row = {
             nome: data.name,
@@ -291,7 +289,7 @@ export function AppDataProvider({ children }) {
           latitudine: data.latitude ?? null,
           longitudine: data.longitude ?? null,
           image_url: data.cover_image,
-          categoria: data.categories?.[0] ?? data.category ?? "cocktail_bar",
+          categoria: (data.categories?.length ? data.categories : (data.category ? [data.category] : ["cocktail_bar"])).join(","),
           price_range: data.price_range,
           telefono: data.phone,
           sito: data.website,
@@ -637,10 +635,10 @@ export function AppDataProvider({ children }) {
       },
 
       resetToDefaults: () => {
-        if (!isSupabaseConfigured()) setVenues(initialVenues);
+        if (!isSupabaseConfigured()) setVenues([]);
         else supabase?.from(TABLE_LOCALI).select("*").eq("status", "approved").then(({ data }) => {
           const list = (data || []).map(mapLocaliToVenue);
-          setVenues(list.length > 0 ? list : initialVenues);
+          setVenues(list);
         });
         setReviews(initialReviews);
         setArticles(initialArticles);
@@ -775,7 +773,7 @@ export function AppDataProvider({ children }) {
         if (data.communityPosts && Array.isArray(data.communityPosts)) setCommunityPosts(data.communityPosts);
       },
     };
-  }, [venues, cloudVenues, reviews, articles, drinks, user, ownerMessages, communityEvents, communityPosts, bartenders, mapAppUserToBartender, mapLocaliToVenue, mapReviewCloudToLocal]);
+  }, [venues, reviews, articles, drinks, user, ownerMessages, communityEvents, communityPosts, bartenders, mapAppUserToBartender, mapLocaliToVenue, mapReviewCloudToLocal]);
 
   return (
     <AppDataContext.Provider value={api}>{children}</AppDataContext.Provider>

@@ -811,8 +811,15 @@ export default function Dashboard() {
                     <p className="font-semibold">{venue.name}</p>
                     <p className="text-sm text-stone-500">
                       {venue.city}
+                      {venue.province ? ` (${venue.province})` : ""}
                       {venue.country ? `, ${venue.country}` : ""}
                     </p>
+                    {venue.address && <p className="text-xs text-stone-500 mt-0.5">{venue.address}</p>}
+                    {(venue.categories?.length || venue.category) && (
+                      <p className="text-xs text-stone-500 mt-0.5">
+                        {(venue.categories || [venue.category]).filter(Boolean).map((c) => CATEGORY_LABELS[c] || c).join(", ")}
+                      </p>
+                    )}
                   </div>
                   <div className="flex gap-2">
                     <Link to={createPageUrl(`EditVenue?id=${venue.id}`)}>
