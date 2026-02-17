@@ -1,14 +1,14 @@
 /**
- * AdminDashboard – SORGENTE UNICA: tabella Locali (Supabase).
- * Nessun dato statico. Stato vuoto []. Legge approvato/status solo dal DB.
- * TABELLA: Locali (NON venues_cloud).
+ * AdminDashboard – ZERO dati statici. Solo Supabase tabella Locali.
+ * Stato iniziale: []. Nessun import da data/venues.js o file locali.
+ * Approvato da DB = verde. Elimina/Rifiuta = .delete() permanente.
  */
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
 import { createPageUrl } from "@/utils";
 import { supabase, isSupabaseConfigured } from "@/lib/supabase";
 import { useVenuesRealtime, useAppUsersRealtime } from "@/hooks/useSupabaseRealtime";
-import { TABLE_APP_USERS, TABLE_LOCALI } from "@/lib/supabaseTables";
+import { TABLE_APP_USERS } from "@/lib/supabaseTables";
 import { MapPin, User, Wine, ChevronLeft, Loader2, AlertCircle, Edit3, Trash2, RefreshCw } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import AdminCard from "@/components/admin/AdminCard";
@@ -25,8 +25,6 @@ const CATEGORY_LABELS = {
   rooftop: "Rooftop Bar",
   hotel_bar: "Hotel Bar",
 };
-
-const TABELLA_LOCALI = "Locali";
 
 function rowToDisplay(row) {
   const catRaw = row.categoria || "cocktail_bar";
@@ -58,9 +56,7 @@ function rowToDisplay(row) {
 }
 
 function isApprovedFromDb(row) {
-  const approvato = row.approvato;
-  const status = String(row.status || "").toLowerCase();
-  return approvato === true || approvato === "t" || status === "approved";
+  return row.approvato === true || String(row.status || "").toLowerCase() === "approved";
 }
 
 export default function AdminDashboard() {
@@ -76,13 +72,10 @@ export default function AdminDashboard() {
     setLoading(true);
     setLoadError(null);
     try {
-      const { data, error } = await supabase
-        .from(TABELLA_LOCALI)
-        .select("*")
-        .order("created_at", { ascending: false });
+      const { data, error } = await supabase.from("Locali").select("*").order("created_at", { ascending: false });
 
       if (error) {
-        console.error("[AdminDashboard] Errore fetch Locali:", error);
+        console.error("[AdminDashboard] Errore Supabase esatto:", error);
         throw error;
       }
 
@@ -91,9 +84,9 @@ export default function AdminDashboard() {
 
       console.table(list.map((r) => ({ id: r.id, nome: r.nome, citta: r.citta, status: r.status, approvato: r.approvato })));
 
-      const hasIlCantiere = list.some((r) => (String(r.nome || "").toLowerCase().includes("cantiere")));
+      const hasIlCantiere = list.some((r) => String(r.nome || "").toLowerCase().includes("cantiere"));
       if (!hasIlCantiere && list.length > 0) {
-        console.error("[AdminDashboard] 'Il Cantiere' non in lista. Totale righe:", list.length, "| Lista nomi:", list.map((r) => r.nome));
+        console.error("[AdminDashboard] 'Il Cantiere' NON in lista. Righe:", list.length, "| Nomi:", list.map((r) => r.nome));
       }
 
       const { data: regs, error: errRegs } = await supabase.from(TABLE_APP_USERS).select("*").eq("status", "pending").order("created_at", { ascending: false });
@@ -101,6 +94,7 @@ export default function AdminDashboard() {
     } catch (err) {
       const msg = err?.message || err?.code || "Errore di connessione";
       setLoadError(msg);
+      console.error("[AdminDashboard] Errore caricamento:", err);
       toast({ title: "Errore caricamento", description: msg, variant: "destructive" });
     } finally {
       setLoading(false);
@@ -119,7 +113,7 @@ export default function AdminDashboard() {
     const update = currentlyApproved ? { approvato: false, status: "pending" } : { approvato: true, status: "approved" };
     setUpdatingId(row.id);
     try {
-      const { error } = await supabase.from(TABELLA_LOCALI).update(update).eq("id", row.id);
+      const { error } = await supabase.from("Locali").update(update).eq("id", row.id);
       if (error) throw error;
       toast({ title: update.status === "approved" ? "Locale approvato" : "Locale in attesa" });
       await loadData();
@@ -131,10 +125,10 @@ export default function AdminDashboard() {
   };
 
   const handleDeleteLocale = async (row) => {
-    if (!confirm(`Eliminare definitivamente "${row.nome}"?`)) return;
+    if (!confirm(`Eliminare definitivamente "${row.nome}"? Il locale sparirà per sempre.`)) return;
     setUpdatingId(row.id);
     try {
-      const { error } = await supabase.from(TABELLA_LOCALI).delete().eq("id", row.id);
+      const { error } = await supabase.from("Locali").delete().eq("id", row.id);
       if (error) throw error;
       toast({ title: "Locale eliminato" });
       setSelected(null);
@@ -155,7 +149,7 @@ export default function AdminDashboard() {
           ...(extra.latitude != null && { latitudine: extra.latitude }),
           ...(extra.longitude != null && { longitudine: extra.longitude }),
         };
-        const { error } = await supabase.from(TABELLA_LOCALI).update(update).eq("id", item.id);
+        const { error } = await supabase.from("Locali").update(update).eq("id", item.id);
         if (error) throw error;
         toast({ title: "Locale approvato" });
       } else {
@@ -174,7 +168,7 @@ export default function AdminDashboard() {
     if (!confirm("Eliminare definitivamente questo record?")) return;
     try {
       if (selected?.type === "venue") {
-        const { error } = await supabase.from(TABELLA_LOCALI).delete().eq("id", item.id);
+        const { error } = await supabase.from("Locali").delete().eq("id", item.id);
         if (error) throw error;
         toast({ title: "Locale eliminato" });
       } else if (selected?.type === "bartender" || selected?.type === "user") {
@@ -213,7 +207,7 @@ export default function AdminDashboard() {
           </Link>
           <div>
             <h1 className="text-2xl md:text-3xl font-bold">Admin – Verifica profili</h1>
-            <p className="text-stone-500">Tabella: Locali (Supabase)</p>
+            <p className="text-stone-500">Solo Supabase · Tabella: Locali</p>
           </div>
           <Button variant="outline" size="sm" onClick={loadData} disabled={loading} className="ml-auto">
             <RefreshCw className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`} />
@@ -284,14 +278,19 @@ export default function AdminDashboard() {
                           <p className="text-xs text-stone-500 mt-0.5">{catLabel}</p>
                         </div>
                         <div className="flex items-center gap-2 flex-shrink-0">
-                          <button
-                            onClick={() => handleStatusToggle(row)}
-                            disabled={isUpdating}
-                            className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
+                          <span
+                            className={`px-2 py-1 rounded text-xs font-medium ${
                               isApproved ? "bg-green-500/20 text-green-400 border border-green-500/30" : "bg-amber-500/20 text-amber-400 border border-amber-500/30"
                             }`}
                           >
-                            {isUpdating ? "..." : isApproved ? "Approvato" : "In attesa"}
+                            {isApproved ? "Approvato" : "In attesa"}
+                          </span>
+                          <button
+                            onClick={() => handleStatusToggle(row)}
+                            disabled={isUpdating}
+                            className="px-2 py-1 rounded text-xs border border-stone-600 text-stone-300 hover:bg-stone-700"
+                          >
+                            {isUpdating ? "..." : isApproved ? "Annulla" : "Approva"}
                           </button>
                           <Link to={createPageUrl(`EditVenue?id=${row.id}`)} state={{ venue: d, fromCloud: true }}>
                             <Button size="sm" variant="outline" className="border-stone-600">
@@ -307,7 +306,7 @@ export default function AdminDashboard() {
                             disabled={isUpdating}
                           >
                             <Trash2 className="w-3.5 h-3.5 mr-1" />
-                            Elimina
+                            Rifiuta / Elimina
                           </Button>
                           <Button
                             size="sm"

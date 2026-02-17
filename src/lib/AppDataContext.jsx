@@ -769,6 +769,7 @@ export function AppDataProvider({ children }) {
         return JSON.stringify({ venues: toExport, exportedAt: new Date().toISOString(), type: "loziodelrum-venues-sync" }, null, 2);
       },
       importVenuesFromMobileSync: (jsonStr) => {
+        if (isSupabaseConfigured()) return { imported: 0 };
         try {
           const data = JSON.parse(jsonStr);
           if (data?.type !== "loziodelrum-venues-sync" || !Array.isArray(data?.venues)) return { imported: 0 };
@@ -806,14 +807,17 @@ export function AppDataProvider({ children }) {
         version: 1,
       }),
       importVenuesFromMobile: (mobileVenues) => {
+        if (isSupabaseConfigured()) return;
         if (!Array.isArray(mobileVenues) || mobileVenues.length === 0) return;
         const ids = new Set(venues.map((v) => v.id));
         const toAdd = mobileVenues.filter((v) => v.id && !ids.has(v.id)).map((v) => ({ ...v, verified: false }));
         if (toAdd.length > 0) setVenues((prev) => [...prev, ...toAdd]);
       },
       importData: (data) => {
-        if (data.venues && Array.isArray(data.venues)) setVenues(data.venues);
-        if (data.reviews && Array.isArray(data.reviews)) setReviews(data.reviews);
+        if (!isSupabaseConfigured()) {
+          if (data.venues && Array.isArray(data.venues)) setVenues(data.venues);
+          if (data.reviews && Array.isArray(data.reviews)) setReviews(data.reviews);
+        }
         if (data.articles && Array.isArray(data.articles)) setArticles(data.articles);
         if (data.drinks && Array.isArray(data.drinks)) setDrinks(data.drinks);
         if (data.user && typeof data.user === "object") setUser(data.user);
