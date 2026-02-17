@@ -1,8 +1,7 @@
 /**
- * AdminDashboard – Gestione completa Locali, Bartender, Utenti.
- * SORGENTE: Tabella Locali (Supabase) per i locali; app_users per Bartender/Utenti.
- * Visualizza tutti i locali con nome, citta, indirizzo, categoria, status.
- * Modifica/Elimina/Status con sync immediato.
+ * AdminDashboard – SORGENTE UNICA: Supabase.
+ * Nessun dato locale. Legge approvato e status direttamente dal DB.
+ * Campi DB: nome, citta, indirizzo, latitudine, longitudine, status, approvato.
  */
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
@@ -27,16 +26,12 @@ const CATEGORY_LABELS = {
   hotel_bar: "Hotel Bar",
 };
 
-/** Mappa riga Locali al formato venue. Legge approvato e status da Supabase. */
-function mapLocaliToVenue(row) {
+/** Mappa riga DB → UI. Usa SOLO i campi dal database: nome, citta, indirizzo, latitudine, longitudine, status, approvato. */
+function rowToDisplay(row) {
   const catRaw = row.categoria || "cocktail_bar";
   const categories = catRaw ? catRaw.split(",").map((s) => s.trim()).filter(Boolean) : ["cocktail_bar"];
-  const status = row.status || "pending";
-  const approvato = row.approvato === true;
-  const isApproved = approvato || status === "approved";
   return {
     id: String(row.id),
-    supabase_id: String(row.id),
     name: row.nome || "",
     city: row.citta || "",
     province: row.provincia || "",
@@ -53,12 +48,10 @@ function mapLocaliToVenue(row) {
     instagram: row.instagram || "",
     opening_hours: row.orari || "",
     slug: row.slug || null,
-    latitude: row.latitudine ?? null,
-    longitude: row.longitudine ?? null,
-    status,
-    approvato,
-    isApproved,
-    _cloudPending: !isApproved,
+    latitude: row.latitudine != null ? parseFloat(row.latitudine) : null,
+    longitude: row.longitudine != null ? parseFloat(row.longitudine) : null,
+    status: row.status || "pending",
+    approvato: row.approvato === true,
     created_at: row.created_at,
   };
 }
@@ -71,94 +64,69 @@ export default function AdminDashboard() {
   const [selected, setSelected] = useState(null);
   const [updatingId, setUpdatingId] = useState(null);
 
-  const fetchLocali = useCallback(async () => {
-    if (!isSupabaseConfigured?.() || !supabase) return [];
-    const { data, error } = await supabase.from(TABLE_LOCALI).select("*").order("created_at", { ascending: false });
-    if (error) {
-      console.error("[AdminDashboard] Errore fetch Locali:", error);
-      console.log("[AdminDashboard] DEBUG: Tabella Locali vuota o RLS blocca la lettura. Verifica Supabase Dashboard.");
-      throw error;
-    }
-    return data || [];
-  }, []);
-
-  const fetchRegistrations = useCallback(async () => {
-    if (!isSupabaseConfigured?.() || !supabase) return [];
-    const { data, error } = await supabase
-      .from(TABLE_APP_USERS)
-      .select("*")
-      .eq("status", "pending")
-      .order("created_at", { ascending: false });
-    if (error) {
-      console.error("[AdminDashboard] Errore fetch app_users:", error);
-      throw error;
-    }
-    return data || [];
-  }, []);
-
   const loadData = useCallback(async () => {
+    if (!isSupabaseConfigured?.() || !supabase) return;
     setLoading(true);
     setLoadError(null);
     try {
-      const [localiData, regs] = await Promise.all([fetchLocali(), fetchRegistrations()]);
-      setLocali(localiData);
-      setPendingRegistrations(Array.isArray(regs) ? regs : []);
+      const { data: localiData, error: errLocali } = await supabase.from(TABLE_LOCALI).select("*").order("created_at", { ascending: false });
+      if (errLocali) {
+        console.error("[AdminDashboard] Errore fetch Locali:", errLocali);
+        throw errLocali;
+      }
+      const list = Array.isArray(localiData) ? localiData : [];
+      setLocali(list);
+
+      const hasIlCantiere = list.some((r) => (r.nome || "").toLowerCase().includes("cantiere"));
+      if (!hasIlCantiere && list.length > 0) {
+        console.error("[AdminDashboard] 'Il Cantiere' non trovato. Lista completa da DB:", JSON.stringify(list.map((r) => ({ id: r.id, nome: r.nome, citta: r.citta, status: r.status, approvato: r.approvato })), null, 2));
+      }
+
+      const { data: regs, error: errRegs } = await supabase.from(TABLE_APP_USERS).select("*").eq("status", "pending").order("created_at", { ascending: false });
+      if (!errRegs) setPendingRegistrations(Array.isArray(regs) ? regs : []);
     } catch (err) {
-      const msg = err?.message || err?.code || "Errore di connessione al database";
+      const msg = err?.message || err?.code || "Errore di connessione";
       setLoadError(msg);
-      console.error("[AdminDashboard] Errore caricamento Supabase:", err);
-      console.log("[AdminDashboard] DEBUG: Verifica VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY. Controlla RLS su tabella Locali.");
       toast({ title: "Errore caricamento", description: msg, variant: "destructive" });
     } finally {
       setLoading(false);
     }
-  }, [fetchLocali, fetchRegistrations]);
+  }, []);
 
   useEffect(() => {
     loadData();
   }, [loadData]);
 
-  // Realtime: aggiornamento istantaneo su insert/update/delete Locali e app_users
-  const refreshOnChange = useCallback(() => {
-    fetchLocali().then(setLocali).catch(() => {});
-    fetchRegistrations().then((r) => setPendingRegistrations(Array.isArray(r) ? r : [])).catch(() => {});
-  }, [fetchLocali, fetchRegistrations]);
-  useVenuesRealtime(refreshOnChange, refreshOnChange, refreshOnChange);
-  useAppUsersRealtime(null, refreshOnChange, refreshOnChange, refreshOnChange);
+  useVenuesRealtime(loadData, loadData, loadData);
+  useAppUsersRealtime(null, loadData, loadData, loadData);
 
-  const handleStatusToggle = async (venue) => {
-    const isCurrentlyApproved = venue.isApproved ?? venue.status === "approved" ?? venue.approvato;
-    const update = isCurrentlyApproved
-      ? { approvato: false, status: "pending" }
-      : { approvato: true, status: "approved" };
-    setUpdatingId(venue.id);
+  const handleStatusToggle = async (row) => {
+    const approvato = row.approvato === true;
+    const update = approvato ? { approvato: false, status: "pending" } : { approvato: true, status: "approved" };
+    setUpdatingId(row.id);
     try {
-      const { error } = await supabase.from(TABLE_LOCALI).update(update).eq("id", venue.id);
-      if (error) {
-        console.error("[AdminDashboard] Errore update status:", error);
-        toast({ title: "Errore", description: error.message, variant: "destructive" });
-        return;
-      }
-      toast({ title: update.status === "approved" ? "Locale approvato" : "Locale in attesa" });
+      const { error } = await supabase.from(TABLE_LOCALI).update(update).eq("id", row.id);
+      if (error) throw error;
+      toast({ title: update.approvato ? "Locale approvato" : "Locale in attesa" });
       await loadData();
+    } catch (err) {
+      toast({ title: "Errore", description: err?.message, variant: "destructive" });
     } finally {
       setUpdatingId(null);
     }
   };
 
-  const handleDeleteLocale = async (venue) => {
-    if (!confirm(`Eliminare definitivamente "${venue.name}"?`)) return;
-    setUpdatingId(venue.id);
+  const handleDeleteLocale = async (row) => {
+    if (!confirm(`Eliminare definitivamente "${row.nome}"?`)) return;
+    setUpdatingId(row.id);
     try {
-      const { error } = await supabase.from(TABLE_LOCALI).delete().eq("id", venue.id);
-      if (error) {
-        console.error("[AdminDashboard] Errore delete:", error);
-        toast({ title: "Errore", description: error.message, variant: "destructive" });
-        return;
-      }
+      const { error } = await supabase.from(TABLE_LOCALI).delete().eq("id", row.id);
+      if (error) throw error;
       toast({ title: "Locale eliminato" });
       setSelected(null);
       await loadData();
+    } catch (err) {
+      toast({ title: "Errore", description: err?.message, variant: "destructive" });
     } finally {
       setUpdatingId(null);
     }
@@ -175,7 +143,7 @@ export default function AdminDashboard() {
         };
         const { error } = await supabase.from(TABLE_LOCALI).update(update).eq("id", item.id);
         if (error) throw error;
-        toast({ title: "Locale approvato (salvataggio permanente)" });
+        toast({ title: "Locale approvato" });
       } else {
         const { error } = await supabase.from(TABLE_APP_USERS).update({ status: "approved" }).eq("id", item.id);
         if (error) throw error;
@@ -184,7 +152,6 @@ export default function AdminDashboard() {
       setSelected(null);
       await loadData();
     } catch (err) {
-      console.error("[AdminDashboard] Errore approve:", err);
       toast({ title: "Errore", description: err?.message, variant: "destructive" });
     }
   };
@@ -204,7 +171,6 @@ export default function AdminDashboard() {
       setSelected(null);
       await loadData();
     } catch (err) {
-      console.error("[AdminDashboard] Errore delete:", err);
       toast({ title: "Errore", description: err?.message, variant: "destructive" });
     }
   };
@@ -212,23 +178,14 @@ export default function AdminDashboard() {
   const pendingBartenders = pendingRegistrations.filter((r) => r.role === "bartender");
   const pendingUsers = pendingRegistrations.filter((r) => r.role === "user" || r.role === "proprietario");
 
-  // Ordine: Da Revisionare (pending) in cima, poi Approvati
-  const localiDaRevisionare = locali.filter((r) => {
-    const s = r.status || "pending";
-    const a = r.approvato === true;
-    return s !== "approved" && !a;
-  });
-  const localiApprovati = locali.filter((r) => {
-    const s = r.status || "approved";
-    const a = r.approvato === true;
-    return s === "approved" || a;
-  });
-  const localiOrdinati = [...localiDaRevisionare, ...localiApprovati];
+  const daRevisionare = locali.filter((r) => r.approvato !== true && r.status !== "approved");
+  const approvati = locali.filter((r) => r.approvato === true || r.status === "approved");
+  const localiOrdinati = [...daRevisionare, ...approvati];
 
   if (!isSupabaseConfigured?.()) {
     return (
       <div className="min-h-screen bg-stone-950 text-stone-100 p-8">
-        <p className="text-amber-400">Supabase non configurato. Configura VITE_SUPABASE_URL e VITE_SUPABASE_ANON_KEY.</p>
+        <p className="text-amber-400">Supabase non configurato.</p>
       </div>
     );
   }
@@ -242,7 +199,7 @@ export default function AdminDashboard() {
           </Link>
           <div>
             <h1 className="text-2xl md:text-3xl font-bold">Admin – Verifica profili</h1>
-            <p className="text-stone-500">Locali, Bartender e Utenti</p>
+            <p className="text-stone-500">Locali, Bartender e Utenti da Supabase</p>
           </div>
           <Button variant="outline" size="sm" onClick={loadData} disabled={loading} className="ml-auto">
             <RefreshCw className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`} />
@@ -282,49 +239,47 @@ export default function AdminDashboard() {
           </div>
         ) : (
           <div className="space-y-8">
-            {/* LOCALI – SORGENTE UNICA: tabella Locali. Da Revisionare in cima. */}
             <section className="bg-stone-900/50 rounded-2xl border border-stone-800/50 p-6">
               <h2 className="text-lg font-semibold mb-2 flex items-center gap-2">
                 <MapPin className="w-5 h-5 text-amber-500" />
-                Locali
+                Locali (Supabase)
               </h2>
               <p className="text-sm text-stone-500 mb-4">
-                Da Revisionare: {localiDaRevisionare.length} · Approvati: {localiApprovati.length}
+                Da Revisionare: {daRevisionare.length} · Approvati: {approvati.length}
               </p>
               {locali.length === 0 ? (
                 <p className="text-stone-500 py-4">
-                  {!loadError ? "Nessun locale nella tabella Locali. Aggiungi locali da AddVenue." : "Impossibile caricare i locali."}
+                  {!loadError ? "Nessun locale. La tabella Locali è vuota." : "Impossibile caricare."}
                 </p>
               ) : (
                 <div className="space-y-3">
                   {localiOrdinati.map((row) => {
-                    const venue = mapLocaliToVenue(row);
-                    const isUpdating = updatingId === venue.id;
-                    const catLabel = (venue.categories || [venue.category]).filter(Boolean).map((c) => CATEGORY_LABELS[c] || c).join(", ") || "—";
+                    const d = rowToDisplay(row);
+                    const isUpdating = updatingId === row.id;
+                    const isApproved = row.approvato === true || row.status === "approved";
+                    const catLabel = (d.categories || [d.category]).filter(Boolean).map((c) => CATEGORY_LABELS[c] || c).join(", ") || "—";
                     return (
                       <div
-                        key={venue.id}
+                        key={row.id}
                         className="p-4 rounded-xl bg-stone-800/30 border border-stone-700/50 flex flex-col sm:flex-row sm:items-center gap-4"
                       >
                         <div className="flex-1 min-w-0">
-                          <p className="font-semibold truncate">{venue.name || row.nome || "—"}</p>
-                          <p className="text-sm text-stone-500">{venue.city || row.citta || "—"}{venue.province ? ` (${venue.province})` : ""}</p>
-                          {venue.address && <p className="text-xs text-stone-500 truncate">{venue.address}</p>}
+                          <p className="font-semibold truncate">{row.nome || d.name || "—"}</p>
+                          <p className="text-sm text-stone-500">{row.citta || d.city || "—"}{row.provincia ? ` (${row.provincia})` : ""}</p>
+                          {row.indirizzo && <p className="text-xs text-stone-500 truncate">{row.indirizzo}</p>}
                           <p className="text-xs text-stone-500 mt-0.5">{catLabel}</p>
                         </div>
                         <div className="flex items-center gap-2 flex-shrink-0">
                           <button
-                            onClick={() => handleStatusToggle(venue)}
+                            onClick={() => handleStatusToggle(row)}
                             disabled={isUpdating}
                             className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
-                              venue.isApproved
-                                ? "bg-green-500/20 text-green-400 border border-green-500/30"
-                                : "bg-amber-500/20 text-amber-400 border border-amber-500/30"
+                              isApproved ? "bg-green-500/20 text-green-400 border border-green-500/30" : "bg-amber-500/20 text-amber-400 border border-amber-500/30"
                             }`}
                           >
-                            {isUpdating ? "..." : venue.isApproved ? "Approvato" : "Da revisionare"}
+                            {isUpdating ? "..." : isApproved ? "Approvato" : "Da revisionare"}
                           </button>
-                          <Link to={createPageUrl(`EditVenue?id=${venue.id}`)} state={{ venue, fromCloud: true }}>
+                          <Link to={createPageUrl(`EditVenue?id=${row.id}`)} state={{ venue: d, fromCloud: true }}>
                             <Button size="sm" variant="outline" className="border-stone-600">
                               <Edit3 className="w-3.5 h-3.5 mr-1" />
                               Modifica
@@ -334,7 +289,7 @@ export default function AdminDashboard() {
                             size="sm"
                             variant="outline"
                             className="border-red-500/50 text-red-400 hover:bg-red-500/10"
-                            onClick={() => handleDeleteLocale(venue)}
+                            onClick={() => handleDeleteLocale(row)}
                             disabled={isUpdating}
                           >
                             <Trash2 className="w-3.5 h-3.5 mr-1" />
@@ -343,7 +298,7 @@ export default function AdminDashboard() {
                           <Button
                             size="sm"
                             variant="outline"
-                            onClick={() => setSelected({ type: "venue", item: venue })}
+                            onClick={() => setSelected({ type: "venue", item: d })}
                             className="border-stone-600"
                           >
                             Dettagli
@@ -356,7 +311,6 @@ export default function AdminDashboard() {
               )}
             </section>
 
-            {/* Bartender */}
             <section className="bg-stone-900/50 rounded-2xl border border-stone-800/50 p-6">
               <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
                 <Wine className="w-5 h-5 text-amber-500" />
@@ -381,7 +335,6 @@ export default function AdminDashboard() {
               )}
             </section>
 
-            {/* Utenti */}
             <section className="bg-stone-900/50 rounded-2xl border border-stone-800/50 p-6">
               <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
                 <User className="w-5 h-5 text-amber-500" />
