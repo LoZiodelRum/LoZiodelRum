@@ -107,7 +107,7 @@ export function AppDataProvider({ children }) {
   useEffect(() => {
     if (!isSupabaseConfigured()) {
       setVenues([]);
-      setReviews([...initialReviews]);
+      setReviews([]);
       return;
     }
     supabase.from(TABLE_LOCALI).select("*").eq("status", "approved").then(({ data }) => {
@@ -119,9 +119,9 @@ export function AppDataProvider({ children }) {
       if (!error && data && Array.isArray(data)) {
         setReviews(data.map(mapReviewCloudToLocal));
       } else {
-        setReviews([...initialReviews]);
+        setReviews([]);
       }
-    }).catch(() => setReviews([...initialReviews]));
+    }).catch(() => setReviews([]));
 
     supabase.from(TABLE_APP_USERS).select("*").eq("role", "bartender").order("created_at", { ascending: false }).then(({ data, error }) => {
       if (!error && data && Array.isArray(data)) {
@@ -635,12 +635,19 @@ export function AppDataProvider({ children }) {
       },
 
       resetToDefaults: () => {
-        if (!isSupabaseConfigured()) setVenues([]);
-        else supabase?.from(TABLE_LOCALI).select("*").eq("status", "approved").then(({ data }) => {
-          const list = (data || []).map(mapLocaliToVenue);
-          setVenues(list);
-        });
-        setReviews(initialReviews);
+        if (!isSupabaseConfigured()) {
+          setVenues([]);
+          setReviews([]);
+        } else {
+          supabase?.from(TABLE_LOCALI).select("*").eq("status", "approved").then(({ data }) => {
+            const list = (data || []).map(mapLocaliToVenue);
+            setVenues(list);
+          });
+          supabase?.from("reviews_cloud").select("*").eq("status", "approved").order("created_at", { ascending: false }).then(({ data, error }) => {
+            if (!error && data && Array.isArray(data)) setReviews(data.map(mapReviewCloudToLocal));
+            else setReviews([]);
+          }).catch(() => setReviews([]));
+        }
         setArticles(initialArticles);
         setDrinks(initialDrinks);
       },
