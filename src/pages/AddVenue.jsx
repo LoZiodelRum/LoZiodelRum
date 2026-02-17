@@ -68,6 +68,7 @@ export default function AddVenue() {
     name: "",
     description: "",
     city: "",
+    province: "",
     country: "Italia",
     address: "",
     categories: [],
@@ -109,6 +110,7 @@ export default function AddVenue() {
     name: "",
     description: "",
     city: "",
+    province: "",
     country: "Italia",
     address: "",
     categories: [],
@@ -215,6 +217,7 @@ export default function AddVenue() {
           telefono: formData.phone || "",
           orari: formData.opening_hours || "",
           citta: formData.city || "",
+          provincia: formData.province || null,
           paese: formData.country || "Italia",
           sito: formData.website || "",
           instagram: formData.instagram || "",
@@ -259,6 +262,7 @@ export default function AddVenue() {
         slug,
         description: formData.description || "",
         city: formData.city,
+        province: formData.province || "",
         country: formData.country || "Italia",
         address: formData.address || "",
         categories: formData.categories,
@@ -447,14 +451,23 @@ export default function AddVenue() {
                   {errors.city && <p className="mt-1.5 text-sm text-red-400">{errors.city}</p>}
                 </div>
                 <div>
-                  <Label className="mb-2 block">Paese</Label>
+                  <Label className="mb-2 block">Provincia</Label>
                   <Input
-                    placeholder="Es. Italia"
-                    value={formData.country}
-                    onChange={(e) => setFormData(prev => ({ ...prev, country: e.target.value }))}
+                    placeholder="Es. MI"
+                    value={formData.province}
+                    onChange={(e) => setFormData(prev => ({ ...prev, province: e.target.value }))}
                     className="bg-stone-800/50 border-stone-700"
                   />
                 </div>
+              </div>
+              <div>
+                <Label className="mb-2 block">Paese</Label>
+                <Input
+                  placeholder="Es. Italia"
+                  value={formData.country}
+                  onChange={(e) => setFormData(prev => ({ ...prev, country: e.target.value }))}
+                  className="bg-stone-800/50 border-stone-700"
+                />
               </div>
 
               <div>

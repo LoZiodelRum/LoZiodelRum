@@ -53,6 +53,7 @@ export default function EditVenue() {
     name: "",
     description: "",
     city: "",
+    province: "",
     country: "",
     address: "",
     latitude: null,
@@ -78,6 +79,7 @@ export default function EditVenue() {
         name: venue.name || "",
         description: venue.description || "",
         city: venue.city || "",
+        province: venue.province || "",
         country: venue.country || "",
         address: venue.address || "",
         latitude: venue.latitude ?? null,
@@ -368,9 +370,13 @@ export default function EditVenue() {
                   <input type="text" value={formData.city} onChange={(e) => setFormData((p) => ({ ...p, city: e.target.value }))} onPaste={(e) => handlePaste("city", e)} placeholder="Milano" style={fieldStyle} />
                 </div>
                 <div>
-                  <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.875rem" }}>Paese *</label>
-                  <input type="text" value={formData.country} onChange={(e) => setFormData((p) => ({ ...p, country: e.target.value }))} onPaste={(e) => handlePaste("country", e)} placeholder="Italia" style={fieldStyle} />
+                  <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.875rem" }}>Provincia</label>
+                  <input type="text" value={formData.province} onChange={(e) => setFormData((p) => ({ ...p, province: e.target.value }))} onPaste={(e) => handlePaste("province", e)} placeholder="MI" style={fieldStyle} />
                 </div>
+              </div>
+              <div>
+                <label style={{ display: "block", marginBottom: "0.5rem", fontSize: "0.875rem" }}>Paese *</label>
+                <input type="text" value={formData.country} onChange={(e) => setFormData((p) => ({ ...p, country: e.target.value }))} onPaste={(e) => handlePaste("country", e)} placeholder="Italia" style={fieldStyle} />
               </div>
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem" }}>
                 <div>

@@ -11,6 +11,7 @@ function mapLocaliRow(row) {
     supabase_id: String(row.id),
     name: row.nome || "",
     city: row.citta || "",
+    province: row.provincia || "",
     country: row.paese || "Italia",
     address: row.indirizzo || "",
     description: row.descrizione || "",

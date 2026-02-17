@@ -79,6 +79,7 @@ export async function insertLocali(venueData) {
     telefono: venueData.phone || venueData.telefono || "",
     orari: venueData.opening_hours || venueData.orari || "",
     citta: venueData.city || venueData.citta || "",
+    provincia: venueData.province || venueData.provincia || null,
     paese: venueData.country || venueData.paese || "Italia",
     sito: venueData.website || venueData.sito || "",
     instagram: venueData.instagram || "",
