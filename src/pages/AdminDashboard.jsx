@@ -1,7 +1,7 @@
 /**
- * AdminDashboard – SORGENTE UNICA: Supabase.
- * Nessun dato locale. Legge approvato e status direttamente dal DB.
- * Campi DB: nome, citta, indirizzo, latitudine, longitudine, status, approvato.
+ * AdminDashboard – SORGENTE UNICA: tabella Locali (Supabase).
+ * Nessun dato statico. Stato vuoto []. Legge approvato/status solo dal DB.
+ * TABELLA: Locali (NON venues_cloud).
  */
 import { useState, useEffect, useCallback } from "react";
 import { Link } from "react-router-dom";
@@ -26,7 +26,8 @@ const CATEGORY_LABELS = {
   hotel_bar: "Hotel Bar",
 };
 
-/** Mappa riga DB → UI. Usa SOLO i campi dal database: nome, citta, indirizzo, latitudine, longitudine, status, approvato. */
+const TABELLA_LOCALI = "Locali";
+
 function rowToDisplay(row) {
   const catRaw = row.categoria || "cocktail_bar";
   const categories = catRaw ? catRaw.split(",").map((s) => s.trim()).filter(Boolean) : ["cocktail_bar"];
@@ -56,6 +57,12 @@ function rowToDisplay(row) {
   };
 }
 
+function isApprovedFromDb(row) {
+  const approvato = row.approvato;
+  const status = String(row.status || "").toLowerCase();
+  return approvato === true || approvato === "t" || status === "approved";
+}
+
 export default function AdminDashboard() {
   const [locali, setLocali] = useState([]);
   const [pendingRegistrations, setPendingRegistrations] = useState([]);
@@ -69,17 +76,24 @@ export default function AdminDashboard() {
     setLoading(true);
     setLoadError(null);
     try {
-      const { data: localiData, error: errLocali } = await supabase.from(TABLE_LOCALI).select("*").order("created_at", { ascending: false });
-      if (errLocali) {
-        console.error("[AdminDashboard] Errore fetch Locali:", errLocali);
-        throw errLocali;
+      const { data, error } = await supabase
+        .from(TABELLA_LOCALI)
+        .select("*")
+        .order("created_at", { ascending: false });
+
+      if (error) {
+        console.error("[AdminDashboard] Errore fetch Locali:", error);
+        throw error;
       }
-      const list = Array.isArray(localiData) ? localiData : [];
+
+      const list = Array.isArray(data) ? data : [];
       setLocali(list);
 
-      const hasIlCantiere = list.some((r) => (r.nome || "").toLowerCase().includes("cantiere"));
+      console.table(list.map((r) => ({ id: r.id, nome: r.nome, citta: r.citta, status: r.status, approvato: r.approvato })));
+
+      const hasIlCantiere = list.some((r) => (String(r.nome || "").toLowerCase().includes("cantiere")));
       if (!hasIlCantiere && list.length > 0) {
-        console.error("[AdminDashboard] 'Il Cantiere' non trovato. Lista completa da DB:", JSON.stringify(list.map((r) => ({ id: r.id, nome: r.nome, citta: r.citta, status: r.status, approvato: r.approvato })), null, 2));
+        console.error("[AdminDashboard] 'Il Cantiere' non in lista. Totale righe:", list.length, "| Lista nomi:", list.map((r) => r.nome));
       }
 
       const { data: regs, error: errRegs } = await supabase.from(TABLE_APP_USERS).select("*").eq("status", "pending").order("created_at", { ascending: false });
@@ -101,13 +115,13 @@ export default function AdminDashboard() {
   useAppUsersRealtime(null, loadData, loadData, loadData);
 
   const handleStatusToggle = async (row) => {
-    const approvato = row.approvato === true;
-    const update = approvato ? { approvato: false, status: "pending" } : { approvato: true, status: "approved" };
+    const currentlyApproved = isApprovedFromDb(row);
+    const update = currentlyApproved ? { approvato: false, status: "pending" } : { approvato: true, status: "approved" };
     setUpdatingId(row.id);
     try {
-      const { error } = await supabase.from(TABLE_LOCALI).update(update).eq("id", row.id);
+      const { error } = await supabase.from(TABELLA_LOCALI).update(update).eq("id", row.id);
       if (error) throw error;
-      toast({ title: update.approvato ? "Locale approvato" : "Locale in attesa" });
+      toast({ title: update.status === "approved" ? "Locale approvato" : "Locale in attesa" });
       await loadData();
     } catch (err) {
       toast({ title: "Errore", description: err?.message, variant: "destructive" });
@@ -120,7 +134,7 @@ export default function AdminDashboard() {
     if (!confirm(`Eliminare definitivamente "${row.nome}"?`)) return;
     setUpdatingId(row.id);
     try {
-      const { error } = await supabase.from(TABLE_LOCALI).delete().eq("id", row.id);
+      const { error } = await supabase.from(TABELLA_LOCALI).delete().eq("id", row.id);
       if (error) throw error;
       toast({ title: "Locale eliminato" });
       setSelected(null);
@@ -141,7 +155,7 @@ export default function AdminDashboard() {
           ...(extra.latitude != null && { latitudine: extra.latitude }),
           ...(extra.longitude != null && { longitudine: extra.longitude }),
         };
-        const { error } = await supabase.from(TABLE_LOCALI).update(update).eq("id", item.id);
+        const { error } = await supabase.from(TABELLA_LOCALI).update(update).eq("id", item.id);
         if (error) throw error;
         toast({ title: "Locale approvato" });
       } else {
@@ -160,7 +174,7 @@ export default function AdminDashboard() {
     if (!confirm("Eliminare definitivamente questo record?")) return;
     try {
       if (selected?.type === "venue") {
-        const { error } = await supabase.from(TABLE_LOCALI).delete().eq("id", item.id);
+        const { error } = await supabase.from(TABELLA_LOCALI).delete().eq("id", item.id);
         if (error) throw error;
         toast({ title: "Locale eliminato" });
       } else if (selected?.type === "bartender" || selected?.type === "user") {
@@ -178,8 +192,8 @@ export default function AdminDashboard() {
   const pendingBartenders = pendingRegistrations.filter((r) => r.role === "bartender");
   const pendingUsers = pendingRegistrations.filter((r) => r.role === "user" || r.role === "proprietario");
 
-  const daRevisionare = locali.filter((r) => r.approvato !== true && r.status !== "approved");
-  const approvati = locali.filter((r) => r.approvato === true || r.status === "approved");
+  const daRevisionare = locali.filter((r) => !isApprovedFromDb(r));
+  const approvati = locali.filter((r) => isApprovedFromDb(r));
   const localiOrdinati = [...daRevisionare, ...approvati];
 
   if (!isSupabaseConfigured?.()) {
@@ -199,7 +213,7 @@ export default function AdminDashboard() {
           </Link>
           <div>
             <h1 className="text-2xl md:text-3xl font-bold">Admin – Verifica profili</h1>
-            <p className="text-stone-500">Locali, Bartender e Utenti da Supabase</p>
+            <p className="text-stone-500">Tabella: Locali (Supabase)</p>
           </div>
           <Button variant="outline" size="sm" onClick={loadData} disabled={loading} className="ml-auto">
             <RefreshCw className={`w-4 h-4 mr-2 ${loading ? "animate-spin" : ""}`} />
@@ -242,21 +256,21 @@ export default function AdminDashboard() {
             <section className="bg-stone-900/50 rounded-2xl border border-stone-800/50 p-6">
               <h2 className="text-lg font-semibold mb-2 flex items-center gap-2">
                 <MapPin className="w-5 h-5 text-amber-500" />
-                Locali (Supabase)
+                Locali
               </h2>
               <p className="text-sm text-stone-500 mb-4">
-                Da Revisionare: {daRevisionare.length} · Approvati: {approvati.length}
+                In attesa: {daRevisionare.length} · Approvati: {approvati.length}
               </p>
               {locali.length === 0 ? (
                 <p className="text-stone-500 py-4">
-                  {!loadError ? "Nessun locale. La tabella Locali è vuota." : "Impossibile caricare."}
+                  {!loadError ? "Nessun locale nella tabella Locali." : "Impossibile caricare."}
                 </p>
               ) : (
                 <div className="space-y-3">
                   {localiOrdinati.map((row) => {
                     const d = rowToDisplay(row);
                     const isUpdating = updatingId === row.id;
-                    const isApproved = row.approvato === true || row.status === "approved";
+                    const isApproved = isApprovedFromDb(row);
                     const catLabel = (d.categories || [d.category]).filter(Boolean).map((c) => CATEGORY_LABELS[c] || c).join(", ") || "—";
                     return (
                       <div
@@ -264,8 +278,8 @@ export default function AdminDashboard() {
                         className="p-4 rounded-xl bg-stone-800/30 border border-stone-700/50 flex flex-col sm:flex-row sm:items-center gap-4"
                       >
                         <div className="flex-1 min-w-0">
-                          <p className="font-semibold truncate">{row.nome || d.name || "—"}</p>
-                          <p className="text-sm text-stone-500">{row.citta || d.city || "—"}{row.provincia ? ` (${row.provincia})` : ""}</p>
+                          <p className="font-semibold truncate">{row.nome || "—"}</p>
+                          <p className="text-sm text-stone-500">{row.citta || "—"}{row.provincia ? ` (${row.provincia})` : ""}</p>
                           {row.indirizzo && <p className="text-xs text-stone-500 truncate">{row.indirizzo}</p>}
                           <p className="text-xs text-stone-500 mt-0.5">{catLabel}</p>
                         </div>
@@ -277,7 +291,7 @@ export default function AdminDashboard() {
                               isApproved ? "bg-green-500/20 text-green-400 border border-green-500/30" : "bg-amber-500/20 text-amber-400 border border-amber-500/30"
                             }`}
                           >
-                            {isUpdating ? "..." : isApproved ? "Approvato" : "Da revisionare"}
+                            {isUpdating ? "..." : isApproved ? "Approvato" : "In attesa"}
                           </button>
                           <Link to={createPageUrl(`EditVenue?id=${row.id}`)} state={{ venue: d, fromCloud: true }}>
                             <Button size="sm" variant="outline" className="border-stone-600">
