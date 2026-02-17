@@ -1,18 +1,37 @@
 /**
  * AdminDashboard – Centro di gestione totale.
  * Gestione: Locali, Utenti (Proprietario/Bartender/User), Recensioni.
- * Editing in-place con modale e salvataggio diretto su Supabase.
+ * Locale: scheda finita con foto upload e mappa.
  */
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "@/lib/supabase";
 import { createPageUrl } from "@/utils";
 import {
   MapPin, ChevronLeft, Loader2, RefreshCw, X, Save, Trash2,
-  CheckCircle, Clock, User, MessageSquare, Store
+  CheckCircle, Clock, User, MessageSquare, Store, ImagePlus, Edit3
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "@/components/ui/use-toast";
+import { MapContainer, TileLayer, Marker, useMap } from "react-leaflet";
+import L from "leaflet";
+import { uploadToSupabaseStorage } from "@/lib/supabaseStorage";
+import "leaflet/dist/leaflet.css";
+
+const adminPinIcon = new L.DivIcon({
+  className: "admin-pin",
+  html: `<div style="width:36px;height:48px;position:relative;display:flex;align-items:flex-start;justify-content:center"><div style="width:36px;height:36px;background:linear-gradient(135deg,#f59e0b 0%,#d97706 100%);border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,0.3);border:2px solid white"><div style="transform:rotate(45deg);color:#1c1917"><svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7z"/></svg></div></div><div style="position:absolute;left:50%;bottom:0;width:0;height:0;margin-left:-6px;border-left:6px solid transparent;border-right:6px solid transparent;border-top:12px solid #b45309"></div></div>`,
+  iconSize: [36, 48],
+  iconAnchor: [18, 48],
+});
+
+function MapCenterUpdater({ center }) {
+  const map = useMap();
+  useEffect(() => {
+    if (center && center[0] && center[1]) map.setView(center, 15);
+  }, [center, map]);
+  return null;
+}
 
 const TABLE_LOCALI = "Locali";
 const TABLE_APP_USERS = "app_users";
@@ -29,6 +48,9 @@ export default function AdminDashboard() {
   const [saving, setSaving] = useState(false);
   const [selected, setSelected] = useState(null);
   const [editForm, setEditForm] = useState({});
+  const [uploadingImage, setUploadingImage] = useState(false);
+  const [imagePreview, setImagePreview] = useState(null);
+  const photoInputRef = useRef(null);
 
   const loadData = useCallback(async () => {
     setLoading(true);
@@ -55,6 +77,7 @@ export default function AdminDashboard() {
 
   const openModal = (item, type) => {
     setSelected({ item, type });
+    setImagePreview(null);
     if (type === "locale") {
       setEditForm({
         nome: safeStr(item.nome),
@@ -89,13 +112,13 @@ export default function AdminDashboard() {
       const { item, type } = selected;
       if (type === "locale") {
         const payload = {
-          nome: editForm.nome || null,
-          indirizzo: editForm.indirizzo || null,
-          citta: editForm.citta || null,
-          descrizione: editForm.descrizione || null,
-          image_url: editForm.image_url || null,
-          latitudine: safeNum(editForm.latitudine),
-          longitudine: safeNum(editForm.longitudine),
+          nome: item.nome || editForm.nome || null,
+          indirizzo: item.indirizzo || editForm.indirizzo || null,
+          citta: item.citta || editForm.citta || null,
+          descrizione: item.descrizione || editForm.descrizione || null,
+          image_url: editForm.image_url || item.image_url || null,
+          latitudine: safeNum(editForm.latitudine) ?? item.latitudine,
+          longitudine: safeNum(editForm.longitudine) ?? item.longitudine,
           approvato: !!editForm.approvato,
           status: editForm.approvato ? "approved" : (item.status || "pending"),
         };
@@ -141,6 +164,26 @@ export default function AdminDashboard() {
       loadData();
     } catch (err) {
       toast({ title: "Errore", description: err?.message, variant: "destructive" });
+    }
+  };
+
+  const handlePhotoUpload = async (e) => {
+    const file = e.target?.files?.[0];
+    if (!file || !file.type.startsWith("image/")) {
+      toast({ title: "Seleziona un'immagine", variant: "destructive" });
+      return;
+    }
+    setUploadingImage(true);
+    try {
+      const url = await uploadToSupabaseStorage(file, "venues", "image");
+      setEditForm((p) => ({ ...p, image_url: url }));
+      setImagePreview(URL.createObjectURL(file));
+      toast({ title: "Foto caricata" });
+    } catch (err) {
+      toast({ title: "Errore upload", description: err?.message, variant: "destructive" });
+    } finally {
+      setUploadingImage(false);
+      e.target.value = "";
     }
   };
 
@@ -196,90 +239,93 @@ export default function AdminDashboard() {
               </h2>
 
               {selected.type === "locale" && (
-                <div className="space-y-4">
-                  <div>
-                    <label className={labelClass}>Nome</label>
-                    <input
-                      type="text"
-                      value={editForm.nome}
-                      onChange={(e) => setEditForm((p) => ({ ...p, nome: e.target.value }))}
-                      className={inputClass}
-                      placeholder="Nome locale"
-                    />
-                  </div>
-                  <div>
-                    <label className={labelClass}>Indirizzo</label>
-                    <input
-                      type="text"
-                      value={editForm.indirizzo}
-                      onChange={(e) => setEditForm((p) => ({ ...p, indirizzo: e.target.value }))}
-                      className={inputClass}
-                      placeholder="Via Roma 1"
-                    />
-                  </div>
-                  <div>
-                    <label className={labelClass}>Città</label>
-                    <input
-                      type="text"
-                      value={editForm.citta}
-                      onChange={(e) => setEditForm((p) => ({ ...p, citta: e.target.value }))}
-                      className={inputClass}
-                      placeholder="Milano"
-                    />
-                  </div>
-                  <div>
-                    <label className={labelClass}>Descrizione</label>
-                    <textarea
-                      value={editForm.descrizione}
-                      onChange={(e) => setEditForm((p) => ({ ...p, descrizione: e.target.value }))}
-                      className={inputClass + " min-h-[80px]"}
-                      placeholder="Descrizione"
-                      rows={4}
-                    />
-                  </div>
-                  <div>
-                    <label className={labelClass}>URL Immagine</label>
-                    <input
-                      type="text"
-                      value={editForm.image_url}
-                      onChange={(e) => setEditForm((p) => ({ ...p, image_url: e.target.value }))}
-                      className={inputClass}
-                      placeholder="https://..."
-                    />
-                  </div>
-                  <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <label className={labelClass}>Latitudine</label>
-                      <input
-                        type="number"
-                        step="any"
-                        value={editForm.latitudine}
-                        onChange={(e) => setEditForm((p) => ({ ...p, latitudine: e.target.value }))}
-                        className={inputClass}
-                        placeholder="45.46"
+                <div className="space-y-6">
+                  {/* SCHEDA FINITA – Hero + dati */}
+                  <div className="rounded-2xl overflow-hidden border border-stone-800">
+                    <div className="relative h-48 bg-stone-800">
+                      <img
+                        src={imagePreview || (editForm.image_url ? (editForm.image_url || "").split(",")[0]?.trim() : null) || "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800"}
+                        alt={editForm.nome}
+                        className="w-full h-full object-cover"
+                        onError={(e) => { e.target.src = "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800"; }}
                       />
+                      <div className="absolute inset-0 bg-gradient-to-t from-stone-950 via-transparent to-transparent" />
+                      <input
+                        ref={photoInputRef}
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={handlePhotoUpload}
+                      />
+                      <button
+                        type="button"
+                        onClick={() => photoInputRef.current?.click()}
+                        disabled={uploadingImage}
+                        className="absolute bottom-3 left-3 flex items-center gap-2 px-4 py-2 bg-amber-500 hover:bg-amber-600 disabled:opacity-50 text-stone-950 font-bold rounded-xl transition-colors"
+                      >
+                        {uploadingImage ? <Loader2 className="w-4 h-4 animate-spin" /> : <ImagePlus className="w-4 h-4" />}
+                        Allega foto
+                      </button>
                     </div>
-                    <div>
-                      <label className={labelClass}>Longitudine</label>
-                      <input
-                        type="number"
-                        step="any"
-                        value={editForm.longitudine}
-                        onChange={(e) => setEditForm((p) => ({ ...p, longitudine: e.target.value }))}
-                        className={inputClass}
-                        placeholder="9.19"
-                      />
+                    <div className="p-4 bg-stone-900/90">
+                      <h3 className="text-xl font-bold text-white mb-1">{editForm.nome || "Senza nome"}</h3>
+                      <p className="text-amber-500 flex items-center gap-2 text-sm">
+                        <MapPin className="w-4 h-4 shrink-0" />
+                        {editForm.indirizzo || "—"}, {editForm.citta || "—"}
+                      </p>
+                      {editForm.descrizione && (
+                        <p className="text-stone-400 text-sm mt-3 leading-relaxed">{editForm.descrizione}</p>
+                      )}
                     </div>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      id="approvato"
-                      checked={editForm.approvato}
-                      onChange={(e) => setEditForm((p) => ({ ...p, approvato: e.target.checked }))}
-                      className="w-4 h-4 rounded border-stone-600 bg-stone-800 text-amber-500"
-                    />
-                    <label htmlFor="approvato" className="text-sm font-medium">Approvato</label>
+
+                  {/* Mappa con marker */}
+                  <div>
+                    <p className="text-xs uppercase text-stone-500 font-bold mb-2">Posizione sulla mappa</p>
+                    {editForm.latitudine && editForm.longitudine && !isNaN(parseFloat(editForm.latitudine)) && !isNaN(parseFloat(editForm.longitudine)) ? (
+                      <div className="h-[240px] rounded-xl overflow-hidden border border-stone-800">
+                        <MapContainer
+                          center={[parseFloat(editForm.latitudine), parseFloat(editForm.longitudine)]}
+                          zoom={15}
+                          className="h-full w-full"
+                          style={{ background: "#1c1917" }}
+                          zoomControl={false}
+                        >
+                          <TileLayer
+                            attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+                            url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
+                          />
+                          <Marker
+                            position={[parseFloat(editForm.latitudine), parseFloat(editForm.longitudine)]}
+                            icon={adminPinIcon}
+                          />
+                          <MapCenterUpdater center={[parseFloat(editForm.latitudine), parseFloat(editForm.longitudine)]} />
+                        </MapContainer>
+                      </div>
+                    ) : (
+                      <div className="h-[120px] rounded-xl border border-stone-800 bg-stone-800/50 flex items-center justify-center text-stone-500 text-sm">
+                        Inserisci latitudine e longitudine in Modifica dettagli per vedere il marker
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Approvato + link Modifica */}
+                  <div className="flex flex-wrap items-center gap-4">
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        id="approvato"
+                        checked={editForm.approvato}
+                        onChange={(e) => setEditForm((p) => ({ ...p, approvato: e.target.checked }))}
+                        className="w-4 h-4 rounded border-stone-600 bg-stone-800 text-amber-500"
+                      />
+                      <label htmlFor="approvato" className="text-sm font-medium">Approvato</label>
+                    </div>
+                    <Link to={createPageUrl(`EditVenue?id=${selected.item.id}`)} onClick={() => setSelected(null)}>
+                      <Button variant="outline" size="sm" className="border-stone-600 text-stone-300">
+                        <Edit3 className="w-4 h-4 mr-2" /> Modifica dettagli (nome, indirizzo, coordinate…)
+                      </Button>
+                    </Link>
                   </div>
                 </div>
               )}
@@ -536,6 +582,10 @@ export default function AdminDashboard() {
           </div>
         </section>
       </div>
+      <style>{`
+        .admin-pin { background: transparent !important; border: none !important; }
+        .leaflet-container { font-family: inherit; }
+      `}</style>
     </div>
   );
 }
