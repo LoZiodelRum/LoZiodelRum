@@ -740,7 +740,7 @@ export function AppDataProvider({ children }) {
       },
       getPendingVenuesFromCloud: async () => {
         if (!isSupabaseConfigured()) return [];
-        const { data, error } = await supabase.from(TABLE_LOCALI).select("*").eq("status", "pending").order("created_at", { ascending: false });
+        const { data, error } = await supabase.from(TABLE_LOCALI).select("*").eq("status", "pending");
         if (error) return [];
         return (data || []).map(mapLocaliToVenue);
       },

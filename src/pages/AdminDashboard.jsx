@@ -22,7 +22,7 @@ export default function AdminDashboard() {
     setLoading(true);
     try {
       // 1. Carica Locali
-      const { data: venues, error: vError } = await supabase.from(TABELLA).select("*").order('created_at', { ascending: false });
+      const { data: venues, error: vError } = await supabase.from(TABELLA).select("*");
       if (vError) throw vError;
       setLocali(venues || []);
 
