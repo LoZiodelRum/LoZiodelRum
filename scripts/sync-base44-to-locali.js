@@ -62,6 +62,7 @@ function toLocaliRow(v) {
     orari: v.opening_hours || "",
     telefono: v.phone || "",
     status: "approved",
+    approvato: true,
     image_url: v.cover_image || null,
   };
   if (v.latitude != null && v.longitude != null) {

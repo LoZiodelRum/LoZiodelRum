@@ -27,10 +27,13 @@ const CATEGORY_LABELS = {
   hotel_bar: "Hotel Bar",
 };
 
-/** Mappa riga Locali al formato venue per EditVenue e AdminCard */
+/** Mappa riga Locali al formato venue. Legge approvato e status da Supabase. */
 function mapLocaliToVenue(row) {
   const catRaw = row.categoria || "cocktail_bar";
   const categories = catRaw ? catRaw.split(",").map((s) => s.trim()).filter(Boolean) : ["cocktail_bar"];
+  const status = row.status || "pending";
+  const approvato = row.approvato === true;
+  const isApproved = approvato || status === "approved";
   return {
     id: String(row.id),
     supabase_id: String(row.id),
@@ -52,8 +55,10 @@ function mapLocaliToVenue(row) {
     slug: row.slug || null,
     latitude: row.latitudine ?? null,
     longitude: row.longitudine ?? null,
-    status: row.status || "pending",
-    _cloudPending: row.status === "pending",
+    status,
+    approvato,
+    isApproved,
+    _cloudPending: !isApproved,
     created_at: row.created_at,
   };
 }
@@ -122,16 +127,19 @@ export default function AdminDashboard() {
   useAppUsersRealtime(null, refreshOnChange, refreshOnChange, refreshOnChange);
 
   const handleStatusToggle = async (venue) => {
-    const newStatus = venue.status === "approved" ? "pending" : "approved";
+    const isCurrentlyApproved = venue.isApproved ?? venue.status === "approved" ?? venue.approvato;
+    const update = isCurrentlyApproved
+      ? { approvato: false, status: "pending" }
+      : { approvato: true, status: "approved" };
     setUpdatingId(venue.id);
     try {
-      const { error } = await supabase.from(TABLE_LOCALI).update({ status: newStatus }).eq("id", venue.id);
+      const { error } = await supabase.from(TABLE_LOCALI).update(update).eq("id", venue.id);
       if (error) {
         console.error("[AdminDashboard] Errore update status:", error);
         toast({ title: "Errore", description: error.message, variant: "destructive" });
         return;
       }
-      toast({ title: `Status → ${newStatus}` });
+      toast({ title: update.status === "approved" ? "Locale approvato" : "Locale in attesa" });
       await loadData();
     } finally {
       setUpdatingId(null);
@@ -159,10 +167,15 @@ export default function AdminDashboard() {
   const handleApprove = async (item, extra = {}) => {
     try {
       if (selected?.type === "venue") {
-        const update = { status: "approved", ...(extra.latitude != null && { latitudine: extra.latitude }), ...(extra.longitude != null && { longitudine: extra.longitude }) };
+        const update = {
+          approvato: true,
+          status: "approved",
+          ...(extra.latitude != null && { latitudine: extra.latitude }),
+          ...(extra.longitude != null && { longitudine: extra.longitude }),
+        };
         const { error } = await supabase.from(TABLE_LOCALI).update(update).eq("id", item.id);
         if (error) throw error;
-        toast({ title: "Locale approvato" });
+        toast({ title: "Locale approvato (salvataggio permanente)" });
       } else {
         const { error } = await supabase.from(TABLE_APP_USERS).update({ status: "approved" }).eq("id", item.id);
         if (error) throw error;
@@ -198,6 +211,19 @@ export default function AdminDashboard() {
 
   const pendingBartenders = pendingRegistrations.filter((r) => r.role === "bartender");
   const pendingUsers = pendingRegistrations.filter((r) => r.role === "user" || r.role === "proprietario");
+
+  // Ordine: Da Revisionare (pending) in cima, poi Approvati
+  const localiDaRevisionare = locali.filter((r) => {
+    const s = r.status || "pending";
+    const a = r.approvato === true;
+    return s !== "approved" && !a;
+  });
+  const localiApprovati = locali.filter((r) => {
+    const s = r.status || "approved";
+    const a = r.approvato === true;
+    return s === "approved" || a;
+  });
+  const localiOrdinati = [...localiDaRevisionare, ...localiApprovati];
 
   if (!isSupabaseConfigured?.()) {
     return (
@@ -256,19 +282,22 @@ export default function AdminDashboard() {
           </div>
         ) : (
           <div className="space-y-8">
-            {/* LOCALI – tutti dalla tabella Locali */}
+            {/* LOCALI – SORGENTE UNICA: tabella Locali. Da Revisionare in cima. */}
             <section className="bg-stone-900/50 rounded-2xl border border-stone-800/50 p-6">
-              <h2 className="text-lg font-semibold mb-4 flex items-center gap-2">
+              <h2 className="text-lg font-semibold mb-2 flex items-center gap-2">
                 <MapPin className="w-5 h-5 text-amber-500" />
-                Locali ({locali.length})
+                Locali
               </h2>
+              <p className="text-sm text-stone-500 mb-4">
+                Da Revisionare: {localiDaRevisionare.length} · Approvati: {localiApprovati.length}
+              </p>
               {locali.length === 0 ? (
                 <p className="text-stone-500 py-4">
                   {!loadError ? "Nessun locale nella tabella Locali. Aggiungi locali da AddVenue." : "Impossibile caricare i locali."}
                 </p>
               ) : (
                 <div className="space-y-3">
-                  {locali.map((row) => {
+                  {localiOrdinati.map((row) => {
                     const venue = mapLocaliToVenue(row);
                     const isUpdating = updatingId === venue.id;
                     const catLabel = (venue.categories || [venue.category]).filter(Boolean).map((c) => CATEGORY_LABELS[c] || c).join(", ") || "—";
@@ -288,12 +317,12 @@ export default function AdminDashboard() {
                             onClick={() => handleStatusToggle(venue)}
                             disabled={isUpdating}
                             className={`px-2 py-1 rounded text-xs font-medium transition-colors ${
-                              venue.status === "approved"
+                              venue.isApproved
                                 ? "bg-green-500/20 text-green-400 border border-green-500/30"
                                 : "bg-amber-500/20 text-amber-400 border border-amber-500/30"
                             }`}
                           >
-                            {isUpdating ? "..." : venue.status === "approved" ? "Approved" : "Pending"}
+                            {isUpdating ? "..." : venue.isApproved ? "Approvato" : "Da revisionare"}
                           </button>
                           <Link to={createPageUrl(`EditVenue?id=${venue.id}`)} state={{ venue, fromCloud: true }}>
                             <Button size="sm" variant="outline" className="border-stone-600">

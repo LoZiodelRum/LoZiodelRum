@@ -56,6 +56,9 @@ export function AppDataProvider({ children }) {
   const mapLocaliToVenue = useCallback((row) => {
     const catRaw = row.categoria || "cocktail_bar";
     const categories = catRaw ? catRaw.split(",").map((s) => s.trim()).filter(Boolean) : ["cocktail_bar"];
+    const status = row.status || "pending";
+    const approvato = row.approvato === true;
+    const isApproved = approvato || status === "approved";
     return {
     id: String(row.id),
     supabase_id: String(row.id),
@@ -76,8 +79,9 @@ export function AppDataProvider({ children }) {
     opening_hours: row.orari || "",
     latitude: row.latitudine != null ? parseFloat(row.latitudine) : null,
     longitude: row.longitudine != null ? parseFloat(row.longitudine) : null,
-    status: row.status || "pending",
-    _cloudPending: row.status === "pending",
+    status,
+    approvato,
+    _cloudPending: !isApproved,
     created_at: row.created_at || null,
     slug: row.slug || null,
   };
@@ -119,7 +123,7 @@ export function AppDataProvider({ children }) {
       setBartenders([]);
       return;
     }
-    supabase.from(TABLE_LOCALI).select("*").eq("status", "approved").then(({ data }) => {
+    supabase.from(TABLE_LOCALI).select("*").or("status.eq.approved,approvato.eq.true").then(({ data }) => {
       const list = (data || []).map((r) => mapLocaliToVenue(r));
       setVenues(list);
     }).catch(() => setVenues([]));
@@ -141,7 +145,8 @@ export function AppDataProvider({ children }) {
 
   // Real-time: aggiornamenti live da Supabase
   const onInsert = useCallback((venue) => {
-    if (venue?.status === "approved") {
+    const isApproved = venue?.approvato === true || venue?.status === "approved";
+    if (isApproved) {
       setVenues((prev) => {
         const exists = prev.some((v) => v.id === venue.id || v.supabase_id === venue.id);
         if (exists) return prev.map((v) => (v.id === venue.id || v.supabase_id === venue.id ? venue : v));
@@ -150,7 +155,8 @@ export function AppDataProvider({ children }) {
     }
   }, []);
   const onUpdate = useCallback((venue) => {
-    if (venue?.status === "approved") {
+    const isApproved = venue?.approvato === true || venue?.status === "approved";
+    if (isApproved) {
       setVenues((prev) => prev.map((v) => (v.id === venue.id || v.supabase_id === venue.id ? venue : v)));
     } else {
       setVenues((prev) => prev.filter((v) => v.supabase_id !== venue?.id));
@@ -675,7 +681,7 @@ export function AppDataProvider({ children }) {
           setVenues([]);
           setReviews([]);
         } else {
-          supabase?.from(TABLE_LOCALI).select("*").eq("status", "approved").then(({ data }) => {
+          supabase?.from(TABLE_LOCALI).select("*").or("status.eq.approved,approvato.eq.true").then(({ data }) => {
             const list = (data || []).map(mapLocaliToVenue);
             setVenues(list);
           });
@@ -733,9 +739,9 @@ export function AppDataProvider({ children }) {
       },
       approveVenueCloud: async (id, extra = {}) => {
         if (!isSupabaseConfigured()) return;
-        const update = { status: "approved", ...(extra.latitude != null && { latitudine: extra.latitude }), ...(extra.longitude != null && { longitudine: extra.longitude }) };
+        const update = { approvato: true, status: "approved", ...(extra.latitude != null && { latitudine: extra.latitude }), ...(extra.longitude != null && { longitudine: extra.longitude }) };
         await supabase.from(TABLE_LOCALI).update(update).eq("id", id);
-        const { data } = await supabase.from(TABLE_LOCALI).select("*").eq("status", "approved");
+        const { data } = await supabase.from(TABLE_LOCALI).select("*").or("status.eq.approved,approvato.eq.true");
         const list = (data || []).map(mapLocaliToVenue);
         setVenues((prev) => list.length > 0 ? list : prev.filter((v) => v.id !== id));
       },

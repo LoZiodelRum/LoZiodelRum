@@ -30,7 +30,8 @@ function mapLocaliRow(row) {
     latitude: row.latitudine != null ? parseFloat(row.latitudine) : null,
     longitude: row.longitudine != null ? parseFloat(row.longitudine) : null,
     status: row.status || "pending",
-    _cloudPending: row.status === "pending",
+    approvato: row.approvato === true,
+    _cloudPending: !(row.approvato === true || row.status === "approved"),
     created_at: row.created_at || null,
     slug: row.slug || null,
   };
