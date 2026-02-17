@@ -19,11 +19,27 @@ import L from "leaflet";
 import { uploadToSupabaseStorage } from "@/lib/supabaseStorage";
 import "leaflet/dist/leaflet.css";
 
-const adminPinIcon = new L.Icon({
-  iconUrl: "/marker-pin.png",
-  iconRetinaUrl: "/marker-pin.png",
-  iconSize: [36, 42],
-  iconAnchor: [18, 42],
+const adminPinIcon = new L.DivIcon({
+  className: "admin-pin",
+  html: `<div style="position:relative;width:36px;height:48px;display:flex;justify-content:center;background:transparent;">
+    <svg width="36" height="48" viewBox="0 0 36 48" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,0.3));">
+      <defs><radialGradient id="lzdrAdminGrad" cx="30%" cy="30%" r="70%" fx="25%" fy="25%"><stop offset="0%" style="stop-color:#fbbf24"/><stop offset="100%" style="stop-color:#d97706"/></radialGradient></defs>
+      <path d="M18 3 C10 3 3 9 3 18 C3 27 18 48 18 48 C18 48 33 27 33 18 C33 9 26 3 18 3 Z" fill="url(#lzdrAdminGrad)"/>
+    </svg>
+    <div style="position:absolute;top:6px;left:50%;transform:translateX(-50%);width:16px;height:16px;">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#1c1917" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M4 5h16l-2 7H6l2-7z"/>
+        <path d="M6 12l6 7 6-7"/>
+        <path d="M12 19v1"/>
+        <path d="M9 12h6"/>
+        <path d="M6 12l3 4h6l3-4" fill="#1c1917"/>
+        <ellipse cx="18" cy="4.5" rx="1.8" ry="1.2" fill="#e8dcc4" stroke="#1c1917" stroke-width="1"/>
+        <path d="M18 4l1.5 2" stroke="#1c1917" stroke-width="0.8"/>
+      </svg>
+    </div>
+  </div>`,
+  iconSize: [36, 48],
+  iconAnchor: [18, 48],
 });
 
 function MapCenterUpdater({ center }) {
