@@ -47,6 +47,7 @@ export default function EditDrink() {
     brand: "",
     origin: "",
     description: "",
+    ingredienti_proporzioni: "",
     image: "",
     abv: "",
   });
@@ -61,6 +62,7 @@ export default function EditDrink() {
         brand: drink.brand || "",
         origin: drink.origin || "",
         description: drink.description || "",
+        ingredienti_proporzioni: drink.ingredienti_proporzioni || drink.ingredients || "",
         image: drink.image || "",
         abv: drink.abv != null ? String(drink.abv) : "",
       });
@@ -240,6 +242,19 @@ export default function EditDrink() {
               value={formData.description}
               onChange={(e) =>
                 setFormData((prev) => ({ ...prev, description: e.target.value }))
+              }
+              rows={4}
+              className="bg-stone-800/50 border-stone-700"
+            />
+          </div>
+
+          <div>
+            <Label className="mb-2 block">Ingredienti e proporzioni</Label>
+            <Textarea
+              placeholder="Es: 50ml Gin, 25ml succo di limone, 100ml soda..."
+              value={formData.ingredienti_proporzioni}
+              onChange={(e) =>
+                setFormData((prev) => ({ ...prev, ingredienti_proporzioni: e.target.value }))
               }
               rows={4}
               className="bg-stone-800/50 border-stone-700"

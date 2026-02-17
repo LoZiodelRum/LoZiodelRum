@@ -124,6 +124,10 @@ export default function DrinkDetail() {
                   </p>
                 )}
               </div>
+            ) : (drink.ingredienti_proporzioni || drink.ingredients) ? (
+              <p className="text-zinc-400 text-sm leading-relaxed whitespace-pre-line">
+                {drink.ingredienti_proporzioni || drink.ingredients}
+              </p>
             ) : (
               <p className="text-zinc-500 italic text-sm">Ingredienti non ancora inseriti per questo cocktail.</p>
             )}
