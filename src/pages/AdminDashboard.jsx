@@ -58,7 +58,7 @@ const safeStr = (v) => (v == null ? "" : String(v));
 const safeNum = (v) => (v == null || v === "" ? null : parseFloat(v));
 
 export default function AdminDashboard() {
-  const { reloadVenuesFromSupabase } = useAppData();
+  const { reloadVenuesFromSupabase, reloadReviewsFromSupabase } = useAppData();
   const [locali, setLocali] = useState([]);
   const [users, setUsers] = useState([]);
   const [reviews, setReviews] = useState([]);
@@ -158,6 +158,7 @@ export default function AdminDashboard() {
         content: safeStr(item.content),
         overall_rating: item.overall_rating != null ? String(item.overall_rating) : "",
         status: safeStr(item.status) || "approved",
+        venue_id: safeStr(item.venue_id) || "",
       });
     }
   };
@@ -207,9 +208,11 @@ export default function AdminDashboard() {
           content: editForm.content || null,
           overall_rating: safeNum(editForm.overall_rating),
           status: editForm.status || "approved",
+          ...(editForm.venue_id && { venue_id: editForm.venue_id }),
         };
         const { error } = await supabase.from(TABLE_REVIEWS).update(payload).eq("id", item.id);
         if (error) throw error;
+        await reloadReviewsFromSupabase?.();
         toast({ title: "Recensione aggiornata" });
       }
       setSelected(null);
@@ -470,6 +473,21 @@ export default function AdminDashboard() {
 
               {selected.type === "review" && (
                 <div className="space-y-4">
+                  <div>
+                    <label className={labelClass}>Locale (sincronizza recensione)</label>
+                    <select
+                      value={editForm.venue_id}
+                      onChange={(e) => setEditForm((p) => ({ ...p, venue_id: e.target.value }))}
+                      className={inputClass}
+                    >
+                      <option value="">— Seleziona locale —</option>
+                      {[...localiOnline, ...localiInAttesa].map((l) => (
+                        <option key={l.id} value={l.id}>
+                          {l.nome || "Senza nome"} — {l.citta || ""}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
                   <div>
                     <label className={labelClass}>Testo</label>
                     <textarea
