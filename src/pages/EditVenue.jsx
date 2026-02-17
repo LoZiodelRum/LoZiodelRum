@@ -470,7 +470,7 @@ export default function EditVenue() {
               </div>
               <div>
                 <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem", fontSize: "0.875rem" }}><Globe style={{ width: 16, height: 16, color: "#f59e0b" }} /> Sito web</label>
-                <input type="url" value={formData.website} onChange={(e) => setFormData((p) => ({ ...p, website: e.target.value }))} onPaste={(e) => handlePaste("website", e)} placeholder="https://..." style={fieldStyle} />
+                <input type="text" value={formData.website} onChange={(e) => setFormData((p) => ({ ...p, website: e.target.value }))} onPaste={(e) => handlePaste("website", e)} placeholder="https://..." style={fieldStyle} />
               </div>
               <div>
                 <label style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.5rem", fontSize: "0.875rem" }}><Instagram style={{ width: 16, height: 16, color: "#f59e0b" }} /> Instagram</label>
