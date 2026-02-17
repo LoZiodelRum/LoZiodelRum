@@ -60,11 +60,11 @@ export default function AdminDashboard() {
   const pendingBartenders = pendingRegistrations.filter((r) => r.role === "bartender");
   const pendingUsers = pendingRegistrations.filter((r) => r.role === "user" || r.role === "proprietario");
 
-  const handleApprove = async (item) => {
+  const handleApprove = async (item, extra = {}) => {
     try {
       if (selected?.type === "venue") {
-        await approveVenueCloud?.(item.id, {});
-        toast({ title: "Locale approvato" });
+        await approveVenueCloud?.(item.id, extra);
+        toast({ title: "Locale approvato. Il marker apparirà sulla mappa se hai inserito latitudine e longitudine." });
       } else {
         await updateAppUserStatus?.(item.id, "approved");
         toast({ title: "Profilo approvato" });

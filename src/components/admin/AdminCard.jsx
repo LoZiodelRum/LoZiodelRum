@@ -1,12 +1,14 @@
 /**
  * AdminCard – Visualizzatore universale per verifica profili pending.
  * Mostra campi testuali, foto profilo e video (solo locali).
- * Supporta più immagini (cover_image, image_url, photo come stringa separata da virgole).
- * Pulsanti: APPROVA (status → approved) e ELIMINA (rimuove record).
+ * Per locali: caselle Latitudine e Longitudine per posizione sulla mappa.
+ * Pulsanti: APPROVA (status → approved, salva coord per marker) e ELIMINA.
  */
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { MapPin, Phone, Globe, Instagram, Clock, User, Wine, X, ChevronLeft, ChevronRight } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { dbStringToUrls } from "@/lib/supabaseStorage";
 
 const FIELD = ({ label, value }) =>
@@ -19,6 +21,14 @@ const FIELD = ({ label, value }) =>
 
 export default function AdminCard({ type, item, onApprove, onDelete, onClose, isPending }) {
   const [imgIndex, setImgIndex] = useState(0);
+  const [latitude, setLatitude] = useState("");
+  const [longitude, setLongitude] = useState("");
+  useEffect(() => {
+    if (item) {
+      setLatitude(item.latitude ?? item.latitudine ?? "");
+      setLongitude(item.longitude ?? item.longitudine ?? "");
+    }
+  }, [item?.id]);
   if (!item) return null;
 
   const imgUrlRaw = type === "venue" ? item.cover_image : (item.image_url || item.photo);
@@ -106,6 +116,31 @@ export default function AdminCard({ type, item, onApprove, onDelete, onClose, is
               <FIELD label="Orari" value={item.opening_hours} />
               <FIELD label="Categoria" value={item.category} />
               <FIELD label="Fascia prezzo" value={item.price_range} />
+              <div className="grid grid-cols-2 gap-3 mt-4">
+                <div>
+                  <Label className="text-xs text-stone-500 mb-1 block">Latitudine (per mappa)</Label>
+                  <Input
+                    type="number"
+                    step="any"
+                    placeholder="45.4642"
+                    value={latitude}
+                    onChange={(e) => setLatitude(e.target.value)}
+                    className="bg-stone-800/50 border-stone-700 h-9 text-sm"
+                  />
+                </div>
+                <div>
+                  <Label className="text-xs text-stone-500 mb-1 block">Longitudine (per mappa)</Label>
+                  <Input
+                    type="number"
+                    step="any"
+                    placeholder="9.1900"
+                    value={longitude}
+                    onChange={(e) => setLongitude(e.target.value)}
+                    className="bg-stone-800/50 border-stone-700 h-9 text-sm"
+                  />
+                </div>
+              </div>
+              <p className="text-xs text-stone-500 mt-1">Inserisci le coordinate per mostrare il marker nella posizione esatta sulla mappa.</p>
             </>
           )}
           {(type === "bartender" || type === "user") && (
@@ -142,7 +177,14 @@ export default function AdminCard({ type, item, onApprove, onDelete, onClose, is
         {isPending !== false && (
           <div className="flex gap-3 mt-6 pt-4 border-t border-stone-800">
             <Button
-              onClick={() => onApprove?.(item)}
+              onClick={() => {
+                const extra = {};
+                const lat = parseFloat(latitude);
+                const lng = parseFloat(longitude);
+                if (!isNaN(lat)) extra.latitude = lat;
+                if (!isNaN(lng)) extra.longitude = lng;
+                onApprove?.(item, extra);
+              }}
               className="bg-green-600 hover:bg-green-700 text-white flex-1"
             >
               APPROVA
