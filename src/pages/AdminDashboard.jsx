@@ -112,9 +112,10 @@ export default function AdminDashboard() {
       };
       const { data, error } = await supabase.from(TABLE_LOCALI).insert(payload).select().single();
       if (error) throw error;
-      toast({ title: "Locale inserito", description: `${data.nome} aggiunto con successo.` });
-      loadData();
-      reloadVenuesFromSupabase?.();
+      toast({ title: "Locale inserito", description: `${data.nome} aggiunto. Ricarico...` });
+      await loadData();
+      await reloadVenuesFromSupabase?.();
+      toast({ title: "Aggiornato", description: "Lista aggiornata. Controlla 'Online' o la Mappa." });
     } catch (err) {
       toast({ title: "Errore inserimento", description: err?.message, variant: "destructive" });
     } finally {

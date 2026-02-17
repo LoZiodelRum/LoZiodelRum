@@ -39,3 +39,7 @@ I locali approvati restano in Supabase e vengono caricati dall’app a ogni avvi
 ## Sincronizzazione modifiche admin (venue_overrides)
 
 Per far sì che le modifiche ai locali seed (da Amministratore) siano visibili su tutti i device (Cursor, cellulare, tablet, PC), esegui nel SQL Editor di Supabase lo script `supabase/venue_overrides.sql`. Le modifiche verranno salvate in Supabase e lette da tutti i punti di accesso.
+
+## Locali non visibili dopo l'inserimento
+
+Se inserisci un locale (es. da AdminDashboard) ma non lo vedi nella lista o sulla Mappa, probabilmente la tabella `Locali` ha RLS attivo senza policy. Esegui nel **SQL Editor** di Supabase lo script `supabase/migrations/20250227000000_locali_rls.sql` per abilitare lettura/scrittura.
