@@ -69,7 +69,7 @@ export default function AdminDashboard() {
 
       const list = Array.isArray(data) ? data : [];
       setLocali(list);
-      console.log("Dati caricati da Supabase:", list);
+      console.log("DATI REALI DA SUPABASE:", list);
 
       if (list.length === 0) {
         console.warn("[AdminDashboard] Lista vuota. Verifica il pannello Supabase: tabella Locali.");
@@ -241,7 +241,7 @@ export default function AdminDashboard() {
               </p>
               {locali.length === 0 ? (
                 <p className="text-stone-500 py-4">
-                  {!loadError ? "Nessun locale. Controlla la console per 'Dati caricati da Supabase'." : "Impossibile caricare."}
+                  {!loadError ? "Nessun locale. Controlla la console per 'DATI REALI DA SUPABASE'." : "Impossibile caricare."}
                 </p>
               ) : (
                 <div className="space-y-3">
