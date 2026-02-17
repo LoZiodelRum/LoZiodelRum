@@ -1,5 +1,5 @@
 /**
- * Mappa locali – Supabase (venues_cloud). Nessun localStorage.
+ * Mappa locali – Supabase (tabella Locali). Nessun localStorage.
  * getVenues() carica da Supabase. Inserimenti da mobile → cloud → visibili su Mac.
  */
 import { useState, useEffect } from "react";
@@ -91,7 +91,7 @@ export default function MapPage() {
         </Button>
       </div>
 
-      {/* Map - Leaflet con locali da Supabase (venues_cloud) */}
+      {/* Map - Leaflet con locali da Supabase (tabella Locali) */}
       <MapContainer
         center={mapCenter}
         zoom={4}

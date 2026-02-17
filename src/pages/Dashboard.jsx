@@ -69,7 +69,7 @@ const CATEGORY_LABELS = {
 };
 
 export default function Dashboard() {
-  const { user, getVenues, getArticles, getDrinks, getBartenders, getPendingBartenders, loadBartendersFromCloud, updateVenue, deleteVenue, setBartenderStatus, deleteBartender, exportData, importData, restoreReviewsFromSeed, isSupabaseConfigured, getPendingVenuesFromCloud, getPendingLocalVenues, approveVenueCloud, rejectVenueCloud, getPendingRegistrationsFromCloud, updateAppUserStatus, deleteAppUser } = useAppData();
+  const { user, getVenues, getArticles, getDrinks, getBartenders, getPendingBartenders, loadBartendersFromCloud, updateVenue, deleteVenue, deleteVenueCloud, setBartenderStatus, deleteBartender, exportData, importData, restoreReviewsFromSeed, isSupabaseConfigured, getPendingVenuesFromCloud, getPendingLocalVenues, approveVenueCloud, rejectVenueCloud, getPendingRegistrationsFromCloud, updateAppUserStatus, deleteAppUser } = useAppData();
   const allVenues = getVenues();
   const allArticles = getArticles();
   const allDrinks = getDrinks();
@@ -614,7 +614,7 @@ export default function Dashboard() {
                             const extra = {};
                             if (lat != null && !isNaN(lat)) extra.latitude = lat;
                             if (lng != null && !isNaN(lng)) extra.longitude = lng;
-                            await approveVenueCloud(venue.id, extra, venue._source);
+                            await approveVenueCloud(venue.id, extra);
                             loadCloudPending();
                             toast.success("Locale approvato: ora è visibile a tutti");
                           }}
@@ -628,7 +628,7 @@ export default function Dashboard() {
                           className="border-red-500/50 text-red-400 hover:bg-red-500/10"
                           onClick={async () => {
                             if (confirm("Rifiutare questo locale? Non sarà visibile in app.")) {
-                              await rejectVenueCloud(venue.id, venue._source);
+                              await rejectVenueCloud(venue.id);
                               loadCloudPending();
                               toast.success("Locale rifiutato");
                             }
@@ -801,7 +801,7 @@ export default function Dashboard() {
                       onClick={async () => {
                         if (!confirm(`Eliminare "${venue.name}"?`)) return;
                         if (venue.supabase_id && isSupabaseConfigured()) {
-                          await rejectVenueCloud(venue.supabase_id, venue._source);
+                          await deleteVenueCloud(venue.supabase_id);
                           toast.success("Locale eliminato");
                         } else {
                           deleteVenue(venue.id);

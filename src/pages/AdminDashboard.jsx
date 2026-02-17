@@ -3,7 +3,7 @@
  * Query aggressiva: select('*') senza filtri per debug sync Invio/Database/Dashboard.
  *
  * RLS BYPASS (DEBUG): Se i dati non appaiono nonostante l'inserimento riuscito,
- * disattiva temporaneamente l'RLS su Supabase: Table Editor → venues_cloud / app_users → RLS → Disable.
+ * disattiva temporaneamente l'RLS su Supabase: Table Editor → Locali / app_users → RLS → Disable.
  */
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
@@ -63,7 +63,7 @@ export default function AdminDashboard() {
   const handleApprove = async (item) => {
     try {
       if (selected?.type === "venue") {
-        await approveVenueCloud?.(item.id, {}, item._source);
+        await approveVenueCloud?.(item.id, {});
         toast({ title: "Locale approvato" });
       } else {
         await updateAppUserStatus?.(item.id, "approved");
@@ -80,7 +80,7 @@ export default function AdminDashboard() {
     if (!confirm("Eliminare definitivamente questo record?")) return;
     try {
       if (selected?.type === "venue") {
-        await deleteVenueCloud?.(item.id, item._source);
+        await deleteVenueCloud?.(item.id);
         toast({ title: "Locale eliminato" });
       } else if (selected?.type === "bartender") {
         await deleteBartender?.(item.id);
