@@ -8,6 +8,10 @@ function normalizeUrl(url: string) {
   return url.replace(/\s+/g, "").trim();
 }
 
+function isVideoUrl(url: string) {
+  return /\.(mp4|webm|ogg)(\?.*)?$/i.test(url);
+}
+
 function renderInlineLinks(text: string, keyBase: string) {
   const linkRegex = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
   const pieces: React.ReactNode[] = [];
@@ -76,12 +80,23 @@ function renderArticleContent(raw: string) {
     const alt = m[1] || "Immagine articolo";
     const src = normalizeUrl(m[2]);
 
-    nodes.push(
-      <figure key={`img-${blockIndex}`} style={articleFigure}>
-        <img src={src} alt={alt} style={articleImage} loading="lazy" />
-        <figcaption style={articleCaption}>{alt}</figcaption>
-      </figure>
-    );
+    if (isVideoUrl(src)) {
+      nodes.push(
+        <figure key={`video-${blockIndex}`} style={articleFigure}>
+          <video style={articleVideo} controls preload="metadata">
+            <source src={src} />
+          </video>
+          <figcaption style={articleCaption}>{alt}</figcaption>
+        </figure>
+      );
+    } else {
+      nodes.push(
+        <figure key={`img-${blockIndex}`} style={articleFigure}>
+          <img src={src} alt={alt} style={articleImage} loading="lazy" />
+          <figcaption style={articleCaption}>{alt}</figcaption>
+        </figure>
+      );
+    }
     blockIndex += 1;
 
     lastIndex = m.index + m[0].length;
@@ -389,6 +404,14 @@ const articleImage = {
   maxHeight: "26rem",
   objectFit: "cover" as const,
   borderRadius: 14,
+  display: "block",
+};
+
+const articleVideo = {
+  width: "100%",
+  maxHeight: "26rem",
+  borderRadius: 14,
+  background: "#000",
   display: "block",
 };
 
