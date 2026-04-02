@@ -19,6 +19,8 @@ export default function PannelloControllo() {
 
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [selectedTable, setSelectedTable] = useState<string>("");
+  const [isCreating, setIsCreating] = useState(false);
+  const [createRoleHint, setCreateRoleHint] = useState<string | null>(null);
 
   const [kpi, setKpi] = useState({
     utenti: 0,
@@ -82,10 +84,28 @@ export default function PannelloControllo() {
       cleanData[k] = dataToUpdate[k] ?? null;
     });
 
-    const { error } = await supabase
-      .from(selectedTable)
-      .update(cleanData)
-      .eq("id", id);
+    let error: any = null;
+
+    if (isCreating) {
+      if (selectedTable === "profili") {
+        cleanData.id = cleanData.id || crypto.randomUUID();
+        cleanData.ruolo = cleanData.ruolo || createRoleHint || "utente";
+        cleanData.approvato = cleanData.approvato ?? false;
+      }
+
+      const result = await supabase
+        .from(selectedTable)
+        .insert([cleanData]);
+
+      error = result.error;
+    } else {
+      const result = await supabase
+        .from(selectedTable)
+        .update(cleanData)
+        .eq("id", id);
+
+      error = result.error;
+    }
 
     if (error) {
       setSaveStatus("error");
@@ -98,11 +118,14 @@ export default function PannelloControllo() {
       setSaveStatus(null);
     }, 2000);
 
+    setIsCreating(false);
+    setCreateRoleHint(null);
+
     await loadData();
   }
 
   async function eliminaElemento() {
-    if (!selectedItem || !selectedTable) return;
+    if (!selectedItem || !selectedTable || isCreating) return;
 
     const { error } = await supabase
       .from(selectedTable)
@@ -139,14 +162,47 @@ export default function PannelloControllo() {
   };
 
   function openFirstEditor(table: string, data: any[]) {
-    if (!Array.isArray(data) || data.length === 0) {
-      alert("Nessun elemento disponibile");
-      return;
-    }
+    if (!Array.isArray(data) || data.length === 0) return;
 
     setSelectedTable(table);
     setSelectedItem(data[0]);
     setSaveStatus(null);
+    setIsCreating(false);
+    setCreateRoleHint(null);
+  }
+
+  function openCreateEditor(table: string, data: any[], roleHint?: string) {
+    const base = Array.isArray(data) && data.length > 0 ? data[0] : null;
+    const draft: any = {};
+
+    if (base) {
+      Object.keys(base).forEach((k) => {
+        if (k === "id") return;
+
+        if (booleanFields.has(k)) {
+          draft[k] = false;
+          return;
+        }
+
+        draft[k] = "";
+      });
+    }
+
+    if (table === "cocktail") {
+      draft.categoria = draft.categoria || "cocktail";
+    }
+
+    if (table === "profili") {
+      draft.ruolo = roleHint || "utente";
+      draft.approvato = false;
+      draft.status = draft.status || "in_attesa";
+    }
+
+    setSelectedTable(table);
+    setSelectedItem(draft);
+    setSaveStatus(null);
+    setIsCreating(true);
+    setCreateRoleHint(roleHint || null);
   }
 
   function Sidebar(title: string, data: any[], table: string, label: string) {
@@ -168,6 +224,8 @@ export default function PannelloControllo() {
             setSelectedItem(item || null);
             setSelectedTable(table);
             setSaveStatus(null);
+            setIsCreating(false);
+            setCreateRoleHint(null);
           }}
         >
           <option value="">Scegli</option>
@@ -224,35 +282,35 @@ export default function PannelloControllo() {
         <div style={quickActionGridStyle}>
           <div style={quickActionCardStyle}>
             <h3 style={quickActionTitleStyle}>Aggiunta Cocktail</h3>
-            <button style={quickActionBtnStyle} onClick={() => openFirstEditor("cocktail", cocktail)}>
+            <button style={quickActionBtnStyle} onClick={() => openCreateEditor("cocktail", cocktail)}>
               Apri scheda modifica cocktail
             </button>
           </div>
 
           <div style={quickActionCardStyle}>
             <h3 style={quickActionTitleStyle}>Aggiunta Distillati</h3>
-            <button style={quickActionBtnStyle} onClick={() => openFirstEditor("distillati", distillati)}>
+            <button style={quickActionBtnStyle} onClick={() => openCreateEditor("distillati", distillati)}>
               Apri scheda modifica distillati
             </button>
           </div>
 
           <div style={quickActionCardStyle}>
             <h3 style={quickActionTitleStyle}>Aggiunta Locali</h3>
-            <button style={quickActionBtnStyle} onClick={() => openFirstEditor("Locali", locali)}>
+            <button style={quickActionBtnStyle} onClick={() => openCreateEditor("Locali", locali)}>
               Apri scheda modifica locali
             </button>
           </div>
 
           <div style={quickActionCardStyle}>
             <h3 style={quickActionTitleStyle}>Aggiunta Bartender</h3>
-            <button style={quickActionBtnStyle} onClick={() => openFirstEditor("profili", bartender)}>
+            <button style={quickActionBtnStyle} onClick={() => openCreateEditor("profili", bartender, "bartender")}>
               Apri scheda modifica bartender
             </button>
           </div>
 
           <div style={quickActionCardStyle}>
             <h3 style={quickActionTitleStyle}>Aggiunta Proprietari</h3>
-            <button style={quickActionBtnStyle} onClick={() => openFirstEditor("profili", proprietari)}>
+            <button style={quickActionBtnStyle} onClick={() => openCreateEditor("profili", proprietari, "proprietario")}>
               Apri scheda modifica proprietari
             </button>
           </div>
@@ -261,7 +319,9 @@ export default function PannelloControllo() {
         {selectedItem && (
           <div style={cardStyle}>
             <h2 style={{ fontSize: "1.1rem", marginBottom: 15 }}>
-              {selectedItem.nome || selectedItem.titolo || selectedItem.username}
+              {isCreating
+                ? "Nuovo elemento"
+                : (selectedItem.nome || selectedItem.titolo || selectedItem.username)}
             </h2>
 
             {saveStatus === "ok" && (
@@ -314,12 +374,14 @@ export default function PannelloControllo() {
 
             <div style={buttonRowStyle}>
               <button style={btnSaveStyle} onClick={salvaModifiche}>
-                Salva
+                {isCreating ? "Crea" : "Salva"}
               </button>
 
-              <button style={btnDeleteStyle} onClick={eliminaElemento}>
-                Elimina
-              </button>
+              {!isCreating && (
+                <button style={btnDeleteStyle} onClick={eliminaElemento}>
+                  Elimina
+                </button>
+              )}
             </div>
           </div>
         )}
