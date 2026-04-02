@@ -170,110 +170,151 @@ button {
 button:active { transform: scale(0.98); }
 
 /* ============================================================
-   6. OTTIMIZZAZIONE RESPONSIVE (Righe 141-185)
-   ============================================================ */
-@media (max-width: 1024px) {
-  .page { padding: 24px; }
-  .grid-wrapper { grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); }
-}
-
-@media (max-width: 768px) {
-  .page { padding: 16px; }
-  .page-full-bleed { padding: 0; }
-  
-  .page-title { 
-    font-size: 26px; 
-    text-align: center; 
-    margin-top: 10px;
-  }
-
-  .grid-wrapper {
-    grid-template-columns: repeat(2, 1fr); /* 2 colonne su tablet */
-    gap: 12px;
-  }
-
-  button { width: 100%; } /* Bottoni grandi facili da premere */
-
-  /* Fix per la Navbar che si accavallava */
-  .nav-container {
-    flex-direction: column;
-    padding: 15px;
-    gap: 10px;
-  }
-
-  .nav-logo {
-    width: 100%;
-    text-align: center;
-  }
-
-  .nav-menu {
-    width: 100%;
-    justify-content: center;
-  }
-
-  .admin-modal {
-    left: 50%;
-    right: auto;
-    transform: translateX(-50%);
-  }
-
-  /* Ridimensiona le immagini nelle card per non rubare spazio */
-  .card img { height: 140px; }
-}
-
-/* ============================================================
-   7. FIX FINALI E UTILITY (Righe 186-205)
+   6. UTILITY & COMPONENTI COMUNI
    ============================================================ */
 .text-center { text-align: center; }
 .mt-20 { margin-top: 20px; }
 .hidden { display: none; }
 
-/* ============================================================
-   HAMBURGER MENU STYLES (Desktop by default)
-   ============================================================ */
-.nav-menu-desktop {
-  display: flex !important; /* Desktop: menu visibile */
-}
-
-.hamburger-btn {
-  display: none !important; /* Desktop: hamburger nascosto */
-}
-
-.mobile-menu {
-  display: none !important; /* Desktop: mobile menu nascosto */
-}
-
-.mobile-menu-overlay {
-  display: none !important; /* Desktop: overlay nascosto */
-}
-
 .btn-primary {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 8px;
-  padding: 10px 16px;
-  border-radius: 10px;
+  gap: 6px;
+  padding: 9px 15px;
+  border-radius: 8px;
   background: var(--primary);
   color: #fff;
   font-weight: 600;
+  font-size: 14px;
+  white-space: nowrap;
+  width: auto; /* Override bottoni a tutto schermo */
 }
 
 .btn-primary:hover {
   color: #fff;
-  filter: brightness(1.05);
+  filter: brightness(1.1);
+}
+
+.btn-small {
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: 6px;
 }
 
 .content-wrapper {
   background: #fff;
   border-radius: 20px;
   overflow: hidden;
-  padding: 16px;
+  padding: 20px;
 }
 
-/* Animazione per evitare il flash nero al caricamento */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.section-title-dark {
+  color: #1f2937;
+}
+
+/* Grid cocktail: 3 col desktop */
+.cocktail-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+/* Grid locali/magazine: auto-fill 3 col desktop */
+.content-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+/* Card generica scura */
+.preview-card {
+  border-radius: 12px;
+  overflow: hidden;
+  background: #1a1a1a;
+  display: block;
+  text-decoration: none;
+  transition: transform 0.15s ease;
+}
+
+.preview-card:hover {
+  transform: translateY(-2px);
+}
+
+.preview-card img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  display: block;
+}
+
+.preview-card-body {
+  padding: 12px;
+}
+
+.preview-card-body h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 4px 0;
+}
+
+.preview-card-body p {
+  font-size: 12px;
+  color: #aaa;
+  margin: 0;
+}
+
+/* Card cocktail chiara */
+.cocktail-card {
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f5f4f0;
+  display: block;
+  text-decoration: none;
+  transition: transform 0.15s ease;
+}
+
+.cocktail-card:hover {
+  transform: translateY(-2px);
+}
+
+.cocktail-card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  display: block;
+}
+
+.cocktail-card-body {
+  padding: 10px 8px;
+  border-top: 1px solid #e5e5e5;
+  text-align: center;
+}
+
+.cocktail-card-body h3 {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0;
+}
+
+/* Animazione caricamento */
 .fade-in {
-  animation: fadeIn 0.5s ease-in;
+  animation: fadeIn 0.4s ease-in;
 }
 
 @keyframes fadeIn {
@@ -281,149 +322,109 @@ button:active { transform: scale(0.98); }
   to { opacity: 1; }
 }
 
-/* ============================================================
-   8. MOBILE EXTRA SMALL (max-width: 480px)
-   ============================================================ */
-@media (max-width: 480px) {
-  .page {
-    padding: 12px;
-    width: 100%;
-  }
-
-  .page-full-bleed {
-    padding: 0;
-  }
-
-  .page-title {
-    font-size: 22px;
-    margin-bottom: 16px;
-  }
-
-  h1 { font-size: clamp(1.5rem, 5vw, 2rem); }
-  h2 { font-size: 18px; }
-  h3 { font-size: 13px; }
-  p, span { font-size: 13px; }
-
-  /* Grid: 2 colonne su mobile */
-  .grid-wrapper {
-    grid-template-columns: repeat(2, 1fr);
-    gap: 10px;
-  }
-
-  /* Bottoni compatti */
-  .btn-primary {
-    padding: 8px 12px;
-    font-size: 12px;
-    border-radius: 6px;
-  }
-
-  .btn-small {
-    padding: 6px 10px;
-    font-size: 11px;
-  }
-
-  /* Button a tutta larghezza */
-  button {
-    width: 100%;
-    padding: 12px 16px;
-    font-size: 14px;
-  }
-
-  /* Immagini ancora più piccole */
-  .img-mobile-small {
-    max-height: 100px !important;
-  }
-
-  .card img { height: 100px; }
-
-  /* Navbar su mobile */
-  .nav-container {
-    flex-direction: column;
-    padding: 12px;
-    gap: 8px;
-  }
-
-  .nav-logo {
-    font-size: 14px;
-  }
-
-  /* Ridurre padding contenitore cocktail */
-  .content-wrapper {
-    padding: 16px !important;
-    border-radius: 12px;
-  }
-
-  /* Griglia cocktail: 2 colonne su mobile < 480px */
-  .cocktail-grid {
-    grid-template-columns: repeat(2, 1fr) !important;
-  }
-
-  /* Immagini cocktail ridotte su mobile */
-  .cocktail-grid img {
-    height: 140px !important;
-  }
-
-  /* Sezioni: meno padding */
-  .section {
-    margin-bottom: 20px;
-  }
-
-  /* Titoli sezioni */
-  .section h2 {
-    margin-bottom: 12px;
-    font-size: 16px;
-  }
-
-  /* Hamburger menu visibile su mobile */
-  .hamburger-btn {
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-  }
-
-  /* Menu desktop nascosto su mobile */
-  .nav-menu-desktop {
-    display: none !important;
-  }
-
-  /* Mobile menu overlay visibile */
-  .mobile-menu-overlay {
-    display: block !important;
-  }
-
-  /* Mobile menu slide-in */
-  .mobile-menu {
-    display: flex !important;
-  }
-}
-
-/* ============================================================
-   9. TABLET (max-width: 1024px, min-width: 768px)
-   ============================================================ */
-@media (max-width: 1024px) and (min-width: 768px) {
-  /* Hamburger menu visibile su tablet */
-  .hamburger-btn {
-    display: flex !important;
-    align-items: center;
-    justify-content: center;
-  }
-
-  .nav-menu-desktop {
-    display: none !important;
-  }
-
-  .mobile-menu-overlay {
-    display: block !important;
-  }
-
-  .mobile-menu {
-    display: flex !important;
-  }
-}
-
-/* Fix specifico per gli scroll delle tabelle nel Pannello Controllo */
+/* Tabelle nel pannello controllo */
 .table-responsive {
   width: 100%;
   overflow-x: auto;
   -webkit-overflow-scrolling: touch;
-}/* update forzato */
+}
+
+/* ============================================================
+   7. NAVBAR / HAMBURGER — Default Desktop
+   ============================================================ */
+.nav-menu-desktop {
+  display: flex !important;
+}
+
+.hamburger-btn {
+  display: none !important;
+}
+
+.mobile-menu {
+  display: none !important;
+}
+
+.mobile-menu-overlay {
+  display: none !important;
+}
+
+/* ============================================================
+   8. RESPONSIVE BREAKPOINTS
+   ============================================================ */
+
+/* --- TABLET & MOBILE (≤1024px) --- */
+@media (max-width: 1024px) {
+  /* Attiva hamburger */
+  .nav-menu-desktop { display: none !important; }
+  .hamburger-btn    { display: flex !important; }
+  .mobile-menu      { display: flex !important; }
+  .mobile-menu-overlay { display: block !important; }
+
+  /* Layout */
+  .page { padding: 20px; }
+
+  /* Griglie a 2 colonne */
+  .cocktail-grid  { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .content-grid   { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .grid-wrapper   { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+
+  /* Immagini */
+  .cocktail-card img  { height: 160px; }
+  .preview-card img   { height: 130px; }
+
+  /* Hero più contenuto */
+  .hero-section { height: 75vh !important; min-height: 380px; }
+}
+
+/* --- MOBILE (≤768px) --- */
+@media (max-width: 768px) {
+  .page { padding: 14px; }
+  .page-full-bleed { padding: 0; }
+
+  .page-title { font-size: 24px; text-align: center; }
+
+  /* I bottoni inline NON devono andare a tutta larghezza */
+  button { width: auto; }
+
+  .cocktail-card img  { height: 130px; }
+  .preview-card img   { height: 110px; }
+
+  .section-title { font-size: 17px; }
+
+  .hero-section { height: 65vh !important; min-height: 320px; }
+
+  .content-wrapper { padding: 14px; }
+}
+
+/* --- MOBILE PICCOLO (≤480px) --- */
+@media (max-width: 480px) {
+  .page { padding: 10px; }
+
+  h1 { font-size: clamp(1.4rem, 5vw, 1.8rem); }
+  h2 { font-size: 16px; }
+  h3 { font-size: 13px; }
+  p, span { font-size: 12px; }
+
+  .cocktail-grid  { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .content-grid   { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .grid-wrapper   { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+
+  .cocktail-card img  { height: 110px; }
+  .preview-card img   { height: 90px; }
+
+  .content-wrapper { padding: 10px; border-radius: 14px; }
+
+  .btn-primary { padding: 8px 12px; font-size: 12px; }
+  .btn-small   { padding: 5px 9px;  font-size: 11px; }
+
+  .cocktail-card-body h3 { font-size: 11px; }
+  .preview-card-body h3  { font-size: 12px; }
+  .preview-card-body p   { font-size: 10px; }
+
+  .section-title { font-size: 15px; }
+
+  .hero-section { height: 55vh !important; min-height: 280px; }
+
+  /* Bottoni nel form restano grandi */
+  form button { width: 100%; }
+}

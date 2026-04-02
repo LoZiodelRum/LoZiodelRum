@@ -179,6 +179,7 @@ export default function Home() {
 
       {/* HERO */}
       <div
+        className="hero-section"
         style={{
           height: "100vh",
           display: "flex",
@@ -223,10 +224,11 @@ export default function Home() {
               marginTop: 20,
               background: "#f5a623",
               border: "none",
-              padding: "14px 22px",
+              padding: "14px 28px",
               borderRadius: 8,
               fontWeight: "bold",
               cursor: "pointer",
+              fontSize: "15px",
             }}
           >
             Entra nella Community
@@ -237,41 +239,20 @@ export default function Home() {
       {/* COCKTAIL */}
       <div className="page fade-in">
         <div className="content-wrapper">
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
-            <h2 style={{ color: "#1f2937", fontSize: "22px", fontWeight: 700, margin: 0 }}>Cocktail</h2>
+          <div className="section-header">
+            <h2 className="section-title section-title-dark">Cocktail</h2>
             <Link className="btn-primary btn-small" to="/drinks">Vedi tutti</Link>
           </div>
 
-          <div
-            className="cocktail-grid"
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(3, 1fr)",
-              gap: 16,
-            }}
-          >
+          <div className="cocktail-grid">
             {drinks.map((d) => (
-              <Link
-                key={d.id}
-                to={`/drink/${d.id}`}
-                style={{
-                  borderRadius: 12,
-                  overflow: "hidden",
-                  background: "#f5f4f0",
-                  cursor: "pointer",
-                  display: "block",
-                  textDecoration: "none",
-                }}
-              >
+              <Link key={d.id} to={`/drink/${d.id}`} className="cocktail-card">
                 <img
-                  src={
-                    d.immagine ||
-                    "https://via.placeholder.com/400x300?text=Drink"
-                  }
-                  style={{ width: "100%", height: "240px", objectFit: "cover", display: "block" }}
+                  src={d.immagine || "https://via.placeholder.com/400x300?text=Drink"}
+                  alt={d.nome}
                 />
-                <div style={{ padding: "12px 8px", borderTop: "1px solid #e5e5e5" }}>
-                  <h3 style={{ fontSize: "15px", fontWeight: 700, color: "#1a1a2e", margin: 0, textAlign: "center" }}>{d.nome || "Drink"}</h3>
+                <div className="cocktail-card-body">
+                  <h3>{d.nome || "Drink"}</h3>
                 </div>
               </Link>
             ))}
@@ -280,42 +261,22 @@ export default function Home() {
       </div>
 
       {/* LOCALI */}
-      <div style={{ padding: "0 20px 30px 20px" }}>
-        <h2 style={{ marginBottom: 12, fontSize: "18px" }}>Locali</h2>
-
-        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 12 }}>
-          <Link className="btn-primary btn-small" to="/venues">Tutti</Link>
+      <div className="page">
+        <div className="section-header">
+          <h2 className="section-title" style={{ color: "#fff" }}>Locali</h2>
+          <Link className="btn-primary btn-small" to="/venues">Vedi tutti</Link>
         </div>
 
-        <div
-          className="grid-wrapper"
-          style={{
-            gap: 12,
-          }}
-        >
+        <div className="content-grid">
           {locali.map((l) => (
-            <Link
-              key={l.id}
-              to={`/venue/${l.id}`}
-              style={{
-                borderRadius: 12,
-                overflow: "hidden",
-                background: "#111",
-                cursor: "pointer",
-                display: "block",
-              }}
-            >
+            <Link key={l.id} to={`/venue/${l.id}`} className="preview-card">
               <img
-                src={
-                  l.image_url ||
-                  "https://via.placeholder.com/400x200?text=Locale"
-                }
-                style={{ width: "100%", height: "70px", objectFit: "cover" }}
-                className="img-mobile-small"
+                src={l.image_url || "https://via.placeholder.com/400x200?text=Locale"}
+                alt={l.nome}
               />
-              <div style={{ padding: 10 }}>
-                <h3 style={{ fontSize: "12px", margin: "2px 0" }}>{l.nome}</h3>
-                <p style={{ opacity: 0.6, fontSize: "10px", margin: 0 }}>{l.citta}</p>
+              <div className="preview-card-body">
+                <h3>{l.nome}</h3>
+                <p>{l.citta}</p>
               </div>
             </Link>
           ))}
@@ -323,33 +284,20 @@ export default function Home() {
       </div>
 
       {/* MAGAZINE */}
-      <div style={{ padding: "0 20px 30px 20px" }}>
-        <h2 style={{ marginBottom: 12, fontSize: "18px" }}>Magazine</h2>
+      <div className="page" style={{ paddingBottom: 40 }}>
+        <div className="section-header">
+          <h2 className="section-title" style={{ color: "#fff" }}>Magazine</h2>
+        </div>
 
-        <div className="grid-wrapper" style={{ gap: 12 }}>
+        <div className="content-grid">
           {articoli.map((a) => (
-            <Link
-              key={a.id}
-              to={`/magazine/${a.id}`}
-              style={{
-                borderRadius: 12,
-                overflow: "hidden",
-                background: "#111",
-                cursor: "pointer",
-                display: "block",
-              }}
-            >
+            <Link key={a.id} to={`/magazine/${a.id}`} className="preview-card">
               <img
-                src={
-                  a.immagine ||
-                  "https://via.placeholder.com/400x200?text=Articolo"
-                }
-                style={{ width: "100%", height: "70px", objectFit: "cover" }}
-                className="img-mobile-small"
+                src={a.immagine || "https://via.placeholder.com/400x200?text=Articolo"}
+                alt={a.titolo}
               />
-
-              <div style={{ padding: 10 }}>
-                <h3 style={{ fontSize: "12px", margin: 0 }}>{a.titolo || "Articolo"}</h3>
+              <div className="preview-card-body">
+                <h3>{a.titolo || "Articolo"}</h3>
               </div>
             </Link>
           ))}
