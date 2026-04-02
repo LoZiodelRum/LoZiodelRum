@@ -355,7 +355,7 @@ const layout = {
   flexWrap: "wrap" as const,
   gap: 60,
   maxWidth: "min(100%, 68rem)",
-  margin: "0 auto",
+  margin: "10px auto 0",
 };
 
 const left = { flex: 1 };
