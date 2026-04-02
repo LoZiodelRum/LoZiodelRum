@@ -19,14 +19,22 @@ type Drink = {
   immagine: string | null;
 };
 
+type Articolo = {
+  id: string;
+  titolo: string;
+  immagine: string | null;
+};
+
 export default function Home() {
   const [locali, setLocali] = useState<Locale[]>([]);
   const [drinks, setDrinks] = useState<Drink[]>([]);
+  const [articoli, setArticoli] = useState<Articolo[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchLocali();
     fetchDrinks();
+    fetchArticoli();
   }, []);
 
   async function fetchLocali() {
@@ -75,6 +83,21 @@ export default function Home() {
     });
 
     setDrinks([...cocktail, ...distillati].slice(0, 6));
+  }
+
+  async function fetchArticoli() {
+    const { data, error } = await supabase
+      .from("articoli")
+      .select("*")
+      .eq("pubblicato", true)
+      .limit(6);
+
+    if (error) {
+      console.error("Errore articoli:", error);
+      return;
+    }
+
+    setArticoli(data || []);
   }
 
   function handleAdminAccess() {
@@ -217,7 +240,6 @@ export default function Home() {
 
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
           <Link className="btn-primary" to="/venues">Tutti i locali</Link>
-          <Link className="btn-primary" to="/mappa">Apri mappa</Link>
         </div>
 
         <div
@@ -251,10 +273,6 @@ export default function Home() {
               </div>
             </Link>
           ))}
-        </div>
-
-        <div className="text-center mt-20">
-          <Link className="btn-primary" to="/venues">Vedi tutti i locali</Link>
         </div>
       </div>
 
@@ -304,9 +322,40 @@ export default function Home() {
             </Link>
           ))}
         </div>
+      </div>
 
-        <div className="text-center mt-20">
-          <Link className="btn-primary" to="/drinks">Vedi tutti i drink</Link>
+      {/* MAGAZINE */}
+      <div style={{ padding: "0 40px 60px 40px" }}>
+        <h2 style={{ marginBottom: 20 }}>Magazine</h2>
+
+        {articoli.length === 0 && <p>Nessun articolo trovato</p>}
+
+        <div className="grid-wrapper" style={{ gap: 20 }}>
+          {articoli.map((a) => (
+            <Link
+              key={a.id}
+              to={`/magazine/${a.id}`}
+              style={{
+                borderRadius: 12,
+                overflow: "hidden",
+                background: "#111",
+                cursor: "pointer",
+                display: "block",
+              }}
+            >
+              <img
+                src={
+                  a.immagine ||
+                  "https://via.placeholder.com/400x200?text=Articolo"
+                }
+                style={{ width: "100%", height: 180, objectFit: "cover" }}
+              />
+
+              <div style={{ padding: 15 }}>
+                <h3>{a.titolo || "Articolo"}</h3>
+              </div>
+            </Link>
+          ))}
         </div>
       </div>
     </div>
