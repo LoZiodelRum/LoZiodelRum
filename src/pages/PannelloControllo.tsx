@@ -81,14 +81,24 @@ export default function PannelloControllo() {
 
     const cleanData: any = {};
     Object.keys(dataToUpdate).forEach(k => {
-      cleanData[k] = dataToUpdate[k] ?? null;
+      const value = dataToUpdate[k];
+
+      if (value === "") {
+        cleanData[k] = null;
+        return;
+      }
+
+      cleanData[k] = value ?? null;
     });
 
     let error: any = null;
 
     if (isCreating) {
+      if (!cleanData.id) {
+        cleanData.id = crypto.randomUUID();
+      }
+
       if (selectedTable === "profili") {
-        cleanData.id = cleanData.id || crypto.randomUUID();
         cleanData.ruolo = cleanData.ruolo || createRoleHint || "utente";
         cleanData.approvato = cleanData.approvato ?? false;
       }
@@ -109,6 +119,8 @@ export default function PannelloControllo() {
 
     if (error) {
       setSaveStatus("error");
+      console.error("Errore salvataggio:", error);
+      alert(error.message || "Errore salvataggio");
       return;
     }
 
