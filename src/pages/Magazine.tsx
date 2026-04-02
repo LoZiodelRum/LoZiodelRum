@@ -38,7 +38,7 @@ export default function Magazine() {
   const others = articles.slice(1);
 
   return (
-    <div className="page fade-in">
+    <div className="page fade-in" style={{ paddingTop: "clamp(72px, 10vw, 96px)" }}>
 
       {/* HERO */}
       <Link
