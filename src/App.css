@@ -266,8 +266,9 @@ button:active { transform: scale(0.98); }
 
 .content-wrapper {
   background: #fff;
-  border-radius: 16px;
+  border-radius: 20px;
   overflow: hidden;
+  padding: 16px;
 }
 
 /* Animazione per evitare il flash nero al caricamento */

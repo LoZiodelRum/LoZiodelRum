@@ -236,10 +236,10 @@ export default function Home() {
 
       {/* COCKTAIL */}
       <div className="page fade-in">
-        <div className="content-wrapper" style={{ padding: 16 }}>
-          <h2 className="mt-20" style={{ marginBottom: 16, color: "#1f2937", fontSize: "18px" }}>Cocktail</h2>
+        <div className="content-wrapper">
+          <h2 className="mt-20" style={{ marginBottom: 12, color: "#1f2937", fontSize: "16px" }}>Cocktail</h2>
 
-          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 12 }}>
+          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 12 }}>
             <Link className="btn-primary btn-small" to="/categoria/cocktail">Cocktail</Link>
             <Link className="btn-primary btn-small" to="/categoria/rum">Rum</Link>
             <Link className="btn-primary btn-small" to="/categoria/whisky">Whisky</Link>
@@ -249,7 +249,8 @@ export default function Home() {
           <div
             className="grid-wrapper"
             style={{
-              gap: 20,
+              gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+              gap: 16,
             }}
           >
             {drinks.map((d) => (
@@ -257,7 +258,7 @@ export default function Home() {
                 key={d.id}
                 to={`/drink/${d.id}`}
                 style={{
-                  borderRadius: 12,
+                  borderRadius: 10,
                   overflow: "hidden",
                   background: "#111",
                   cursor: "pointer",
@@ -269,13 +270,13 @@ export default function Home() {
                     d.immagine ||
                     "https://via.placeholder.com/400x200?text=Drink"
                   }
-                  style={{ width: "100%", height: "80px", objectFit: "cover" }}
+                  style={{ width: "100%", height: "56px", objectFit: "cover" }}
                   className="img-mobile-small"
                 />
 
-                <div style={{ padding: 10 }}>
-                  <h3 style={{ fontSize: "13px", margin: "4px 0" }}>{d.nome || "Drink"}</h3>
-                  <p style={{ opacity: 0.7, margin: 0, textTransform: "capitalize", fontSize: "11px" }}>{d.categoria}</p>
+                <div style={{ padding: 8 }}>
+                  <h3 style={{ fontSize: "11px", margin: "3px 0" }}>{d.nome || "Drink"}</h3>
+                  <p style={{ opacity: 0.7, margin: 0, textTransform: "capitalize", fontSize: "10px" }}>{d.categoria}</p>
                 </div>
               </Link>
             ))}
