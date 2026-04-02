@@ -192,7 +192,7 @@ export default function VenueDetail() {
   const website = locale.sito?.startsWith("http") ? locale.sito : locale.sito ? `https://${locale.sito}` : "";
 
   return (
-    <div className="page fade-in" style={{ color: "white" }}>
+    <div className="page fade-in venue-detail-page" style={{ color: "white" }}>
 
       {/* 🔧 EDITOR ADMIN */}
       {isAdmin && form && (
