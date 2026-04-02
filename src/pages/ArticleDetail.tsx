@@ -4,6 +4,93 @@ import { supabase } from "../lib/supabaseClient";
 import { useParams } from "react-router-dom";
 import { useUser } from "../context/UserContext"; // ✅ AGGIUNTO
 
+function normalizeUrl(url: string) {
+  return url.replace(/\s+/g, "").trim();
+}
+
+function renderInlineLinks(text: string, keyBase: string) {
+  const linkRegex = /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g;
+  const pieces: React.ReactNode[] = [];
+  let lastIndex = 0;
+  let m: RegExpExecArray | null;
+  let i = 0;
+
+  while ((m = linkRegex.exec(text)) !== null) {
+    if (m.index > lastIndex) {
+      pieces.push(text.slice(lastIndex, m.index));
+    }
+
+    pieces.push(
+      <a key={`${keyBase}-link-${i}`} href={m[2]} target="_blank" rel="noreferrer" style={articleLink}>
+        {m[1]}
+      </a>
+    );
+
+    lastIndex = m.index + m[0].length;
+    i += 1;
+  }
+
+  if (lastIndex < text.length) {
+    pieces.push(text.slice(lastIndex));
+  }
+
+  return pieces;
+}
+
+function renderArticleContent(raw: string) {
+  const content = raw || "";
+  const imageRegex = /!\[([^\]]*)\]\((https?:\/\/[\s\S]*?)\)/g;
+  const nodes: React.ReactNode[] = [];
+
+  let lastIndex = 0;
+  let m: RegExpExecArray | null;
+  let blockIndex = 0;
+
+  const pushTextChunk = (chunk: string) => {
+    const trimmed = chunk.trim();
+    if (!trimmed) return;
+
+    const paragraphs = trimmed.split(/\n{2,}/);
+    paragraphs.forEach((paragraph) => {
+      const lines = paragraph.split("\n");
+      const lineNodes: React.ReactNode[] = [];
+
+      lines.forEach((line, idx) => {
+        lineNodes.push(...renderInlineLinks(line, `p-${blockIndex}-${idx}`));
+        if (idx < lines.length - 1) lineNodes.push(<br key={`br-${blockIndex}-${idx}`} />);
+      });
+
+      nodes.push(
+        <p key={`p-${blockIndex}`} style={articleParagraph}>
+          {lineNodes}
+        </p>
+      );
+      blockIndex += 1;
+    });
+  };
+
+  while ((m = imageRegex.exec(content)) !== null) {
+    const before = content.slice(lastIndex, m.index);
+    pushTextChunk(before);
+
+    const alt = m[1] || "Immagine articolo";
+    const src = normalizeUrl(m[2]);
+
+    nodes.push(
+      <figure key={`img-${blockIndex}`} style={articleFigure}>
+        <img src={src} alt={alt} style={articleImage} loading="lazy" />
+        <figcaption style={articleCaption}>{alt}</figcaption>
+      </figure>
+    );
+    blockIndex += 1;
+
+    lastIndex = m.index + m[0].length;
+  }
+
+  pushTextChunk(content.slice(lastIndex));
+  return nodes;
+}
+
 export default function ArticleDetail() {
   const { id } = useParams();
   const { role } = useUser(); // ✅
@@ -195,7 +282,7 @@ export default function ArticleDetail() {
       <div style={articleWrapper}>
         <div style={articleBox}>
           <div style={articleContent}>
-            {data.contenuto}
+            {renderArticleContent(data.contenuto || "")}
           </div>
         </div>
       </div>
@@ -287,4 +374,30 @@ const articleContent = {
   fontSize: 18,
   lineHeight: 1.8,
   color: "#ddd",
+};
+
+const articleParagraph = {
+  margin: "0 0 18px 0",
+};
+
+const articleFigure = {
+  margin: "18px 0",
+};
+
+const articleImage = {
+  width: "100%",
+  maxHeight: "26rem",
+  objectFit: "cover" as const,
+  borderRadius: 14,
+  display: "block",
+};
+
+const articleCaption = {
+  marginTop: 8,
+  color: "#aaa",
+  fontSize: 13,
+};
+
+const articleLink = {
+  color: "#f5a623",
 };
