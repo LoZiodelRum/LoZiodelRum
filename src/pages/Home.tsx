@@ -237,7 +237,7 @@ export default function Home() {
       </div>
 
       {/* COCKTAIL */}
-      <div className="page fade-in">
+      <div className="page page-section fade-in" style={{ minHeight: 0 }}>
         <div className="content-wrapper">
           <div className="section-header">
             <h2 className="section-title section-title-dark">Cocktail</h2>
@@ -261,7 +261,7 @@ export default function Home() {
       </div>
 
       {/* LOCALI */}
-      <div className="page">
+      <div className="page page-section" style={{ minHeight: 0 }}>
         <div className="section-header">
           <h2 className="section-title" style={{ color: "#fff" }}>Locali</h2>
           <Link className="btn-primary btn-small" to="/venues">Vedi tutti</Link>
@@ -284,7 +284,7 @@ export default function Home() {
       </div>
 
       {/* MAGAZINE */}
-      <div className="page" style={{ paddingBottom: 40 }}>
+      <div className="page page-section" style={{ minHeight: 0, paddingBottom: 40 }}>
         <div className="section-header">
           <h2 className="section-title" style={{ color: "#fff" }}>Magazine</h2>
         </div>

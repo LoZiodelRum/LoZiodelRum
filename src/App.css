@@ -557,6 +557,7 @@ button:active { transform: scale(0.98); }
 /* --- MOBILE (≤768px) --- */
 @media (max-width: 768px) {
   .page { padding: 14px; }
+  .page-section { padding-top: 8px !important; padding-bottom: 8px !important; }
   .page-full-bleed { padding: 0; }
 
   .page-title { font-size: 24px; text-align: center; }
