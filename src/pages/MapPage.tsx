@@ -71,7 +71,7 @@ export default function MapPage() {
             <Marker key={l.id} position={coords} icon={customIcon}>
               <Popup>
                 <div
-                  onClick={() => navigate(`/locale/${l.id}`)}
+                  onClick={() => navigate(`/venue/${l.id}`)}
                   style={{
                     cursor: "pointer",
                     width: "min(70vw, 14rem)",
