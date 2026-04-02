@@ -409,6 +409,44 @@ button:active { transform: scale(0.98); }
   left: 16px;
   text-shadow: 0 2px 6px rgba(0,0,0,0.9);
 }
+.venue-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.gold-badge {
+  background: #a36b00;
+}
+.contact-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  text-decoration: none;
+  background: #f3efe2;
+  color: #4b2e1f;
+  border: 1px solid #d9cfb3;
+  font-size: 13px;
+  font-weight: 600;
+}
+.contact-chip:hover {
+  background: #eadfbe;
+}
+.venue-description {
+  margin: 0;
+  line-height: 1.75;
+  color: #3a3a3a;
+  white-space: pre-wrap;
+}
+.venue-main-video {
+  width: 100%;
+  max-height: 360px;
+  border-radius: 12px;
+  margin-top: 12px;
+  background: #000;
+}
 
 /* Hero Magazine */
 .magazine-hero {
@@ -603,6 +641,9 @@ button:active { transform: scale(0.98); }
   .section-title { font-size: 15px; }
 
   .hero-section { height: 55vh !important; min-height: 280px; }
+
+  .contact-chip { font-size: 11px; padding: 7px 10px; }
+  .venue-description { line-height: 1.6; font-size: 12px; }
 
   /* Bottoni nel form restano grandi */
   form button { width: 100%; }
