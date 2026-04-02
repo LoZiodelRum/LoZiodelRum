@@ -1,3 +1,4 @@
+import "../App.css";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useParams, useNavigate } from "react-router-dom";
@@ -123,14 +124,14 @@ export default function Category() {
   }
 
   if (loading) {
-    return <div style={{ padding: 40 }}>Caricamento...</div>;
+    return <div className="page fade-in">Caricamento...</div>;
   }
 
   return (
-    <div style={container}>
+    <div className="page fade-in" style={container}>
       <h1 style={title}>{getTitle(tipo)}</h1>
 
-      <div style={grid}>
+      <div className="grid-wrapper" style={grid}>
         {items.map((item) => (
           <div
             key={item.id}
@@ -177,9 +178,9 @@ function getTitle(tipo: any) {
 /* ---------- STILI ---------- */
 
 const container = {
-  padding: 40,
+  padding: 24,
   background: "#F5F5F0",
-  minHeight: "100vh",
+  minHeight: "100%",
 };
 
 const title = {
@@ -189,16 +190,12 @@ const title = {
 };
 
 const grid = {
-  display: "grid",
-  gridTemplateColumns: "repeat(4, 220px)",
-  justifyContent: "center",
-  columnGap: 40,
-  rowGap: 30,
+  gap: 20,
 };
 
 const card = {
-  width: 220,
-  height: 220,
+  width: "100%",
+  aspectRatio: "1 / 1",
   borderRadius: 16,
   overflow: "hidden",
   position: "relative" as const,

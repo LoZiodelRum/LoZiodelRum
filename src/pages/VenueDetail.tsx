@@ -1,3 +1,4 @@
+import "../App.css";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
@@ -157,7 +158,7 @@ export default function VenueDetail() {
     setUploading(false);
   }
 
-  if (!locale) return <div style={{ padding: 40 }}>Caricamento...</div>;
+  if (!locale) return <div className="page fade-in" style={{ padding: 40 }}>Caricamento...</div>;
 
   const placeholder = (value: string | null | undefined, label: string) =>
     value && value !== "" ? value : `Non disponibile (${label})`;
@@ -166,7 +167,7 @@ export default function VenueDetail() {
     value && value !== "" ? value : "Non valutato";
 
   return (
-    <div style={{ color: "white" }}>
+    <div className="page fade-in" style={{ color: "white" }}>
 
       {/* 🔧 EDITOR ADMIN */}
       {isAdmin && form && (

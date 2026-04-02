@@ -1,3 +1,4 @@
+import "../App.css";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useUser } from "../context/UserContext";
@@ -159,7 +160,7 @@ export default function PannelloControllo() {
   }
 
   return (
-    <div style={layoutStyle}>
+    <div className="page page-full-bleed fade-in" style={layoutStyle}>
       <div style={sidebarStyle}>
         <h2 style={{ color: "#f59e0b", marginBottom: 20, fontSize: "1.2rem" }}>Pannello di Controllo</h2>
 
@@ -262,7 +263,7 @@ const layoutStyle: React.CSSProperties = {
 
 const sidebarStyle: React.CSSProperties = { 
   width: "100%", 
-  maxWidth: "260px", // Larghezza fissa su desktop, flessibile su mobile
+  maxWidth: "16.25rem",
   flexBasis: "260px",
   flexGrow: 1,
   padding: 20, 
@@ -272,7 +273,7 @@ const sidebarStyle: React.CSSProperties = {
 
 const contentStyle: React.CSSProperties = { 
   flex: 1, 
-  minWidth: "300px", // Evita che il contenuto diventi troppo stretto
+  minWidth: 0,
   padding: "20px" 
 };
 

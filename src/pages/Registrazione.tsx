@@ -1,3 +1,4 @@
+import "../App.css";
 import { useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 
@@ -57,7 +58,7 @@ export default function Registrazione() {
   }
 
   return (
-    <div style={container}>
+    <div className="page fade-in" style={container}>
       <form onSubmit={handleRegister} style={card}>
         <h1>Registrazione Utente</h1>
 
@@ -78,7 +79,7 @@ export default function Registrazione() {
 }
 
 const container = {
-  minHeight: "100vh",
+  minHeight: "100%",
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
@@ -86,7 +87,7 @@ const container = {
 };
 
 const card = {
-  width: 400,
+  width: "min(100%, 400px)",
   padding: 30,
   background: "#111",
   borderRadius: 12,

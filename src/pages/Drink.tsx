@@ -1,3 +1,4 @@
+import "../App.css";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useNavigate } from "react-router-dom";
@@ -92,7 +93,7 @@ export default function Drink() {
   }
 
   if (loading) {
-    return <div style={{ padding: 40 }}>Caricamento...</div>;
+    return <div className="page fade-in">Caricamento...</div>;
   }
 
   function renderSection(title: string, list: any[], tipo: string) {
@@ -114,7 +115,7 @@ export default function Drink() {
         {!list.length ? (
           <p style={empty}>Nessun dato</p>
         ) : (
-          <div style={grid}>
+          <div className="grid-wrapper" style={grid}>
             {list.map((item) => (
               <div
                 key={item.id}
@@ -148,7 +149,7 @@ export default function Drink() {
   }
 
   return (
-    <div style={container}>
+    <div className="page fade-in" style={container}>
       {renderSection("Cocktail", cocktail, "cocktail")}
       {renderSection("Rum", rum, "rum")}
       {renderSection("Whisky", whisky, "whisky")}
@@ -160,17 +161,18 @@ export default function Drink() {
 /* STILI */
 
 const container = {
-  padding: "40px 0",
+  padding: "24px 0",
   background: "#F5F5F0",
-  minHeight: "100vh",
+  minHeight: "100%",
 };
 
 const header = {
   display: "flex",
   alignItems: "center",
+  justifyContent: "space-between",
+  flexWrap: "wrap" as const,
   gap: 20,
-  maxWidth: 700,
-  margin: "0 auto 20px auto",
+  marginBottom: 20,
 };
 
 const sectionTitle = {
@@ -194,16 +196,12 @@ const empty = {
 };
 
 const grid = {
-  display: "grid",
-  gridTemplateColumns: "repeat(3, 200px)",
-  justifyContent: "center",
-  columnGap: 60,
-  rowGap: 30,
+  gap: 20,
 };
 
 const card = {
-  width: 200,
-  height: 200,
+  width: "100%",
+  aspectRatio: "1 / 1",
   borderRadius: 16,
   overflow: "hidden",
   position: "relative" as const,

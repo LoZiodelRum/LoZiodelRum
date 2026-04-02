@@ -1,3 +1,4 @@
+import "../App.css";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useParams } from "react-router-dom";
@@ -89,11 +90,11 @@ export default function ArticleDetail() {
   }
 
   if (!data) {
-    return <div style={{ padding: 40 }}>Caricamento...</div>;
+    return <div className="page fade-in" style={{ padding: 40 }}>Caricamento...</div>;
   }
 
   return (
-    <div style={container}>
+    <div className="page fade-in" style={container}>
 
       {/* 🔧 EDITOR ADMIN */}
       {isAdmin && form && (
@@ -231,7 +232,7 @@ const heroBox = {
   background: "rgba(25,25,25,0.95)",
   borderRadius: 20,
   padding: "40px",
-  maxWidth: 900,
+  maxWidth: "min(100%, 56rem)",
   width: "90%",
   marginBottom: -80,
   color: "#fff",
@@ -248,7 +249,7 @@ const badge = {
 };
 
 const title = {
-  fontSize: 44,
+  fontSize: "clamp(2rem, 6vw, 2.75rem)",
   margin: "10px 0",
   lineHeight: 1.2,
 };
@@ -274,7 +275,7 @@ const articleWrapper = {
 };
 
 const articleBox = {
-  maxWidth: 900,
+  maxWidth: "min(100%, 56rem)",
   width: "90%",
   background: "#111",
   borderRadius: 20,

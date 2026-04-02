@@ -1,3 +1,4 @@
+import "../App.css";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useParams } from "react-router-dom";
@@ -109,7 +110,7 @@ export default function DrinkDetail() {
   }
 
   if (!data) {
-    return <div style={{ padding: 40 }}>Caricamento...</div>;
+    return <div className="page fade-in">Caricamento...</div>;
   }
 
   function getImage(obj: any) {
@@ -144,7 +145,7 @@ export default function DrinkDetail() {
   }
 
   return (
-    <div style={container}>
+    <div className="page fade-in" style={container}>
 
       {/* 🔧 EDITOR ADMIN */}
       {isAdmin && form && (
@@ -170,7 +171,7 @@ export default function DrinkDetail() {
             {getImage(form) && (
               <img
                 src={getImage(form)}
-                style={{ width: 120, marginTop: 10, borderRadius: 8 }}
+                style={{ width: "min(100%, 7.5rem)", marginTop: 10, borderRadius: 8 }}
               />
             )}
           </div>
@@ -350,23 +351,24 @@ export default function DrinkDetail() {
 /* STILI ORIGINALI */
 
 const container = {
-  padding: 40,
+  padding: 16,
   background: "#F5F5F0",
-  minHeight: "100vh",
+  minHeight: "100%",
 };
 
 const layout = {
   display: "flex",
+  flexWrap: "wrap" as const,
   gap: 60,
-  maxWidth: 1100,
+  maxWidth: "min(100%, 68rem)",
   margin: "0 auto",
 };
 
 const left = { flex: 1 };
-const right = { width: 350 };
+const right = { flex: "1 1 320px" };
 
 const title = {
-  fontSize: 36,
+  fontSize: "clamp(1.8rem, 5vw, 2.25rem)",
   marginBottom: 20,
   color: "#4b2e1f",
 };

@@ -60,6 +60,10 @@ function Protected({
   return <>{children}</>;
 }
 
+function PageShell({ children, fullBleed = false }: { children: React.ReactNode; fullBleed?: boolean }) {
+  return <div className={fullBleed ? "page page-full-bleed fade-in" : "page fade-in"}>{children}</div>;
+}
+
 export default function App() {
   return (
     <UserProvider>
@@ -69,76 +73,86 @@ export default function App() {
         <Routes>
 
           {/* PUBBLICHE */}
-          <Route path="/" element={<Home />} />
-          <Route path="/auth" element={<Auth />} />
+          <Route path="/" element={<PageShell fullBleed><Home /></PageShell>} />
+          <Route path="/auth" element={<PageShell><Auth /></PageShell>} />
 
           {/* REGISTRAZIONE */}
-          <Route path="/registrati" element={<SceltaRegistrazione />} />
-          <Route path="/registrazione" element={<Registrazione />} />
-          <Route path="/registrazione-bartender" element={<RegistrazioneBartender />} />
-          <Route path="/registrazione-owner" element={<RegistrazioneProprietario />} />
+          <Route path="/registrati" element={<PageShell><SceltaRegistrazione /></PageShell>} />
+          <Route path="/registrazione" element={<PageShell><Registrazione /></PageShell>} />
+          <Route path="/registrazione-bartender" element={<PageShell><RegistrazioneBartender /></PageShell>} />
+          <Route path="/registrazione-owner" element={<PageShell><RegistrazioneProprietario /></PageShell>} />
 
           {/* DRINK */}
-          <Route path="/drink" element={<Drink />} />
-          <Route path="/drink/:id" element={<DrinkDetail />} />
-          <Route path="/categoria/:categoria" element={<Category />} />
+          <Route path="/drink" element={<PageShell><Drink /></PageShell>} />
+          <Route path="/drink/:id" element={<PageShell><DrinkDetail /></PageShell>} />
+          <Route path="/categoria/:categoria" element={<PageShell><Category /></PageShell>} />
 
           {/* MAGAZINE */}
-          <Route path="/magazine" element={<Magazine />} />
-          <Route path="/magazine/:id" element={<ArticleDetail />} />
+          <Route path="/magazine" element={<PageShell><Magazine /></PageShell>} />
+          <Route path="/magazine/:id" element={<PageShell><ArticleDetail /></PageShell>} />
 
           {/* BLOCCO UTENTE */}
-          <Route path="/in-attesa" element={<InAttesa />} />
+          <Route path="/in-attesa" element={<PageShell><InAttesa /></PageShell>} />
 
           {/* 🔴 ADMIN */}
-          <Route path="/admin" element={<PannelloControllo />} />
+          <Route path="/admin" element={<PageShell fullBleed><PannelloControllo /></PageShell>} />
 
           {/* 🔥 MAPPA PUBBLICA */}
-          <Route path="/mappa" element={<MapPage />} />
+          <Route path="/mappa" element={<PageShell fullBleed><MapPage /></PageShell>} />
 
           {/* PROTETTE */}
           <Route
             path="/community"
             element={
-              <Protected>
-                <Community />
-              </Protected>
+              <PageShell>
+                <Protected>
+                  <Community />
+                </Protected>
+              </PageShell>
             }
           />
 
           <Route
             path="/profilo/:id"
             element={
-              <Protected>
-                <UserProfile />
-              </Protected>
+              <PageShell>
+                <Protected>
+                  <UserProfile />
+                </Protected>
+              </PageShell>
             }
           />
 
           <Route
             path="/venue/:id"
             element={
-              <Protected>
-                <VenueDetail />
-              </Protected>
+              <PageShell>
+                <Protected>
+                  <VenueDetail />
+                </Protected>
+              </PageShell>
             }
           />
 
           <Route
             path="/recensione"
             element={
-              <Protected>
-                <Recensione />
-              </Protected>
+              <PageShell>
+                <Protected>
+                  <Recensione />
+                </Protected>
+              </PageShell>
             }
           />
 
           <Route
             path="/segnala-locale"
             element={
-              <Protected>
-                <SegnalaLocale />
-              </Protected>
+              <PageShell>
+                <Protected>
+                  <SegnalaLocale />
+                </Protected>
+              </PageShell>
             }
           />
 
@@ -146,9 +160,11 @@ export default function App() {
           <Route
             path="/crea"
             element={
-              <Protected roles={["bartender", "proprietario"]}>
-                <Crea />
-              </Protected>
+              <PageShell>
+                <Protected roles={["bartender", "proprietario"]}>
+                  <Crea />
+                </Protected>
+              </PageShell>
             }
           />
 
@@ -156,9 +172,11 @@ export default function App() {
           <Route
             path="/pannello"
             element={
-              <Protected roles={["proprietario"]}>
-                <PannelloControllo />
-              </Protected>
+              <PageShell fullBleed>
+                <Protected roles={["proprietario"]}>
+                  <PannelloControllo />
+                </Protected>
+              </PageShell>
             }
           />
 

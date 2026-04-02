@@ -1,3 +1,4 @@
+import "../App.css";
 import React from "react";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
@@ -68,6 +69,7 @@ export default function Home() {
 
   return (
     <div
+      className="page page-full-bleed fade-in"
       style={{
         background: "#0b0b0b",
         color: "#fff",
@@ -157,12 +159,12 @@ export default function Home() {
           }}
         />
 
-        <div style={{ position: "relative", zIndex: 2, maxWidth: 800 }}>
+        <div style={{ position: "relative", zIndex: 2, maxWidth: "min(100%, 50rem)" }}>
           <p style={{ color: "#f5a623", marginBottom: 10 }}>
             La community del bere consapevole
           </p>
 
-          <h1 style={{ fontSize: 52, marginBottom: 20 }}>
+          <h1 style={{ fontSize: "clamp(2rem, 7vw, 3.25rem)", marginBottom: 20 }}>
             Scopri i migliori <br />
             <span style={{ color: "#f5a623" }}>locali del mondo</span>
           </h1>
@@ -194,9 +196,8 @@ export default function Home() {
         <h2 style={{ marginBottom: 20 }}>Locali</h2>
 
         <div
+          className="grid-wrapper"
           style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
             gap: 20,
           }}
         >

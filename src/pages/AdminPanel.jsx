@@ -1,3 +1,4 @@
+import "../App.css";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 
@@ -53,7 +54,7 @@ export default function AdminPanel() {
   }
 
   return (
-    <div style={container}>
+    <div className="page fade-in" style={container}>
       <h1 style={title}>Pannello di Controllo</h1>
 
       {/* LOCALI */}
@@ -412,7 +413,7 @@ const card = {
   padding: 30,
   borderRadius: 20,
   marginTop: 20,
-  width: 500,
+  width: "min(100%, 500px)",
   display: "flex",
   flexDirection: "column",
   gap: 15,
@@ -433,7 +434,7 @@ const textarea = {
 
 const select = {
   ...input,
-  width: 260,
+  width: "min(100%, 260px)",
 };
 
 const actions = {

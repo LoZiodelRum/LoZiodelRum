@@ -1,6 +1,7 @@
+import "../App.css";
 export default function InAttesa() {
   return (
-    <div style={container}>
+    <div className="page page-full-bleed fade-in" style={container}>
       <div style={box}>
         <h1 style={title}>Account in attesa</h1>
 
@@ -28,7 +29,7 @@ const container = {
 
 const box = {
   background: "#1A1A1A",
-  padding: 40,
+  padding: "clamp(1.25rem, 4vw, 2.5rem)",
   borderRadius: 20,
   textAlign: "center" as const,
 };

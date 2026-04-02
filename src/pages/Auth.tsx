@@ -1,3 +1,4 @@
+import "../App.css";
 import { useState } from "react";
 import { supabase } from "../lib/supabaseClient.js";
 import { useNavigate } from "react-router-dom";
@@ -226,7 +227,7 @@ export default function Auth() {
   }
 
   return (
-    <div style={container}>
+    <div className="page fade-in" style={container}>
       <form
         onSubmit={isRegister ? handleRegister : handleLogin}
         style={card}
@@ -338,7 +339,7 @@ const container = {
 };
 
 const card = {
-  width: 380,
+  width: "min(100%, 380px)",
   background: "#111",
   padding: 30,
   borderRadius: 12,

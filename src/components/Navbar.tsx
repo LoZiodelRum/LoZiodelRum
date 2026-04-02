@@ -1,3 +1,4 @@
+import "../App.css";
 import { Link, useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import { supabase } from "../lib/supabaseClient";
@@ -36,6 +37,7 @@ export default function Navbar() {
 
   return (
     <nav
+      className="nav-container"
       style={{
         background: "#000",
         color: "#fff",
@@ -43,17 +45,22 @@ export default function Navbar() {
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
+        flexWrap: "wrap",
+        gap: "12px",
         position: "relative",
         zIndex: 1000,
       }}
     >
       {/* LOGO */}
       <Link
+        className="nav-logo"
         to="/"
         style={{
           color: "#f5a623",
           fontWeight: "bold",
-          fontSize: "20px",
+          fontSize: "clamp(1rem, 2.6vw, 1.25rem)",
+          flexShrink: 0,
+          whiteSpace: "nowrap",
           textDecoration: "none",
         }}
       >
@@ -62,10 +69,14 @@ export default function Navbar() {
 
       {/* MENU */}
       <div
+        className="nav-menu"
         style={{
           display: "flex",
           gap: "20px",
           alignItems: "center",
+          flexWrap: "wrap",
+          justifyContent: "flex-end",
+          rowGap: "10px",
         }}
       >
         <Link to="/" style={{ color: "#fff", textDecoration: "none" }}>
@@ -159,10 +170,12 @@ export default function Navbar() {
       {/* MODAL ADMIN */}
       {showAdmin && (
         <div
+          className="admin-modal"
           style={{
             position: "absolute",
             top: "70px",
-            right: "30px",
+            right: "max(16px, 3vw)",
+            width: "min(92vw, 320px)",
             background: "#111",
             padding: "20px",
             borderRadius: "10px",
@@ -178,7 +191,7 @@ export default function Navbar() {
             style={{
               padding: "10px",
               marginBottom: "10px",
-              width: "200px",
+              width: "100%",
               borderRadius: "6px",
               border: "none",
             }}

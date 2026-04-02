@@ -1,10 +1,11 @@
+import "../App.css";
 import { useNavigate } from "react-router-dom";
 
 export default function SceltaRegistrazione() {
   const navigate = useNavigate();
 
   return (
-    <div style={container}>
+    <div className="page fade-in" style={container}>
       <div style={card}>
         <h1 style={title}>Registrati</h1>
         <p style={subtitle}>Scegli il tuo ruolo</p>
@@ -26,7 +27,7 @@ export default function SceltaRegistrazione() {
 }
 
 const container = {
-  minHeight: "100vh",
+  minHeight: "100%",
   display: "flex",
   justifyContent: "center",
   alignItems: "center",
@@ -34,7 +35,7 @@ const container = {
 };
 
 const card = {
-  width: 400,
+  width: "min(100%, 400px)",
   padding: 30,
   background: "#111",
   borderRadius: 12,
@@ -43,7 +44,7 @@ const card = {
 };
 
 const title = {
-  fontSize: 30,
+  fontSize: "clamp(1.6rem, 5vw, 1.875rem)",
   marginBottom: 10,
 };
 

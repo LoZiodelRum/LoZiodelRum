@@ -1,3 +1,4 @@
+import "../App.css";
 import { useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useNavigate } from "react-router-dom";
@@ -19,11 +20,11 @@ export default function SegnalaLocale() {
   // 🔒 BLOCCO ACCESSO
   if (loading) return null;
 
-  if (!user) return <div style={{ padding: 40 }}>Devi effettuare il login</div>;
+  if (!user) return <div className="page fade-in" style={{ padding: 40 }}>Devi effettuare il login</div>;
 
   if (status !== "attivo")
     return (
-      <div style={{ padding: 40 }}>
+      <div className="page fade-in" style={{ padding: 40 }}>
         Il tuo account è in attesa di approvazione
       </div>
     );
@@ -93,7 +94,7 @@ export default function SegnalaLocale() {
   };
 
   return (
-    <div style={{ padding: 40, maxWidth: 600 }}>
+    <div className="page fade-in" style={{ padding: 40, maxWidth: "min(100%, 37.5rem)" }}>
       <h1>Segnala un Locale</h1>
 
       <input

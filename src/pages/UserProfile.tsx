@@ -1,3 +1,4 @@
+import "../App.css";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useParams } from "react-router-dom";
@@ -25,10 +26,10 @@ export default function UserProfile() {
     setUser(data);
   }
 
-  if (!user) return <div style={{ padding: 40 }}>Caricamento...</div>;
+  if (!user) return <div className="page fade-in" style={{ padding: 40 }}>Caricamento...</div>;
 
   return (
-    <div style={container}>
+    <div className="page fade-in" style={container}>
       <div style={card}>
 
         {/* HEADER */}
@@ -117,7 +118,7 @@ const container = {
 };
 
 const card = {
-  maxWidth: 900,
+  maxWidth: "min(100%, 56rem)",
   margin: "0 auto",
   background: "#1A1A1A",
   padding: 30,
@@ -132,14 +133,14 @@ const header = {
 };
 
 const avatar: React.CSSProperties = {
-  width: 100,
-  height: 100,
+  width: "clamp(4.5rem, 16vw, 6.25rem)",
+  height: "clamp(4.5rem, 16vw, 6.25rem)",
   borderRadius: "50%",
   objectFit: "cover",
 };
 
 const name = {
-  fontSize: 28,
+  fontSize: "clamp(1.5rem, 4.5vw, 1.75rem)",
   margin: 0,
 };
 

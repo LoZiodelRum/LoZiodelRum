@@ -1,3 +1,4 @@
+import "../App.css";
 import { useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 
@@ -106,7 +107,7 @@ export default function RegistrazioneProprietario() {
   }
 
   return (
-    <div style={container}>
+    <div className="page fade-in" style={container}>
       <form onSubmit={handleRegister} style={card}>
         <h1 style={title}>Registrazione Proprietario</h1>
 
@@ -204,23 +205,23 @@ function Textarea(props: any) {
 /* STYLE */
 
 const container = {
-  minHeight: "100vh",
+  minHeight: "100%",
   background: "#000",
   display: "flex",
   justifyContent: "center",
-  padding: 40,
+  padding: 16,
 };
 
 const card = {
-  width: 750,
-  padding: 40,
+  width: "min(100%, 750px)",
+  padding: "clamp(16px, 3vw, 40px)",
   background: "#111",
   borderRadius: 20,
   color: "#fff",
 };
 
 const title = {
-  fontSize: 34,
+  fontSize: "clamp(1.75rem, 4.5vw, 2.125rem)",
   marginBottom: 25,
 };
 

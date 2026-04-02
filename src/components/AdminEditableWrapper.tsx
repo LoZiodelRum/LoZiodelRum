@@ -1,3 +1,4 @@
+import "../App.css";
 import { ReactNode, useState } from "react";
 import { useUser } from "../context/UserContext";
 

@@ -1,3 +1,4 @@
+import "../App.css";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useNavigate } from "react-router-dom";
@@ -31,14 +32,14 @@ export default function Magazine() {
   }
 
   if (!articles.length) {
-    return <div style={{ padding: 40 }}>Nessun articolo</div>;
+    return <div className="page fade-in" style={{ padding: 40 }}>Nessun articolo</div>;
   }
 
   const hero = articles[0];
   const others = articles.slice(1);
 
   return (
-    <div style={container}>
+    <div className="page fade-in" style={container}>
       
       {/* HERO */}
       <div
@@ -105,7 +106,7 @@ const overlay = {
 
 const heroTitle = {
   color: "#fff",
-  fontSize: 36,
+  fontSize: "clamp(1.8rem, 5vw, 2.25rem)",
   margin: "10px 0",
 };
 
