@@ -234,50 +234,8 @@ export default function Home() {
         </div>
       </div>
 
-      {/* LOCALI */}
-      <div style={{ padding: "60px 40px" }}>
-        <h2 style={{ marginBottom: 20 }}>Locali</h2>
-
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
-          <Link className="btn-primary" to="/venues">Tutti i locali</Link>
-        </div>
-
-        <div
-          className="grid-wrapper"
-          style={{
-            gap: 20,
-          }}
-        >
-          {locali.map((l) => (
-            <Link
-              key={l.id}
-              to={`/venue/${l.id}`}
-              style={{
-                borderRadius: 12,
-                overflow: "hidden",
-                background: "#111",
-                cursor: "pointer",
-                display: "block",
-              }}
-            >
-              <img
-                src={
-                  l.image_url ||
-                  "https://via.placeholder.com/400x200?text=Locale"
-                }
-                style={{ width: "100%", height: 180, objectFit: "cover" }}
-              />
-              <div style={{ padding: 15 }}>
-                <h3>{l.nome}</h3>
-                <p style={{ opacity: 0.6 }}>{l.citta}</p>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </div>
-
       {/* DRINK */}
-      <div style={{ padding: "0 40px 60px 40px" }}>
+      <div style={{ padding: "60px 40px" }}>
         <h2 style={{ marginBottom: 20 }}>Drink</h2>
 
         <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
@@ -318,6 +276,48 @@ export default function Home() {
               <div style={{ padding: 15 }}>
                 <h3>{d.nome || "Drink"}</h3>
                 <p style={{ opacity: 0.7, marginTop: 6, textTransform: "capitalize" }}>{d.categoria}</p>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      {/* LOCALI */}
+      <div style={{ padding: "0 40px 60px 40px" }}>
+        <h2 style={{ marginBottom: 20 }}>Locali</h2>
+
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
+          <Link className="btn-primary" to="/venues">Tutti i locali</Link>
+        </div>
+
+        <div
+          className="grid-wrapper"
+          style={{
+            gap: 20,
+          }}
+        >
+          {locali.map((l) => (
+            <Link
+              key={l.id}
+              to={`/venue/${l.id}`}
+              style={{
+                borderRadius: 12,
+                overflow: "hidden",
+                background: "#111",
+                cursor: "pointer",
+                display: "block",
+              }}
+            >
+              <img
+                src={
+                  l.image_url ||
+                  "https://via.placeholder.com/400x200?text=Locale"
+                }
+                style={{ width: "100%", height: 180, objectFit: "cover" }}
+              />
+              <div style={{ padding: 15 }}>
+                <h3>{l.nome}</h3>
+                <p style={{ opacity: 0.6 }}>{l.citta}</p>
               </div>
             </Link>
           ))}
