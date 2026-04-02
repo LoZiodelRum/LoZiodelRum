@@ -95,19 +95,26 @@ export default function App() {
           <Route path="/in-attesa" element={<PageShell><InAttesa /></PageShell>} />
 
           {/* 🔴 ADMIN */}
-          <Route path="/admin" element={<PageShell fullBleed><PannelloControllo /></PageShell>} />
+          <Route
+            path="/admin"
+            element={
+              <PageShell fullBleed>
+                <Protected roles={["admin"]}>
+                  <PannelloControllo />
+                </Protected>
+              </PageShell>
+            }
+          />
 
           {/* 🔥 MAPPA PUBBLICA */}
           <Route path="/mappa" element={<PageShell fullBleed><MapPage /></PageShell>} />
 
-          {/* PROTETTE */}
+          {/* PUBBLICHE */}
           <Route
             path="/community"
             element={
               <PageShell>
-                <Protected>
-                  <Community />
-                </Protected>
+                <Community />
               </PageShell>
             }
           />
@@ -116,9 +123,7 @@ export default function App() {
             path="/profilo/:id"
             element={
               <PageShell>
-                <Protected>
-                  <UserProfile />
-                </Protected>
+                <UserProfile />
               </PageShell>
             }
           />
@@ -127,12 +132,12 @@ export default function App() {
             path="/venue/:id"
             element={
               <PageShell>
-                <Protected>
-                  <VenueDetail />
-                </Protected>
+                <VenueDetail />
               </PageShell>
             }
           />
+
+          {/* PROTETTE */}
 
           <Route
             path="/recensione"
