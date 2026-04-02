@@ -246,8 +246,8 @@ export default function VenueDetail() {
       </div>
 
       {/* CONTATTI & SOCIAL */}
-      <div className="content-wrapper">
-        <h2 className="section-title section-title-dark">Contatti e Social</h2>
+      <div className="content-wrapper venue-section">
+        <h2 className="section-title">Contatti e Social</h2>
         <div className="venue-meta-row">
           {locale.telefono && (
             <a className="contact-chip" href={`tel:${locale.telefono}`}>
@@ -274,8 +274,8 @@ export default function VenueDetail() {
       </div>
 
       {/* DETTAGLI TECNICI */}
-      <div className="content-wrapper">
-        <h2 className="section-title section-title-dark">Dettagli tecnici</h2>
+      <div className="content-wrapper venue-section">
+        <h2 className="section-title">Dettagli tecnici</h2>
         <div className="grid-wrapper" style={{ gap: 12, marginTop: 12 }}>
           <div className="rating-box">
             <p>Orari apertura</p>
@@ -297,16 +297,16 @@ export default function VenueDetail() {
       </div>
 
       {/* DESCRIZIONE */}
-      <div className="content-wrapper">
-        <h2 className="section-title section-title-dark">Descrizione</h2>
+      <div className="content-wrapper venue-section">
+        <h2 className="section-title">Descrizione</h2>
         <p className="venue-description">
           {locale.descrizione_completa || locale.descrizione || "Descrizione non disponibile"}
         </p>
       </div>
 
       {/* VALUTAZIONI */}
-      <div className="content-wrapper">
-        <h2 className="section-title section-title-dark">Valutazioni</h2>
+      <div className="content-wrapper venue-section">
+        <h2 className="section-title">Valutazioni</h2>
         <div className="grid-wrapper" style={{ gap: 20, marginTop: 12 }}>
         {[
           { label: "Qualità Drink", value: locale.qualita_drink },
@@ -323,8 +323,8 @@ export default function VenueDetail() {
       </div>
 
       {/* RECENSIONI */}
-      <div className="content-wrapper">
-        <h2 className="section-title section-title-dark">Recensioni</h2>
+      <div className="content-wrapper venue-section">
+        <h2 className="section-title">Recensioni</h2>
 
         {recensioni.map((rec) => (
           <div key={rec.id} className="review-card">
@@ -338,8 +338,8 @@ export default function VenueDetail() {
       </div>
 
       {/* MEDIA */}
-      <div className="content-wrapper" style={{ marginBottom: 60 }}>
-        <h2 className="section-title section-title-dark">Foto e Video</h2>
+      <div className="content-wrapper venue-section" style={{ marginBottom: 60 }}>
+        <h2 className="section-title">Foto e Video</h2>
 
         {videoMain && (
           <video className="venue-main-video" src={videoMain} controls />

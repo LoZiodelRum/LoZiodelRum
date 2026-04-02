@@ -415,8 +415,20 @@ button:active { transform: scale(0.98); }
   gap: 8px;
   margin-top: 10px;
 }
+.venue-section {
+  background: #111;
+  border: 1px solid #222;
+}
+.venue-section .section-title {
+  color: #fff;
+}
+.venue-section p,
+.venue-section span {
+  color: #ddd;
+}
 .gold-badge {
   background: #a36b00;
+  color: #fff;
 }
 .contact-chip {
   display: inline-flex;
@@ -425,19 +437,19 @@ button:active { transform: scale(0.98); }
   padding: 8px 12px;
   border-radius: 999px;
   text-decoration: none;
-  background: #f3efe2;
-  color: #4b2e1f;
-  border: 1px solid #d9cfb3;
+  background: #1f1f1f;
+  color: #fff;
+  border: 1px solid #3a3a3a;
   font-size: 13px;
   font-weight: 600;
 }
 .contact-chip:hover {
-  background: #eadfbe;
+  background: #2a2a2a;
 }
 .venue-description {
   margin: 0;
   line-height: 1.75;
-  color: #3a3a3a;
+  color: #ddd;
   white-space: pre-wrap;
 }
 .venue-main-video {
