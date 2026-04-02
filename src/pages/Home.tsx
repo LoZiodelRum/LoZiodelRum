@@ -237,19 +237,16 @@ export default function Home() {
       {/* COCKTAIL */}
       <div className="page fade-in">
         <div className="content-wrapper">
-          <h2 className="mt-20" style={{ marginBottom: 12, color: "#1f2937", fontSize: "16px" }}>Cocktail</h2>
-
-          <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 12 }}>
-            <Link className="btn-primary btn-small" to="/categoria/cocktail">Cocktail</Link>
-            <Link className="btn-primary btn-small" to="/categoria/rum">Rum</Link>
-            <Link className="btn-primary btn-small" to="/categoria/whisky">Whisky</Link>
-            <Link className="btn-primary btn-small" to="/drinks">Tutti</Link>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 16 }}>
+            <h2 style={{ color: "#1f2937", fontSize: "22px", fontWeight: 700, margin: 0 }}>Cocktail</h2>
+            <Link className="btn-primary btn-small" to="/drinks">Vedi tutti</Link>
           </div>
 
           <div
-            className="grid-wrapper"
+            className="cocktail-grid"
             style={{
-              gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
+              display: "grid",
+              gridTemplateColumns: "repeat(3, 1fr)",
               gap: 16,
             }}
           >
@@ -258,25 +255,23 @@ export default function Home() {
                 key={d.id}
                 to={`/drink/${d.id}`}
                 style={{
-                  borderRadius: 10,
+                  borderRadius: 12,
                   overflow: "hidden",
-                  background: "#111",
+                  background: "#f5f4f0",
                   cursor: "pointer",
                   display: "block",
+                  textDecoration: "none",
                 }}
               >
                 <img
                   src={
                     d.immagine ||
-                    "https://via.placeholder.com/400x200?text=Drink"
+                    "https://via.placeholder.com/400x300?text=Drink"
                   }
-                  style={{ width: "100%", height: "56px", objectFit: "cover" }}
-                  className="img-mobile-small"
+                  style={{ width: "100%", height: "240px", objectFit: "cover", display: "block" }}
                 />
-
-                <div style={{ padding: 8 }}>
-                  <h3 style={{ fontSize: "11px", margin: "3px 0" }}>{d.nome || "Drink"}</h3>
-                  <p style={{ opacity: 0.7, margin: 0, textTransform: "capitalize", fontSize: "10px" }}>{d.categoria}</p>
+                <div style={{ padding: "12px 8px", borderTop: "1px solid #e5e5e5" }}>
+                  <h3 style={{ fontSize: "15px", fontWeight: 700, color: "#1a1a2e", margin: 0, textAlign: "center" }}>{d.nome || "Drink"}</h3>
                 </div>
               </Link>
             ))}

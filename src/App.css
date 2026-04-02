@@ -353,6 +353,16 @@ button:active { transform: scale(0.98); }
     border-radius: 12px;
   }
 
+  /* Griglia cocktail: 2 colonne su mobile < 480px */
+  .cocktail-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+
+  /* Immagini cocktail ridotte su mobile */
+  .cocktail-grid img {
+    height: 140px !important;
+  }
+
   /* Sezioni: meno padding */
   .section {
     margin-bottom: 20px;
