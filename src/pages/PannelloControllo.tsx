@@ -124,7 +124,7 @@ export default function PannelloControllo() {
   }
 
   if (loading) return null;
-  if (!isAdmin) return <div>Accesso negato</div>;
+  if (!isAdmin) return <div style={{ padding: 20, color: "red" }}>Accesso negato</div>;
 
   function Sidebar(title: string, data: any[], table: string, label: string) {
     const sorted = [...data].sort((a, b) =>
@@ -135,9 +135,9 @@ export default function PannelloControllo() {
 
     return (
       <div style={{ marginBottom: 20 }}>
-        <h4 style={sidebarTitle}>{title}</h4>
+        <h4 style={sidebarTitleStyle}>{title}</h4>
         <select
-          style={select}
+          style={selectStyle}
           value={selectedTable === table && selectedItem ? String(selectedItem.id) : ""}
           onChange={(e) => {
             const value = e.target.value;
@@ -159,11 +159,11 @@ export default function PannelloControllo() {
   }
 
   return (
-    <div style={layout}>
-      <div style={sidebar}>
-        <h2 style={{ color: "#f59e0b", marginBottom: 30 }}>Pannello di Controllo</h2>
+    <div style={layoutStyle}>
+      <div style={sidebarStyle}>
+        <h2 style={{ color: "#f59e0b", marginBottom: 20, fontSize: "1.2rem" }}>Pannello di Controllo</h2>
 
-        <div style={{ marginTop: 40 }}>
+        <div style={{ marginTop: 20 }}>
           {Sidebar("Locali", locali, "Locali", "nome")}
         </div>
 
@@ -175,65 +175,71 @@ export default function PannelloControllo() {
         {Sidebar("Articoli", articoli, "articoli", "titolo")}
       </div>
 
-      <div style={content}>
-        <div style={kpiGrid}>
-          <div style={kpiCard}>Utenti {kpi.utenti}</div>
-          <div style={kpiCard}>Locali {kpi.locali}</div>
-          <div style={kpiCard}>Drink {kpi.drink}</div>
-          <div style={kpiCard}>Articoli {kpi.articoli}</div>
+      <div style={contentStyle}>
+        <div style={kpiGridStyle}>
+          <div style={kpiCardStyle}><span style={kpiLabelStyle}>Utenti</span> <strong>{kpi.utenti}</strong></div>
+          <div style={kpiCardStyle}><span style={kpiLabelStyle}>Locali</span> <strong>{kpi.locali}</strong></div>
+          <div style={kpiCardStyle}><span style={kpiLabelStyle}>Drink</span> <strong>{kpi.drink}</strong></div>
+          <div style={kpiCardStyle}><span style={kpiLabelStyle}>Articoli</span> <strong>{kpi.articoli}</strong></div>
         </div>
 
-        <div style={approvalBox}>
+        <div style={approvalBoxStyle}>
+          <h3 style={{ fontSize: "1rem", color: "#f59e0b", marginBottom: 10 }}>Approvazioni pendenti</h3>
           {utenti.filter(u => !u.approvato).map(u => (
-            <div key={u.id} style={approvalRow}>
-              <span>{u.username} ({u.ruolo})</span>
-              <button style={btnApprove} onClick={() => toggleApprovazione(u)}>
+            <div key={u.id} style={approvalRowStyle}>
+              <span style={{ fontSize: "0.9rem" }}>{u.username} ({u.ruolo})</span>
+              <button style={btnApproveStyle} onClick={() => toggleApprovazione(u)}>
                 Approva
               </button>
             </div>
           ))}
+          {utenti.filter(u => !u.approvato).length === 0 && (
+            <p style={{ fontSize: "0.8rem", color: "#666" }}>Nessun utente da approvare.</p>
+          )}
         </div>
 
         {selectedItem && (
-          <div style={card}>
-            <h2>{selectedItem.nome || selectedItem.titolo || selectedItem.username}</h2>
+          <div style={cardStyle}>
+            <h2 style={{ fontSize: "1.1rem", marginBottom: 15 }}>
+              {selectedItem.nome || selectedItem.titolo || selectedItem.username}
+            </h2>
 
             {saveStatus === "ok" && (
-              <div style={badgeOk}>Modifica salvata</div>
+              <div style={badgeOkStyle}>Modifica salvata</div>
             )}
 
             {saveStatus === "error" && (
-              <div style={badgeError}>Modifica non salvata</div>
+              <div style={badgeErrorStyle}>Modifica non salvata</div>
             )}
 
-            {Object.keys(selectedItem).map(key =>
-              key !== "id" && (
-                <div key={key} style={field}>
-                  <label>{key}</label>
-                  <input
-                    value={selectedItem[key] ?? ""}
-                    onChange={(e) => {
-                      const value = e.target.value;
+            <div style={formGridStyle}>
+              {Object.keys(selectedItem).map(key =>
+                key !== "id" && (
+                  <div key={key} style={fieldStyle}>
+                    <label style={labelStyle}>{key}</label>
+                    <input
+                      value={selectedItem[key] ?? ""}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setSelectedItem((prev: any) => ({
+                          ...prev,
+                          [key]: value,
+                        }));
+                        setSaveStatus(null);
+                      }}
+                      style={inputStyle}
+                    />
+                  </div>
+                )
+              )}
+            </div>
 
-                      setSelectedItem((prev: any) => ({
-                        ...prev,
-                        [key]: value,
-                      }));
-
-                      setSaveStatus(null);
-                    }}
-                    style={input}
-                  />
-                </div>
-              )
-            )}
-
-            <div style={buttonRow}>
-              <button style={btnSave} onClick={salvaModifiche}>
+            <div style={buttonRowStyle}>
+              <button style={btnSaveStyle} onClick={salvaModifiche}>
                 Salva
               </button>
 
-              <button style={btnDelete} onClick={eliminaElemento}>
+              <button style={btnDeleteStyle} onClick={eliminaElemento}>
                 Elimina
               </button>
             </div>
@@ -244,99 +250,172 @@ export default function PannelloControllo() {
   );
 }
 
-/* STILI */
+/* STILI OTTIMIZZATI PER MOBILE & TABLET */
 
-const layout = { display: "flex", height: "100vh", background: "#020617", color: "white" };
-const sidebar = { width: 260, padding: 20 };
-const content = { flex: 1, padding: 30 };
+const layoutStyle: React.CSSProperties = { 
+  display: "flex", 
+  flexWrap: "wrap", // Permette alla sidebar di andare sopra il contenuto su mobile
+  minHeight: "100vh", 
+  background: "#020617", 
+  color: "white" 
+};
 
-const kpiGrid = { display: "flex", gap: 20 };
+const sidebarStyle: React.CSSProperties = { 
+  width: "100%", 
+  maxWidth: "260px", // Larghezza fissa su desktop, flessibile su mobile
+  flexBasis: "260px",
+  flexGrow: 1,
+  padding: 20, 
+  borderRight: "1px solid #1e293b",
+  background: "#0f172a" 
+};
 
-const kpiCard = {
+const contentStyle: React.CSSProperties = { 
+  flex: 1, 
+  minWidth: "300px", // Evita che il contenuto diventi troppo stretto
+  padding: "20px" 
+};
+
+const kpiGridStyle: React.CSSProperties = { 
+  display: "flex", 
+  gap: 10, 
+  flexWrap: "wrap", // I KPI vanno a capo su mobile
+  marginBottom: 20 
+};
+
+const kpiCardStyle: React.CSSProperties = {
   background: "#0f172a",
-  padding: 20,
+  padding: "15px",
   borderRadius: 12,
   border: "1px solid #334155",
+  flex: "1 1 140px", // Cresce e si restringe, minimo 140px
+  textAlign: "center"
 };
 
-const card = {
+const kpiLabelStyle: React.CSSProperties = {
+  display: "block",
+  fontSize: "0.75rem",
+  color: "#94a3b8",
+  marginBottom: 5,
+  textTransform: "uppercase"
+};
+
+const cardStyle: React.CSSProperties = {
   background: "#0f172a",
-  padding: 25,
+  padding: 20,
   borderRadius: 16,
   marginTop: 20,
+  border: "1px solid #1e293b"
 };
 
-const sidebarTitle = { color: "#f59e0b" };
+const formGridStyle: React.CSSProperties = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", // Griglia automatica per i campi input
+  gap: 15
+};
 
-const field = {
+const sidebarTitleStyle = { color: "#f59e0b", fontSize: "0.9rem", marginBottom: 8 };
+
+const fieldStyle = {
   marginBottom: 10,
   display: "flex",
   flexDirection: "column" as const,
 };
 
-const input = {
-  padding: 8,
+const labelStyle = {
+  fontSize: "0.8rem",
+  color: "#94a3b8",
+  marginBottom: 5
+};
+
+const inputStyle = {
+  padding: "10px",
   borderRadius: 6,
   background: "#020617",
   color: "#fff",
+  border: "1px solid #334155",
+  fontSize: "14px"
 };
 
-const select = {
+const selectStyle = {
   width: "100%",
-  padding: 8,
+  padding: "10px",
   borderRadius: 6,
   background: "#020617",
   color: "#fff",
+  border: "1px solid #334155",
 };
 
-const approvalBox = {
+const approvalBoxStyle = {
   marginTop: 20,
-  background: "#111",
+  background: "#0f172a",
   padding: 15,
   borderRadius: 10,
+  border: "1px solid #1e293b"
 };
 
-const approvalRow = {
+const approvalRowStyle = {
   display: "flex",
   justifyContent: "space-between",
-  padding: 10,
-  borderBottom: "1px solid #333",
+  alignItems: "center",
+  padding: "10px 0",
+  borderBottom: "1px solid #1e293b",
 };
 
-const btnApprove = {
+const btnApproveStyle = {
   background: "#f59e0b",
-  padding: "6px 10px",
+  color: "#000",
+  border: "none",
+  padding: "6px 12px",
   borderRadius: 6,
+  fontWeight: "bold" as const,
+  cursor: "pointer"
 };
 
-const buttonRow = {
+const buttonRowStyle = {
   display: "flex",
   gap: 10,
-  marginTop: 20,
+  marginTop: 25,
 };
 
-const btnSave = {
-  background: "green",
-  padding: "10px 16px",
+const btnSaveStyle = {
+  background: "#10b981",
+  color: "white",
+  border: "none",
+  padding: "12px 20px",
   borderRadius: 6,
+  fontWeight: "bold" as const,
+  cursor: "pointer",
+  flex: 1
 };
 
-const btnDelete = {
-  background: "red",
-  padding: "10px 16px",
+const btnDeleteStyle = {
+  background: "#ef4444",
+  color: "white",
+  border: "none",
+  padding: "12px 20px",
   borderRadius: 6,
+  fontWeight: "bold" as const,
+  cursor: "pointer",
+  flex: 1
 };
 
-const badgeOk = {
-  background: "green",
+const badgeOkStyle = {
+  background: "rgba(16, 185, 129, 0.2)",
+  color: "#10b981",
   padding: 10,
   borderRadius: 6,
-  marginBottom: 10,
+  marginBottom: 15,
+  border: "1px solid #10b981",
+  textAlign: "center" as const
 };
 
-const badgeError = {
-  background: "red",
+const badgeErrorStyle = {
+  background: "rgba(239, 68, 68, 0.2)",
+  color: "#ef4444",
   padding: 10,
   borderRadius: 6,
-  marginBottom: 10,
+  marginBottom: 15,
+  border: "1px solid #ef4444",
+  textAlign: "center" as const
 };
