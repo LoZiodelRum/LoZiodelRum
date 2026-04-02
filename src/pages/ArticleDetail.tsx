@@ -1,0 +1,289 @@
+import { useEffect, useState } from "react";
+import { supabase } from "../lib/supabaseClient";
+import { useParams } from "react-router-dom";
+import { useUser } from "../context/UserContext"; // ✅ AGGIUNTO
+
+export default function ArticleDetail() {
+  const { id } = useParams();
+  const { role } = useUser(); // ✅
+  const isAdmin = role === "admin"; // ✅
+
+  const [data, setData] = useState<any>(null);
+  const [form, setForm] = useState<any>(null); // ✅
+  const [uploading, setUploading] = useState(false); // ✅
+
+  useEffect(() => {
+    load();
+  }, [id]);
+
+  async function load() {
+    const { data } = await supabase
+      .from("articoli")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    setData(data);
+    setForm(data); // ✅
+  }
+
+  // ✅ SAVE
+  async function handleSave() {
+    const { error } = await supabase
+      .from("articoli")
+      .update({
+        ...form,
+        immagine: form.immagine,
+      })
+      .eq("id", form.id);
+
+    if (error) {
+      alert("Errore salvataggio");
+      return;
+    }
+
+    setData(form);
+    alert("Salvato ✅");
+  }
+
+  // ✅ DELETE
+  async function handleDelete() {
+    const ok = confirm("Eliminare articolo?");
+    if (!ok) return;
+
+    await supabase.from("articoli").delete().eq("id", form.id);
+
+    window.location.href = "/magazine";
+  }
+
+  // ✅ UPLOAD IMMAGINE
+  async function handleImageUpload(file: File) {
+    if (!file) return;
+
+    setUploading(true);
+
+    const fileName = `${Date.now()}-${file.name}`;
+
+    const { error } = await supabase.storage
+      .from("drink-images")
+      .upload(fileName, file);
+
+    if (error) {
+      alert("Errore upload");
+      setUploading(false);
+      return;
+    }
+
+    const { data } = supabase.storage
+      .from("drink-images")
+      .getPublicUrl(fileName);
+
+    const url = data.publicUrl;
+
+    setForm({
+      ...form,
+      immagine: url,
+    });
+
+    setUploading(false);
+  }
+
+  if (!data) {
+    return <div style={{ padding: 40 }}>Caricamento...</div>;
+  }
+
+  return (
+    <div style={container}>
+
+      {/* 🔧 EDITOR ADMIN */}
+      {isAdmin && form && (
+        <div style={{ padding: 20, background: "#111", marginBottom: 40 }}>
+          <h2 style={{ color: "#fff" }}>Editor Articolo</h2>
+
+          {/* IMMAGINE */}
+          <input
+            type="file"
+            onChange={(e) => {
+              if (e.target.files?.[0]) {
+                handleImageUpload(e.target.files[0]);
+              }
+            }}
+          />
+
+          {uploading && <p style={{ color: "#fff" }}>Upload...</p>}
+
+          {/* CAMPI */}
+          <input
+            value={form.titolo || ""}
+            onChange={(e) =>
+              setForm({ ...form, titolo: e.target.value })
+            }
+            placeholder="Titolo"
+            style={{ width: "100%", marginTop: 10 }}
+          />
+
+          <input
+            value={form.descrizione || ""}
+            onChange={(e) =>
+              setForm({ ...form, descrizione: e.target.value })
+            }
+            placeholder="Descrizione"
+            style={{ width: "100%", marginTop: 10 }}
+          />
+
+          <input
+            value={form.categoria || ""}
+            onChange={(e) =>
+              setForm({ ...form, categoria: e.target.value })
+            }
+            placeholder="Categoria"
+            style={{ width: "100%", marginTop: 10 }}
+          />
+
+          <textarea
+            value={form.contenuto || ""}
+            onChange={(e) =>
+              setForm({ ...form, contenuto: e.target.value })
+            }
+            placeholder="Contenuto articolo"
+            style={{ width: "100%", height: 200, marginTop: 10 }}
+          />
+
+          {/* BOTTONI */}
+          <div style={{ marginTop: 15 }}>
+            <button
+              onClick={handleSave}
+              style={{ background: "green", color: "#fff", marginRight: 10 }}
+            >
+              Salva
+            </button>
+
+            <button
+              onClick={handleDelete}
+              style={{ background: "red", color: "#fff" }}
+            >
+              Elimina
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* HERO */}
+      <div
+        style={{
+          ...hero,
+          backgroundImage: `url(${data.immagine})`,
+        }}
+      >
+        <div style={overlay} />
+
+        <div style={heroBox}>
+          <span style={badge}>{data.categoria}</span>
+
+          <h1 style={title}>{data.titolo}</h1>
+
+          <p style={subtitle}>{data.descrizione}</p>
+
+          <div style={meta}>
+            <span>Lo Zio del Rum</span>
+          </div>
+        </div>
+      </div>
+
+      {/* 🔥 BOX ARTICOLO COMPLETO */}
+      <div style={articleWrapper}>
+        <div style={articleBox}>
+          <div style={articleContent}>
+            {data.contenuto}
+          </div>
+        </div>
+      </div>
+
+    </div>
+  );
+}
+
+/* STILI */
+
+const container = {
+  background: "#000",
+  minHeight: "100vh",
+};
+
+const hero = {
+  height: 520,
+  position: "relative" as const,
+  backgroundSize: "cover",
+  backgroundPosition: "center",
+  display: "flex",
+  alignItems: "flex-end",
+  justifyContent: "center",
+};
+
+const overlay = {
+  position: "absolute" as const,
+  inset: 0,
+  background: "linear-gradient(rgba(0,0,0,0.0), rgba(0,0,0,0.2))",
+};
+
+const heroBox = {
+  position: "relative" as const,
+  background: "rgba(25,25,25,0.95)",
+  borderRadius: 20,
+  padding: "40px",
+  maxWidth: 900,
+  width: "90%",
+  marginBottom: -80,
+  color: "#fff",
+  boxShadow: "0 20px 60px rgba(0,0,0,0.6)",
+};
+
+const badge = {
+  background: "#1e3a5f",
+  padding: "4px 10px",
+  borderRadius: 8,
+  fontSize: 12,
+  display: "inline-block",
+  marginBottom: 10,
+};
+
+const title = {
+  fontSize: 44,
+  margin: "10px 0",
+  lineHeight: 1.2,
+};
+
+const subtitle = {
+  fontSize: 18,
+  color: "#ccc",
+  marginBottom: 20,
+};
+
+const meta = {
+  display: "flex",
+  gap: 20,
+  fontSize: 14,
+  color: "#aaa",
+};
+
+const articleWrapper = {
+  display: "flex",
+  justifyContent: "center",
+  marginTop: 120,
+  paddingBottom: 80,
+};
+
+const articleBox = {
+  maxWidth: 900,
+  width: "90%",
+  background: "#111",
+  borderRadius: 20,
+  padding: "40px",
+  boxShadow: "0 20px 60px rgba(0,0,0,0.8)",
+};
+
+const articleContent = {
+  fontSize: 18,
+  lineHeight: 1.8,
+  color: "#ddd",
+};
