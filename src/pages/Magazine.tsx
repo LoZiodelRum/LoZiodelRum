@@ -26,7 +26,7 @@ export default function Magazine() {
       .order("data_creazione", { ascending: false });
 
     if (data) {
-      setArticles(data.slice(0, 6)); // 👉 SOLO 6 ANTEPRIME
+      setArticles(data);
     }
   }
 
