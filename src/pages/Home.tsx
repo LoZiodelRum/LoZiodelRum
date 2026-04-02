@@ -236,26 +236,15 @@ export default function Home() {
         </div>
       </div>
 
-      {/* COCKTAIL */}
+      {/* DRINK */}
       <div className="page page-section fade-in" style={{ minHeight: 0 }}>
-        <div className="content-wrapper">
+        <div className="content-wrapper" style={{ width: "min(100%, 640px)" }}>
           <div className="section-header">
-            <h2 className="section-title section-title-dark">Cocktail</h2>
-            <Link className="btn-primary btn-small" to="/drinks">Vedi tutti</Link>
-          </div>
-
-          <div className="cocktail-grid">
-            {drinks.map((d) => (
-              <Link key={d.id} to={`/drink/${d.id}`} className="cocktail-card">
-                <img
-                  src={d.immagine || "https://via.placeholder.com/400x300?text=Drink"}
-                  alt={d.nome}
-                />
-                <div className="cocktail-card-body">
-                  <h3>{d.nome || "Drink"}</h3>
-                </div>
-              </Link>
-            ))}
+            <h2 className="section-title section-title-dark">Drink</h2>
+            <div style={{ display: "flex", gap: 10 }}>
+              <Link className="btn-primary btn-small" to="/categoria/cocktail">Cocktail</Link>
+              <Link className="btn-primary btn-small" to="/drink">Distillati</Link>
+            </div>
           </div>
         </div>
       </div>
