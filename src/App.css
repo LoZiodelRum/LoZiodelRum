@@ -228,6 +228,25 @@ button:active { transform: scale(0.98); }
 .mt-20 { margin-top: 20px; }
 .hidden { display: none; }
 
+/* ============================================================
+   HAMBURGER MENU STYLES (Desktop by default)
+   ============================================================ */
+.nav-menu-desktop {
+  display: flex !important; /* Desktop: menu visibile */
+}
+
+.hamburger-btn {
+  display: none !important; /* Desktop: hamburger nascosto */
+}
+
+.mobile-menu {
+  display: none !important; /* Desktop: mobile menu nascosto */
+}
+
+.mobile-menu-overlay {
+  display: none !important; /* Desktop: overlay nascosto */
+}
+
 .btn-primary {
   display: inline-flex;
   align-items: center;
@@ -342,6 +361,52 @@ button:active { transform: scale(0.98); }
   .section h2 {
     margin-bottom: 12px;
     font-size: 16px;
+  }
+
+  /* Hamburger menu visibile su mobile */
+  .hamburger-btn {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+  }
+
+  /* Menu desktop nascosto su mobile */
+  .nav-menu-desktop {
+    display: none !important;
+  }
+
+  /* Mobile menu overlay visibile */
+  .mobile-menu-overlay {
+    display: block !important;
+  }
+
+  /* Mobile menu slide-in */
+  .mobile-menu {
+    display: flex !important;
+  }
+}
+
+/* ============================================================
+   9. TABLET (max-width: 1024px, min-width: 768px)
+   ============================================================ */
+@media (max-width: 1024px) and (min-width: 768px) {
+  /* Hamburger menu visibile su tablet */
+  .hamburger-btn {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .nav-menu-desktop {
+    display: none !important;
+  }
+
+  .mobile-menu-overlay {
+    display: block !important;
+  }
+
+  .mobile-menu {
+    display: flex !important;
   }
 }
 

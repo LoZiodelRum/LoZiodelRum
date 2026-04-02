@@ -236,14 +236,14 @@ export default function Home() {
 
       {/* COCKTAIL */}
       <div className="page fade-in">
-        <div className="content-wrapper" style={{ padding: 24 }}>
-          <h2 className="mt-20" style={{ marginBottom: 20, color: "#1f2937" }}>Cocktail</h2>
+        <div className="content-wrapper" style={{ padding: 16 }}>
+          <h2 className="mt-20" style={{ marginBottom: 16, color: "#1f2937", fontSize: "18px" }}>Cocktail</h2>
 
-          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
+          <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 12 }}>
             <Link className="btn-primary btn-small" to="/categoria/cocktail">Cocktail</Link>
             <Link className="btn-primary btn-small" to="/categoria/rum">Rum</Link>
             <Link className="btn-primary btn-small" to="/categoria/whisky">Whisky</Link>
-            <Link className="btn-primary btn-small" to="/drinks">Tutti i drink</Link>
+            <Link className="btn-primary btn-small" to="/drinks">Tutti</Link>
           </div>
 
           <div
@@ -269,13 +269,13 @@ export default function Home() {
                     d.immagine ||
                     "https://via.placeholder.com/400x200?text=Drink"
                   }
-                  style={{ width: "100%", height: "120px", objectFit: "cover" }}
+                  style={{ width: "100%", height: "80px", objectFit: "cover" }}
                   className="img-mobile-small"
                 />
 
-                <div style={{ padding: 12 }}>
-                  <h3 style={{ fontSize: "14px" }}>{d.nome || "Drink"}</h3>
-                  <p style={{ opacity: 0.7, marginTop: 4, textTransform: "capitalize", fontSize: "12px" }}>{d.categoria}</p>
+                <div style={{ padding: 10 }}>
+                  <h3 style={{ fontSize: "13px", margin: "4px 0" }}>{d.nome || "Drink"}</h3>
+                  <p style={{ opacity: 0.7, margin: 0, textTransform: "capitalize", fontSize: "11px" }}>{d.categoria}</p>
                 </div>
               </Link>
             ))}
@@ -284,17 +284,17 @@ export default function Home() {
       </div>
 
       {/* LOCALI */}
-      <div style={{ padding: "0 40px 60px 40px" }}>
-        <h2 style={{ marginBottom: 20 }}>Locali</h2>
+      <div style={{ padding: "0 20px 30px 20px" }}>
+        <h2 style={{ marginBottom: 12, fontSize: "18px" }}>Locali</h2>
 
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
-          <Link className="btn-primary" to="/venues">Tutti i locali</Link>
+        <div style={{ display: "flex", gap: 8, flexWrap: "wrap", marginBottom: 12 }}>
+          <Link className="btn-primary btn-small" to="/venues">Tutti</Link>
         </div>
 
         <div
           className="grid-wrapper"
           style={{
-            gap: 20,
+            gap: 12,
           }}
         >
           {locali.map((l) => (
@@ -314,12 +314,12 @@ export default function Home() {
                   l.image_url ||
                   "https://via.placeholder.com/400x200?text=Locale"
                 }
-                style={{ width: "100%", height: "100px", objectFit: "cover" }}
+                style={{ width: "100%", height: "70px", objectFit: "cover" }}
                 className="img-mobile-small"
               />
-              <div style={{ padding: 12 }}>
-                <h3 style={{ fontSize: "13px" }}>{l.nome}</h3>
-                <p style={{ opacity: 0.6, fontSize: "11px" }}>{l.citta}</p>
+              <div style={{ padding: 10 }}>
+                <h3 style={{ fontSize: "12px", margin: "2px 0" }}>{l.nome}</h3>
+                <p style={{ opacity: 0.6, fontSize: "10px", margin: 0 }}>{l.citta}</p>
               </div>
             </Link>
           ))}
@@ -327,12 +327,10 @@ export default function Home() {
       </div>
 
       {/* MAGAZINE */}
-      <div style={{ padding: "0 40px 60px 40px" }}>
-        <h2 style={{ marginBottom: 20 }}>Magazine</h2>
+      <div style={{ padding: "0 20px 30px 20px" }}>
+        <h2 style={{ marginBottom: 12, fontSize: "18px" }}>Magazine</h2>
 
-        {articoli.length === 0 && <p>Nessun articolo trovato</p>}
-
-        <div className="grid-wrapper" style={{ gap: 20 }}>
+        <div className="grid-wrapper" style={{ gap: 12 }}>
           {articoli.map((a) => (
             <Link
               key={a.id}
@@ -350,12 +348,12 @@ export default function Home() {
                   a.immagine ||
                   "https://via.placeholder.com/400x200?text=Articolo"
                 }
-                style={{ width: "100%", height: "100px", objectFit: "cover" }}
+                style={{ width: "100%", height: "70px", objectFit: "cover" }}
                 className="img-mobile-small"
               />
 
-              <div style={{ padding: 12 }}>
-                <h3 style={{ fontSize: "13px" }}>{a.titolo || "Articolo"}</h3>
+              <div style={{ padding: 10 }}>
+                <h3 style={{ fontSize: "12px", margin: 0 }}>{a.titolo || "Articolo"}</h3>
               </div>
             </Link>
           ))}

@@ -1,11 +1,18 @@
 import { useNavigate, Outlet } from "react-router-dom";
 import { useUser } from "./context/UserContext";
+import { useState } from "react";
 
 export default function Layout() {
   const navigate = useNavigate();
   const { user, role, loading } = useUser();
+  const [menuOpen, setMenuOpen] = useState(false);
 
   if (loading) return null;
+
+  const handleNavigation = (path: string) => {
+    navigate(path);
+    setMenuOpen(false);
+  };
 
   return (
     <div
@@ -27,48 +34,56 @@ export default function Layout() {
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
-          padding: "0 40px",
+          padding: "0 20px",
           zIndex: 9999,
         }}
       >
-        {/* LOGO */}
+        {/* LOGO - Responsive */}
         <div
           style={{
             fontWeight: "bold",
             color: "#f5a623",
             cursor: "pointer",
+            fontSize: "clamp(0.9rem, 2vw, 1.1rem)",
+            whiteSpace: "nowrap",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            maxWidth: "60vw",
           }}
-          onClick={() => navigate("/")}
+          onClick={() => handleNavigation("/")}
         >
           Lo Zio del Rum
         </div>
 
-        {/* MENU */}
-        <div style={{ display: "flex", gap: 25 }}>
-          <span style={{ cursor: "pointer" }} onClick={() => navigate("/")}>
+        {/* MENU DESKTOP (display: flex su 1024px+) */}
+        <div 
+          className="nav-menu-desktop"
+          style={{ display: "flex", gap: 25, alignItems: "center" }}
+        >
+          <span style={{ cursor: "pointer" }} onClick={() => handleNavigation("/")}>
             Home
           </span>
 
-          <span style={{ cursor: "pointer" }} onClick={() => navigate("/mappa")}>
+          <span style={{ cursor: "pointer" }} onClick={() => handleNavigation("/mappa")}>
             Mappa
           </span>
 
-          <span style={{ cursor: "pointer" }} onClick={() => navigate("/drink")}>
+          <span style={{ cursor: "pointer" }} onClick={() => handleNavigation("/drink")}>
             Drink
           </span>
 
-          <span style={{ cursor: "pointer" }} onClick={() => navigate("/magazine")}>
+          <span style={{ cursor: "pointer" }} onClick={() => handleNavigation("/magazine")}>
             Magazine
           </span>
 
           {/* SOLO UTENTI LOGGATI */}
           {user && (
             <>
-              <span style={{ cursor: "pointer" }} onClick={() => navigate("/community")}>
+              <span style={{ cursor: "pointer" }} onClick={() => handleNavigation("/community")}>
                 Community
               </span>
 
-              <span style={{ cursor: "pointer" }} onClick={() => navigate("/crea")}>
+              <span style={{ cursor: "pointer" }} onClick={() => handleNavigation("/crea")}>
                 Crea
               </span>
             </>
@@ -76,11 +91,161 @@ export default function Layout() {
 
           {/* ADMIN */}
           {role === "admin" && (
-            <span style={{ cursor: "pointer" }} onClick={() => navigate("/dashboard")}>
+            <span style={{ cursor: "pointer" }} onClick={() => handleNavigation("/dashboard")}>
               Dashboard
             </span>
           )}
         </div>
+
+        {/* HAMBURGER ICON (display: none su 1024px+) */}
+        <button
+          className="hamburger-btn"
+          onClick={() => setMenuOpen(!menuOpen)}
+          style={{
+            background: "none",
+            border: "none",
+            color: "#f5a623",
+            fontSize: "28px",
+            cursor: "pointer",
+            display: "none",
+            padding: 0,
+          }}
+        >
+          ☰
+        </button>
+      </div>
+
+      {/* MOBILE MENU OVERLAY */}
+      {menuOpen && (
+        <div
+          className="mobile-menu-overlay"
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.5)",
+            zIndex: 9998,
+            display: "none",
+          }}
+          onClick={() => setMenuOpen(false)}
+        />
+      )}
+
+      {/* MOBILE MENU SLIDE-IN */}
+      <div
+        className="mobile-menu"
+        style={{
+          position: "fixed",
+          top: 70,
+          right: menuOpen ? 0 : "-100%",
+          width: "100%",
+          maxWidth: "300px",
+          height: "calc(100vh - 70px)",
+          background: "rgba(0,0,0,0.95)",
+          backdropFilter: "blur(10px)",
+          display: "flex",
+          flexDirection: "column",
+          gap: 0,
+          padding: "20px",
+          zIndex: 9999,
+          transition: "right 0.3s ease",
+          overflowY: "auto",
+          borderLeft: "1px solid #333",
+        }}
+      >
+        <span 
+          style={{ 
+            cursor: "pointer", 
+            padding: "12px 0", 
+            borderBottom: "1px solid #333",
+            fontSize: "16px"
+          }} 
+          onClick={() => handleNavigation("/")}
+        >
+          Home
+        </span>
+
+        <span 
+          style={{ 
+            cursor: "pointer", 
+            padding: "12px 0", 
+            borderBottom: "1px solid #333",
+            fontSize: "16px"
+          }} 
+          onClick={() => handleNavigation("/mappa")}
+        >
+          Mappa
+        </span>
+
+        <span 
+          style={{ 
+            cursor: "pointer", 
+            padding: "12px 0", 
+            borderBottom: "1px solid #333",
+            fontSize: "16px"
+          }} 
+          onClick={() => handleNavigation("/drink")}
+        >
+          Drink
+        </span>
+
+        <span 
+          style={{ 
+            cursor: "pointer", 
+            padding: "12px 0", 
+            borderBottom: "1px solid #333",
+            fontSize: "16px"
+          }} 
+          onClick={() => handleNavigation("/magazine")}
+        >
+          Magazine
+        </span>
+
+        {/* SOLO UTENTI LOGGATI */}
+        {user && (
+          <>
+            <span 
+              style={{ 
+                cursor: "pointer", 
+                padding: "12px 0", 
+                borderBottom: "1px solid #333",
+                fontSize: "16px"
+              }} 
+              onClick={() => handleNavigation("/community")}
+            >
+              Community
+            </span>
+
+            <span 
+              style={{ 
+                cursor: "pointer", 
+                padding: "12px 0", 
+                borderBottom: "1px solid #333",
+                fontSize: "16px",
+                color: "#f5a623",
+                fontWeight: "bold"
+              }} 
+              onClick={() => handleNavigation("/crea")}
+            >
+              ✨ Crea
+            </span>
+          </>
+        )}
+
+        {/* ADMIN */}
+        {role === "admin" && (
+          <span 
+            style={{ 
+              cursor: "pointer", 
+              padding: "12px 0", 
+              borderBottom: "1px solid #333",
+              fontSize: "16px",
+              color: "#f5a623"
+            }} 
+            onClick={() => handleNavigation("/dashboard")}
+          >
+            🔧 Dashboard
+          </span>
+        )}
       </div>
 
       {/* CONTENUTO */}
