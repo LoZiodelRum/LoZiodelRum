@@ -41,52 +41,19 @@ export default function Drink() {
     }
 
     if (cocktailData) {
-      const sorted = cocktailData.sort((a: any, b: any) =>
-        a.nome.localeCompare(b.nome)
-      );
-
-      setCocktail(
-        sorted.slice(0, 6).map((c: any) => ({
-          id: c.id,
-          nome: c.nome,
-          immagine: getImage(c),
-        }))
-      );
+      const sorted = cocktailData.sort((a: any, b: any) => a.nome.localeCompare(b.nome));
+      setCocktail(sorted.slice(0, 6).map((c: any) => ({ id: c.id, nome: c.nome, immagine: getImage(c) })));
     }
 
     if (distillatiData) {
       const normalize = (c: string) => c?.toLowerCase().trim();
-
       const mapped = distillatiData
-        .map((d: any) => ({
-          id: d.id,
-          nome: d.nome,
-          marca: d.marca,
-          categoria: normalize(d.categoria),
-          immagine: getImage(d),
-        }))
+        .map((d: any) => ({ id: d.id, nome: d.nome, marca: d.marca, categoria: normalize(d.categoria), immagine: getImage(d) }))
         .sort((a, b) => a.nome.localeCompare(b.nome));
 
       setRum(mapped.filter(d => d.categoria.includes("rum")).slice(0, 6));
-
-      setWhisky(
-        mapped.filter(
-          d =>
-            d.categoria.includes("whisky") ||
-            d.categoria.includes("whiskey")
-        ).slice(0, 6)
-      );
-
-      setAltri(
-        mapped
-          .filter(
-            d =>
-              !d.categoria.includes("rum") &&
-              !d.categoria.includes("whisky") &&
-              !d.categoria.includes("whiskey")
-          )
-          .slice(0, 6)
-      );
+      setWhisky(mapped.filter(d => d.categoria.includes("whisky") || d.categoria.includes("whiskey")).slice(0, 6));
+      setAltri(mapped.filter(d => !d.categoria.includes("rum") && !d.categoria.includes("whisky") && !d.categoria.includes("whiskey")).slice(0, 6));
     }
 
     setLoading(false);
@@ -98,47 +65,28 @@ export default function Drink() {
 
   function renderSection(title: string, list: any[], tipo: string) {
     return (
-      <div style={{ marginTop: 60 }}>
-
-        {/* HEADER */}
-        <div style={header}>
-          <h2 style={sectionTitle}>{title}</h2>
-
-          <button
-            style={button}
-            onClick={() => navigate(`/categoria/${tipo}`)}
-          >
+      <div className="section-gap">
+        <div className="section-header">
+          <h2 className="section-title" style={{ color: "#4b2e1f" }}>{title}</h2>
+          <button className="btn-primary btn-small" onClick={() => navigate(`/categoria/${tipo}`)}>
             Vedi tutti
           </button>
         </div>
 
         {!list.length ? (
-          <p style={empty}>Nessun dato</p>
+          <p style={{ textAlign: "center", color: "#999" }}>Nessun dato</p>
         ) : (
-          <div className="grid-wrapper" style={grid}>
+          <div className="cocktail-grid">
             {list.map((item) => (
-              <div
-                key={item.id}
-                style={card}
-                onMouseEnter={(e) => {
-                  e.currentTarget.style.transform = "translateY(-6px)";
-                  e.currentTarget.style.boxShadow = "0 12px 30px rgba(0,0,0,0.25)";
-                }}
-                onMouseLeave={(e) => {
-                  e.currentTarget.style.transform = "translateY(0)";
-                  e.currentTarget.style.boxShadow = "0 8px 20px rgba(0,0,0,0.15)";
-                }}
-                onClick={() => navigate(`/drink/${item.id}`)}
-              >
+              <div key={item.id} className="drink-card" onClick={() => navigate(`/drink/${item.id}`)}>
                 {item.immagine ? (
-                  <img src={item.immagine} style={img} />
+                  <img src={item.immagine} alt={item.nome} />
                 ) : (
-                  <div style={noImage}>NO IMG</div>
+                  <div className="no-img-placeholder">NO IMG</div>
                 )}
-
-                <div style={overlay}>
-                  <h3 style={cardTitle}>{item.nome}</h3>
-                  {item.marca && <p style={brand}>{item.marca}</p>}
+                <div className="drink-card-overlay">
+                  <h3>{item.nome}</h3>
+                  {item.marca && <p>{item.marca}</p>}
                 </div>
               </div>
             ))}
@@ -149,7 +97,7 @@ export default function Drink() {
   }
 
   return (
-    <div className="page fade-in" style={container}>
+    <div className="page fade-in page-light">
       {renderSection("Cocktail", cocktail, "cocktail")}
       {renderSection("Rum", rum, "rum")}
       {renderSection("Whisky", whisky, "whisky")}
@@ -157,92 +105,3 @@ export default function Drink() {
     </div>
   );
 }
-
-/* STILI */
-
-const container = {
-  padding: "24px 0",
-  background: "#F5F5F0",
-  minHeight: "100%",
-};
-
-const header = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  flexWrap: "wrap" as const,
-  gap: 20,
-  marginBottom: 20,
-};
-
-const sectionTitle = {
-  fontSize: 20,
-  fontWeight: 600,
-  color: "#4b2e1f",
-};
-
-const button = {
-  background: "#111",
-  color: "#fff",
-  border: "none",
-  padding: "6px 12px",
-  borderRadius: 8,
-  cursor: "pointer",
-};
-
-const empty = {
-  textAlign: "center" as const,
-  color: "#999",
-};
-
-const grid = {
-  gap: 20,
-};
-
-const card = {
-  width: "100%",
-  aspectRatio: "1 / 1",
-  borderRadius: 16,
-  overflow: "hidden",
-  position: "relative" as const,
-  background: "#111",
-  cursor: "pointer",
-  boxShadow: "0 8px 20px rgba(0,0,0,0.15)", // 🔥 rilievo
-  transition: "all 0.25s ease",
-};
-
-const img = {
-  width: "100%",
-  height: "100%",
-  objectFit: "cover" as const,
-};
-
-const noImage = {
-  width: "100%",
-  height: "100%",
-  background: "#ddd",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  color: "#666",
-};
-
-const overlay = {
-  position: "absolute" as const,
-  bottom: 0,
-  width: "100%",
-  padding: 10,
-  background: "linear-gradient(transparent, rgba(0,0,0,0.9))",
-};
-
-const cardTitle = {
-  color: "#fff",
-  fontSize: 13,
-  margin: 0,
-};
-
-const brand = {
-  color: "#bbb",
-  fontSize: 10,
-  marginTop: 2,
-};

@@ -94,7 +94,7 @@ export default function SegnalaLocale() {
   };
 
   return (
-    <div className="page fade-in" style={{ padding: 40, maxWidth: "min(100%, 37.5rem)" }}>
+    <div className="page fade-in" style={{ maxWidth: "min(100%, 37.5rem)" }}>
       <h1>Segnala un Locale</h1>
 
       <input

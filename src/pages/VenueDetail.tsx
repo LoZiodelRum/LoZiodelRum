@@ -200,33 +200,13 @@ export default function VenueDetail() {
       )}
 
       {/* HERO */}
-      <div
-        style={{
-          position: "relative",
-          height: 340,
-          borderRadius: 12,
-          overflow: "hidden",
-          marginBottom: 30,
-        }}
-      >
+      <div className="venue-hero">
         <img
           src={locale.image_url || locale.image}
           alt={locale.nome}
-          style={{
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-          }}
         />
 
-        <div
-          style={{
-            position: "absolute",
-            bottom: 20,
-            left: 20,
-            textShadow: "0 2px 6px rgba(0,0,0,0.9)",
-          }}
-        >
+        <div className="venue-hero-info">
           <h1>{locale.nome}</h1>
 
           <p>
@@ -234,21 +214,14 @@ export default function VenueDetail() {
             {placeholder(locale.citta, "città")}
           </p>
 
-          <span
-            style={{
-              border: "1px solid #f5a623",
-              padding: "4px 10px",
-              borderRadius: 6,
-              background: "rgba(0,0,0,0.4)",
-            }}
-          >
+          <span className="badge-category">
             {locale.price_range}
           </span>
         </div>
       </div>
 
       {/* DESCRIZIONE */}
-      <div style={{ padding: "0 20px", marginBottom: 30 }}>
+      <div style={{ marginBottom: 30 }}>
         <p>
           {locale.descrizione_completa || locale.descrizione || "Descrizione non disponibile"}
         </p>
@@ -257,11 +230,7 @@ export default function VenueDetail() {
       {/* VALUTAZIONI */}
       <div
         className="grid-wrapper"
-        style={{
-          gap: 20,
-          padding: "0 20px",
-          marginBottom: 40,
-        }}
+        style={{ gap: 20, marginBottom: 40 }}
       >
         {[
           { label: "Qualità Drink", value: locale.qualita_drink },
@@ -269,48 +238,21 @@ export default function VenueDetail() {
           { label: "Atmosfera", value: locale.atmosfera },
           { label: "Qualità/Prezzo", value: locale.qualita_prezzo },
         ].map((item) => (
-          <div
-            key={item.label}
-            style={{
-              background: "#111",
-              padding: 20,
-              borderRadius: 10,
-            }}
-          >
+          <div key={item.label} className="rating-box">
             <p>{item.label}</p>
-
-            <div
-              style={{
-                marginTop: 10,
-                padding: 10,
-                background: "#000",
-                borderRadius: 6,
-                border: "1px solid #333",
-              }}
-            >
-              {giudizio(item.value)}
-            </div>
+            <div className="rating-value">{giudizio(item.value)}</div>
           </div>
         ))}
       </div>
 
       {/* RECENSIONI */}
-      <div style={{ padding: "0 20px", marginBottom: 40 }}>
+      <div style={{ marginBottom: 40 }}>
         <h2>Recensioni</h2>
 
         {recensioni.map((rec) => (
-          <div
-            key={rec.id}
-            style={{
-              background: "#111",
-              padding: 20,
-              borderRadius: 12,
-              marginTop: 20,
-            }}
-          >
+          <div key={rec.id} className="review-card">
             <p>{rec.commento}</p>
-
-            <p style={{ marginTop: 10, fontSize: 12, opacity: 0.5 }}>
+            <p className="review-date">
               {new Date(rec.created_at).toLocaleDateString()}
             </p>
           </div>
@@ -318,18 +260,12 @@ export default function VenueDetail() {
       </div>
 
       {/* MEDIA */}
-      <div style={{ padding: "0 20px", marginBottom: 60 }}>
+      <div style={{ marginBottom: 60 }}>
         <h2>Foto e Video</h2>
 
         {media.length === 0 && <p>Nessun contenuto disponibile</p>}
 
-        <div
-          className="grid-wrapper"
-          style={{
-            gap: 10,
-            marginTop: 20,
-          }}
-        >
+        <div className="grid-wrapper" style={{ gap: 10, marginTop: 20 }}>
           {media.map((m) => {
             if (m.tipo === "foto") {
               return (

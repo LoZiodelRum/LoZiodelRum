@@ -26,10 +26,10 @@ export default function UserProfile() {
     setUser(data);
   }
 
-  if (!user) return <div className="page fade-in" style={{ padding: 40 }}>Caricamento...</div>;
+  if (!user) return <div className="page fade-in">Caricamento...</div>;
 
   return (
-    <div className="page fade-in" style={container}>
+    <div className="page fade-in">
       <div style={card}>
 
         {/* HEADER */}
@@ -110,12 +110,6 @@ export default function UserProfile() {
 }
 
 /* STILI */
-
-const container = {
-  background: "#0B0B0B",
-  minHeight: "100vh",
-  padding: 40,
-};
 
 const card = {
   maxWidth: "min(100%, 56rem)",

@@ -55,7 +55,7 @@ export default function MapPage() {
   }
 
   return (
-    <div className="page page-full-bleed fade-in" style={{ height: "100vh", width: "100%" }}>
+    <div className="page page-full-bleed fade-in" style={{ height: "100dvh", width: "100%", padding: 0 }}>
       <MapContainer
         center={[41.9028, 12.4964]}
         zoom={6}

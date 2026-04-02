@@ -145,7 +145,7 @@ export default function DrinkDetail() {
   }
 
   return (
-    <div className="page fade-in" style={container}>
+    <div className="page-light fade-in">
 
       {/* 🔧 EDITOR ADMIN */}
       {isAdmin && form && (
@@ -349,12 +349,6 @@ export default function DrinkDetail() {
 }
 
 /* STILI ORIGINALI */
-
-const container = {
-  padding: 16,
-  background: "#F5F5F0",
-  minHeight: "100%",
-};
 
 const layout = {
   display: "flex",

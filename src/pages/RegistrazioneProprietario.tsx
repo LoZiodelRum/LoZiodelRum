@@ -107,8 +107,8 @@ export default function RegistrazioneProprietario() {
   }
 
   return (
-    <div className="page fade-in" style={container}>
-      <form onSubmit={handleRegister} style={card}>
+    <div className="page fade-in">
+      <form onSubmit={handleRegister} style={{ width: "min(100%, 760px)", margin: "0 auto", padding: "clamp(16px, 3vw, 40px)", background: "#111", borderRadius: 20, color: "#fff" }}>
         <h1 style={title}>Registrazione Proprietario</h1>
 
         <Section title="Dati anagrafici">

@@ -128,35 +128,24 @@ export default function Category() {
   }
 
   return (
-    <div className="page fade-in" style={container}>
-      <h1 style={title}>{getTitle(tipo)}</h1>
+    <div className="page fade-in page-light">
+      <h1 className="page-title" style={{ color: "#4b2e1f" }}>{getTitle(tipo)}</h1>
 
-      <div className="grid-wrapper" style={grid}>
+      <div className="cocktail-grid">
         {items.map((item) => (
           <div
             key={item.id}
-            style={card}
+            className="drink-card"
             onClick={() => navigate(`/drink/${item.id}`)}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = "translateY(-6px)";
-              e.currentTarget.style.boxShadow =
-                "0 14px 30px rgba(0,0,0,0.25)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = "translateY(0)";
-              e.currentTarget.style.boxShadow =
-                "0 8px 20px rgba(0,0,0,0.15)";
-            }}
           >
             {item.immagine ? (
-              <img src={item.immagine} style={img} />
+              <img src={item.immagine} alt={item.nome} />
             ) : (
-              <div style={noImage}>NO IMG</div>
+              <div className="no-img-placeholder">NO IMG</div>
             )}
-
-            <div style={overlay}>
-              <h3 style={cardTitle}>{item.nome}</h3>
-              {item.marca && <p style={brand}>{item.marca}</p>}
+            <div className="drink-card-overlay">
+              <h3>{item.nome}</h3>
+              {item.marca && <p>{item.marca}</p>}
             </div>
           </div>
         ))}
@@ -174,69 +163,3 @@ function getTitle(tipo: any) {
   if (tipo === "altri") return "Altri distillati";
   return "Cocktail";
 }
-
-/* ---------- STILI ---------- */
-
-const container = {
-  padding: 24,
-  background: "#F5F5F0",
-  minHeight: "100%",
-};
-
-const title = {
-  fontSize: 28,
-  marginBottom: 30,
-  color: "#4b2e1f",
-};
-
-const grid = {
-  gap: 20,
-};
-
-const card = {
-  width: "100%",
-  aspectRatio: "1 / 1",
-  borderRadius: 16,
-  overflow: "hidden",
-  position: "relative" as const,
-  background: "#111",
-  cursor: "pointer",
-  boxShadow: "0 8px 20px rgba(0,0,0,0.15)",
-  transition: "all 0.25s ease",
-};
-
-const img = {
-  width: "100%",
-  height: "100%",
-  objectFit: "cover" as const,
-};
-
-const noImage = {
-  width: "100%",
-  height: "100%",
-  background: "#ddd",
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "center",
-  color: "#666",
-};
-
-const overlay = {
-  position: "absolute" as const,
-  bottom: 0,
-  width: "100%",
-  padding: 10,
-  background: "linear-gradient(transparent, rgba(0,0,0,0.95))",
-};
-
-const cardTitle = {
-  color: "#fff",
-  fontSize: 14,
-  margin: 0,
-};
-
-const brand = {
-  color: "#bbb",
-  fontSize: 11,
-  marginTop: 2,
-};

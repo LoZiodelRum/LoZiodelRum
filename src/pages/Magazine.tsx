@@ -1,7 +1,7 @@
 import "../App.css";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 type Article = {
   id: string;
@@ -14,7 +14,6 @@ type Article = {
 
 export default function Magazine() {
   const [articles, setArticles] = useState<Article[]>([]);
-  const navigate = useNavigate();
 
   useEffect(() => {
     load();
@@ -39,120 +38,35 @@ export default function Magazine() {
   const others = articles.slice(1);
 
   return (
-    <div className="page fade-in" style={container}>
-      
+    <div className="page fade-in">
+
       {/* HERO */}
-      <div
-        style={{
-          ...heroBox,
-          backgroundImage: `url(${hero.immagine})`,
-        }}
-        onClick={() => navigate(`/magazine/${hero.id}`)}
+      <Link
+        to={`/magazine/${hero.id}`}
+        className="magazine-hero"
+        style={{ backgroundImage: `url(${hero.immagine})` }}
       >
-        <div style={overlay}>
-          <span style={badge}>{hero.categoria}</span>
-          <h1 style={heroTitle}>{hero.titolo}</h1>
-          <p style={heroDesc}>{hero.descrizione}</p>
+        <div className="magazine-hero-overlay">
+          <span className="badge-category">{hero.categoria}</span>
+          <h1>{hero.titolo}</h1>
+          <p>{hero.descrizione}</p>
         </div>
-      </div>
+      </Link>
 
       {/* GRID */}
-      <div className="grid-wrapper" style={grid}>
+      <div className="cocktail-grid">
         {others.map((a) => (
-          <div
-            key={a.id}
-            style={card}
-            onClick={() => navigate(`/magazine/${a.id}`)}
-          >
-            <img src={a.immagine} style={img} />
-
-            <div style={cardOverlay}>
-              <span style={badge}>{a.categoria}</span>
-              <h3 style={cardTitle}>{a.titolo}</h3>
-              <p style={cardDesc}>{a.descrizione}</p>
+          <Link key={a.id} to={`/magazine/${a.id}`} className="drink-card">
+            <img src={a.immagine} alt={a.titolo} />
+            <div className="drink-card-overlay">
+              <span className="badge-category">{a.categoria}</span>
+              <h3>{a.titolo}</h3>
+              <p>{a.descrizione}</p>
             </div>
-          </div>
+          </Link>
         ))}
       </div>
+
     </div>
   );
 }
-
-/* STILI */
-
-const container = {
-  padding: 20,
-  background: "#000",
-  minHeight: "100vh",
-};
-
-const heroBox = {
-  height: 400,
-  borderRadius: 20,
-  backgroundSize: "cover",
-  backgroundPosition: "center",
-  marginBottom: 30,
-  cursor: "pointer",
-  position: "relative" as const,
-};
-
-const overlay = {
-  position: "absolute" as const,
-  bottom: 0,
-  padding: 30,
-  background: "linear-gradient(transparent, rgba(0,0,0,0.9))",
-  width: "100%",
-};
-
-const heroTitle = {
-  color: "#fff",
-  fontSize: "clamp(1.8rem, 5vw, 2.25rem)",
-  margin: "10px 0",
-};
-
-const heroDesc = {
-  color: "#ccc",
-};
-
-const grid = {
-  gap: 20,
-};
-
-const card = {
-  borderRadius: 16,
-  overflow: "hidden",
-  cursor: "pointer",
-  position: "relative" as const,
-};
-
-const img = {
-  width: "100%",
-  height: 200,
-  objectFit: "cover" as const,
-};
-
-const cardOverlay = {
-  position: "absolute" as const,
-  bottom: 0,
-  padding: 15,
-  background: "linear-gradient(transparent, rgba(0,0,0,0.9))",
-  width: "100%",
-};
-
-const cardTitle = {
-  color: "#fff",
-  fontSize: 16,
-};
-
-const cardDesc = {
-  color: "#bbb",
-  fontSize: 12,
-};
-
-const badge = {
-  background: "#2e7e79",
-  color: "#fff",
-  padding: "4px 8px",
-  borderRadius: 6,
-  fontSize: 12,
-};

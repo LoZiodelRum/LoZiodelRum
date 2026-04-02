@@ -58,57 +58,20 @@ export default function Registrazione() {
   }
 
   return (
-    <div className="page fade-in" style={container}>
-      <form onSubmit={handleRegister} style={card}>
+    <div className="form-page fade-in">
+      <form onSubmit={handleRegister} className="form-card">
         <h1>Registrazione Utente</h1>
 
-        <input placeholder="Nome" onChange={(e: any) => setNome(e.target.value)} style={input} />
-        <input placeholder="Cognome" onChange={(e: any) => setCognome(e.target.value)} style={input} />
-        <input placeholder="Username" onChange={(e: any) => setUsername(e.target.value)} style={input} />
-        <input placeholder="Email" onChange={(e: any) => setEmail(e.target.value)} style={input} />
-        <input type="password" placeholder="Password" onChange={(e: any) => setPassword(e.target.value)} style={input} />
+        <input placeholder="Nome" onChange={(e: any) => setNome(e.target.value)} />
+        <input placeholder="Cognome" onChange={(e: any) => setCognome(e.target.value)} />
+        <input placeholder="Username" onChange={(e: any) => setUsername(e.target.value)} />
+        <input placeholder="Email" onChange={(e: any) => setEmail(e.target.value)} />
+        <input type="password" placeholder="Password" onChange={(e: any) => setPassword(e.target.value)} />
 
-        <button type="submit" style={btn}>
-          Registrati
-        </button>
+        <button type="submit">Registrati</button>
 
         {messaggio && <p style={{ marginTop: 10 }}>{messaggio}</p>}
       </form>
     </div>
   );
 }
-
-const container = {
-  minHeight: "100%",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  background: "#000",
-};
-
-const card = {
-  width: "min(100%, 400px)",
-  padding: 30,
-  background: "#111",
-  borderRadius: 12,
-  color: "#fff",
-};
-
-const input = {
-  width: "100%",
-  padding: 10,
-  marginBottom: 10,
-  borderRadius: 6,
-  border: "1px solid #333",
-  background: "#000",
-  color: "#fff",
-};
-
-const btn = {
-  width: "100%",
-  padding: 12,
-  background: "#f5a623",
-  border: "none",
-  borderRadius: 8,
-  cursor: "pointer",
-};

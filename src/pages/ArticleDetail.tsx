@@ -94,7 +94,7 @@ export default function ArticleDetail() {
   }
 
   return (
-    <div className="page fade-in" style={container}>
+    <div className="page fade-in">
 
       {/* 🔧 EDITOR ADMIN */}
       {isAdmin && form && (
@@ -212,7 +212,7 @@ const container = {
 };
 
 const hero = {
-  height: 520,
+  height: "clamp(220px, 45vw, 520px)",
   position: "relative" as const,
   backgroundSize: "cover",
   backgroundPosition: "center",

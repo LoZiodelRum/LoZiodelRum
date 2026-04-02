@@ -227,10 +227,10 @@ export default function Auth() {
   }
 
   return (
-    <div className="page fade-in" style={container}>
+    <div className="form-page fade-in">
       <form
         onSubmit={isRegister ? handleRegister : handleLogin}
-        style={card}
+        className="form-card"
       >
         <h2>{isRegister ? "Registrati" : "Accedi"}</h2>
 
@@ -241,7 +241,6 @@ export default function Auth() {
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
-              style={input}
             />
 
             <input
@@ -250,17 +249,16 @@ export default function Auth() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              style={input}
             />
           </>
         )}
 
         {isRegister && step === "auth" && (
           <>
-            <input placeholder="Nome" value={nome} onChange={(e) => setNome(e.target.value)} required style={input} />
-            <input placeholder="Cognome" value={cognome} onChange={(e) => setCognome(e.target.value)} required style={input} />
-            <input placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} required style={input} />
-            <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required style={input} />
+            <input placeholder="Nome" value={nome} onChange={(e) => setNome(e.target.value)} required />
+            <input placeholder="Cognome" value={cognome} onChange={(e) => setCognome(e.target.value)} required />
+            <input placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} required />
+            <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
           </>
         )}
 
@@ -268,47 +266,35 @@ export default function Auth() {
           <>
             <h3>Scegli il tuo ruolo</h3>
 
-            <button type="button" style={btn} onClick={() => setRuolo("utente")}>
-              Utente
-            </button>
-
-            <button type="button" style={btn} onClick={() => setRuolo("bartender")}>
-              Bartender
-            </button>
-
-            <button type="button" style={btn} onClick={() => setRuolo("proprietario")}>
-              Proprietario
-            </button>
+            <button type="button" onClick={() => setRuolo("utente")}>Utente</button>
+            <button type="button" onClick={() => setRuolo("bartender")}>Bartender</button>
+            <button type="button" onClick={() => setRuolo("proprietario")}>Proprietario</button>
 
             {ruolo === "bartender" && (
               <>
-                <input placeholder="Esperienze" value={esperienze} onChange={(e) => setEsperienze(e.target.value)} style={input} />
-                <input placeholder="Specialità" value={specialita} onChange={(e) => setSpecialita(e.target.value)} style={input} />
-                <input placeholder="Città" value={citta} onChange={(e) => setCitta(e.target.value)} style={input} />
-                <input placeholder="Social" value={social} onChange={(e) => setSocial(e.target.value)} style={input} />
+                <input placeholder="Esperienze" value={esperienze} onChange={(e) => setEsperienze(e.target.value)} />
+                <input placeholder="Specialità" value={specialita} onChange={(e) => setSpecialita(e.target.value)} />
+                <input placeholder="Città" value={citta} onChange={(e) => setCitta(e.target.value)} />
+                <input placeholder="Social" value={social} onChange={(e) => setSocial(e.target.value)} />
               </>
             )}
 
             {ruolo === "proprietario" && (
               <>
-                <input placeholder="Nome locale" value={nomeLocale} onChange={(e) => setNomeLocale(e.target.value)} style={input} />
-                <input placeholder="Indirizzo" value={indirizzo} onChange={(e) => setIndirizzo(e.target.value)} style={input} />
-                <input placeholder="Telefono" value={telefono} onChange={(e) => setTelefono(e.target.value)} style={input} />
+                <input placeholder="Nome locale" value={nomeLocale} onChange={(e) => setNomeLocale(e.target.value)} />
+                <input placeholder="Indirizzo" value={indirizzo} onChange={(e) => setIndirizzo(e.target.value)} />
+                <input placeholder="Telefono" value={telefono} onChange={(e) => setTelefono(e.target.value)} />
               </>
             )}
 
-            <button
-              type="button"
-              style={submit}
-              onClick={() => handleRuoloSelect(ruolo)}
-            >
+            <button type="button" onClick={() => handleRuoloSelect(ruolo)}>
               Completa registrazione
             </button>
           </>
         )}
 
         {step === "auth" && (
-          <button style={submit}>
+          <button>
             {loading ? "..." : isRegister ? "Registrati" : "Accedi"}
           </button>
         )}
@@ -328,50 +314,3 @@ export default function Auth() {
     </div>
   );
 }
-
-// STILI invariati
-const container = {
-  minHeight: "100vh",
-  display: "flex",
-  justifyContent: "center",
-  alignItems: "center",
-  background: "#0b0b0b",
-};
-
-const card = {
-  width: "min(100%, 380px)",
-  background: "#111",
-  padding: 30,
-  borderRadius: 12,
-  color: "#fff",
-};
-
-const input = {
-  width: "100%",
-  padding: 10,
-  marginBottom: 10,
-  background: "#000",
-  color: "#fff",
-  border: "1px solid #333",
-  borderRadius: 6,
-};
-
-const btn = {
-  width: "100%",
-  padding: 10,
-  marginTop: 10,
-  background: "#222",
-  color: "#fff",
-  border: "none",
-  borderRadius: 8,
-};
-
-const submit = {
-  width: "100%",
-  padding: 12,
-  marginTop: 15,
-  background: "#f5a623",
-  border: "none",
-  borderRadius: 8,
-  fontWeight: "bold",
-};
