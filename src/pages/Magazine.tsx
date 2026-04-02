@@ -14,6 +14,7 @@ type Article = {
 
 export default function Magazine() {
   const [articles, setArticles] = useState<Article[]>([]);
+  const fallbackArticleImage = "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=1600";
 
   useEffect(() => {
     load();
@@ -38,17 +39,17 @@ export default function Magazine() {
   const others = articles.slice(1);
 
   return (
-    <div className="page fade-in" style={{ paddingTop: "clamp(72px, 10vw, 96px)" }}>
+    <div className="page fade-in" style={{ paddingTop: "clamp(96px, 14vw, 132px)" }}>
 
       {/* HERO */}
       <Link
         to={`/magazine/${hero.id}`}
         className="magazine-hero"
-        style={{ backgroundImage: `url(${hero.immagine})` }}
+        style={{ backgroundImage: `url(${hero.immagine || fallbackArticleImage})` }}
       >
         <div className="magazine-hero-overlay">
           <span className="badge-category">{hero.categoria}</span>
-          <h1>{hero.titolo}</h1>
+          <h1 className="magazine-hero-title-single">{hero.titolo}</h1>
           <p>{hero.descrizione}</p>
         </div>
       </Link>
@@ -57,7 +58,7 @@ export default function Magazine() {
       <div className="cocktail-grid">
         {others.map((a) => (
           <Link key={a.id} to={`/magazine/${a.id}`} className="drink-card">
-            <img src={a.immagine} alt={a.titolo} />
+            <img src={a.immagine || fallbackArticleImage} alt={a.titolo} />
             <div className="drink-card-overlay">
               <span className="badge-category">{a.categoria}</span>
               <h3>{a.titolo}</h3>
