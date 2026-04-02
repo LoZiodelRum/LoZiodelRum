@@ -127,6 +127,17 @@ export default function PannelloControllo() {
   if (loading) return null;
   if (!isAdmin) return <div style={{ padding: 20, color: "red" }}>Accesso negato</div>;
 
+  const booleanFields = new Set(["approvato", "in_evidenza", "verificato"]);
+  const toBoolean = (value: any) => {
+    if (typeof value === "boolean") return value;
+    if (typeof value === "number") return value === 1;
+    if (typeof value === "string") {
+      const normalized = value.toLowerCase().trim();
+      return ["true", "1", "si", "yes", "on"].includes(normalized);
+    }
+    return false;
+  };
+
   function Sidebar(title: string, data: any[], table: string, label: string) {
     const sorted = [...data].sort((a, b) =>
       String(a?.[label] ?? a?.nome ?? "").localeCompare(
@@ -218,18 +229,36 @@ export default function PannelloControllo() {
                 key !== "id" && (
                   <div key={key} style={fieldStyle}>
                     <label style={labelStyle}>{key}</label>
-                    <input
-                      value={selectedItem[key] ?? ""}
-                      onChange={(e) => {
-                        const value = e.target.value;
-                        setSelectedItem((prev: any) => ({
-                          ...prev,
-                          [key]: value,
-                        }));
-                        setSaveStatus(null);
-                      }}
-                      style={inputStyle}
-                    />
+                    {booleanFields.has(key) ? (
+                      <select
+                        value={String(toBoolean(selectedItem[key]))}
+                        onChange={(e) => {
+                          const value = e.target.value === "true";
+                          setSelectedItem((prev: any) => ({
+                            ...prev,
+                            [key]: value,
+                          }));
+                          setSaveStatus(null);
+                        }}
+                        style={selectStyle}
+                      >
+                        <option value="true">true</option>
+                        <option value="false">false</option>
+                      </select>
+                    ) : (
+                      <input
+                        value={selectedItem[key] ?? ""}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          setSelectedItem((prev: any) => ({
+                            ...prev,
+                            [key]: value,
+                          }));
+                          setSaveStatus(null);
+                        }}
+                        style={inputStyle}
+                      />
+                    )}
                   </div>
                 )
               )}
