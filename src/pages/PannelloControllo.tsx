@@ -138,6 +138,17 @@ export default function PannelloControllo() {
     return false;
   };
 
+  function openFirstEditor(table: string, data: any[]) {
+    if (!Array.isArray(data) || data.length === 0) {
+      alert("Nessun elemento disponibile");
+      return;
+    }
+
+    setSelectedTable(table);
+    setSelectedItem(data[0]);
+    setSaveStatus(null);
+  }
+
   function Sidebar(title: string, data: any[], table: string, label: string) {
     const sorted = [...data].sort((a, b) =>
       String(a?.[label] ?? a?.nome ?? "").localeCompare(
@@ -208,6 +219,43 @@ export default function PannelloControllo() {
           {utenti.filter(u => !u.approvato).length === 0 && (
             <p style={{ fontSize: "0.8rem", color: "#666" }}>Nessun utente da approvare.</p>
           )}
+        </div>
+
+        <div style={quickActionGridStyle}>
+          <div style={quickActionCardStyle}>
+            <h3 style={quickActionTitleStyle}>Aggiunta Cocktail</h3>
+            <button style={quickActionBtnStyle} onClick={() => openFirstEditor("cocktail", cocktail)}>
+              Apri scheda modifica cocktail
+            </button>
+          </div>
+
+          <div style={quickActionCardStyle}>
+            <h3 style={quickActionTitleStyle}>Aggiunta Distillati</h3>
+            <button style={quickActionBtnStyle} onClick={() => openFirstEditor("distillati", distillati)}>
+              Apri scheda modifica distillati
+            </button>
+          </div>
+
+          <div style={quickActionCardStyle}>
+            <h3 style={quickActionTitleStyle}>Aggiunta Locali</h3>
+            <button style={quickActionBtnStyle} onClick={() => openFirstEditor("Locali", locali)}>
+              Apri scheda modifica locali
+            </button>
+          </div>
+
+          <div style={quickActionCardStyle}>
+            <h3 style={quickActionTitleStyle}>Aggiunta Bartender</h3>
+            <button style={quickActionBtnStyle} onClick={() => openFirstEditor("profili", bartender)}>
+              Apri scheda modifica bartender
+            </button>
+          </div>
+
+          <div style={quickActionCardStyle}>
+            <h3 style={quickActionTitleStyle}>Aggiunta Proprietari</h3>
+            <button style={quickActionBtnStyle} onClick={() => openFirstEditor("profili", proprietari)}>
+              Apri scheda modifica proprietari
+            </button>
+          </div>
         </div>
 
         {selectedItem && (
@@ -382,6 +430,40 @@ const approvalBoxStyle = {
   padding: 15,
   borderRadius: 10,
   border: "1px solid #1e293b"
+};
+
+const quickActionGridStyle: React.CSSProperties = {
+  marginTop: 20,
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+  gap: 12,
+};
+
+const quickActionCardStyle: React.CSSProperties = {
+  background: "#0f172a",
+  border: "1px solid #1e293b",
+  borderRadius: 10,
+  padding: 15,
+  minHeight: 120,
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "space-between",
+};
+
+const quickActionTitleStyle: React.CSSProperties = {
+  fontSize: "1rem",
+  color: "#f59e0b",
+  margin: 0,
+};
+
+const quickActionBtnStyle: React.CSSProperties = {
+  background: "#f59e0b",
+  color: "#000",
+  border: "none",
+  borderRadius: 8,
+  padding: "10px 12px",
+  cursor: "pointer",
+  fontWeight: "bold",
 };
 
 const approvalRowStyle = {
