@@ -235,9 +235,8 @@ export default function Home() {
         {articoli.length === 0 && <p>Nessun articolo trovato</p>}
 
         <div
+          className="grid-wrapper"
           style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
             gap: 20,
           }}
         >

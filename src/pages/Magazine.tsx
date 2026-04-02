@@ -57,7 +57,7 @@ export default function Magazine() {
       </div>
 
       {/* GRID */}
-      <div style={grid}>
+      <div className="grid-wrapper" style={grid}>
         {others.map((a) => (
           <div
             key={a.id}
@@ -115,8 +115,6 @@ const heroDesc = {
 };
 
 const grid = {
-  display: "grid",
-  gridTemplateColumns: "repeat(3, 1fr)",
   gap: 20,
 };
 

@@ -1,3 +1,4 @@
+import "../../App.css";
 import { Link } from "react-router-dom";
 import { useEffect } from "react";
 import { supabase } from "../../lib/supabaseClient";
@@ -28,21 +29,21 @@ export default function AdminDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-[#0f0f0f] text-white p-6">
+    <div className="page fade-in" style={{ background: "#0f0f0f", color: "white" }}>
       
       {/* HEADER */}
-      <h1 className="text-3xl font-bold mb-8">
+      <h1 style={{ fontSize: "clamp(2rem, 5vw, 3rem)", fontWeight: 700, marginBottom: 32 }}>
         Pannello di Controllo
       </h1>
 
       {/* GRID */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid-wrapper" style={{ gap: 24 }}>
 
         {/* UTENTI */}
         <Link to="/admin/users">
-          <div className="bg-[#1c1c1c] p-6 rounded-2xl shadow-lg hover:scale-105 transition">
-            <h2 className="text-xl font-semibold mb-2">Utenti</h2>
-            <p className="text-gray-400">
+          <div style={{ background: "#1c1c1c", padding: 24, borderRadius: 16, boxShadow: "0 10px 24px rgba(0,0,0,0.24)", minHeight: 180 }}>
+            <h2 style={{ fontSize: "1.25rem", fontWeight: 600, marginBottom: 8 }}>Utenti</h2>
+            <p style={{ color: "#9ca3af" }}>
               Gestisci utenti, approvazioni e ruoli
             </p>
           </div>
@@ -50,18 +51,18 @@ export default function AdminDashboard() {
 
         {/* LOCALI */}
         <Link to="/admin/venues">
-          <div className="bg-[#1c1c1c] p-6 rounded-2xl shadow-lg hover:scale-105 transition">
-            <h2 className="text-xl font-semibold mb-2">Locali</h2>
-            <p className="text-gray-400">
+          <div style={{ background: "#1c1c1c", padding: 24, borderRadius: 16, boxShadow: "0 10px 24px rgba(0,0,0,0.24)", minHeight: 180 }}>
+            <h2 style={{ fontSize: "1.25rem", fontWeight: 600, marginBottom: 8 }}>Locali</h2>
+            <p style={{ color: "#9ca3af" }}>
               Approva e modifica locali
             </p>
           </div>
         </Link>
 
         {/* CONTENUTI (FUTURO) */}
-        <div className="bg-[#1c1c1c] p-6 rounded-2xl opacity-50">
-          <h2 className="text-xl font-semibold mb-2">Contenuti</h2>
-          <p className="text-gray-400">
+        <div style={{ background: "#1c1c1c", padding: 24, borderRadius: 16, opacity: 0.5, minHeight: 180 }}>
+          <h2 style={{ fontSize: "1.25rem", fontWeight: 600, marginBottom: 8 }}>Contenuti</h2>
+          <p style={{ color: "#9ca3af" }}>
             In arrivo
           </p>
         </div>

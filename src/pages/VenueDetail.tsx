@@ -256,9 +256,8 @@ export default function VenueDetail() {
 
       {/* VALUTAZIONI */}
       <div
+        className="grid-wrapper"
         style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(4, 1fr)",
           gap: 20,
           padding: "0 20px",
           marginBottom: 40,
@@ -325,9 +324,8 @@ export default function VenueDetail() {
         {media.length === 0 && <p>Nessun contenuto disponibile</p>}
 
         <div
+          className="grid-wrapper"
           style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fill, minmax(150px,1fr))",
             gap: 10,
             marginTop: 20,
           }}
