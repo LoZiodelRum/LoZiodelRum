@@ -6,13 +6,24 @@ type UserContextType = {
   role: string | null;
   status: string | null;
   loading: boolean;
+  isAuthenticated: boolean;
+  isAdmin: boolean;
+  loginAdminWithKey: (password: string) => boolean;
+  logoutAdminKey: () => void;
 };
+
+const ADMIN_SESSION_KEY = "isAdmin";
+const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || "850877";
 
 const UserContext = createContext<UserContextType>({
   user: null,
   role: null,
   status: null,
   loading: true,
+  isAuthenticated: false,
+  isAdmin: false,
+  loginAdminWithKey: () => false,
+  logoutAdminKey: () => {},
 });
 
 export function UserProvider({ children }: { children: React.ReactNode }) {
@@ -20,6 +31,22 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [role, setRole] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [isAdminKey, setIsAdminKey] = useState(
+    localStorage.getItem(ADMIN_SESSION_KEY) === "true"
+  );
+
+  function loginAdminWithKey(password: string) {
+    if (password !== ADMIN_PASSWORD) return false;
+
+    localStorage.setItem(ADMIN_SESSION_KEY, "true");
+    setIsAdminKey(true);
+    return true;
+  }
+
+  function logoutAdminKey() {
+    localStorage.removeItem(ADMIN_SESSION_KEY);
+    setIsAdminKey(false);
+  }
 
   async function checkUser() {
     const {
@@ -72,8 +99,22 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
+  const isAdmin = isAdminKey || role === "admin";
+  const isAuthenticated = Boolean(user) || isAdmin;
+
   return (
-    <UserContext.Provider value={{ user, role, status, loading }}>
+    <UserContext.Provider
+      value={{
+        user,
+        role,
+        status,
+        loading,
+        isAuthenticated,
+        isAdmin,
+        loginAdminWithKey,
+        logoutAdminKey,
+      }}
+    >
       {children}
     </UserContext.Provider>
   );

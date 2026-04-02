@@ -39,21 +39,23 @@ function Protected({
   children: React.ReactNode;
   roles?: string[];
 }) {
-  const { user, loading, role, status } = useUser();
+  const { user, loading, role, status, isAuthenticated, isAdmin } = useUser();
 
   if (loading) return null;
 
   // NON LOGGATO
-  if (!user) return <Navigate to="/auth" />;
+  if (!isAuthenticated) return <Navigate to="/auth" />;
+
+  const effectiveRole = isAdmin ? "admin" : role;
 
   // NON APPROVATO
-  if (status === "in_attesa") return <Navigate to="/in-attesa" />;
+  if (!isAdmin && user && status === "in_attesa") return <Navigate to="/in-attesa" />;
 
   // RIFIUTATO
-  if (status === "rifiutato") return <Navigate to="/auth" />;
+  if (!isAdmin && user && status === "rifiutato") return <Navigate to="/auth" />;
 
   // CONTROLLO RUOLO
-  if (roles && role && !roles.includes(role)) {
+  if (roles && (!effectiveRole || !roles.includes(effectiveRole))) {
     return <Navigate to="/" />;
   }
 

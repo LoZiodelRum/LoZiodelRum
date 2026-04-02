@@ -5,13 +5,11 @@ import { supabase } from "../lib/supabaseClient";
 import { useState } from "react";
 
 export default function Navbar() {
-  const { user, role } = useUser();
+  const { user, isAdmin, loginAdminWithKey, logoutAdminKey } = useUser();
   const navigate = useNavigate();
 
   const [showAdmin, setShowAdmin] = useState(false);
   const [adminPass, setAdminPass] = useState("");
-
-  const isAdmin = localStorage.getItem("isAdmin") === "true";
 
   async function handleLogout() {
     await supabase.auth.signOut();
@@ -20,19 +18,18 @@ export default function Navbar() {
   }
 
   function checkAdmin() {
-    if (adminPass === "850877") {
-      localStorage.setItem("isAdmin", "true");
+    if (loginAdminWithKey(adminPass)) {
       setShowAdmin(false);
       setAdminPass("");
-      window.location.reload();
+      navigate("/admin");
     } else {
       alert("Password errata");
     }
   }
 
   function logoutAdmin() {
-    localStorage.removeItem("isAdmin");
-    window.location.reload();
+    logoutAdminKey();
+    navigate("/");
   }
 
   return (
