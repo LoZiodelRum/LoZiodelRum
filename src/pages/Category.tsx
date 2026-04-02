@@ -128,27 +128,29 @@ export default function Category() {
   }
 
   return (
-    <div className="page fade-in page-light">
-      <h1 className="page-title" style={{ color: "#4b2e1f" }}>{getTitle(tipo)}</h1>
+    <div className="page fade-in">
+      <div className="content-wrapper">
+        <h1 className="page-title" style={{ color: "#4b2e1f", marginTop: 0 }}>{getTitle(tipo)}</h1>
 
-      <div className="cocktail-grid">
-        {items.map((item) => (
-          <div
-            key={item.id}
-            className="drink-card"
-            onClick={() => navigate(`/drink/${item.id}`)}
-          >
-            {item.immagine ? (
-              <img src={item.immagine} alt={item.nome} />
-            ) : (
-              <div className="no-img-placeholder">NO IMG</div>
-            )}
-            <div className="drink-card-overlay">
-              <h3>{item.nome}</h3>
-              {item.marca && <p>{item.marca}</p>}
+        <div className="cocktail-grid">
+          {items.map((item) => (
+            <div
+              key={item.id}
+              className="drink-card"
+              onClick={() => navigate(`/drink/${item.id}`)}
+            >
+              {item.immagine ? (
+                <img src={item.immagine} alt={item.nome} />
+              ) : (
+                <div className="no-img-placeholder">NO IMG</div>
+              )}
+              <div className="drink-card-overlay">
+                <h3>{item.nome}</h3>
+                {item.marca && <p>{item.marca}</p>}
+              </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
     </div>
   );

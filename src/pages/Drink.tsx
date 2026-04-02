@@ -65,7 +65,7 @@ export default function Drink() {
 
   function renderSection(title: string, list: any[], tipo: string) {
     return (
-      <div className="section-gap">
+      <div className="content-wrapper">
         <div className="section-header">
           <h2 className="section-title" style={{ color: "#4b2e1f" }}>{title}</h2>
           <button className="btn-primary btn-small" onClick={() => navigate(`/categoria/${tipo}`)}>
@@ -97,7 +97,7 @@ export default function Drink() {
   }
 
   return (
-    <div className="page fade-in page-light">
+    <div className="page fade-in">
       {renderSection("Cocktail", cocktail, "cocktail")}
       {renderSection("Rum", rum, "rum")}
       {renderSection("Whisky", whisky, "whisky")}
