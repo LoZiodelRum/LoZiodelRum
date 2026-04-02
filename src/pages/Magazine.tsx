@@ -35,34 +35,36 @@ export default function Magazine() {
     return <div className="page fade-in" style={{ padding: 40 }}>Nessun articolo</div>;
   }
 
-  const hero = articles[0];
-  const others = articles.slice(1);
+  const hero = articles.find((a) => (a.titolo || "").trim().length > 0 && (a.descrizione || "").trim().length > 0);
+  const others = hero ? articles.filter((a) => a.id !== hero.id) : articles;
 
   return (
     <div className="page fade-in" style={{ paddingTop: "clamp(96px, 14vw, 132px)" }}>
 
       {/* HERO */}
-      <Link
-        to={`/magazine/${hero.id}`}
-        className="magazine-hero"
-        style={{ backgroundImage: `url(${hero.immagine || fallbackArticleImage})` }}
-      >
-        <div className="magazine-hero-overlay">
-          <span className="badge-category">{hero.categoria}</span>
-          <h1 className="magazine-hero-title-single">{hero.titolo}</h1>
-          <p>{hero.descrizione}</p>
-        </div>
-      </Link>
+      {hero && (
+        <Link
+          to={`/magazine/${hero.id}`}
+          className="magazine-hero"
+          style={{ backgroundImage: `url(${hero.immagine || fallbackArticleImage})` }}
+        >
+          <div className="magazine-hero-overlay">
+            {hero.categoria && <span className="badge-category">{hero.categoria}</span>}
+            <h1 className="magazine-hero-title-single">{hero.titolo}</h1>
+            <p>{hero.descrizione}</p>
+          </div>
+        </Link>
+      )}
 
       {/* GRID */}
       <div className="cocktail-grid">
         {others.map((a) => (
           <Link key={a.id} to={`/magazine/${a.id}`} className="drink-card">
-            <img src={a.immagine || fallbackArticleImage} alt={a.titolo} />
+            <img src={a.immagine || fallbackArticleImage} alt={a.titolo || "Articolo"} />
             <div className="drink-card-overlay">
-              <span className="badge-category">{a.categoria}</span>
-              <h3>{a.titolo}</h3>
-              <p>{a.descrizione}</p>
+              {a.categoria && <span className="badge-category">{a.categoria}</span>}
+              <h3>{a.titolo || "Articolo senza titolo"}</h3>
+              {a.descrizione && <p>{a.descrizione}</p>}
             </div>
           </Link>
         ))}
