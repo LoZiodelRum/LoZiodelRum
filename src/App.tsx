@@ -84,6 +84,7 @@ export default function App() {
 
           {/* DRINK */}
           <Route path="/drink" element={<PageShell><Drink /></PageShell>} />
+          <Route path="/drinks" element={<PageShell><Drink /></PageShell>} />
           <Route path="/drink/:id" element={<PageShell><DrinkDetail /></PageShell>} />
           <Route path="/categoria/:categoria" element={<PageShell><Category /></PageShell>} />
 
@@ -108,6 +109,7 @@ export default function App() {
 
           {/* 🔥 MAPPA PUBBLICA */}
           <Route path="/mappa" element={<PageShell fullBleed><MapPage /></PageShell>} />
+          <Route path="/venues" element={<PageShell fullBleed><MapPage /></PageShell>} />
 
           {/* PUBBLICHE */}
           <Route

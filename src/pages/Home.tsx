@@ -11,20 +11,22 @@ type Locale = {
   image_url: string | null;
 };
 
-type Articolo = {
+type Drink = {
   id: string;
-  titolo: string;
+  nome: string;
+  tipo: "cocktail" | "distillato";
+  categoria: string;
   immagine: string | null;
 };
 
 export default function Home() {
   const [locali, setLocali] = useState<Locale[]>([]);
-  const [articoli, setArticoli] = useState<Articolo[]>([]);
+  const [drinks, setDrinks] = useState<Drink[]>([]);
   const navigate = useNavigate();
 
   useEffect(() => {
     fetchLocali();
-    fetchArticoli();
+    fetchDrinks();
   }, []);
 
   async function fetchLocali() {
@@ -39,22 +41,40 @@ export default function Home() {
       return;
     }
 
-    setLocali(data || []);
+    setLocali((data || []).slice(0, 6));
   }
 
-  async function fetchArticoli() {
-    const { data, error } = await supabase
-      .from("articoli")
-      .select("*")
-      .eq("pubblicato", true)
-      .limit(8);
+  async function fetchDrinks() {
+    const [{ data: cocktailData, error: cocktailError }, { data: distillatiData, error: distillatiError }] = await Promise.all([
+      supabase.from("cocktail").select("id,nome,immagine,immagine_url").limit(6),
+      supabase.from("distillati").select("id,nome,categoria,immagine,immagine_url").limit(6),
+    ]);
 
-    if (error) {
-      console.error("Errore articoli:", error);
+    if (cocktailError || distillatiError) {
+      console.error("Errore drink:", cocktailError || distillatiError);
       return;
     }
 
-    setArticoli(data || []);
+    const cocktail = (cocktailData || []).map((c: any) => ({
+      id: c.id,
+      nome: c.nome,
+      tipo: "cocktail" as const,
+      categoria: "cocktail",
+      immagine: c.immagine || c.immagine_url || null,
+    }));
+
+    const distillati = (distillatiData || []).map((d: any) => {
+      const categoria = String(d.categoria || "altri").toLowerCase();
+      return {
+        id: d.id,
+        nome: d.nome,
+        tipo: "distillato" as const,
+        categoria,
+        immagine: d.immagine || d.immagine_url || null,
+      };
+    });
+
+    setDrinks([...cocktail, ...distillati].slice(0, 6));
   }
 
   function handleAdminAccess() {
@@ -195,6 +215,11 @@ export default function Home() {
       <div style={{ padding: "60px 40px" }}>
         <h2 style={{ marginBottom: 20 }}>Locali</h2>
 
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
+          <Link className="btn-primary" to="/venues">Tutti i locali</Link>
+          <Link className="btn-primary" to="/mappa">Apri mappa</Link>
+        </div>
+
         <div
           className="grid-wrapper"
           style={{
@@ -227,13 +252,24 @@ export default function Home() {
             </Link>
           ))}
         </div>
+
+        <div className="text-center mt-20">
+          <Link className="btn-primary" to="/venues">Vedi tutti i locali</Link>
+        </div>
       </div>
 
-      {/* ARTICOLI */}
+      {/* DRINK */}
       <div style={{ padding: "0 40px 60px 40px" }}>
-        <h2 style={{ marginBottom: 20 }}>Articoli</h2>
+        <h2 style={{ marginBottom: 20 }}>Drink</h2>
 
-        {articoli.length === 0 && <p>Nessun articolo trovato</p>}
+        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
+          <Link className="btn-primary" to="/categoria/cocktail">Cocktail</Link>
+          <Link className="btn-primary" to="/categoria/rum">Rum</Link>
+          <Link className="btn-primary" to="/categoria/whisky">Whisky</Link>
+          <Link className="btn-primary" to="/drinks">Tutti i drink</Link>
+        </div>
+
+        {drinks.length === 0 && <p>Nessun drink trovato</p>}
 
         <div
           className="grid-wrapper"
@@ -241,10 +277,10 @@ export default function Home() {
             gap: 20,
           }}
         >
-          {articoli.map((a) => (
+          {drinks.map((d) => (
             <Link
-              key={a.id}
-              to={`/magazine/${a.id}`}
+              key={d.id}
+              to={`/drink/${d.id}`}
               style={{
                 borderRadius: 12,
                 overflow: "hidden",
@@ -255,17 +291,22 @@ export default function Home() {
             >
               <img
                 src={
-                  a.immagine ||
-                  "https://via.placeholder.com/400x200?text=Articolo"
+                  d.immagine ||
+                  "https://via.placeholder.com/400x200?text=Drink"
                 }
                 style={{ width: "100%", height: 180, objectFit: "cover" }}
               />
 
               <div style={{ padding: 15 }}>
-                <h3>{a.titolo || "Articolo"}</h3>
+                <h3>{d.nome || "Drink"}</h3>
+                <p style={{ opacity: 0.7, marginTop: 6, textTransform: "capitalize" }}>{d.categoria}</p>
               </div>
             </Link>
           ))}
+        </div>
+
+        <div className="text-center mt-20">
+          <Link className="btn-primary" to="/drinks">Vedi tutti i drink</Link>
         </div>
       </div>
     </div>

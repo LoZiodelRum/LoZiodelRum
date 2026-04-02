@@ -228,6 +228,23 @@ button:active { transform: scale(0.98); }
 .mt-20 { margin-top: 20px; }
 .hidden { display: none; }
 
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 10px 16px;
+  border-radius: 10px;
+  background: var(--primary);
+  color: #fff;
+  font-weight: 600;
+}
+
+.btn-primary:hover {
+  color: #fff;
+  filter: brightness(1.05);
+}
+
 /* Animazione per evitare il flash nero al caricamento */
 .fade-in {
   animation: fadeIn 0.5s ease-in;
