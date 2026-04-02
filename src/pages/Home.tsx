@@ -234,51 +234,53 @@ export default function Home() {
         </div>
       </div>
 
-      {/* DRINK */}
-      <div style={{ padding: "60px 40px" }}>
-        <h2 style={{ marginBottom: 20 }}>Drink</h2>
+      {/* COCKTAIL */}
+      <div className="page fade-in">
+        <div className="content-wrapper" style={{ padding: 24 }}>
+          <h2 className="mt-20" style={{ marginBottom: 20, color: "#1f2937" }}>Cocktail</h2>
 
-        <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
-          <Link className="btn-primary" to="/categoria/cocktail">Cocktail</Link>
-          <Link className="btn-primary" to="/categoria/rum">Rum</Link>
-          <Link className="btn-primary" to="/categoria/whisky">Whisky</Link>
-          <Link className="btn-primary" to="/drinks">Tutti i drink</Link>
-        </div>
+          <div style={{ display: "flex", gap: 10, flexWrap: "wrap", marginBottom: 16 }}>
+            <Link className="btn-primary" to="/categoria/cocktail">Cocktail</Link>
+            <Link className="btn-primary" to="/categoria/rum">Rum</Link>
+            <Link className="btn-primary" to="/categoria/whisky">Whisky</Link>
+            <Link className="btn-primary" to="/drinks">Tutti i drink</Link>
+          </div>
 
-        {drinks.length === 0 && <p>Nessun drink trovato</p>}
+          {drinks.length === 0 && <p style={{ color: "#4b5563" }}>Nessun drink trovato</p>}
 
-        <div
-          className="grid-wrapper"
-          style={{
-            gap: 20,
-          }}
-        >
-          {drinks.map((d) => (
-            <Link
-              key={d.id}
-              to={`/drink/${d.id}`}
-              style={{
-                borderRadius: 12,
-                overflow: "hidden",
-                background: "#111",
-                cursor: "pointer",
-                display: "block",
-              }}
-            >
-              <img
-                src={
-                  d.immagine ||
-                  "https://via.placeholder.com/400x200?text=Drink"
-                }
-                style={{ width: "100%", height: 180, objectFit: "cover" }}
-              />
+          <div
+            className="grid-wrapper"
+            style={{
+              gap: 20,
+            }}
+          >
+            {drinks.map((d) => (
+              <Link
+                key={d.id}
+                to={`/drink/${d.id}`}
+                style={{
+                  borderRadius: 12,
+                  overflow: "hidden",
+                  background: "#111",
+                  cursor: "pointer",
+                  display: "block",
+                }}
+              >
+                <img
+                  src={
+                    d.immagine ||
+                    "https://via.placeholder.com/400x200?text=Drink"
+                  }
+                  style={{ width: "100%", height: 180, objectFit: "cover" }}
+                />
 
-              <div style={{ padding: 15 }}>
-                <h3>{d.nome || "Drink"}</h3>
-                <p style={{ opacity: 0.7, marginTop: 6, textTransform: "capitalize" }}>{d.categoria}</p>
-              </div>
-            </Link>
-          ))}
+                <div style={{ padding: 15 }}>
+                  <h3>{d.nome || "Drink"}</h3>
+                  <p style={{ opacity: 0.7, marginTop: 6, textTransform: "capitalize" }}>{d.categoria}</p>
+                </div>
+              </Link>
+            ))}
+          </div>
         </div>
       </div>
 

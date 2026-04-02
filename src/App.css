@@ -245,6 +245,12 @@ button:active { transform: scale(0.98); }
   filter: brightness(1.05);
 }
 
+.content-wrapper {
+  background: #fff;
+  border-radius: 16px;
+  overflow: hidden;
+}
+
 /* Animazione per evitare il flash nero al caricamento */
 .fade-in {
   animation: fadeIn 0.5s ease-in;
