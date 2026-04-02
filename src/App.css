@@ -188,8 +188,8 @@ button:active { transform: scale(0.98); }
   }
 
   .grid-wrapper {
-    grid-template-columns: 1fr; /* Card a tutta larghezza su cellulare */
-    gap: 16px;
+    grid-template-columns: repeat(2, 1fr); /* 2 colonne su tablet */
+    gap: 12px;
   }
 
   button { width: 100%; } /* Bottoni grandi facili da premere */
@@ -218,7 +218,7 @@ button:active { transform: scale(0.98); }
   }
 
   /* Ridimensiona le immagini nelle card per non rubare spazio */
-  .card img { height: 180px; }
+  .card img { height: 140px; }
 }
 
 /* ============================================================
@@ -259,6 +259,90 @@ button:active { transform: scale(0.98); }
 @keyframes fadeIn {
   from { opacity: 0; }
   to { opacity: 1; }
+}
+
+/* ============================================================
+   8. MOBILE EXTRA SMALL (max-width: 480px)
+   ============================================================ */
+@media (max-width: 480px) {
+  .page {
+    padding: 12px;
+    width: 100%;
+  }
+
+  .page-full-bleed {
+    padding: 0;
+  }
+
+  .page-title {
+    font-size: 22px;
+    margin-bottom: 16px;
+  }
+
+  h1 { font-size: clamp(1.5rem, 5vw, 2rem); }
+  h2 { font-size: 18px; }
+  h3 { font-size: 13px; }
+  p, span { font-size: 13px; }
+
+  /* Grid: 2 colonne su mobile */
+  .grid-wrapper {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 10px;
+  }
+
+  /* Bottoni compatti */
+  .btn-primary {
+    padding: 8px 12px;
+    font-size: 12px;
+    border-radius: 6px;
+  }
+
+  .btn-small {
+    padding: 6px 10px;
+    font-size: 11px;
+  }
+
+  /* Button a tutta larghezza */
+  button {
+    width: 100%;
+    padding: 12px 16px;
+    font-size: 14px;
+  }
+
+  /* Immagini ancora più piccole */
+  .img-mobile-small {
+    max-height: 100px !important;
+  }
+
+  .card img { height: 100px; }
+
+  /* Navbar su mobile */
+  .nav-container {
+    flex-direction: column;
+    padding: 12px;
+    gap: 8px;
+  }
+
+  .nav-logo {
+    font-size: 14px;
+  }
+
+  /* Ridurre padding contenitore cocktail */
+  .content-wrapper {
+    padding: 16px !important;
+    border-radius: 12px;
+  }
+
+  /* Sezioni: meno padding */
+  .section {
+    margin-bottom: 20px;
+  }
+
+  /* Titoli sezioni */
+  .section h2 {
+    margin-bottom: 12px;
+    font-size: 16px;
+  }
 }
 
 /* Fix specifico per gli scroll delle tabelle nel Pannello Controllo */
