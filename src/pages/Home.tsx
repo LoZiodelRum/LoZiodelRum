@@ -2,7 +2,7 @@ import "../App.css";
 import React from "react";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 
 type Locale = {
   id: string;
@@ -202,14 +202,15 @@ export default function Home() {
           }}
         >
           {locali.map((l) => (
-            <div
+            <Link
               key={l.id}
-              onClick={() => navigate(`/locale/${l.id}`)}
+              to={`/venue/${l.id}`}
               style={{
                 borderRadius: 12,
                 overflow: "hidden",
                 background: "#111",
                 cursor: "pointer",
+                display: "block",
               }}
             >
               <img
@@ -223,7 +224,7 @@ export default function Home() {
                 <h3>{l.nome}</h3>
                 <p style={{ opacity: 0.6 }}>{l.citta}</p>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
@@ -241,14 +242,15 @@ export default function Home() {
           }}
         >
           {articoli.map((a) => (
-            <div
+            <Link
               key={a.id}
-              onClick={() => navigate(`/articolo/${a.id}`)}
+              to={`/magazine/${a.id}`}
               style={{
                 borderRadius: 12,
                 overflow: "hidden",
                 background: "#111",
                 cursor: "pointer",
+                display: "block",
               }}
             >
               <img
@@ -262,7 +264,7 @@ export default function Home() {
               <div style={{ padding: 15 }}>
                 <h3>{a.titolo || "Articolo"}</h3>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </div>
