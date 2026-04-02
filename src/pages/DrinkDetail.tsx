@@ -394,6 +394,7 @@ const box = {
   background: "#fff",
   padding: 20,
   borderRadius: 16,
+  overflow: "hidden",
 };
 
 const boxTitle = { marginBottom: 10, color: "#4b2e1f" };
@@ -410,7 +411,8 @@ const editorBox = {
   background: "#fff",
   padding: 20,
   marginBottom: 30,
-  borderRadius: 12,
+  borderRadius: 16,
+  overflow: "hidden",
 };
 
 const field = {
