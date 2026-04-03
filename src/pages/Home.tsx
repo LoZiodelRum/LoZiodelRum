@@ -159,6 +159,19 @@ export default function Home() {
           .card-box { border-radius: 20px !important; }
         }
 
+        @media (min-width: 390px) and (max-width: 430px) {
+          .content-section { padding: 14px 16px !important; }
+          .content-section-first { padding-top: calc(88px + env(safe-area-inset-top)) !important; }
+          .section-grid { gap: 12px !important; }
+          .section-title { font-size: 42px !important; }
+          .card-box { border-radius: 16px !important; }
+          .card-title { font-size: 18px !important; }
+          .card-subtitle { font-size: 14px !important; }
+          .card-title-clamp {
+            -webkit-line-clamp: 4;
+          }
+        }
+
         @media (max-width: 380px) {
           .navbar-mobile { padding: calc(10px + env(safe-area-inset-top)) 12px 10px 12px !important; }
           .mobile-brand { font-size: 16px !important; }
