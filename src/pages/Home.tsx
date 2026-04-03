@@ -54,7 +54,7 @@ export default function Home() {
       .from("Locali")
       .select("*")
       .eq("status", "approved")
-      .limit(4);
+      .limit(6);
 
     if (error) {
       console.error("Errore locali:", error);
@@ -69,7 +69,7 @@ export default function Home() {
       .from("articoli")
       .select("*")
       .eq("pubblicato", true)
-      .limit(4);
+      .limit(6);
 
     if (error) {
       console.error("Errore articoli:", error);
@@ -85,7 +85,7 @@ export default function Home() {
       .select("id, locale_id, rating, autore, Locali(nome, image_url)")
       .eq("status", "approved")
       .order("created_at", { ascending: false })
-      .limit(4);
+      .limit(6);
 
     if (error) {
       console.error("Errore recensioni:", error);
@@ -142,7 +142,7 @@ export default function Home() {
           .navbar-desktop { display: flex !important; }
           .menu-mobile { display: none !important; }
           .content-section { padding: 40px 60px !important; }
-          .section-grid { grid-template-columns: repeat(4, minmax(0, 1fr)) !important; gap: 20px !important; }
+          .section-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 20px !important; }
           .card-box { height: 220px !important; }
         }
       `}</style>
