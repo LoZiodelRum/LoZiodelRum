@@ -165,9 +165,43 @@ export default function Home() {
         @media (max-width: 768px) {
           .navbar-desktop { display: none !important; }
           .navbar-mobile { display: flex !important; }
-          .hero-section { display: none !important; }
+          .hero-section {
+            display: flex !important;
+            min-height: calc(100vh - 10px) !important;
+            padding-top: calc(96px + env(safe-area-inset-top)) !important;
+            align-items: flex-start !important;
+          }
+          .hero-mobile-content { margin-top: 26px !important; }
+          .hero-mobile-badge {
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            border: 1px solid rgba(245, 166, 35, 0.35) !important;
+            background: rgba(245, 166, 35, 0.14) !important;
+            color: #f5a623 !important;
+            border-radius: 999px !important;
+            font-size: 16px !important;
+            padding: 8px 14px !important;
+            margin-bottom: 22px !important;
+          }
+          .hero-mobile-title { font-size: clamp(44px, 12vw, 60px) !important; line-height: 1.04 !important; }
+          .hero-mobile-subtitle { font-size: clamp(14px, 5vw, 20px) !important; line-height: 1.45 !important; }
+          .hero-mobile-buttons {
+            width: 100% !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 14px !important;
+            margin-top: 34px !important;
+          }
+          .hero-mobile-btn {
+            width: 100% !important;
+            justify-content: center !important;
+            font-size: 20px !important;
+            padding: 16px 18px !important;
+            border-radius: 18px !important;
+          }
           .content-section { padding: clamp(12px, 3.6vw, 18px) !important; }
-          .content-section-first { padding-top: calc(88px + env(safe-area-inset-top)) !important; }
+          .content-section-first { padding-top: 26px !important; }
           .section-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: clamp(10px, 3vw, 14px) !important; }
           .card-box { height: auto !important; aspect-ratio: 1 / 1 !important; border-radius: 18px !important; }
           .section-header { margin-bottom: 16px !important; }
@@ -210,6 +244,8 @@ export default function Home() {
         @media (max-width: 380px) {
           .navbar-mobile { padding: calc(10px + env(safe-area-inset-top)) 12px 10px 12px !important; }
           .mobile-brand { font-size: 16px !important; }
+          .hero-mobile-title { font-size: 42px !important; }
+          .hero-mobile-btn { font-size: 18px !important; }
           .content-section { padding: 12px !important; }
           .section-grid { gap: 10px !important; }
           .card-box { border-radius: 14px !important; }
@@ -378,30 +414,57 @@ export default function Home() {
         }}
       >
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(0,0,0,0.5), rgba(0,0,0,0.9))" }} />
-        <div style={{ position: "relative", zIndex: 2, maxWidth: "90%", padding: "0 20px" }}>
-          <p style={{ color: "#f5a623", marginBottom: 10, fontSize: "clamp(14px, 3vw, 16px)" }}>La community del bere consapevole</p>
-          <h1 style={{ fontSize: "clamp(28px, 7vw, 48px)", marginBottom: 20, fontWeight: 800, lineHeight: 1.2 }}>
+        <div className="hero-mobile-content" style={{ position: "relative", zIndex: 2, maxWidth: "90%", padding: "0 20px" }}>
+          <p className="hero-mobile-badge" style={{ display: "none" }}>✨ La community del bere consapevole</p>
+          <h1 className="hero-mobile-title" style={{ fontSize: "clamp(28px, 7vw, 48px)", marginBottom: 20, fontWeight: 800, lineHeight: 1.2 }}>
             Scopri i migliori <br />
             <span style={{ color: "#f5a623" }}>locali del mondo</span>
           </h1>
-          <p style={{ opacity: 0.85, marginBottom: 30, fontSize: "clamp(14px, 2.5vw, 18px)" }}>
-            Recensioni autentiche, esperienze uniche, cultura del bere.
+          <p className="hero-mobile-subtitle" style={{ opacity: 0.85, marginBottom: 30, fontSize: "clamp(14px, 2.5vw, 18px)" }}>
+            Recensioni autentiche, esperienze uniche, cultura del bere. Trova cocktail bar, rum bar e locali d'eccellenza nella tua citta.
           </p>
-          <button
-            onClick={() => navigate("/venues")}
-            style={{
-              background: "#f5a623",
-              color: "#0b0b0b",
-              border: "none",
-              padding: "14px 32px",
-              borderRadius: 8,
-              fontWeight: "bold",
-              cursor: "pointer",
-              fontSize: 16,
-            }}
-          >
-            Esplora Locali
-          </button>
+          <div className="hero-mobile-buttons" style={{ display: "flex", gap: 12 }}>
+            <button
+              className="hero-mobile-btn"
+              onClick={() => navigate("/venues")}
+              style={{
+                background: "#f5a623",
+                color: "#0b0b0b",
+                border: "none",
+                padding: "14px 32px",
+                borderRadius: 8,
+                fontWeight: "bold",
+                cursor: "pointer",
+                fontSize: 16,
+                display: "flex",
+                alignItems: "center",
+                gap: 12,
+              }}
+            >
+              Esplora Locali
+              <span>→</span>
+            </button>
+            <button
+              className="hero-mobile-btn"
+              onClick={() => navigate("/mappa")}
+              style={{
+                background: "#f5a623",
+                color: "#0b0b0b",
+                border: "none",
+                padding: "14px 32px",
+                borderRadius: 8,
+                fontWeight: "bold",
+                cursor: "pointer",
+                fontSize: 16,
+                display: "flex",
+                alignItems: "center",
+                gap: 10,
+              }}
+            >
+              <span>📍</span>
+              Vedi Mappa
+            </button>
+          </div>
         </div>
       </div>
 
