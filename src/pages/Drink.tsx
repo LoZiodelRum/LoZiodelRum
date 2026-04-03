@@ -65,9 +65,9 @@ export default function Drink() {
 
   function renderSection(title: string, list: any[], tipo: string) {
     return (
-      <div className="content-wrapper">
-        <div className="section-header">
-          <h2 className="section-title" style={{ color: "#4b2e1f" }}>{title}</h2>
+      <section className="drink-section-white">
+        <div className="drink-section-header">
+          <h2 className="drink-section-title">{title}</h2>
           <button className="btn-primary btn-small" onClick={() => navigate(`/categoria/${tipo}`)}>
             Vedi tutti
           </button>
@@ -76,28 +76,27 @@ export default function Drink() {
         {!list.length ? (
           <p style={{ textAlign: "center", color: "#999" }}>Nessun dato</p>
         ) : (
-          <div className="cocktail-grid">
+          <div className="drink-grid-uniform">
             {list.map((item) => (
-              <div key={item.id} className="drink-card" onClick={() => navigate(`/drink/${item.id}`)}>
+              <article key={item.id} className="drink-card-uniform" onClick={() => navigate(`/drink/${item.id}`)}>
                 {item.immagine ? (
                   <img src={item.immagine} alt={item.nome} />
                 ) : (
                   <div className="no-img-placeholder">NO IMG</div>
                 )}
-                <div className="drink-card-overlay">
+                <div className="drink-card-caption">
                   <h3>{item.nome}</h3>
-                  {item.marca && <p>{item.marca}</p>}
                 </div>
-              </div>
+              </article>
             ))}
           </div>
         )}
-      </div>
+      </section>
     );
   }
 
   return (
-    <div className="page fade-in">
+    <div className="page fade-in drink-page-white">
       {renderSection("Cocktail", cocktail, "cocktail")}
       {renderSection("Rum", rum, "rum")}
       {renderSection("Whisky", whisky, "whisky")}

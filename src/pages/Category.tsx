@@ -128,15 +128,20 @@ export default function Category() {
   }
 
   return (
-    <div className="page fade-in">
-      <div className="content-wrapper">
-        <h1 className="page-title" style={{ color: "#4b2e1f", marginTop: 0 }}>{getTitle(tipo)}</h1>
+    <div className="page fade-in drink-page-white">
+      <section className="drink-section-white">
+        <div className="drink-top-bar">
+          <button className="drink-back-btn" onClick={() => navigate(-1)} aria-label="Torna indietro">
+            ←
+          </button>
+          <h1 className="drink-page-heading">{getTitle(tipo)}</h1>
+        </div>
 
-        <div className="cocktail-grid">
+        <div className="drink-grid-uniform">
           {items.map((item) => (
-            <div
+            <article
               key={item.id}
-              className="drink-card"
+              className="drink-card-uniform"
               onClick={() => navigate(`/drink/${item.id}`)}
             >
               {item.immagine ? (
@@ -144,14 +149,13 @@ export default function Category() {
               ) : (
                 <div className="no-img-placeholder">NO IMG</div>
               )}
-              <div className="drink-card-overlay">
+              <div className="drink-card-caption">
                 <h3>{item.nome}</h3>
-                {item.marca && <p>{item.marca}</p>}
               </div>
-            </div>
+            </article>
           ))}
         </div>
-      </div>
+      </section>
     </div>
   );
 }
@@ -159,9 +163,9 @@ export default function Category() {
 /* ---------- HELPERS ---------- */
 
 function getTitle(tipo: any) {
-  if (tipo === "cocktail") return "Cocktail";
+  if (tipo === "cocktail") return "IBA - Gli Indimenticabili";
   if (tipo === "rum") return "Rum";
   if (tipo === "whisky") return "Whisky";
   if (tipo === "altri") return "Altri distillati";
-  return "Cocktail";
+  return "IBA - Gli Indimenticabili";
 }

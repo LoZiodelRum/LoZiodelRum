@@ -145,7 +145,7 @@ export default function DrinkDetail() {
   }
 
   return (
-    <div className="page-light fade-in">
+    <div className="drink-page-white fade-in">
 
       {/* 🔧 EDITOR ADMIN */}
       {isAdmin && form && (
