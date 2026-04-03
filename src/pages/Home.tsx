@@ -238,7 +238,7 @@ export default function Home() {
       >
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(0,0,0,0.5), rgba(0,0,0,0.9))" }} />
         <div className="hero-mobile-content" style={{ position: "relative", zIndex: 2, maxWidth: "90%", padding: "0 20px" }}>
-          <p className="hero-mobile-badge" style={{ display: "none" }}>✨ La community del bere consapevole</p>
+          <p className="hero-mobile-badge" style={{ display: "none" }}>La community del bere consapevole</p>
           <h1 className="hero-mobile-title" style={{ fontSize: "clamp(28px, 7vw, 48px)", marginBottom: 20, fontWeight: 800, lineHeight: 1.2 }}>
             <span style={{ color: "#ffffff", display: "block" }}>Scopri i</span>
             <span style={{ color: "#ffffff" }}>migliori </span>
