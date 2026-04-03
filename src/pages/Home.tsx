@@ -167,14 +167,15 @@ export default function Home() {
           .navbar-mobile { display: flex !important; }
           .hero-section {
             display: flex !important;
-            min-height: 78vh !important;
+            min-height: 84vh !important;
             width: 100vw !important;
             margin-left: calc(50% - 50vw) !important;
             margin-right: calc(50% - 50vw) !important;
             padding-top: calc(96px + env(safe-area-inset-top)) !important;
+            padding-bottom: 28px !important;
             align-items: flex-start !important;
           }
-          .hero-mobile-content { margin-top: 26px !important; }
+          .hero-mobile-content { margin-top: 34px !important; padding-bottom: 10px !important; }
           .hero-mobile-badge {
             display: inline-flex !important;
             align-items: center !important;
@@ -187,8 +188,8 @@ export default function Home() {
             padding: 8px 14px !important;
             margin-bottom: 22px !important;
           }
-          .hero-mobile-title { font-size: clamp(44px, 12vw, 60px) !important; line-height: 1.04 !important; }
-          .hero-mobile-subtitle { font-size: clamp(14px, 5vw, 20px) !important; line-height: 1.45 !important; }
+          .hero-mobile-title { font-size: clamp(38px, 11vw, 52px) !important; line-height: 1.06 !important; }
+          .hero-mobile-subtitle { font-size: clamp(14px, 5vw, 20px) !important; line-height: 1.4 !important; }
           .hero-mobile-buttons {
             width: 100% !important;
             display: flex !important;
@@ -204,7 +205,7 @@ export default function Home() {
             border-radius: 18px !important;
           }
           .content-section { padding: clamp(12px, 3.6vw, 18px) !important; }
-          .content-section-first { padding-top: 26px !important; }
+          .content-section-first { padding-top: 56px !important; }
           .section-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: clamp(10px, 3vw, 14px) !important; }
           .card-box { height: auto !important; aspect-ratio: 1 / 1 !important; border-radius: 18px !important; }
           .section-header { margin-bottom: 16px !important; }
