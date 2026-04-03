@@ -238,10 +238,10 @@ export default function Home() {
 
       {/* DRINK */}
       <div className="page page-section fade-in" style={{ minHeight: 0 }}>
-        <div className="content-wrapper" style={{ width: "min(100%, 420px)" }}>
-          <div className="section-header">
+        <div className="content-wrapper" style={{ width: "min(100%, 420px)", padding: "14px 16px" }}>
+          <div className="section-header" style={{ justifyContent: "flex-start", alignItems: "center", gap: 14, marginBottom: 0 }}>
             <h2 className="section-title" style={{ color: "#f5a623" }}>Drink</h2>
-            <div style={{ display: "flex", gap: 10 }}>
+            <div style={{ display: "flex", gap: 8, alignItems: "center", marginLeft: 4 }}>
               <Link className="btn-primary btn-small" to="/categoria/cocktail">Cocktail</Link>
               <Link className="btn-primary btn-small" to="/drink">Distillati</Link>
             </div>

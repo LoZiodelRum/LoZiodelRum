@@ -246,9 +246,26 @@ export default function DrinkDetail() {
                 </>
               )}
 
-              {data.bicchiere && <p style={info}>Bicchiere: {data.bicchiere}</p>}
-              {data.guarnizione && <p style={info}>Guarnizione: {data.guarnizione}</p>}
-              {data.gradazione_alcolica && <p style={info}>Gradazione: {data.gradazione_alcolica}°</p>}
+              {data.bicchiere && (
+                <>
+                  <h2 style={sectionTitle}>Bicchiere</h2>
+                  <p style={text}>{data.bicchiere}</p>
+                </>
+              )}
+
+              {data.guarnizione && (
+                <>
+                  <h2 style={sectionTitle}>Guarnizione</h2>
+                  <p style={text}>{data.guarnizione}</p>
+                </>
+              )}
+
+              {data.gradazione_alcolica && (
+                <>
+                  <h2 style={sectionTitle}>Gradazione</h2>
+                  <p style={text}>{data.gradazione_alcolica}°</p>
+                </>
+              )}
             </>
           )}
 
@@ -398,8 +415,6 @@ const row = {
   borderBottom: "1px solid #eee",
   color: "#4b2e1f",
 };
-
-const info = { marginTop: 10, color: "#444" };
 
 const editorBox = {
   background: "#fff",
