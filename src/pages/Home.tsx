@@ -1,6 +1,6 @@
 import "../App.css";
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 
 type Locale = {
@@ -42,6 +42,19 @@ export default function Home() {
   const [recensioni, setRecensioni] = useState<Recensione[]>([]);
   const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  function desktopLinkStyle(paths: string[]) {
+    const isActive = paths.some((path) =>
+      path === "/" ? location.pathname === "/" : location.pathname.startsWith(path),
+    );
+
+    return {
+      cursor: "pointer",
+      color: isActive ? "#f5a623" : "#fff",
+      fontWeight: isActive ? 700 : 400,
+    } as const;
+  }
 
   useEffect(() => {
     void fetchLocali();
@@ -314,13 +327,13 @@ export default function Home() {
       >
         <div style={{ fontWeight: "bold", color: "#f5a623", cursor: "pointer" }} onClick={() => navigate("/")}>Lo Zio del Rum</div>
         <div style={{ display: "flex", gap: 25, alignItems: "center" }}>
-          <span onClick={() => navigate("/")} style={{ cursor: "pointer" }}>Home</span>
-          <span onClick={() => navigate("/mappa")} style={{ cursor: "pointer" }}>Mappa</span>
-          <span onClick={() => navigate("/drink")} style={{ cursor: "pointer" }}>Drink</span>
-          <span onClick={() => navigate("/magazine")} style={{ cursor: "pointer" }}>Magazine</span>
-          <span onClick={() => navigate("/community")} style={{ cursor: "pointer" }}>Community</span>
-          <span onClick={() => navigate("/dashboard")} style={{ cursor: "pointer" }}>Dashboard</span>
-          <span style={{ color: "#f5a623", fontWeight: "bold", cursor: "pointer" }} onClick={() => navigate("/crea")}>Crea</span>
+          <span onClick={() => navigate("/")} style={desktopLinkStyle(["/"])}>Home</span>
+          <span onClick={() => navigate("/mappa")} style={desktopLinkStyle(["/mappa"])}>Mappa</span>
+          <span onClick={() => navigate("/drink")} style={desktopLinkStyle(["/drink"])}>Drink</span>
+          <span onClick={() => navigate("/magazine")} style={desktopLinkStyle(["/magazine"])}>Magazine</span>
+          <span onClick={() => navigate("/community")} style={desktopLinkStyle(["/community"])}>Community</span>
+          <span onClick={() => navigate("/dashboard")} style={desktopLinkStyle(["/dashboard", "/pannello", "/admin"])}>Dashboard</span>
+          <span onClick={() => navigate("/crea")} style={desktopLinkStyle(["/crea"])}>Crea</span>
           <span style={{ cursor: "pointer", fontSize: 26, marginLeft: 10, display: "flex", alignItems: "center" }} onClick={handleAdminAccess} title="Accesso amministratore">🔑</span>
         </div>
       </div>
