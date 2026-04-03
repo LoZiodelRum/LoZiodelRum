@@ -1,7 +1,7 @@
 import "../App.css";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
-import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Popup, ZoomControl } from "react-leaflet";
 import { useNavigate } from "react-router-dom";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
@@ -75,8 +75,10 @@ export default function MapPage() {
       <MapContainer
         center={[41.9028, 12.4964]}
         zoom={6}
+        zoomControl={false}
         style={{ height: "100%", width: "100%", border: "none", borderRadius: 0, margin: 0, padding: 0 }}
       >
+        <ZoomControl position="bottomleft" />
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
         {locali.map((l) => {

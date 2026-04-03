@@ -601,6 +601,14 @@ button[style*="#c47a2c"] {
   margin-right: auto;
 }
 
+.map-fullscreen .leaflet-left .leaflet-control {
+  margin-left: 14px;
+}
+
+.map-fullscreen .leaflet-bottom .leaflet-control {
+  margin-bottom: 14px;
+}
+
 .nav-container button,
 .mobile-menu button,
 .admin-modal button {
