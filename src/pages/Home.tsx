@@ -141,7 +141,7 @@ export default function Home() {
             padding: 6px 10px !important;
             margin: 0 auto 16px auto !important;
           }
-          .hero-mobile-title { font-size: clamp(38px, 11vw, 52px) !important; line-height: 1.06 !important; }
+          .hero-mobile-title { font-size: clamp(34px, 9.8vw, 46px) !important; line-height: 1.08 !important; }
           .hero-mobile-title span {
             font-size: inherit !important;
             line-height: inherit !important;
@@ -208,7 +208,7 @@ export default function Home() {
         }
 
         @media (max-width: 380px) {
-          .hero-mobile-title { font-size: 42px !important; }
+          .hero-mobile-title { font-size: 38px !important; }
           .hero-mobile-btn { font-size: 18px !important; }
           .content-section { padding: 12px !important; }
           .section-grid { gap: 10px !important; }
@@ -244,10 +244,9 @@ export default function Home() {
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(0,0,0,0.5), rgba(0,0,0,0.9))" }} />
         <div className="hero-mobile-content" style={{ position: "relative", zIndex: 2, maxWidth: "90%", padding: "0 20px" }}>
           <p className="hero-mobile-badge" style={{ display: "none" }}>La community del bere consapevole</p>
-          <h1 className="hero-mobile-title" style={{ fontSize: "clamp(28px, 7vw, 48px)", marginBottom: 20, fontWeight: 800, lineHeight: 1.2 }}>
-            <span style={{ color: "#ffffff", display: "block" }}>Scopri i</span>
-            <span style={{ color: "#ffffff" }}>migliori </span>
-            <span style={{ color: "#f5a623" }}>locali del mondo</span>
+          <h1 className="hero-mobile-title" style={{ fontSize: "clamp(28px, 7vw, 48px)", marginBottom: 20, fontWeight: 800, lineHeight: 1.2, display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
+            <span style={{ color: "#ffffff", display: "block" }}>Scopri i migliori</span>
+            <span style={{ color: "#f5a623", display: "block" }}>locali del mondo</span>
           </h1>
           <p className="hero-mobile-subtitle" style={{ opacity: 0.85, marginBottom: 30, fontSize: "clamp(14px, 2.5vw, 18px)" }}>
             Recensioni autentiche, esperienze uniche, cultura del bere. Trova cocktail bar, rum bar e locali d'eccellenza nella tua citta.
