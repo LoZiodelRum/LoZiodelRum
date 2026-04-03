@@ -131,12 +131,16 @@ export default function Category() {
   return (
     <div className="fade-in drink-page-white">
       <section className="drink-section-white">
-        <div className="drink-top-bar">
-          <button className="drink-back-btn" onClick={() => navigate(-1)} aria-label="Torna indietro">
-            ←
-          </button>
-          <h1 className="drink-page-heading">{getTitle(selectedType)}</h1>
-        </div>
+        {selectedType === "cocktail" ? (
+          <h1 className="drink-page-heading" style={{ marginBottom: 14 }}>Coktail</h1>
+        ) : (
+          <div className="drink-top-bar">
+            <button className="drink-back-btn" onClick={() => navigate(-1)} aria-label="Torna indietro">
+              ←
+            </button>
+            <h1 className="drink-page-heading">{getTitle(selectedType)}</h1>
+          </div>
+        )}
 
         <div className="drink-grid-uniform">
           {items.map((item) => (
@@ -164,9 +168,9 @@ export default function Category() {
 /* ---------- HELPERS ---------- */
 
 function getTitle(tipo: any) {
-  if (tipo === "cocktail") return "IBA - Gli Indimenticabili";
+  if (tipo === "cocktail") return "Coktail";
   if (tipo === "rum") return "Rum";
   if (tipo === "whisky") return "Whisky";
   if (tipo === "altri") return "Altri distillati";
-  return "IBA - Gli Indimenticabili";
+  return "Coktail";
 }
