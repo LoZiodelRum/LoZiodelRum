@@ -167,7 +167,7 @@ export default function Home() {
           .navbar-mobile { display: flex !important; }
           .hero-section { display: none !important; }
           .content-section { padding: clamp(12px, 3.6vw, 18px) !important; }
-          .content-section-first { padding-top: calc(148px + env(safe-area-inset-top)) !important; }
+          .content-section-first { padding-top: calc(88px + env(safe-area-inset-top)) !important; }
           .section-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: clamp(10px, 3vw, 14px) !important; }
           .card-box { height: auto !important; aspect-ratio: 1 / 1 !important; border-radius: 18px !important; }
           .section-header { margin-bottom: 16px !important; }
