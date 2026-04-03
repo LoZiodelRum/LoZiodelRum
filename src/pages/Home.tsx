@@ -1,6 +1,7 @@
 import "../App.css";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { ArrowRight, MapPin } from "lucide-react";
 import { supabase } from "../lib/supabaseClient";
 
 type Locale = {
@@ -135,26 +136,33 @@ export default function Home() {
             background: rgba(245, 166, 35, 0.14) !important;
             color: #f5a623 !important;
             border-radius: 999px !important;
-            font-size: 16px !important;
-            padding: 8px 14px !important;
-            margin-bottom: 22px !important;
+            width: fit-content !important;
+            font-size: 12px !important;
+            padding: 6px 10px !important;
+            margin: 0 auto 16px auto !important;
           }
-          .hero-mobile-title { font-size: clamp(38px, 11vw, 52px) !important; line-height: 1.06 !important; }
-          .hero-mobile-subtitle { font-size: clamp(14px, 5vw, 20px) !important; line-height: 1.4 !important; }
+          .hero-mobile-title { font-size: 2.25rem !important; line-height: 1.1 !important; }
+          .hero-mobile-subtitle {
+            font-size: clamp(14px, 5vw, 20px) !important;
+            line-height: 1.4 !important;
+            max-width: 300px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+          }
           .hero-mobile-buttons {
             width: 100% !important;
             display: flex !important;
             flex-direction: column !important;
-            gap: 14px !important;
+            gap: 12px !important;
             margin-top: 34px !important;
             margin-bottom: 88px !important;
           }
           .hero-mobile-btn {
             width: 100% !important;
             justify-content: center !important;
-            font-size: 20px !important;
+            font-size: 1.25rem !important;
             padding: 16px 18px !important;
-            border-radius: 18px !important;
+            border-radius: 16px !important;
           }
           .content-section { padding: clamp(12px, 3.6vw, 18px) !important; }
           .content-section-first { padding-top: 104px !important; margin-top: 76px !important; }
@@ -195,7 +203,7 @@ export default function Home() {
         }
 
         @media (max-width: 380px) {
-          .hero-mobile-title { font-size: 42px !important; }
+          .hero-mobile-title { font-size: 2rem !important; }
           .hero-mobile-btn { font-size: 18px !important; }
           .content-section { padding: 12px !important; }
           .section-grid { gap: 10px !important; }
@@ -232,7 +240,8 @@ export default function Home() {
         <div className="hero-mobile-content" style={{ position: "relative", zIndex: 2, maxWidth: "90%", padding: "0 20px" }}>
           <p className="hero-mobile-badge" style={{ display: "none" }}>✨ La community del bere consapevole</p>
           <h1 className="hero-mobile-title" style={{ fontSize: "clamp(28px, 7vw, 48px)", marginBottom: 20, fontWeight: 800, lineHeight: 1.2 }}>
-            Scopri i migliori <br />
+            <span style={{ color: "#ffffff", display: "block" }}>Scopri i</span>
+            <span style={{ color: "#ffffff" }}>migliori </span>
             <span style={{ color: "#f5a623" }}>locali del mondo</span>
           </h1>
           <p className="hero-mobile-subtitle" style={{ opacity: 0.85, marginBottom: 30, fontSize: "clamp(14px, 2.5vw, 18px)" }}>
@@ -257,6 +266,7 @@ export default function Home() {
               }}
             >
               Esplora Locali
+              <ArrowRight size={20} strokeWidth={2.5} />
             </button>
             <button
               className="hero-mobile-btn"
@@ -275,6 +285,7 @@ export default function Home() {
                 gap: 10,
               }}
             >
+              <MapPin size={20} strokeWidth={2.5} />
               Vedi Mappa
             </button>
           </div>
