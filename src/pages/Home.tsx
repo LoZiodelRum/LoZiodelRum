@@ -142,6 +142,11 @@ export default function Home() {
             margin: 0 auto 16px auto !important;
           }
           .hero-mobile-title { font-size: clamp(38px, 11vw, 52px) !important; line-height: 1.06 !important; }
+          .hero-mobile-title span {
+            font-size: inherit !important;
+            line-height: inherit !important;
+            font-weight: inherit !important;
+          }
           .hero-mobile-subtitle {
             font-size: clamp(14px, 5vw, 20px) !important;
             line-height: 1.4 !important;
