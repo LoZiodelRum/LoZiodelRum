@@ -465,7 +465,13 @@ button:active { transform: scale(0.98); }
   display: flex;
   flex-direction: column;
   aspect-ratio: 1 / 1;
-  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.08);
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.14);
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.drink-card-uniform:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.2);
 }
 
 .drink-card-uniform img,
@@ -504,8 +510,17 @@ button:active { transform: scale(0.98); }
 }
 
 @media (min-width: 1024px) {
+  .drink-page-white {
+    padding: 24px 40px 36px;
+  }
+
+  .drink-section-white {
+    margin-bottom: 24px;
+  }
+
   .drink-grid-uniform {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
   }
 }
 
