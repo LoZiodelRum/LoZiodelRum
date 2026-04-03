@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { UserProvider, useUser } from "./context/UserContext";
 
 import Navbar from "./components/Navbar";
@@ -67,12 +67,9 @@ function PageShell({ children, fullBleed = false }: { children: React.ReactNode;
 }
 
 function AppContent() {
-  const location = useLocation();
-  const isHomePage = location.pathname === "/";
-
   return (
     <>
-      {!isHomePage && <Navbar />}
+      <Navbar />
 
       <Routes>
 

@@ -1,6 +1,6 @@
 import "../App.css";
 import { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 
 type Locale = {
@@ -40,47 +40,13 @@ export default function Home() {
   const [locali, setLocali] = useState<Locale[]>([]);
   const [articoli, setArticoli] = useState<Articolo[]>([]);
   const [recensioni, setRecensioni] = useState<Recensione[]>([]);
-  const [menuOpen, setMenuOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(() =>
-    typeof window !== "undefined" ? window.innerWidth <= 1024 : false,
-  );
   const navigate = useNavigate();
-  const location = useLocation();
-
-  function desktopLinkStyle(paths: string[]) {
-    const isActive = paths.some((path) =>
-      path === "/" ? location.pathname === "/" : location.pathname.startsWith(path),
-    );
-
-    return {
-      cursor: "pointer",
-      color: isActive ? "#f5a623" : "#fff",
-      fontWeight: isActive ? 700 : 400,
-    } as const;
-  }
 
   useEffect(() => {
     void fetchLocali();
     void fetchArticoli();
     void fetchRecensioni();
   }, []);
-
-  useEffect(() => {
-    function handleResize() {
-      setIsMobile(window.innerWidth <= 1024);
-    }
-
-    handleResize();
-    window.addEventListener("resize", handleResize);
-
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  useEffect(() => {
-    if (!isMobile && menuOpen) {
-      setMenuOpen(false);
-    }
-  }, [isMobile, menuOpen]);
 
   async function fetchLocali() {
     const { data, error } = await supabase
@@ -138,19 +104,6 @@ export default function Home() {
     setRecensioni(mapped);
   }
 
-  function handleAdminAccess() {
-    const password = window.prompt("Inserisci la password admin");
-
-    if (password === "850877") {
-      navigate("/admin/users");
-      return;
-    }
-
-    if (password !== null) {
-      alert("Password errata");
-    }
-  }
-
   return (
     <div
       style={{
@@ -163,8 +116,6 @@ export default function Home() {
     >
       <style>{`
         @media (max-width: 768px) {
-          .navbar-desktop { display: none !important; }
-          .navbar-mobile { display: flex !important; }
           .hero-section {
             display: flex !important;
             min-height: 84vh !important;
@@ -224,12 +175,9 @@ export default function Home() {
         }
 
         @media (max-width: 1024px) {
-          .navbar-desktop { display: none !important; }
-          .navbar-mobile { display: flex !important; }
         }
 
         @media (min-width: 481px) and (max-width: 768px) {
-          .navbar-mobile { padding: 14px 20px !important; }
           .card-box { border-radius: 20px !important; }
         }
 
@@ -246,8 +194,6 @@ export default function Home() {
         }
 
         @media (max-width: 380px) {
-          .navbar-mobile { padding: calc(10px + env(safe-area-inset-top)) 12px 10px 12px !important; }
-          .mobile-brand { font-size: 16px !important; }
           .hero-mobile-title { font-size: 42px !important; }
           .hero-mobile-btn { font-size: 18px !important; }
           .content-section { padding: 12px !important; }
@@ -259,148 +205,11 @@ export default function Home() {
         }
 
         @media (min-width: 769px) {
-          .navbar-mobile { display: none !important; }
-          .navbar-desktop { display: flex !important; }
-          .menu-mobile { display: none !important; }
           .content-section { padding: 40px 60px !important; }
           .section-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 20px !important; }
           .card-box { height: 220px !important; aspect-ratio: auto !important; }
         }
       `}</style>
-
-      {isMobile ? (
-      <nav
-        className="navbar-mobile"
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          width: "100%",
-          background: "#0b0808",
-          padding: "calc(12px + env(safe-area-inset-top)) 16px 12px 16px",
-          display: "none",
-          justifyContent: "space-between",
-          alignItems: "center",
-          zIndex: 1000,
-          boxSizing: "border-box",
-        }}
-      >
-        <div
-          className="mobile-brand"
-          onClick={() => navigate("/")}
-          style={{
-            fontWeight: "bold",
-            color: "#f5a623",
-            fontSize: 18,
-            cursor: "pointer",
-          }}
-        >
-          Lo Zio del Rum
-        </div>
-        <button
-          onClick={() => setMenuOpen((prev) => !prev)}
-          style={{
-            background: "none",
-            border: "none",
-            color: "#fff",
-            cursor: "pointer",
-            width: 40,
-            height: 40,
-            padding: 0,
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-            alignItems: "center",
-            gap: 5,
-          }}
-          aria-label="Apri menu"
-        >
-          <div
-            style={{
-              width: 24,
-              height: 2,
-              background: "#fff",
-              transition: "all .25s ease",
-              transform: menuOpen ? "rotate(45deg) translate(5px, 5px)" : "none",
-            }}
-          />
-          <div
-            style={{
-              width: 24,
-              height: 2,
-              background: "#fff",
-              opacity: menuOpen ? 0 : 1,
-              transition: "opacity .25s ease",
-            }}
-          />
-          <div
-            style={{
-              width: 24,
-              height: 2,
-              background: "#fff",
-              transition: "all .25s ease",
-              transform: menuOpen ? "rotate(-45deg) translate(6px, -6px)" : "none",
-            }}
-          />
-        </button>
-      </nav>
-      ) : (
-      <div
-        className="navbar-desktop"
-        style={{
-          position: "fixed",
-          top: 0,
-          width: "100%",
-          height: 70,
-          background: "rgba(0,0,0,0.85)",
-          backdropFilter: "blur(10px)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "0 40px",
-          zIndex: 1000,
-          boxSizing: "border-box",
-        }}
-      >
-        <div style={{ fontWeight: "bold", color: "#f5a623", cursor: "pointer" }} onClick={() => navigate("/")}>Lo Zio del Rum</div>
-        <div style={{ display: "flex", gap: 25, alignItems: "center" }}>
-          <span onClick={() => navigate("/")} style={desktopLinkStyle(["/"])}>Home</span>
-          <span onClick={() => navigate("/mappa")} style={desktopLinkStyle(["/mappa"])}>Mappa</span>
-          <span onClick={() => navigate("/drink")} style={desktopLinkStyle(["/drink"])}>Drink</span>
-          <span onClick={() => navigate("/magazine")} style={desktopLinkStyle(["/magazine"])}>Magazine</span>
-          <span onClick={() => navigate("/community")} style={desktopLinkStyle(["/community"])}>Community</span>
-          <span onClick={() => navigate("/dashboard")} style={desktopLinkStyle(["/dashboard", "/pannello", "/admin"])}>Dashboard</span>
-          <span onClick={() => navigate("/crea")} style={desktopLinkStyle(["/crea"])}>Crea</span>
-          <span style={{ cursor: "pointer", fontSize: 26, marginLeft: 10, display: "flex", alignItems: "center" }} onClick={handleAdminAccess} title="Accesso amministratore">🔑</span>
-        </div>
-      </div>
-      )}
-
-      {isMobile && menuOpen && (
-        <div
-          className="menu-mobile"
-          style={{
-            position: "fixed",
-            top: "calc(64px + env(safe-area-inset-top))",
-            left: 0,
-            right: 0,
-            background: "rgba(0, 0, 0, 0.98)",
-            backdropFilter: "blur(10px)",
-            padding: 16,
-            display: "flex",
-            flexDirection: "column",
-            gap: 8,
-            zIndex: 999,
-          }}
-        >
-          <Link to="/" onClick={() => setMenuOpen(false)} style={{ color: "#fff", textDecoration: "none", padding: 10 }}>Home</Link>
-          <Link to="/mappa" onClick={() => setMenuOpen(false)} style={{ color: "#fff", textDecoration: "none", padding: 10 }}>Mappa</Link>
-          <Link to="/drink" onClick={() => setMenuOpen(false)} style={{ color: "#fff", textDecoration: "none", padding: 10 }}>Drink</Link>
-          <Link to="/magazine" onClick={() => setMenuOpen(false)} style={{ color: "#fff", textDecoration: "none", padding: 10 }}>Magazine</Link>
-          <Link to="/community" onClick={() => setMenuOpen(false)} style={{ color: "#fff", textDecoration: "none", padding: 10 }}>Community</Link>
-          <Link to="/crea" onClick={() => setMenuOpen(false)} style={{ color: "#f5a623", textDecoration: "none", padding: 10, fontWeight: "bold" }}>Crea</Link>
-        </div>
-      )}
 
       <div
         className="hero-section"
@@ -427,7 +236,7 @@ export default function Home() {
           <p className="hero-mobile-subtitle" style={{ opacity: 0.85, marginBottom: 30, fontSize: "clamp(14px, 2.5vw, 18px)" }}>
             Recensioni autentiche, esperienze uniche, cultura del bere. Trova cocktail bar, rum bar e locali d'eccellenza nella tua citta.
           </p>
-          <div className="hero-mobile-buttons" style={{ display: "flex", gap: 12 }}>
+          <div className="hero-mobile-buttons" style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
             <button
               className="hero-mobile-btn"
               onClick={() => navigate("/venues")}
