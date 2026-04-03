@@ -11,7 +11,8 @@ type Item = {
 };
 
 export default function Category() {
-  const { tipo } = useParams();
+  const { categoria, tipo } = useParams();
+  const selectedType = categoria || tipo;
   const navigate = useNavigate();
 
   const [items, setItems] = useState<Item[]>([]);
@@ -19,7 +20,7 @@ export default function Category() {
 
   useEffect(() => {
     load();
-  }, [tipo]);
+  }, [selectedType]);
 
   async function load() {
     setLoading(true);
@@ -32,7 +33,7 @@ export default function Category() {
     setItems([]);
 
     // 🍸 COCKTAIL
-    if (tipo === "cocktail") {
+    if (selectedType === "cocktail") {
       const { data, error } = await supabase.from("cocktail").select("*");
 
       if (error) console.error(error);
@@ -53,7 +54,7 @@ export default function Category() {
     }
 
     // 🥃 DISTILLATI
-    else if (tipo === "rum" || tipo === "whisky" || tipo === "altri") {
+    else if (selectedType === "rum" || selectedType === "whisky" || selectedType === "altri") {
       const { data, error } = await supabase.from("distillati").select("*");
 
       if (error) console.error(error);
@@ -63,13 +64,13 @@ export default function Category() {
 
         let filtered = data;
 
-        if (tipo === "rum") {
+        if (selectedType === "rum") {
           filtered = data.filter((d: any) =>
             normalize(d.categoria).includes("rum")
           );
         }
 
-        if (tipo === "whisky") {
+        if (selectedType === "whisky") {
           filtered = data.filter(
             (d: any) =>
               normalize(d.categoria).includes("whisky") ||
@@ -77,7 +78,7 @@ export default function Category() {
           );
         }
 
-        if (tipo === "altri") {
+        if (selectedType === "altri") {
           filtered = data.filter(
             (d: any) =>
               !normalize(d.categoria).includes("rum") &&
@@ -134,7 +135,7 @@ export default function Category() {
           <button className="drink-back-btn" onClick={() => navigate(-1)} aria-label="Torna indietro">
             ←
           </button>
-          <h1 className="drink-page-heading">{getTitle(tipo)}</h1>
+          <h1 className="drink-page-heading">{getTitle(selectedType)}</h1>
         </div>
 
         <div className="drink-grid-uniform">
