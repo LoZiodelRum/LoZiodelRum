@@ -128,7 +128,7 @@ export default function Category() {
   }
 
   return (
-    <div className="page fade-in drink-page-white">
+    <div className="fade-in drink-page-white">
       <section className="drink-section-white">
         <div className="drink-top-bar">
           <button className="drink-back-btn" onClick={() => navigate(-1)} aria-label="Torna indietro">

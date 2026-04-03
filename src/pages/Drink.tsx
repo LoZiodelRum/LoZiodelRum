@@ -96,7 +96,7 @@ export default function Drink() {
   }
 
   return (
-    <div className="page fade-in drink-page-white">
+    <div className="fade-in drink-page-white">
       {renderSection("Cocktail", cocktail, "cocktail")}
       {renderSection("Rum", rum, "rum")}
       {renderSection("Whisky", whisky, "whisky")}
