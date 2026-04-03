@@ -133,16 +133,43 @@ export default function Home() {
           .navbar-desktop { display: none !important; }
           .navbar-mobile { display: flex !important; }
           .hero-section { display: none !important; }
-          .content-section { padding: 16px !important; }
-          .content-section-first { padding-top: 92px !important; }
-          .section-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 14px !important; }
+          .content-section { padding: clamp(12px, 3.6vw, 18px) !important; }
+          .content-section-first { padding-top: calc(84px + env(safe-area-inset-top)) !important; }
+          .section-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: clamp(10px, 3vw, 14px) !important; }
           .card-box { height: auto !important; aspect-ratio: 1 / 1 !important; border-radius: 18px !important; }
           .section-header { margin-bottom: 16px !important; }
-          .section-title { font-size: 54px !important; line-height: 1.08 !important; }
-          .section-subtitle { display: block !important; color: #8f8f8f !important; margin-top: 6px !important; font-size: 16px !important; }
+          .section-title { font-size: clamp(30px, 8.6vw, 54px) !important; line-height: 1.08 !important; }
+          .section-subtitle { display: block !important; color: #8f8f8f !important; margin-top: 6px !important; font-size: clamp(14px, 3.8vw, 16px) !important; }
           .section-link { display: none !important; }
           .community-section { display: none !important; }
+          .card-title { font-size: clamp(15px, 5.2vw, 22px) !important; line-height: 1.1 !important; }
+          .card-subtitle { font-size: clamp(13px, 4.3vw, 16px) !important; }
+          .card-rating { font-size: clamp(12px, 3.6vw, 14px) !important; padding: 5px 10px !important; top: 10px !important; right: 10px !important; }
+          .card-title-clamp {
+            display: -webkit-box !important;
+            -webkit-line-clamp: 5;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+          }
         }
+
+        @media (min-width: 481px) and (max-width: 768px) {
+          .navbar-mobile { padding: 14px 20px !important; }
+          .content-section-first { padding-top: calc(92px + env(safe-area-inset-top)) !important; }
+          .card-box { border-radius: 20px !important; }
+        }
+
+        @media (max-width: 380px) {
+          .navbar-mobile { padding: calc(10px + env(safe-area-inset-top)) 12px 10px 12px !important; }
+          .mobile-brand { font-size: 16px !important; }
+          .content-section { padding: 12px !important; }
+          .section-grid { gap: 10px !important; }
+          .card-box { border-radius: 14px !important; }
+          .card-title-clamp {
+            -webkit-line-clamp: 4;
+          }
+        }
+
         @media (min-width: 769px) {
           .navbar-mobile { display: none !important; }
           .navbar-desktop { display: flex !important; }
@@ -161,7 +188,7 @@ export default function Home() {
           left: 0,
           width: "100%",
           background: "#0b0808",
-          padding: "12px 16px",
+          padding: "calc(12px + env(safe-area-inset-top)) 16px 12px 16px",
           display: "none",
           justifyContent: "space-between",
           alignItems: "center",
@@ -170,6 +197,7 @@ export default function Home() {
         }}
       >
         <div
+          className="mobile-brand"
           onClick={() => navigate("/")}
           style={{
             fontWeight: "bold",
@@ -356,8 +384,8 @@ export default function Home() {
               <img src={l.image_url ?? "https://via.placeholder.com/400x300"} alt={l.nome} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }} />
               <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.8), transparent)", zIndex: 1 }} />
               <div style={{ position: "relative", zIndex: 2, padding: 16, width: "100%" }}>
-                <h3 style={{ margin: "0 0 4px 0", fontSize: 18 }}>{l.nome}</h3>
-                <p style={{ margin: 0, fontSize: 14, opacity: 0.9 }}>{l.citta}</p>
+                <h3 className="card-title" style={{ margin: "0 0 4px 0", fontSize: 18 }}>{l.nome}</h3>
+                <p className="card-subtitle" style={{ margin: 0, fontSize: 14, opacity: 0.9 }}>{l.citta}</p>
               </div>
             </Link>
           ))}
@@ -389,7 +417,7 @@ export default function Home() {
               <img src={a.immagine ?? "https://via.placeholder.com/400x300"} alt={a.titolo} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }} />
               <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.8), transparent)", zIndex: 1 }} />
               <div style={{ position: "relative", zIndex: 2, padding: 16, width: "100%" }}>
-                <h3 style={{ margin: 0, fontSize: 16, fontWeight: 600 }}>{a.titolo}</h3>
+                <h3 className="card-title card-title-clamp" style={{ margin: 0, fontSize: 16, fontWeight: 600 }}>{a.titolo}</h3>
               </div>
             </Link>
           ))}
@@ -417,12 +445,12 @@ export default function Home() {
             >
               <img src={r.immagine ?? "https://via.placeholder.com/400x300"} alt={r.locale_nome ?? "Locale"} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }} />
               <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.8), transparent)", zIndex: 1 }} />
-              <div style={{ position: "absolute", top: 12, right: 12, background: "#f5a623", color: "#0b0b0b", padding: "6px 12px", borderRadius: 8, fontWeight: "bold", fontSize: 14, zIndex: 3 }}>
+              <div className="card-rating" style={{ position: "absolute", top: 12, right: 12, background: "#f5a623", color: "#0b0b0b", padding: "6px 12px", borderRadius: 8, fontWeight: "bold", fontSize: 14, zIndex: 3 }}>
                 {`★ ${r.rating.toFixed(1)}`}
               </div>
               <div style={{ position: "relative", zIndex: 2, padding: 16, width: "100%" }}>
-                <h3 style={{ margin: "0 0 4px 0", fontSize: 16 }}>{r.locale_nome ?? "Locale"}</h3>
-                <p style={{ margin: 0, fontSize: 13, opacity: 0.9 }}>{`Lo Zio del Rum - ${r.autore}`}</p>
+                <h3 className="card-title" style={{ margin: "0 0 4px 0", fontSize: 16 }}>{r.locale_nome ?? "Locale"}</h3>
+                <p className="card-subtitle" style={{ margin: 0, fontSize: 13, opacity: 0.9 }}>{`Lo Zio del Rum - ${r.autore}`}</p>
               </div>
             </div>
           ))}
