@@ -76,6 +76,7 @@ export default function MapPage() {
         center={[41.9028, 12.4964]}
         zoom={6}
         zoomControl={false}
+        attributionControl={false}
         style={{ height: "100%", width: "100%", border: "none", borderRadius: 0, margin: 0, padding: 0 }}
       >
         <ZoomControl position="bottomleft" />

@@ -609,6 +609,11 @@ button[style*="#c47a2c"] {
   margin-bottom: 14px;
 }
 
+.map-fullscreen .leaflet-top.leaflet-left .leaflet-control-zoom,
+.map-fullscreen .leaflet-control-attribution {
+  display: none !important;
+}
+
 .nav-container button,
 .mobile-menu button,
 .admin-modal button {
