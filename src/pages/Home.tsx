@@ -167,7 +167,10 @@ export default function Home() {
           .navbar-mobile { display: flex !important; }
           .hero-section {
             display: flex !important;
-            min-height: calc(100vh - 10px) !important;
+            min-height: 78vh !important;
+            width: 100vw !important;
+            margin-left: calc(50% - 50vw) !important;
+            margin-right: calc(50% - 50vw) !important;
             padding-top: calc(96px + env(safe-area-inset-top)) !important;
             align-items: flex-start !important;
           }
