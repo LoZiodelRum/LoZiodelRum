@@ -141,7 +141,7 @@ export default function Home() {
             padding: 6px 10px !important;
             margin: 0 auto 16px auto !important;
           }
-          .hero-mobile-title { font-size: 2.25rem !important; line-height: 1.1 !important; }
+          .hero-mobile-title { font-size: clamp(38px, 11vw, 52px) !important; line-height: 1.06 !important; }
           .hero-mobile-subtitle {
             font-size: clamp(14px, 5vw, 20px) !important;
             line-height: 1.4 !important;
@@ -203,7 +203,7 @@ export default function Home() {
         }
 
         @media (max-width: 380px) {
-          .hero-mobile-title { font-size: 2rem !important; }
+          .hero-mobile-title { font-size: 42px !important; }
           .hero-mobile-btn { font-size: 18px !important; }
           .content-section { padding: 12px !important; }
           .section-grid { gap: 10px !important; }
