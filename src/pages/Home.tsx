@@ -123,7 +123,7 @@ export default function Home() {
             margin-left: calc(50% - 50vw) !important;
             margin-right: calc(50% - 50vw) !important;
             padding-top: calc(96px + env(safe-area-inset-top)) !important;
-            padding-bottom: 28px !important;
+            padding-bottom: 72px !important;
             align-items: flex-start !important;
           }
           .hero-mobile-content { margin-top: 34px !important; padding-bottom: 10px !important; }
@@ -147,6 +147,7 @@ export default function Home() {
             flex-direction: column !important;
             gap: 14px !important;
             margin-top: 34px !important;
+            margin-bottom: 72px !important;
           }
           .hero-mobile-btn {
             width: 100% !important;
@@ -156,7 +157,7 @@ export default function Home() {
             border-radius: 18px !important;
           }
           .content-section { padding: clamp(12px, 3.6vw, 18px) !important; }
-          .content-section-first { padding-top: 72px !important; margin-top: 24px !important; }
+          .content-section-first { padding-top: 92px !important; margin-top: 64px !important; }
           .section-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: clamp(10px, 3vw, 14px) !important; }
           .card-box { height: auto !important; aspect-ratio: 1 / 1 !important; border-radius: 18px !important; }
           .section-header { margin-bottom: 16px !important; }
@@ -206,7 +207,7 @@ export default function Home() {
 
         @media (min-width: 769px) {
           .content-section { padding: 40px 60px !important; }
-          .content-section-first { margin-top: 24px !important; }
+          .content-section-first { margin-top: 56px !important; }
           .section-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 20px !important; }
           .card-box { height: 220px !important; aspect-ratio: auto !important; }
         }
@@ -280,7 +281,7 @@ export default function Home() {
         </div>
       </div>
 
-      <section className="content-section content-section-first" style={{ padding: "40px 60px", maxWidth: 1400, margin: "24px auto 0" }}>
+      <section className="content-section content-section-first" style={{ padding: "40px 60px", maxWidth: 1400, margin: "56px auto 0" }}>
         <div className="section-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 28 }}>
           <div>
             <h2 className="section-title" style={{ fontSize: "clamp(24px, 4vw, 32px)", margin: 0 }}>Locali in evidenza</h2>
