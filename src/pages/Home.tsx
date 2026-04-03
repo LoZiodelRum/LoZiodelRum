@@ -282,8 +282,8 @@ export default function Home() {
       <section className="content-section content-section-first" style={{ padding: "40px 60px", maxWidth: 1400, margin: "0 auto" }}>
         <div className="section-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 28 }}>
           <div>
-            <h2 className="section-title" style={{ fontSize: "clamp(24px, 4vw, 32px)", margin: 0 }}>Locali in Evidenza</h2>
-            <p className="section-subtitle" style={{ display: "none" }}>Selezionati dalla nostra redazione</p>
+            <h2 className="section-title" style={{ fontSize: "clamp(24px, 4vw, 32px)", margin: 0 }}>Locali in evidenza</h2>
+            <p className="section-subtitle" style={{ display: "none", marginTop: 12 }}>Selezionati dalla nostra redazione</p>
           </div>
           <Link className="section-link" to="/venues" style={{ color: "#f5a623", textDecoration: "none" }}>Vedi tutti</Link>
         </div>
