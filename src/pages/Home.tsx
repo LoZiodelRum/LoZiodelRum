@@ -41,6 +41,9 @@ export default function Home() {
   const [articoli, setArticoli] = useState<Articolo[]>([]);
   const [recensioni, setRecensioni] = useState<Recensione[]>([]);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [isMobile, setIsMobile] = useState(() =>
+    typeof window !== "undefined" ? window.innerWidth <= 1024 : false,
+  );
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -61,6 +64,23 @@ export default function Home() {
     void fetchArticoli();
     void fetchRecensioni();
   }, []);
+
+  useEffect(() => {
+    function handleResize() {
+      setIsMobile(window.innerWidth <= 1024);
+    }
+
+    handleResize();
+    window.addEventListener("resize", handleResize);
+
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  useEffect(() => {
+    if (!isMobile && menuOpen) {
+      setMenuOpen(false);
+    }
+  }, [isMobile, menuOpen]);
 
   async function fetchLocali() {
     const { data, error } = await supabase
@@ -147,14 +167,13 @@ export default function Home() {
           .navbar-mobile { display: flex !important; }
           .hero-section { display: none !important; }
           .content-section { padding: clamp(12px, 3.6vw, 18px) !important; }
-          .content-section-first { padding-top: calc(84px + env(safe-area-inset-top)) !important; }
+          .content-section-first { padding-top: calc(86px + env(safe-area-inset-top)) !important; }
           .section-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: clamp(10px, 3vw, 14px) !important; }
           .card-box { height: auto !important; aspect-ratio: 1 / 1 !important; border-radius: 18px !important; }
           .section-header { margin-bottom: 16px !important; }
           .section-title { font-size: clamp(30px, 8.6vw, 54px) !important; line-height: 1.08 !important; }
           .section-subtitle { display: block !important; color: #8f8f8f !important; margin-top: 6px !important; font-size: clamp(14px, 3.8vw, 16px) !important; }
           .section-link { display: none !important; }
-          .community-section { display: none !important; }
           .card-title { font-size: clamp(15px, 5.2vw, 22px) !important; line-height: 1.1 !important; }
           .card-subtitle { font-size: clamp(13px, 4.3vw, 16px) !important; }
           .card-rating { font-size: clamp(12px, 3.6vw, 14px) !important; padding: 5px 10px !important; top: 10px !important; right: 10px !important; }
@@ -166,15 +185,18 @@ export default function Home() {
           }
         }
 
+        @media (max-width: 1024px) {
+          .navbar-desktop { display: none !important; }
+          .navbar-mobile { display: flex !important; }
+        }
+
         @media (min-width: 481px) and (max-width: 768px) {
           .navbar-mobile { padding: 14px 20px !important; }
-          .content-section-first { padding-top: calc(92px + env(safe-area-inset-top)) !important; }
           .card-box { border-radius: 20px !important; }
         }
 
         @media (min-width: 390px) and (max-width: 430px) {
           .content-section { padding: 14px 16px !important; }
-          .content-section-first { padding-top: calc(88px + env(safe-area-inset-top)) !important; }
           .section-grid { gap: 12px !important; }
           .section-title { font-size: 42px !important; }
           .card-box { border-radius: 16px !important; }
@@ -206,6 +228,7 @@ export default function Home() {
         }
       `}</style>
 
+      {isMobile ? (
       <nav
         className="navbar-mobile"
         style={{
@@ -281,33 +304,7 @@ export default function Home() {
           />
         </button>
       </nav>
-
-      {menuOpen && (
-        <div
-          className="menu-mobile"
-          style={{
-            position: "fixed",
-            top: 60,
-            left: 0,
-            right: 0,
-            background: "rgba(0, 0, 0, 0.98)",
-            backdropFilter: "blur(10px)",
-            padding: 16,
-            display: "flex",
-            flexDirection: "column",
-            gap: 8,
-            zIndex: 999,
-          }}
-        >
-          <Link to="/" onClick={() => setMenuOpen(false)} style={{ color: "#fff", textDecoration: "none", padding: 10 }}>Home</Link>
-          <Link to="/mappa" onClick={() => setMenuOpen(false)} style={{ color: "#fff", textDecoration: "none", padding: 10 }}>Mappa</Link>
-          <Link to="/drink" onClick={() => setMenuOpen(false)} style={{ color: "#fff", textDecoration: "none", padding: 10 }}>Drink</Link>
-          <Link to="/magazine" onClick={() => setMenuOpen(false)} style={{ color: "#fff", textDecoration: "none", padding: 10 }}>Magazine</Link>
-          <Link to="/community" onClick={() => setMenuOpen(false)} style={{ color: "#fff", textDecoration: "none", padding: 10 }}>Community</Link>
-          <Link to="/crea" onClick={() => setMenuOpen(false)} style={{ color: "#f5a623", textDecoration: "none", padding: 10, fontWeight: "bold" }}>Crea</Link>
-        </div>
-      )}
-
+      ) : (
       <div
         className="navbar-desktop"
         style={{
@@ -337,6 +334,33 @@ export default function Home() {
           <span style={{ cursor: "pointer", fontSize: 26, marginLeft: 10, display: "flex", alignItems: "center" }} onClick={handleAdminAccess} title="Accesso amministratore">🔑</span>
         </div>
       </div>
+      )}
+
+      {isMobile && menuOpen && (
+        <div
+          className="menu-mobile"
+          style={{
+            position: "fixed",
+            top: "calc(64px + env(safe-area-inset-top))",
+            left: 0,
+            right: 0,
+            background: "rgba(0, 0, 0, 0.98)",
+            backdropFilter: "blur(10px)",
+            padding: 16,
+            display: "flex",
+            flexDirection: "column",
+            gap: 8,
+            zIndex: 999,
+          }}
+        >
+          <Link to="/" onClick={() => setMenuOpen(false)} style={{ color: "#fff", textDecoration: "none", padding: 10 }}>Home</Link>
+          <Link to="/mappa" onClick={() => setMenuOpen(false)} style={{ color: "#fff", textDecoration: "none", padding: 10 }}>Mappa</Link>
+          <Link to="/drink" onClick={() => setMenuOpen(false)} style={{ color: "#fff", textDecoration: "none", padding: 10 }}>Drink</Link>
+          <Link to="/magazine" onClick={() => setMenuOpen(false)} style={{ color: "#fff", textDecoration: "none", padding: 10 }}>Magazine</Link>
+          <Link to="/community" onClick={() => setMenuOpen(false)} style={{ color: "#fff", textDecoration: "none", padding: 10 }}>Community</Link>
+          <Link to="/crea" onClick={() => setMenuOpen(false)} style={{ color: "#f5a623", textDecoration: "none", padding: 10, fontWeight: "bold" }}>Crea</Link>
+        </div>
+      )}
 
       <div
         className="hero-section"
