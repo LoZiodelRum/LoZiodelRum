@@ -167,11 +167,11 @@ export default function Home() {
           .navbar-mobile { display: flex !important; }
           .hero-section { display: none !important; }
           .content-section { padding: clamp(12px, 3.6vw, 18px) !important; }
-          .content-section-first { padding-top: calc(86px + env(safe-area-inset-top)) !important; }
+          .content-section-first { padding-top: calc(148px + env(safe-area-inset-top)) !important; }
           .section-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: clamp(10px, 3vw, 14px) !important; }
           .card-box { height: auto !important; aspect-ratio: 1 / 1 !important; border-radius: 18px !important; }
           .section-header { margin-bottom: 16px !important; }
-          .section-title { font-size: clamp(30px, 8.6vw, 54px) !important; line-height: 1.08 !important; }
+          .section-title { font-size: clamp(26px, 7vw, 34px) !important; line-height: 1.08 !important; }
           .section-subtitle { display: block !important; color: #8f8f8f !important; margin-top: 6px !important; font-size: clamp(14px, 3.8vw, 16px) !important; }
           .section-link { display: none !important; }
           .card-title { font-size: clamp(15px, 5.2vw, 22px) !important; line-height: 1.1 !important; }
@@ -198,7 +198,7 @@ export default function Home() {
         @media (min-width: 390px) and (max-width: 430px) {
           .content-section { padding: 14px 16px !important; }
           .section-grid { gap: 12px !important; }
-          .section-title { font-size: 42px !important; }
+          .section-title { font-size: 32px !important; }
           .card-box { border-radius: 16px !important; }
           .card-title { font-size: 18px !important; }
           .card-subtitle { font-size: 14px !important; }
@@ -408,7 +408,7 @@ export default function Home() {
       <section className="content-section content-section-first" style={{ padding: "40px 60px", maxWidth: 1400, margin: "0 auto" }}>
         <div className="section-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 28 }}>
           <div>
-            <h2 className="section-title" style={{ fontSize: "clamp(24px, 4vw, 32px)", margin: 0 }}>⭐ Locali in Evidenza</h2>
+            <h2 className="section-title" style={{ fontSize: "clamp(24px, 4vw, 32px)", margin: 0 }}>Locali in Evidenza</h2>
             <p className="section-subtitle" style={{ display: "none" }}>Selezionati dalla nostra redazione</p>
           </div>
           <Link className="section-link" to="/venues" style={{ color: "#f5a623", textDecoration: "none" }}>Vedi tutti</Link>
