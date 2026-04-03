@@ -132,10 +132,16 @@ export default function Home() {
         @media (max-width: 768px) {
           .navbar-desktop { display: none !important; }
           .navbar-mobile { display: flex !important; }
-          .hero-section { padding-top: 60px !important; }
+          .hero-section { display: none !important; }
           .content-section { padding: 16px !important; }
+          .content-section-first { padding-top: 92px !important; }
           .section-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 14px !important; }
           .card-box { height: auto !important; aspect-ratio: 1 / 1 !important; border-radius: 18px !important; }
+          .section-header { margin-bottom: 16px !important; }
+          .section-title { font-size: 54px !important; line-height: 1.08 !important; }
+          .section-subtitle { display: block !important; color: #8f8f8f !important; margin-top: 6px !important; font-size: 16px !important; }
+          .section-link { display: none !important; }
+          .community-section { display: none !important; }
         }
         @media (min-width: 769px) {
           .navbar-mobile { display: none !important; }
@@ -154,8 +160,7 @@ export default function Home() {
           top: 0,
           left: 0,
           width: "100%",
-          background: "rgba(0, 0, 0, 0.95)",
-          backdropFilter: "blur(10px)",
+          background: "#0b0808",
           padding: "12px 16px",
           display: "none",
           justifyContent: "space-between",
@@ -322,10 +327,13 @@ export default function Home() {
         </div>
       </div>
 
-      <section className="content-section" style={{ padding: "40px 60px", maxWidth: 1400, margin: "0 auto" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 28 }}>
-          <h2 style={{ fontSize: "clamp(24px, 4vw, 32px)", margin: 0 }}>Locali in Evidenza</h2>
-          <Link to="/venues" style={{ color: "#f5a623", textDecoration: "none" }}>Vedi tutti</Link>
+      <section className="content-section content-section-first" style={{ padding: "40px 60px", maxWidth: 1400, margin: "0 auto" }}>
+        <div className="section-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 28 }}>
+          <div>
+            <h2 className="section-title" style={{ fontSize: "clamp(24px, 4vw, 32px)", margin: 0 }}>⭐ Locali in Evidenza</h2>
+            <p className="section-subtitle" style={{ display: "none" }}>Selezionati dalla nostra redazione</p>
+          </div>
+          <Link className="section-link" to="/venues" style={{ color: "#f5a623", textDecoration: "none" }}>Vedi tutti</Link>
         </div>
         <div className="section-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 20 }}>
           {locali.map((l) => (
@@ -421,7 +429,7 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="content-section" style={{ padding: "40px 60px", maxWidth: 1400, margin: "0 auto", textAlign: "center" }}>
+      <section className="content-section community-section" style={{ padding: "40px 60px", maxWidth: 1400, margin: "0 auto", textAlign: "center" }}>
         <h2 style={{ fontSize: "clamp(28px, 5vw, 44px)", marginBottom: 16, fontWeight: 800 }}>Unisciti alla community</h2>
         <p style={{ fontSize: "clamp(14px, 2vw, 18px)", color: "#aaa", maxWidth: 600, margin: "0 auto 32px", lineHeight: 1.6 }}>
           Condividi le tue esperienze, scopri nuovi locali e contribuisci alla cultura del bere consapevole.
