@@ -55,11 +55,27 @@ export default function MapPage() {
   }
 
   return (
-    <div className="page page-full-bleed fade-in" style={{ height: "100dvh", width: "100%", padding: 0 }}>
+    <div
+      className="fade-in map-fullscreen"
+      style={{
+        position: "fixed",
+        top: 70,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        height: "auto",
+        width: "auto",
+        padding: 0,
+        margin: 0,
+        border: "none",
+        borderRadius: 0,
+        overflow: "hidden",
+      }}
+    >
       <MapContainer
         center={[41.9028, 12.4964]}
         zoom={6}
-        style={{ height: "100%", width: "100%" }}
+        style={{ height: "100%", width: "100%", border: "none", borderRadius: 0, margin: 0, padding: 0 }}
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
