@@ -134,8 +134,8 @@ export default function Home() {
           .navbar-mobile { display: flex !important; }
           .hero-section { padding-top: 60px !important; }
           .content-section { padding: 16px !important; }
-          .section-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 12px !important; }
-          .card-box { height: 180px !important; }
+          .section-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 14px !important; }
+          .card-box { height: 235px !important; border-radius: 18px !important; }
         }
         @media (min-width: 769px) {
           .navbar-mobile { display: none !important; }
