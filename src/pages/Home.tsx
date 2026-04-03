@@ -29,6 +29,7 @@ export default function Home() {
   const [locali, setLocali] = useState<Locale[]>([]);
   const [drinks, setDrinks] = useState<Drink[]>([]);
   const [articoli, setArticoli] = useState<Articolo[]>([]);
+  const [menuOpen, setMenuOpen] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -120,9 +121,166 @@ export default function Home() {
         padding: 0,
       }}
     >
-      {/* NAVBAR */}
-      {false && (
+      <style>{`
+        @media (max-width: 768px) {
+          .navbar-desktop { display: none !important; }
+          .navbar-mobile { display: flex !important; }
+          .hero-section { padding-top: 60px !important; }
+        }
+        @media (min-width: 769px) {
+          .navbar-mobile { display: none !important; }
+          .navbar-desktop { display: flex !important; }
+          .menu-mobile { display: none !important; }
+        }
+      `}</style>
+
+      {/* NAVBAR MOBILE CON HAMBURGER MENU */}
+      <nav
+        className="navbar-mobile"
+        style={{
+          position: "fixed",
+          top: 0,
+          width: "100%",
+          background: "rgba(0, 0, 0, 0.95)",
+          backdropFilter: "blur(10px)",
+          padding: "12px 16px",
+          display: "none",
+          justifyContent: "space-between",
+          alignItems: "center",
+          zIndex: 1000,
+          borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+        }}
+      >
+        {/* LOGO */}
+        <div
+          onClick={() => navigate("/")}
+          style={{
+            fontWeight: "bold",
+            color: "#f5a623",
+            fontSize: "18px",
+            cursor: "pointer",
+          }}
+        >
+          Lo Zio del Rum
+        </div>
+
+        {/* HAMBURGER MENU BUTTON */}
+        <button
+          onClick={() => setMenuOpen(!menuOpen)}
+          style={{
+            background: "none",
+            border: "none",
+            color: "#fff",
+            fontSize: "24px",
+            cursor: "pointer",
+            padding: "8px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "4px",
+          }}
+        >
+          <div
+            style={{
+              width: "24px",
+              height: "2px",
+              background: "#fff",
+              transition: "all 0.3s",
+              transform: menuOpen ? "rotate(45deg) translate(8px, 8px)" : "none",
+            }}
+          />
+          <div
+            style={{
+              width: "24px",
+              height: "2px",
+              background: "#fff",
+              opacity: menuOpen ? 0 : 1,
+              transition: "opacity 0.3s",
+            }}
+          />
+          <div
+            style={{
+              width: "24px",
+              height: "2px",
+              background: "#fff",
+              transition: "all 0.3s",
+              transform: menuOpen ? "rotate(-45deg) translate(8px, -8px)" : "none",
+            }}
+          />
+        </button>
+      </nav>
+
+      {/* MOBILE MENU DROPDOWN */}
+      {menuOpen && (
+        <div
+          className="menu-mobile"
+          style={{
+            position: "fixed",
+            top: "60px",
+            left: 0,
+            right: 0,
+            background: "rgba(0, 0, 0, 0.98)",
+            backdropFilter: "blur(10px)",
+            padding: "16px",
+            display: "flex",
+            flexDirection: "column",
+            gap: "12px",
+            zIndex: 999,
+            borderBottom: "1px solid rgba(255, 255, 255, 0.1)",
+          }}
+        >
+          <Link
+            to="/"
+            onClick={() => setMenuOpen(false)}
+            style={{ color: "#fff", textDecoration: "none", padding: "10px" }}
+          >
+            Home
+          </Link>
+          <Link
+            to="/mappa"
+            onClick={() => setMenuOpen(false)}
+            style={{ color: "#fff", textDecoration: "none", padding: "10px" }}
+          >
+            Mappa
+          </Link>
+          <Link
+            to="/drink"
+            onClick={() => setMenuOpen(false)}
+            style={{ color: "#fff", textDecoration: "none", padding: "10px" }}
+          >
+            Drink
+          </Link>
+          <Link
+            to="/magazine"
+            onClick={() => setMenuOpen(false)}
+            style={{ color: "#fff", textDecoration: "none", padding: "10px" }}
+          >
+            Magazine
+          </Link>
+          <Link
+            to="/community"
+            onClick={() => setMenuOpen(false)}
+            style={{ color: "#fff", textDecoration: "none", padding: "10px" }}
+          >
+            Community
+          </Link>
+          <Link
+            to="/crea"
+            onClick={() => setMenuOpen(false)}
+            style={{
+              color: "#f5a623",
+              textDecoration: "none",
+              padding: "10px",
+              fontWeight: "bold",
+            }}
+          >
+            Crea
+          </Link>
+        </div>
+      )}
+
+      {/* NAVBAR DESKTOP */}
       <div
+        className="navbar-desktop"
         style={{
           position: "fixed",
           top: 0,
@@ -145,21 +303,32 @@ export default function Home() {
         </div>
 
         <div style={{ display: "flex", gap: 25, alignItems: "center" }}>
-          <span onClick={() => navigate("/")}>Home</span>
-          <span onClick={() => navigate("/mappa")}>Mappa</span>
-          <span onClick={() => navigate("/drink")}>Drink</span>
-          <span onClick={() => navigate("/magazine")}>Magazine</span>
-          <span onClick={() => navigate("/community")}>Community</span>
-          <span onClick={() => navigate("/dashboard")}>Dashboard</span>
+          <span onClick={() => navigate("/")} style={{ cursor: "pointer" }}>
+            Home
+          </span>
+          <span onClick={() => navigate("/mappa")} style={{ cursor: "pointer" }}>
+            Mappa
+          </span>
+          <span onClick={() => navigate("/drink")} style={{ cursor: "pointer" }}>
+            Drink
+          </span>
+          <span onClick={() => navigate("/magazine")} style={{ cursor: "pointer" }}>
+            Magazine
+          </span>
+          <span onClick={() => navigate("/community")} style={{ cursor: "pointer" }}>
+            Community
+          </span>
+          <span onClick={() => navigate("/dashboard")} style={{ cursor: "pointer" }}>
+            Dashboard
+          </span>
 
           <span
-            style={{ color: "#f5a623", fontWeight: "bold" }}
+            style={{ color: "#f5a623", fontWeight: "bold", cursor: "pointer" }}
             onClick={() => navigate("/crea")}
           >
             Crea
           </span>
 
-          {/* 🔥 CHIAVE (RESA VISIBILE) */}
           <span
             style={{
               cursor: "pointer",
@@ -175,7 +344,6 @@ export default function Home() {
           </span>
         </div>
       </div>
-      )}
 
       {/* HERO */}
       <div
