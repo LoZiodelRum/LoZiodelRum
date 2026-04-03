@@ -135,7 +135,7 @@ export default function Home() {
           .hero-section { padding-top: 60px !important; }
           .content-section { padding: 16px !important; }
           .section-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: 14px !important; }
-          .card-box { height: 235px !important; border-radius: 18px !important; }
+          .card-box { height: auto !important; aspect-ratio: 1 / 1 !important; border-radius: 18px !important; }
         }
         @media (min-width: 769px) {
           .navbar-mobile { display: none !important; }
@@ -143,7 +143,7 @@ export default function Home() {
           .menu-mobile { display: none !important; }
           .content-section { padding: 40px 60px !important; }
           .section-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 20px !important; }
-          .card-box { height: 220px !important; }
+          .card-box { height: 220px !important; aspect-ratio: auto !important; }
         }
       `}</style>
 
