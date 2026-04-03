@@ -1,5 +1,5 @@
 import React from "react";
-import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import { UserProvider, useUser } from "./context/UserContext";
 
 import Navbar from "./components/Navbar";
@@ -66,133 +66,144 @@ function PageShell({ children, fullBleed = false }: { children: React.ReactNode;
   return <div className={fullBleed ? "page page-full-bleed fade-in" : "page fade-in"}>{children}</div>;
 }
 
+function AppContent() {
+  const location = useLocation();
+  const isHomePage = location.pathname === "/";
+
+  return (
+    <>
+      {!isHomePage && <Navbar />}
+
+      <Routes>
+
+        {/* PUBBLICHE */}
+        <Route path="/" element={<PageShell fullBleed><Home /></PageShell>} />
+        <Route path="/auth" element={<PageShell><Auth /></PageShell>} />
+
+        {/* REGISTRAZIONE */}
+        <Route path="/registrati" element={<PageShell><SceltaRegistrazione /></PageShell>} />
+        <Route path="/registrazione" element={<PageShell><Registrazione /></PageShell>} />
+        <Route path="/registrazione-bartender" element={<PageShell><RegistrazioneBartender /></PageShell>} />
+        <Route path="/registrazione-owner" element={<PageShell><RegistrazioneProprietario /></PageShell>} />
+
+        {/* DRINK */}
+        <Route path="/drink" element={<PageShell><Drink /></PageShell>} />
+        <Route path="/drinks" element={<PageShell><Drink /></PageShell>} />
+        <Route path="/drink/:id" element={<PageShell><DrinkDetail /></PageShell>} />
+        <Route path="/categoria/:categoria" element={<PageShell><Category /></PageShell>} />
+
+        {/* MAGAZINE */}
+        <Route path="/magazine" element={<PageShell><Magazine /></PageShell>} />
+        <Route path="/magazine/:id" element={<PageShell><ArticleDetail /></PageShell>} />
+
+        {/* BLOCCO UTENTE */}
+        <Route path="/in-attesa" element={<PageShell><InAttesa /></PageShell>} />
+
+        {/* 🔴 ADMIN */}
+        <Route
+          path="/admin"
+          element={
+            <PageShell fullBleed>
+              <Protected roles={["admin"]}>
+                <PannelloControllo />
+              </Protected>
+            </PageShell>
+          }
+        />
+
+        {/* 🔥 MAPPA PUBBLICA */}
+        <Route path="/mappa" element={<PageShell fullBleed><MapPage /></PageShell>} />
+        <Route path="/venues" element={<PageShell fullBleed><MapPage /></PageShell>} />
+
+        {/* PUBBLICHE */}
+        <Route
+          path="/community"
+          element={
+            <PageShell>
+              <Community />
+            </PageShell>
+          }
+        />
+
+        <Route
+          path="/profilo/:id"
+          element={
+            <PageShell>
+              <UserProfile />
+            </PageShell>
+          }
+        />
+
+        <Route
+          path="/venue/:id"
+          element={
+            <PageShell>
+              <VenueDetail />
+            </PageShell>
+          }
+        />
+
+        {/* PROTETTE */}
+
+        <Route
+          path="/recensione"
+          element={
+            <PageShell>
+              <Protected>
+                <Recensione />
+              </Protected>
+            </PageShell>
+          }
+        />
+
+        <Route
+          path="/segnala-locale"
+          element={
+            <PageShell>
+              <Protected>
+                <SegnalaLocale />
+              </Protected>
+            </PageShell>
+          }
+        />
+
+        {/* SOLO BARTENDER + PROPRIETARIO */}
+        <Route
+          path="/crea"
+          element={
+            <PageShell>
+              <Protected roles={["bartender", "proprietario"]}>
+                <Crea />
+              </Protected>
+            </PageShell>
+          }
+        />
+
+        {/* SOLO PROPRIETARIO */}
+        <Route
+          path="/pannello"
+          element={
+            <PageShell fullBleed>
+              <Protected roles={["proprietario"]}>
+                <PannelloControllo />
+              </Protected>
+            </PageShell>
+          }
+        />
+
+        {/* FALLBACK */}
+        <Route path="*" element={<Navigate to="/" />} />
+
+      </Routes>
+    </>
+  );
+}
+
 export default function App() {
   return (
     <UserProvider>
       <BrowserRouter>
-        <Navbar />
-
-        <Routes>
-
-          {/* PUBBLICHE */}
-          <Route path="/" element={<PageShell fullBleed><Home /></PageShell>} />
-          <Route path="/auth" element={<PageShell><Auth /></PageShell>} />
-
-          {/* REGISTRAZIONE */}
-          <Route path="/registrati" element={<PageShell><SceltaRegistrazione /></PageShell>} />
-          <Route path="/registrazione" element={<PageShell><Registrazione /></PageShell>} />
-          <Route path="/registrazione-bartender" element={<PageShell><RegistrazioneBartender /></PageShell>} />
-          <Route path="/registrazione-owner" element={<PageShell><RegistrazioneProprietario /></PageShell>} />
-
-          {/* DRINK */}
-          <Route path="/drink" element={<PageShell><Drink /></PageShell>} />
-          <Route path="/drinks" element={<PageShell><Drink /></PageShell>} />
-          <Route path="/drink/:id" element={<PageShell><DrinkDetail /></PageShell>} />
-          <Route path="/categoria/:categoria" element={<PageShell><Category /></PageShell>} />
-
-          {/* MAGAZINE */}
-          <Route path="/magazine" element={<PageShell><Magazine /></PageShell>} />
-          <Route path="/magazine/:id" element={<PageShell><ArticleDetail /></PageShell>} />
-
-          {/* BLOCCO UTENTE */}
-          <Route path="/in-attesa" element={<PageShell><InAttesa /></PageShell>} />
-
-          {/* 🔴 ADMIN */}
-          <Route
-            path="/admin"
-            element={
-              <PageShell fullBleed>
-                <Protected roles={["admin"]}>
-                  <PannelloControllo />
-                </Protected>
-              </PageShell>
-            }
-          />
-
-          {/* 🔥 MAPPA PUBBLICA */}
-          <Route path="/mappa" element={<PageShell fullBleed><MapPage /></PageShell>} />
-          <Route path="/venues" element={<PageShell fullBleed><MapPage /></PageShell>} />
-
-          {/* PUBBLICHE */}
-          <Route
-            path="/community"
-            element={
-              <PageShell>
-                <Community />
-              </PageShell>
-            }
-          />
-
-          <Route
-            path="/profilo/:id"
-            element={
-              <PageShell>
-                <UserProfile />
-              </PageShell>
-            }
-          />
-
-          <Route
-            path="/venue/:id"
-            element={
-              <PageShell>
-                <VenueDetail />
-              </PageShell>
-            }
-          />
-
-          {/* PROTETTE */}
-
-          <Route
-            path="/recensione"
-            element={
-              <PageShell>
-                <Protected>
-                  <Recensione />
-                </Protected>
-              </PageShell>
-            }
-          />
-
-          <Route
-            path="/segnala-locale"
-            element={
-              <PageShell>
-                <Protected>
-                  <SegnalaLocale />
-                </Protected>
-              </PageShell>
-            }
-          />
-
-          {/* SOLO BARTENDER + PROPRIETARIO */}
-          <Route
-            path="/crea"
-            element={
-              <PageShell>
-                <Protected roles={["bartender", "proprietario"]}>
-                  <Crea />
-                </Protected>
-              </PageShell>
-            }
-          />
-
-          {/* SOLO PROPRIETARIO */}
-          <Route
-            path="/pannello"
-            element={
-              <PageShell fullBleed>
-                <Protected roles={["proprietario"]}>
-                  <PannelloControllo />
-                </Protected>
-              </PageShell>
-            }
-          />
-
-          {/* FALLBACK */}
-          <Route path="*" element={<Navigate to="/" />} />
-
-        </Routes>
+        <AppContent />
       </BrowserRouter>
     </UserProvider>
   );
