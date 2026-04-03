@@ -255,7 +255,6 @@ export default function Home() {
               }}
             >
               Esplora Locali
-              <span>→</span>
             </button>
             <button
               className="hero-mobile-btn"
@@ -274,7 +273,6 @@ export default function Home() {
                 gap: 10,
               }}
             >
-              <span>📍</span>
               Vedi Mappa
             </button>
           </div>
