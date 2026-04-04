@@ -186,7 +186,9 @@ export default function Home() {
           .section-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: clamp(10px, 3vw, 14px) !important; }
           .card-box { height: auto !important; aspect-ratio: 1 / 1 !important; border-radius: 18px !important; }
           .section-header { margin-bottom: 16px !important; }
-          .section-title { font-size: clamp(26px, 7vw, 34px) !important; line-height: 1.08 !important; }
+          .section-title { font-size: clamp(16px, 4.5vw, 20px) !important; line-height: 1.08 !important; }
+          .community-section h2 { font-size: clamp(16px, 4.5vw, 20px) !important; }
+          .community-section p { font-size: clamp(11px, 3vw, 13px) !important; }
           .section-subtitle { display: block !important; color: #8f8f8f !important; margin-top: 6px !important; font-size: clamp(14px, 3.8vw, 16px) !important; }
           .section-link { display: none !important; }
           .card-title { font-size: clamp(11px, 3.2vw, 14px) !important; line-height: 1.15 !important; }
@@ -211,7 +213,7 @@ export default function Home() {
         @media (min-width: 390px) and (max-width: 430px) {
           .content-section { padding: 14px 16px !important; }
           .section-grid { gap: 12px !important; }
-          .section-title { font-size: 32px !important; }
+          .section-title { font-size: 18px !important; }
           .card-box { border-radius: 16px !important; }
           .card-title { font-size: 13px !important; }
           .card-subtitle { font-size: 10px !important; }
@@ -352,7 +354,7 @@ export default function Home() {
 
       <section className="content-section" style={{ padding: "40px 60px", maxWidth: 1400, margin: "0 auto" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 28 }}>
-          <h2 style={{ fontSize: "clamp(24px, 4vw, 32px)", margin: 0 }}>Ultimi Articoli</h2>
+          <h2 className="section-title" style={{ fontSize: "clamp(24px, 4vw, 32px)", margin: 0 }}>Ultimi Articoli</h2>
         </div>
         <div className="section-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 20 }}>
           {articoli.map((a) => (
@@ -384,7 +386,7 @@ export default function Home() {
 
       <section className="content-section" style={{ padding: "40px 60px", maxWidth: 1400, margin: "0 auto" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 28 }}>
-          <h2 style={{ fontSize: "clamp(24px, 4vw, 32px)", margin: 0 }}>Ultime Recensioni</h2>
+          <h2 className="section-title" style={{ fontSize: "clamp(24px, 4vw, 32px)", margin: 0 }}>Ultime Recensioni</h2>
         </div>
         <div className="section-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 20 }}>
           {recensioni.map((r) => (
