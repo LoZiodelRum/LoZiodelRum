@@ -250,6 +250,7 @@ export default function Home() {
         className="hero-section"
         style={{
           height: "100vh",
+          width: "100vw",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -258,7 +259,10 @@ export default function Home() {
           backgroundSize: "cover",
           backgroundPosition: "center",
           position: "relative",
-          paddingTop: 70,
+          marginLeft: "calc(50% - 50vw)",
+          marginRight: "calc(50% - 50vw)",
+          paddingTop: 0,
+          borderRadius: 0,
         }}
       >
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(0,0,0,0.5), rgba(0,0,0,0.9))" }} />
