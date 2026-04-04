@@ -213,7 +213,7 @@ export default function Navbar() {
         <Link to="/drink" onClick={closeMobileMenu} style={{ ...linkStyle("/drink"), padding: "12px 0", borderBottom: "1px solid #333" }}>Drink</Link>
         <Link to="/magazine" onClick={closeMobileMenu} style={{ ...linkStyle("/magazine"), padding: "12px 0", borderBottom: "1px solid #333" }}>Magazine</Link>
         <Link to="/community" onClick={closeMobileMenu} style={{ ...linkStyle("/community"), padding: "12px 0", borderBottom: "1px solid #333" }}>Community</Link>
-        <Link to="/crea" onClick={closeMobileMenu} style={{ ...linkStyle("/crea"), color: "#f5a623", fontWeight: 700, padding: "12px 0", borderBottom: "1px solid #333" }}>Crea</Link>
+        <Link to="/crea" onClick={closeMobileMenu} style={{ ...linkStyle("/crea"), padding: "12px 0", borderBottom: "1px solid #333" }}>Crea</Link>
 
         {isAdmin && (
           <Link to="/admin" onClick={closeMobileMenu} style={{ color: "#f5a623", fontWeight: 700, textDecoration: "none", padding: "12px 0", borderBottom: "1px solid #333" }}>
