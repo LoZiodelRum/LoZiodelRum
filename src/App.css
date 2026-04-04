@@ -801,7 +801,15 @@ button[style*="#c47a2c"] {
   .content-wrapper { padding: 14px; }
 
   .drink-card-caption { min-height: 36px; padding: 5px 6px; }
-  .drink-card-caption h3 { font-size: 14px; }
+  .drink-card-caption h3 {
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100%;
+    width: 100%;
+    text-align: center;
+  }
 }
 
 /* --- MOBILE PICCOLO (≤480px) --- */
@@ -830,7 +838,7 @@ button[style*="#c47a2c"] {
   .preview-card-body p   { font-size: 10px; }
 
   .drink-card-caption { min-height: 30px; padding: 4px 5px; }
-  .drink-card-caption h3 { font-size: 12px; }
+  .drink-card-caption h3 { font-size: 13px; }
 
   .section-title { font-size: 15px; }
 
