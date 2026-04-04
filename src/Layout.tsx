@@ -41,32 +41,18 @@ export default function Layout() {
         {/* LOGO - Responsive */}
         <div
           style={{
-            display: "flex",
-            alignItems: "center",
-            gap: "8px",
+            fontWeight: "bold",
+            color: "#f5a623",
             cursor: "pointer",
-            maxWidth: "60vw",
+            fontSize: "clamp(0.9rem, 2vw, 1.1rem)",
+            whiteSpace: "nowrap",
             overflow: "hidden",
+            textOverflow: "ellipsis",
+            maxWidth: "60vw",
           }}
           onClick={() => handleNavigation("/")}
         >
-          <img
-            src="/logo.png"
-            alt="Lo Zio del Rum"
-            style={{ height: "46px", width: "auto", flexShrink: 0 }}
-          />
-          <span
-            style={{
-              fontWeight: "bold",
-              color: "#f5a623",
-              fontSize: "clamp(0.9rem, 2vw, 1.1rem)",
-              whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
-            }}
-          >
-            Lo Zio del Rum
-          </span>
+          Lo Zio del Rum
         </div>
 
         {/* MENU DESKTOP (display: flex su 1024px+) */}
