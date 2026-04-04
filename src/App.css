@@ -412,6 +412,10 @@ button:active { transform: scale(0.98); }
   margin-right: calc(50% - 50vw);
 }
 
+.magazine-page-mobile {
+  width: 100%;
+}
+
 .drink-section-white {
   width: 100%;
   background: #ffffff;
@@ -876,6 +880,15 @@ button[style*="#c47a2c"] {
     border-radius: 18px;
   }
 
+  .magazine-page-mobile {
+    width: 100vw;
+    max-width: none;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
   .content-wrapper { padding: 14px; }
 
   .guest-register-box { padding: 14px; }
@@ -951,6 +964,11 @@ button[style*="#c47a2c"] {
   .drink-card {
     aspect-ratio: 1 / 1;
     border-radius: 16px;
+  }
+
+  .magazine-page-mobile {
+    padding-left: 12px;
+    padding-right: 12px;
   }
 
   .contact-chip { font-size: 11px; padding: 7px 10px; }

@@ -39,7 +39,7 @@ export default function Magazine() {
   const others = hero ? articles.filter((a) => a.id !== hero.id) : articles;
 
   return (
-    <div className="page fade-in" style={{ paddingTop: "clamp(96px, 14vw, 132px)" }}>
+    <div className="page fade-in magazine-page-mobile" style={{ paddingTop: "clamp(96px, 14vw, 132px)" }}>
 
       {/* HERO */}
       {hero && (
