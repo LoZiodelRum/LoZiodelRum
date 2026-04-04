@@ -430,6 +430,12 @@ button:active { transform: scale(0.98); }
   margin-bottom: 12px;
 }
 
+.drink-section-header .btn-primary,
+.drink-section-header button {
+  margin-left: 0;
+  margin-right: 0;
+}
+
 .drink-section-title {
   color: #111;
   font-size: 20px;
