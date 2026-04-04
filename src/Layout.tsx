@@ -50,11 +50,20 @@ export default function Layout() {
           }}
           onClick={() => handleNavigation("/")}
         >
-          <img
-            src="/logo.png"
-            alt="logo"
-            style={{ height: "46px", width: "auto", flexShrink: 0, filter: "brightness(0) invert(1)" }}
-          />
+          <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
+            {/* Face circle */}
+            <circle cx="20" cy="22" r="14" fill="#ffffff"/>
+            {/* Left eye */}
+            <circle cx="15" cy="18" r="3" fill="#f5a623"/>
+            {/* Right eye */}
+            <circle cx="25" cy="18" r="3" fill="#f5a623"/>
+            {/* Smile */}
+            <path d="M 15 24 Q 20 27 25 24" stroke="#f5a623" strokeWidth="1.5" fill="none"/>
+            {/* Hat */}
+            <ellipse cx="20" cy="8" rx="16" ry="6" fill="#f5a623"/>
+            {/* Hat brim */}
+            <rect x="8" y="12" width="24" height="3" fill="#f5a623" rx="1"/>
+          </svg>
           <span
             style={{
               fontWeight: "bold",
