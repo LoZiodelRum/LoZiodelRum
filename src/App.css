@@ -556,9 +556,9 @@ button:active { transform: scale(0.98); }
   text-shadow: 0 2px 6px rgba(0,0,0,0.9);
 }
 .venue-detail-page {
-  margin-top: 10px;
+  margin-top: 0;
   border-radius: 22px;
-  padding-top: clamp(12px, 2vw, 20px);
+  padding-top: 0;
 }
 .venue-meta-row {
   display: flex;

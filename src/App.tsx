@@ -134,7 +134,7 @@ function AppContent() {
         <Route
           path="/venue/:id"
           element={
-            <PageShell>
+            <PageShell fullBleed>
               <VenueDetail />
             </PageShell>
           }
