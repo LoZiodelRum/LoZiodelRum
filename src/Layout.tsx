@@ -43,10 +43,9 @@ export default function Layout() {
           style={{
             display: "flex",
             alignItems: "center",
-            gap: "8px",
+            gap: "12px",
             cursor: "pointer",
-            maxWidth: "60vw",
-            overflow: "hidden",
+            minWidth: "50px",
           }}
           onClick={() => handleNavigation("/")}
         >
@@ -72,8 +71,6 @@ export default function Layout() {
               color: "#f5a623",
               fontSize: "clamp(0.9rem, 2vw, 1.1rem)",
               whiteSpace: "nowrap",
-              overflow: "hidden",
-              textOverflow: "ellipsis",
             }}
           >
             Lo Zio del Rum
