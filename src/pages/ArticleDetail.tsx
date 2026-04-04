@@ -196,7 +196,7 @@ export default function ArticleDetail() {
   }
 
   return (
-    <div className="page fade-in">
+    <div className="page page-full-bleed fade-in">
 
       {/* 🔧 EDITOR ADMIN */}
       {isAdmin && form && (
