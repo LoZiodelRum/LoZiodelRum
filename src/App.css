@@ -701,6 +701,63 @@ button:active { transform: scale(0.98); }
 .review-card p { margin: 0; color: #ddd; }
 .review-date { margin-top: 8px !important; font-size: 12px !important; opacity: 0.5; }
 
+/* Community: box registrazione non iscritti */
+.guest-register-box {
+  margin-top: 22px;
+  width: 100%;
+  border: 1px solid #2d2d2d;
+  background: linear-gradient(180deg, #151515 0%, #101010 100%);
+  border-radius: 14px;
+  padding: 18px;
+}
+
+@media (min-width: 1024px) {
+  .guest-register-box {
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.guest-register-box h2 {
+  margin: 0 0 8px;
+  font-size: 24px;
+  color: #fff;
+}
+
+.guest-register-box p {
+  margin: 0;
+  color: #c8c8c8;
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+.guest-register-actions {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.guest-register-btn {
+  text-decoration: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.guest-register-btn-primary {
+  background: #f5a623;
+  color: #111;
+}
+
+.guest-register-btn-secondary {
+  background: #1b1b1b;
+  border: 1px solid #383838;
+  color: #fff;
+}
+
 /* ============================================================
    7. NAVBAR / HAMBURGER — Default Desktop
    ============================================================ */
@@ -799,6 +856,12 @@ button[style*="#c47a2c"] {
   .hero-section { height: 65vh !important; min-height: 320px; }
 
   .content-wrapper { padding: 14px; }
+
+  .guest-register-box { padding: 14px; }
+  .guest-register-box h2 { font-size: 20px; }
+  .guest-register-box p { font-size: 13px; }
+  .guest-register-actions { gap: 8px; }
+  .guest-register-btn { padding: 9px 12px; font-size: 13px; }
 
   .drink-card-caption { height: 50px; min-height: 50px; padding: 0 8px; }
   .drink-card-caption h3 {
