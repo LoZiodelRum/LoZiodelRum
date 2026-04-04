@@ -57,6 +57,7 @@ export default function Magazine() {
       )}
 
       {/* GRID */}
+      <h2 className="mobile-articles-title">Articoli</h2>
       <div className="cocktail-grid">
         {others.map((a) => (
           <Link key={a.id} to={`/magazine/${a.id}`} className="drink-card">
