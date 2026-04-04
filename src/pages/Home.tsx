@@ -166,12 +166,20 @@ export default function Home() {
             margin-top: 34px !important;
             margin-bottom: 88px !important;
           }
-          .hero-mobile-btn {
+          .hero-mobile-buttons {
+            flex-direction: column !important;
+            align-items: center !important;
             width: 100% !important;
-            justify-content: center !important;
-            font-size: 1.25rem !important;
-            padding: 16px 18px !important;
-            border-radius: 16px !important;
+          }
+          .hero-mobile-btn {
+            width: 52% !important;
+            justify-content: flex-start !important;
+            font-size: 0.7rem !important;
+            padding: 8px 16px !important;
+            border-radius: 10px !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
           }
           .content-section { padding: clamp(12px, 3.6vw, 18px) !important; }
           .content-section-first { padding-top: 104px !important; margin-top: 76px !important; }
@@ -215,7 +223,7 @@ export default function Home() {
 
         @media (max-width: 380px) {
           .hero-mobile-title { font-size: 32px !important; }
-          .hero-mobile-btn { font-size: 18px !important; }
+          .hero-mobile-btn { font-size: 0.65rem !important; padding: 7px 14px !important; }
           .content-section { padding: 12px !important; }
           .section-grid { gap: 10px !important; }
           .card-box { border-radius: 14px !important; }
@@ -279,8 +287,8 @@ export default function Home() {
                 gap: 12,
               }}
             >
-              Esplora Locali
               <ArrowRight size={20} strokeWidth={2.5} />
+              Esplora Locali
             </button>
             <button
               className="hero-mobile-btn"
