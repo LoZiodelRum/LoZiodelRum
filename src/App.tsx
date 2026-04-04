@@ -90,8 +90,8 @@ function AppContent() {
         <Route path="/categoria/:categoria" element={<PageShell><Category /></PageShell>} />
 
         {/* MAGAZINE */}
-        <Route path="/magazine" element={<PageShell><Magazine /></PageShell>} />
-        <Route path="/magazine/:id" element={<PageShell><ArticleDetail /></PageShell>} />
+        <Route path="/magazine" element={<PageShell fullBleed><Magazine /></PageShell>} />
+        <Route path="/magazine/:id" element={<PageShell fullBleed><ArticleDetail /></PageShell>} />
 
         {/* BLOCCO UTENTE */}
         <Route path="/in-attesa" element={<PageShell><InAttesa /></PageShell>} />
