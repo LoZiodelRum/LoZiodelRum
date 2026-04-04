@@ -28,11 +28,13 @@ type Recensione = {
 
 type RecensioneRow = {
   id: string;
-  locale_id: string;
-  rating: number | null;
+  locale_id?: string | null;
+  rating?: number | null;
   overall_rating?: number | null;
-  autore: string | null;
+  autore?: string | null;
   author_name?: string | null;
+  created_at?: string | null;
+  created_date?: string | null;
 };
 
 export default function Home() {
@@ -78,11 +80,31 @@ export default function Home() {
   }
 
   async function fetchRecensioni() {
-    const { data, error } = await supabase
-      .from("Recensioni")
-      .select("id, locale_id, rating, overall_rating, autore, author_name")
-      .order("created_at", { ascending: false })
-      .limit(6);
+    const loadRows = async () => {
+      const primary = await supabase
+        .from("Recensioni")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(6);
+
+      if (!primary.error) return primary;
+
+      const noOrder = await supabase
+        .from("Recensioni")
+        .select("*")
+        .limit(6);
+
+      if (!noOrder.error) return noOrder;
+
+      const lowerCase = await supabase
+        .from("recensioni")
+        .select("*")
+        .limit(6);
+
+      return lowerCase;
+    };
+
+    const { data, error } = await loadRows();
 
     if (error) {
       console.error("Errore recensioni:", error);
@@ -112,9 +134,9 @@ export default function Home() {
 
     const mapped = rows.map((r) => ({
       id: r.id,
-      locale_id: r.locale_id,
-      locale_nome: localeById[r.locale_id]?.nome ?? "Locale",
-      immagine: localeById[r.locale_id]?.image_url ?? localeById[r.locale_id]?.image ?? null,
+      locale_id: r.locale_id ?? "",
+      locale_nome: (r.locale_id && localeById[r.locale_id]?.nome) ?? "Locale",
+      immagine: (r.locale_id && (localeById[r.locale_id]?.image_url ?? localeById[r.locale_id]?.image)) ?? null,
       rating: r.rating ?? r.overall_rating ?? 0,
       autore: r.autore ?? r.author_name ?? "Utente",
     }));
@@ -439,6 +461,11 @@ export default function Home() {
             </Link>
           ))}
         </div>
+        {recensioni.length === 0 && (
+          <p style={{ marginTop: 14, color: "#a3a3a3" }}>
+            Nessuna recensione disponibile al momento.
+          </p>
+        )}
       </section>
 
       <section className="content-section community-section" style={{ padding: "40px 60px", maxWidth: 1400, margin: "0 auto", textAlign: "center" }}>
