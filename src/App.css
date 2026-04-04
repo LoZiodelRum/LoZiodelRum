@@ -842,3 +842,8 @@ button[style*="#c47a2c"] {
    ============================================================ */
 .header { display: flex; align-items: center; gap: 10px; }
 .logo { height: 52px; width: auto; object-fit: contain; border-radius: 6px; }
+
+@media (max-width: 768px) {
+  .nav-logo span { font-size: 0.8rem !important; }
+  .logo { height: 36px; }
+}
