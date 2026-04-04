@@ -856,6 +856,8 @@ button[style*="#c47a2c"] {
   /* I bottoni inline NON devono andare a tutta larghezza */
   button { width: auto; }
 
+  .cocktail-grid  { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+
   .cocktail-card img  { height: 100px; }
   .preview-card img   { height: 110px; }
 
@@ -870,7 +872,7 @@ button[style*="#c47a2c"] {
   }
 
   .drink-card {
-    aspect-ratio: 3 / 2;
+    aspect-ratio: 1 / 1;
     border-radius: 18px;
   }
 
@@ -947,7 +949,7 @@ button[style*="#c47a2c"] {
   }
 
   .drink-card {
-    aspect-ratio: 3 / 2;
+    aspect-ratio: 1 / 1;
     border-radius: 16px;
   }
 
