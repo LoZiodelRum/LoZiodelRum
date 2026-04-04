@@ -394,8 +394,9 @@ export default function Home() {
         </div>
         <div className="section-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 20 }}>
           {recensioni.map((r) => (
-            <div
+            <Link
               key={r.id}
+              to={`/recensione/${r.id}`}
               className="card-box"
               style={{
                 position: "relative",
@@ -405,6 +406,8 @@ export default function Home() {
                 display: "flex",
                 alignItems: "flex-end",
                 color: "#fff",
+                textDecoration: "none",
+                cursor: "pointer",
               }}
             >
               <img src={r.immagine ?? "https://via.placeholder.com/400x300"} alt={r.locale_nome ?? "Locale"} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }} />
@@ -416,7 +419,7 @@ export default function Home() {
                 <h3 className="card-title" style={{ margin: "0 0 4px 0", fontSize: 16 }}>{r.locale_nome ?? "Locale"}</h3>
                 <p className="card-subtitle" style={{ margin: 0, fontSize: 13, opacity: 0.9 }}>{`Lo Zio del Rum - ${r.autore}`}</p>
               </div>
-            </div>
+            </Link>
           ))}
         </div>
       </section>

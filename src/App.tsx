@@ -17,6 +17,7 @@ import ArticleDetail from "./pages/ArticleDetail";
 import MapPage from "./pages/MapPage";
 import PannelloControllo from "./pages/PannelloControllo";
 import Recensione from "./pages/Recensione";
+import RecensioneDetail from "./pages/RecensioneDetail";
 import SegnalaLocale from "./pages/SegnalaLocale";
 import VenueDetail from "./pages/VenueDetail";
 import UserProfile from "./pages/UserProfile";
@@ -149,6 +150,15 @@ function AppContent() {
               <Protected>
                 <Recensione />
               </Protected>
+            </PageShell>
+          }
+        />
+
+        <Route
+          path="/recensione/:id"
+          element={
+            <PageShell fullBleed>
+              <RecensioneDetail />
             </PageShell>
           }
         />
