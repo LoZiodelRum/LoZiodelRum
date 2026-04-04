@@ -213,6 +213,7 @@ export default function VenueDetail() {
           <input value={form.citta || ""} onChange={(e)=>setForm({...form,citta:e.target.value})} placeholder="Città" />
           <input value={form.telefono || ""} onChange={(e)=>setForm({...form,telefono:e.target.value})} placeholder="Telefono" />
           <input value={form.sito || ""} onChange={(e)=>setForm({...form,sito:e.target.value})} placeholder="Sito" />
+          <textarea value={form.recensioni || ""} onChange={(e)=>setForm({...form,recensioni:e.target.value})} placeholder="Recensioni" />
 
           <textarea value={form.descrizione || ""} onChange={(e)=>setForm({...form,descrizione:e.target.value})} />
           <textarea value={form.descrizione_completa || ""} onChange={(e)=>setForm({...form,descrizione_completa:e.target.value})} />

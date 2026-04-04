@@ -211,6 +211,7 @@ function LocaleFullCard({ locale, refresh }) {
       <input name="email" value={edit.email || ""} onChange={change} placeholder="Email locale" style={input} />
 
       <textarea name="descrizione" value={edit.descrizione || ""} onChange={change} placeholder="Descrizione breve" style={textarea} />
+      <textarea name="recensioni" value={edit.recensioni || ""} onChange={change} placeholder="Recensioni" style={textarea} />
 
       <input name="slug" value={edit.slug || ""} onChange={change} placeholder="Slug URL" style={input} />
       <input name="price_range" value={edit.price_range || ""} onChange={change} placeholder="Fascia prezzo (€ / €€ / €€€)" style={input} />
