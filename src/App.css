@@ -800,14 +800,15 @@ button[style*="#c47a2c"] {
 
   .content-wrapper { padding: 14px; }
 
-  .drink-card-caption { min-height: 36px; padding: 5px 6px; }
+  .drink-card-caption { height: 50px; min-height: 50px; padding: 0 8px; }
   .drink-card-caption h3 {
     font-size: 15px;
     display: flex;
     align-items: center;
     justify-content: center;
-    min-height: 100%;
+    height: 100%;
     width: 100%;
+    line-height: 1.05;
     text-align: center;
   }
 }
@@ -837,7 +838,7 @@ button[style*="#c47a2c"] {
   .preview-card-body h3  { font-size: 12px; }
   .preview-card-body p   { font-size: 10px; }
 
-  .drink-card-caption { min-height: 30px; padding: 4px 5px; }
+  .drink-card-caption { height: 50px; min-height: 50px; padding: 0 7px; }
   .drink-card-caption h3 { font-size: 13px; }
 
   .section-title { font-size: 15px; }
