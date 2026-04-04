@@ -425,7 +425,7 @@ button:active { transform: scale(0.98); }
 .drink-section-header {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-start;
   gap: 12px;
   margin-bottom: 12px;
 }
