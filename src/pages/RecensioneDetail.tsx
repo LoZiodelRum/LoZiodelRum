@@ -17,12 +17,14 @@ type ReviewDetail = {
   title?: string | null;
   visit_date?: string | null;
   created_at?: string | null;
-  Locali?: {
-    nome?: string | null;
-    image_url?: string | null;
-    citta?: string | null;
-    indirizzo?: string | null;
-  } | null;
+};
+
+type ReviewLocale = {
+  nome?: string | null;
+  image_url?: string | null;
+  image?: string | null;
+  citta?: string | null;
+  indirizzo?: string | null;
 };
 
 function formatDate(value?: string | null) {
@@ -41,6 +43,7 @@ export default function RecensioneDetail() {
   const navigate = useNavigate();
 
   const [review, setReview] = useState<ReviewDetail | null>(null);
+  const [reviewLocale, setReviewLocale] = useState<ReviewLocale | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -48,13 +51,16 @@ export default function RecensioneDetail() {
   }, [id]);
 
   async function loadReview() {
-    if (!id) return;
+    if (!id) {
+      setLoading(false);
+      return;
+    }
 
     setLoading(true);
 
     const { data, error } = await supabase
       .from("Recensioni")
-      .select("*, Locali(nome, image_url, citta, indirizzo)")
+      .select("*")
       .eq("id", id)
       .single();
 
@@ -66,6 +72,25 @@ export default function RecensioneDetail() {
     }
 
     setReview(data as ReviewDetail);
+
+    const localeId = (data as ReviewDetail)?.locale_id;
+    if (localeId) {
+      const { data: localeData, error: localeError } = await supabase
+        .from("Locali")
+        .select("nome, image_url, image, citta, indirizzo")
+        .eq("id", localeId)
+        .single();
+
+      if (localeError) {
+        console.error("Errore caricamento locale recensione:", localeError);
+        setReviewLocale(null);
+      } else {
+        setReviewLocale(localeData as ReviewLocale);
+      }
+    } else {
+      setReviewLocale(null);
+    }
+
     setLoading(false);
   }
 
@@ -84,10 +109,10 @@ export default function RecensioneDetail() {
     );
   }
 
-  const venueName = review.Locali?.nome || "Locale";
-  const venueImage = review.Locali?.image_url || "https://via.placeholder.com/1600x900";
-  const venueCity = review.Locali?.citta || "";
-  const venueAddress = review.Locali?.indirizzo || "";
+  const venueName = reviewLocale?.nome || "Locale";
+  const venueImage = reviewLocale?.image_url || reviewLocale?.image || "https://via.placeholder.com/1600x900";
+  const venueCity = reviewLocale?.citta || "";
+  const venueAddress = reviewLocale?.indirizzo || "";
   const ratingRaw = review.rating ?? review.overall_rating;
   const rating = typeof ratingRaw === "number" ? ratingRaw.toFixed(1) : "N/A";
   const title = review.titolo || review.title || `Recensione di ${venueName}`;

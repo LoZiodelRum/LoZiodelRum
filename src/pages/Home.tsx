@@ -30,11 +30,9 @@ type RecensioneRow = {
   id: string;
   locale_id: string;
   rating: number | null;
+  overall_rating?: number | null;
   autore: string | null;
-  Locali?: {
-    nome?: string | null;
-    image_url?: string | null;
-  } | null;
+  author_name?: string | null;
 };
 
 export default function Home() {
@@ -82,24 +80,43 @@ export default function Home() {
   async function fetchRecensioni() {
     const { data, error } = await supabase
       .from("Recensioni")
-      .select("id, locale_id, rating, autore, Locali(nome, image_url)")
-      .eq("status", "approved")
+      .select("id, locale_id, rating, overall_rating, autore, author_name")
       .order("created_at", { ascending: false })
       .limit(6);
 
     if (error) {
       console.error("Errore recensioni:", error);
+      setRecensioni([]);
       return;
     }
 
     const rows = (data ?? []) as RecensioneRow[];
+    const localeIds = Array.from(new Set(rows.map((r) => r.locale_id).filter(Boolean)));
+
+    let localeById: Record<string, { nome?: string | null; image_url?: string | null; image?: string | null }> = {};
+    if (localeIds.length) {
+      const { data: localiData, error: localiError } = await supabase
+        .from("Locali")
+        .select("id, nome, image_url, image")
+        .in("id", localeIds);
+
+      if (localiError) {
+        console.error("Errore lookup locali recensioni:", localiError);
+      } else {
+        localeById = (localiData ?? []).reduce((acc: any, locale: any) => {
+          acc[locale.id] = locale;
+          return acc;
+        }, {});
+      }
+    }
+
     const mapped = rows.map((r) => ({
       id: r.id,
       locale_id: r.locale_id,
-      locale_nome: r.Locali?.nome ?? "Locale",
-      immagine: r.Locali?.image_url ?? null,
-      rating: r.rating ?? 0,
-      autore: r.autore ?? "Utente",
+      locale_nome: localeById[r.locale_id]?.nome ?? "Locale",
+      immagine: localeById[r.locale_id]?.image_url ?? localeById[r.locale_id]?.image ?? null,
+      rating: r.rating ?? r.overall_rating ?? 0,
+      autore: r.autore ?? r.author_name ?? "Utente",
     }));
 
     setRecensioni(mapped);
