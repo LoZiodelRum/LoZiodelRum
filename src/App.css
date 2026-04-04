@@ -860,8 +860,22 @@ button[style*="#c47a2c"] {
   .guest-register-box { padding: 14px; }
   .guest-register-box h2 { font-size: 20px; }
   .guest-register-box p { font-size: 13px; }
-  .guest-register-actions { gap: 8px; }
-  .guest-register-btn { padding: 9px 12px; font-size: 13px; }
+  .guest-register-actions {
+    display: flex !important;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .guest-register-btn {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    min-width: 118px;
+    padding: 9px 12px;
+    font-size: 13px;
+    background: #f5a623 !important;
+    color: #111 !important;
+    border: 1px solid #f5a623 !important;
+  }
 
   .drink-card-caption { height: 50px; min-height: 50px; padding: 0 8px; }
   .drink-card-caption h3 {
