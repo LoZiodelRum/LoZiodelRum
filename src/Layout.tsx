@@ -50,19 +50,21 @@ export default function Layout() {
           }}
           onClick={() => handleNavigation("/")}
         >
-          <svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0 }}>
-            {/* Face circle */}
-            <circle cx="20" cy="22" r="14" fill="#ffffff"/>
+          <svg width="50" height="50" viewBox="0 0 50 50" xmlns="http://www.w3.org/2000/svg" style={{ flexShrink: 0, display: "block" }}>
+            {/* Background circle for visibility */}
+            <circle cx="25" cy="25" r="23" fill="rgba(255,255,255,0.1)"/>
+            {/* Face */}
+            <circle cx="25" cy="28" r="16" fill="#ffffff"/>
             {/* Left eye */}
-            <circle cx="15" cy="18" r="3" fill="#f5a623"/>
+            <circle cx="18" cy="22" r="4" fill="#f5a623"/>
             {/* Right eye */}
-            <circle cx="25" cy="18" r="3" fill="#f5a623"/>
+            <circle cx="32" cy="22" r="4" fill="#f5a623"/>
             {/* Smile */}
-            <path d="M 15 24 Q 20 27 25 24" stroke="#f5a623" strokeWidth="1.5" fill="none"/>
-            {/* Hat */}
-            <ellipse cx="20" cy="8" rx="16" ry="6" fill="#f5a623"/>
+            <path d="M 18 30 Q 25 34 32 30" stroke="#f5a623" strokeWidth="2" fill="none" strokeLinecap="round"/>
             {/* Hat brim */}
-            <rect x="8" y="12" width="24" height="3" fill="#f5a623" rx="1"/>
+            <rect x="10" y="13" width="30" height="3" fill="#f5a623" rx="1.5"/>
+            {/* Hat crown */}
+            <path d="M 12 13 Q 12 5 25 5 Q 38 5 38 13" fill="#f5a623"/>
           </svg>
           <span
             style={{
