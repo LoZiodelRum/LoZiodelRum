@@ -799,6 +799,9 @@ button[style*="#c47a2c"] {
   .hero-section { height: 65vh !important; min-height: 320px; }
 
   .content-wrapper { padding: 14px; }
+
+  .drink-card-caption { min-height: 36px; padding: 5px 6px; }
+  .drink-card-caption h3 { font-size: 13px; }
 }
 
 /* --- MOBILE PICCOLO (≤480px) --- */
@@ -825,6 +828,9 @@ button[style*="#c47a2c"] {
   .cocktail-card-body h3 { font-size: 11px; }
   .preview-card-body h3  { font-size: 12px; }
   .preview-card-body p   { font-size: 10px; }
+
+  .drink-card-caption { min-height: 30px; padding: 4px 5px; }
+  .drink-card-caption h3 { font-size: 11px; }
 
   .section-title { font-size: 15px; }
 
