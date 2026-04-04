@@ -1,6 +1,6 @@
 import "../App.css";
 import { useUser } from "../context/UserContext";
-import Auth from "./Auth";
+import SignupInviteBox from "../components/SignupInviteBox";
 
 export default function Community() {
   const { isAuthenticated, loading } = useUser();
@@ -14,7 +14,12 @@ export default function Community() {
   }
 
   if (!isAuthenticated) {
-    return <Auth />;
+    return (
+      <div className="page fade-in" style={{ padding: 40 }}>
+        <h1>Community</h1>
+        <SignupInviteBox description="Registrati o accedi per pubblicare contenuti, commentare e partecipare alla community." />
+      </div>
+    );
   }
 
   return (

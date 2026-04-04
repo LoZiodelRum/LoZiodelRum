@@ -169,9 +169,7 @@ function AppContent() {
           path="/crea"
           element={
             <PageShell>
-              <Protected roles={["bartender", "proprietario"]}>
-                <Crea />
-              </Protected>
+              <Crea />
             </PageShell>
           }
         />
