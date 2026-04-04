@@ -181,12 +181,13 @@ export default function Home() {
           .section-title { font-size: clamp(26px, 7vw, 34px) !important; line-height: 1.08 !important; }
           .section-subtitle { display: block !important; color: #8f8f8f !important; margin-top: 6px !important; font-size: clamp(14px, 3.8vw, 16px) !important; }
           .section-link { display: none !important; }
-          .card-title { font-size: clamp(15px, 5.2vw, 22px) !important; line-height: 1.1 !important; }
-          .card-subtitle { font-size: clamp(13px, 4.3vw, 16px) !important; }
-          .card-rating { font-size: clamp(12px, 3.6vw, 14px) !important; padding: 5px 10px !important; top: 10px !important; right: 10px !important; }
+          .card-title { font-size: clamp(11px, 3.2vw, 14px) !important; line-height: 1.15 !important; }
+          .card-subtitle { font-size: clamp(10px, 2.8vw, 12px) !important; }
+          .card-rating { font-size: clamp(10px, 2.8vw, 12px) !important; padding: 4px 8px !important; top: 8px !important; right: 8px !important; }
+          .card-content { padding: 10px !important; }
           .card-title-clamp {
             display: -webkit-box !important;
-            -webkit-line-clamp: 5;
+            -webkit-line-clamp: 3;
             -webkit-box-orient: vertical;
             overflow: hidden;
           }
@@ -204,10 +205,11 @@ export default function Home() {
           .section-grid { gap: 12px !important; }
           .section-title { font-size: 32px !important; }
           .card-box { border-radius: 16px !important; }
-          .card-title { font-size: 18px !important; }
-          .card-subtitle { font-size: 14px !important; }
+          .card-title { font-size: 13px !important; }
+          .card-subtitle { font-size: 10px !important; }
+          .card-content { padding: 10px !important; }
           .card-title-clamp {
-            -webkit-line-clamp: 4;
+            -webkit-line-clamp: 3;
           }
         }
 
@@ -217,8 +219,12 @@ export default function Home() {
           .content-section { padding: 12px !important; }
           .section-grid { gap: 10px !important; }
           .card-box { border-radius: 14px !important; }
+          .card-title { font-size: 11px !important; }
+          .card-subtitle { font-size: 10px !important; }
+          .card-content { padding: 8px !important; }
+          .card-rating { font-size: 10px !important; padding: 3px 6px !important; }
           .card-title-clamp {
-            -webkit-line-clamp: 4;
+            -webkit-line-clamp: 3;
           }
         }
 
@@ -327,7 +333,7 @@ export default function Home() {
             >
               <img src={l.image_url ?? "https://via.placeholder.com/400x300"} alt={l.nome} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }} />
               <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.8), transparent)", zIndex: 1 }} />
-              <div style={{ position: "relative", zIndex: 2, padding: 16, width: "100%" }}>
+              <div className="card-content" style={{ position: "relative", zIndex: 2, padding: 16, width: "100%" }}>
                 <h3 className="card-title" style={{ margin: "0 0 4px 0", fontSize: 18 }}>{l.nome}</h3>
                 <p className="card-subtitle" style={{ margin: 0, fontSize: 14, opacity: 0.9 }}>{l.citta}</p>
               </div>
@@ -360,7 +366,7 @@ export default function Home() {
             >
               <img src={a.immagine ?? "https://via.placeholder.com/400x300"} alt={a.titolo} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }} />
               <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.8), transparent)", zIndex: 1 }} />
-              <div style={{ position: "relative", zIndex: 2, padding: 16, width: "100%" }}>
+              <div className="card-content" style={{ position: "relative", zIndex: 2, padding: 16, width: "100%" }}>
                 <h3 className="card-title card-title-clamp" style={{ margin: 0, fontSize: 16, fontWeight: 600 }}>{a.titolo}</h3>
               </div>
             </Link>
@@ -392,7 +398,7 @@ export default function Home() {
               <div className="card-rating" style={{ position: "absolute", top: 12, right: 12, background: "#f5a623", color: "#0b0b0b", padding: "6px 12px", borderRadius: 8, fontWeight: "bold", fontSize: 14, zIndex: 3 }}>
                 {`★ ${r.rating.toFixed(1)}`}
               </div>
-              <div style={{ position: "relative", zIndex: 2, padding: 16, width: "100%" }}>
+              <div className="card-content" style={{ position: "relative", zIndex: 2, padding: 16, width: "100%" }}>
                 <h3 className="card-title" style={{ margin: "0 0 4px 0", fontSize: 16 }}>{r.locale_nome ?? "Locale"}</h3>
                 <p className="card-subtitle" style={{ margin: 0, fontSize: 13, opacity: 0.9 }}>{`Lo Zio del Rum - ${r.autore}`}</p>
               </div>
