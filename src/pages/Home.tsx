@@ -120,10 +120,10 @@ export default function Home() {
           .hero-section {
             display: flex !important;
             min-height: 84vh !important;
-            width: 100vw !important;
-            margin-left: calc(50% - 50vw) !important;
-            margin-right: calc(50% - 50vw) !important;
-            padding-top: calc(96px + env(safe-area-inset-top)) !important;
+            width: 100% !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            padding-top: 0 !important;
             padding-bottom: 88px !important;
             align-items: flex-start !important;
           }
@@ -250,7 +250,7 @@ export default function Home() {
         className="hero-section"
         style={{
           height: "100vh",
-          width: "100vw",
+          width: "100%",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
@@ -259,8 +259,8 @@ export default function Home() {
           backgroundSize: "cover",
           backgroundPosition: "center",
           position: "relative",
-          marginLeft: "calc(50% - 50vw)",
-          marginRight: "calc(50% - 50vw)",
+          marginLeft: 0,
+          marginRight: 0,
           paddingTop: 0,
           borderRadius: 0,
         }}

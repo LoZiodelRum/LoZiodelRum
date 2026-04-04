@@ -74,7 +74,7 @@ function AppContent() {
       <Routes>
 
         {/* PUBBLICHE */}
-        <Route path="/" element={<PageShell fullBleed><Home /></PageShell>} />
+        <Route path="/" element={<Home />} />
         <Route path="/auth" element={<PageShell><Auth /></PageShell>} />
 
         {/* REGISTRAZIONE */}
