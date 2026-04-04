@@ -176,8 +176,13 @@ export default function PannelloControllo() {
   function openFirstEditor(table: string, data: any[]) {
     if (!Array.isArray(data) || data.length === 0) return;
 
+    const firstItem = { ...data[0] };
+    if (table === "Locali" && firstItem.recensioni === undefined) {
+      firstItem.recensioni = "";
+    }
+
     setSelectedTable(table);
-    setSelectedItem(data[0]);
+    setSelectedItem(firstItem);
     setSaveStatus(null);
     setIsCreating(false);
     setCreateRoleHint(null);
@@ -202,6 +207,10 @@ export default function PannelloControllo() {
 
     if (table === "cocktail") {
       draft.categoria = draft.categoria || "cocktail";
+    }
+
+    if (table === "Locali") {
+      draft.recensioni = draft.recensioni || "";
     }
 
     if (table === "profili") {
@@ -233,7 +242,11 @@ export default function PannelloControllo() {
           onChange={(e) => {
             const value = e.target.value;
             const item = data.find(d => String(d.id) === value);
-            setSelectedItem(item || null);
+            if (table === "Locali" && item) {
+              setSelectedItem({ ...item, recensioni: item.recensioni ?? "" });
+            } else {
+              setSelectedItem(item || null);
+            }
             setSelectedTable(table);
             setSaveStatus(null);
             setIsCreating(false);
