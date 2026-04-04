@@ -71,21 +71,32 @@ export default function Navbar() {
         backdropFilter: "blur(10px)",
       }}
     >
-      <Link
+      <div
         className="nav-logo"
-        to="/"
-        onClick={closeMobileMenu}
+        onClick={() => {
+          closeMobileMenu();
+          navigate("/");
+        }}
         style={{
-          color: "#f5a623",
-          fontWeight: "bold",
-          fontSize: "clamp(1rem, 2.6vw, 1.25rem)",
+          display: "flex",
+          alignItems: "center",
+          gap: "0",
+          cursor: "pointer",
           flexShrink: 0,
-          whiteSpace: "nowrap",
-          textDecoration: "none",
         }}
       >
-        DrinkWise by Lo Zio del Rum
-      </Link>
+        <img src="/logo.png" alt="Logo" className="logo" />
+        <span
+          style={{
+            fontWeight: "bold",
+            color: "#f5a623",
+            fontSize: "clamp(1rem, 2.6vw, 1.25rem)",
+            whiteSpace: "nowrap",
+          }}
+        >
+          DrinkWise <span style={{ color: "#fff" }}>by</span> Lo Zio del Rum
+        </span>
+      </div>
 
       <div
         className="nav-menu-desktop"
@@ -271,7 +282,7 @@ export default function Navbar() {
             position: "absolute",
             top: "70px",
             right: "max(16px, 3vw)",
-            width: "min(92vw, 320px)",
+            width: "min(92vw, 200px)",
             background: "#111",
             padding: "20px",
             borderRadius: "10px",
@@ -281,7 +292,7 @@ export default function Navbar() {
         >
           <input
             type="password"
-            placeholder="Password admin"
+            placeholder="Password Amministratore"
             value={adminPass}
             onChange={(e) => setAdminPass(e.target.value)}
             style={{
@@ -290,6 +301,9 @@ export default function Navbar() {
               width: "100%",
               borderRadius: "6px",
               border: "none",
+              display: "block",
+              margin: "0 auto 10px auto",
+              fontSize: "12px",
             }}
           />
 
@@ -297,7 +311,7 @@ export default function Navbar() {
             style={{
               display: "flex",
               gap: "10px",
-              justifyContent: "flex-end",
+              justifyContent: "center",
             }}
           >
             <button

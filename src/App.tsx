@@ -109,8 +109,8 @@ function AppContent() {
         />
 
         {/* 🔥 MAPPA PUBBLICA */}
-        <Route path="/mappa" element={<PageShell fullBleed><MapPage /></PageShell>} />
-        <Route path="/venues" element={<PageShell fullBleed><MapPage /></PageShell>} />
+        <Route path="/mappa" element={<MapPage />} />
+        <Route path="/venues" element={<MapPage />} />
 
         {/* PUBBLICHE */}
         <Route

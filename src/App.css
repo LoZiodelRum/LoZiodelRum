@@ -836,3 +836,9 @@ button[style*="#c47a2c"] {
   /* Bottoni nel form restano grandi */
   form button { width: 100%; }
 }
+
+/* ============================================================
+   LOGO HEADER
+   ============================================================ */
+.header { display: flex; align-items: center; gap: 10px; }
+.logo { height: 52px; width: auto; object-fit: contain; border-radius: 6px; }
