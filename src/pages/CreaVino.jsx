@@ -36,6 +36,7 @@ const initialVino = {
   temperatura_servizio: "",
   note_personali: "",
   valutazione: "",
+  categoria: "",
 };
 
 const selectOptions = {
@@ -261,6 +262,20 @@ export default function CreaVino() {
             <div><label style={labelStyle}>Corpo</label><select name="corpo" value={vino.corpo} onChange={handleChange} style={selectStyle}>{selectOptions.corpo.map((o) => <option key={o}>{o}</option>)}</select></div>
             <div><label style={labelStyle}>Stato evolutivo</label><select name="stato_evolutivo" value={vino.stato_evolutivo} onChange={handleChange} style={selectStyle}>{selectOptions.stato_evolutivo.map((o) => <option key={o}>{o}</option>)}</select></div>
             <div><label style={labelStyle}>Armonia</label><select name="armonia" value={vino.armonia} onChange={handleChange} style={selectStyle}>{selectOptions.armonia.map((o) => <option key={o}>{o}</option>)}</select></div>
+          </div>
+        </fieldset>
+
+        <fieldset style={fieldsetStyle}>
+          <legend style={{ color: "#f59e0b", padding: "0 6px" }}>Categoria Vino</legend>
+          <div style={{ maxWidth: 320 }}>
+            <label style={labelStyle}>Categoria</label>
+            <select name="categoria" value={vino.categoria} onChange={handleChange} style={selectStyle}>
+              <option value="">Scegli</option>
+              <option value="rosso">rosso</option>
+              <option value="bianco">bianco</option>
+              <option value="bollicine">bollicine</option>
+              <option value="altri vini">altri vini</option>
+            </select>
           </div>
         </fieldset>
 
