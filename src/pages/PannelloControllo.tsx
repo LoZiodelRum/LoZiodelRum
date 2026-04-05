@@ -78,6 +78,16 @@ export default function PannelloControllo() {
   async function salvaModifiche() {
     if (!selectedItem || !selectedTable) return;
 
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session) {
+      setSaveStatus("error");
+      alert("Salvataggio bloccato: non sei autenticato su Supabase. Fai login con un account admin (non basta la chiave admin locale).");
+      return;
+    }
+
     const { id, ...dataToUpdate } = selectedItem;
 
     const normalizeValue = (value: any) => {
@@ -152,7 +162,9 @@ export default function PannelloControllo() {
       error = result.error;
 
       if (!error && (!result.data || result.data.length === 0)) {
-        error = { message: "Nessuna modifica salvata. Verifica permessi o chiave record (id/slug)." };
+        error = {
+          message: `Nessuna modifica salvata su ${selectedTable}. Verifica policy RLS/permessi utente e chiave record (id: ${String(id ?? "null")}, slug: ${fallbackSlug || "n/a"}).`,
+        };
       }
     }
 
