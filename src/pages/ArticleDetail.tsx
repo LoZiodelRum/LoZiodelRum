@@ -205,7 +205,7 @@ export default function ArticleDetail() {
             margin-left: calc(-50vw + 50%) !important;
           }
           .article-hero-box {
-            width: calc(100% - 24px) !important;
+            width: calc(100vw - 24px) !important;
             max-width: none !important;
             padding: 24px 18px !important;
             margin-bottom: -320px !important;
@@ -221,7 +221,7 @@ export default function ArticleDetail() {
             margin-top: 360px !important;
           }
           .article-box {
-            width: calc(100% - 24px) !important;
+            width: calc(100vw - 24px) !important;
             max-width: none !important;
             padding: 24px 18px !important;
             border-radius: 16px !important;
