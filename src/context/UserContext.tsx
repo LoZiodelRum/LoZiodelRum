@@ -13,6 +13,7 @@ type UserContextType = {
 };
 
 const ADMIN_SESSION_KEY = "isAdmin";
+const ADMIN_PASSWORD_CACHE_KEY = "adminPassword";
 const ADMIN_PASSWORD = import.meta.env.VITE_ADMIN_PASSWORD || "850877";
 
 const UserContext = createContext<UserContextType>({
@@ -39,12 +40,14 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     if (password !== ADMIN_PASSWORD) return false;
 
     localStorage.setItem(ADMIN_SESSION_KEY, "true");
+    localStorage.setItem(ADMIN_PASSWORD_CACHE_KEY, password);
     setIsAdminKey(true);
     return true;
   }
 
   function logoutAdminKey() {
     localStorage.removeItem(ADMIN_SESSION_KEY);
+    localStorage.removeItem(ADMIN_PASSWORD_CACHE_KEY);
     setIsAdminKey(false);
   }
 

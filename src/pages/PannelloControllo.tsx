@@ -78,15 +78,11 @@ export default function PannelloControllo() {
   async function salvaModifiche() {
     if (!selectedItem || !selectedTable) return;
 
+    const adminPassword = localStorage.getItem("adminPassword") || "";
+
     const {
       data: { session },
     } = await supabase.auth.getSession();
-
-    if (!session) {
-      setSaveStatus("error");
-      alert("Salvataggio bloccato: non sei autenticato su Supabase. Fai login con un account admin (non basta la chiave admin locale).");
-      return;
-    }
 
     const { id, ...dataToUpdate } = selectedItem;
 
@@ -143,6 +139,32 @@ export default function PannelloControllo() {
         error = { message: "Nessun record creato. Verifica i permessi di scrittura." };
       }
     } else {
+      // Per gli articoli usiamo endpoint serverless admin: evita blocchi RLS lato client.
+      if (selectedTable === "articoli") {
+        const response = await fetch("/api/admin-update-article", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-admin-password": adminPassword,
+          },
+          body: JSON.stringify({
+            id: hasValidId ? id : null,
+            slug: fallbackSlug || null,
+            changes: changedData,
+          }),
+        });
+
+        const payload = await response.json().catch(() => ({}));
+        if (!response.ok || !payload?.ok) {
+          error = { message: payload?.message || "Salvataggio articolo fallito lato server." };
+        }
+      } else {
+        if (!session) {
+          setSaveStatus("error");
+          alert("Salvataggio bloccato: non sei autenticato su Supabase. Fai login con un account con permessi scrittura.");
+          return;
+        }
+
       let query = supabase
         .from(selectedTable)
         .update(changedData);
@@ -165,6 +187,7 @@ export default function PannelloControllo() {
         error = {
           message: `Nessuna modifica salvata su ${selectedTable}. Verifica policy RLS/permessi utente e chiave record (id: ${String(id ?? "null")}, slug: ${fallbackSlug || "n/a"}).`,
         };
+      }
       }
     }
 
