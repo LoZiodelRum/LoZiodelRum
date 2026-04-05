@@ -195,6 +195,14 @@ function AppContent() {
             </PageShell>
           }
         />
+        <Route
+          path="/crea-vino"
+          element={
+            <PageShell>
+              <CreaVino />
+            </PageShell>
+          }
+        />
 
         {/* SOLO PROPRIETARIO */}
         <Route
