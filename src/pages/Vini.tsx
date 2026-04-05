@@ -142,7 +142,7 @@ export default function Vini() {
 
   function renderSection(title: string, list: VinoCard[], tipo: string) {
     const cards = [...list];
-    while (cards.length < 3) {
+    while (cards.length < 6) {
       cards.push({
         id: `placeholder-${tipo}-${cards.length}`,
         nome: "In arrivo",
