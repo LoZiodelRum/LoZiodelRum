@@ -611,27 +611,69 @@ export default function PannelloControllo() {
                       </select>
                     ) : selectedTable === "vini" && aisSelectOptions[key] ? (
                       key === "descrizione_olfattiva" ? (
-                        <select
-                          multiple
-                          value={
-                            typeof selectedItem[key] === "string"
-                              ? selectedItem[key].split(",").map((v: string) => v.trim()).filter(Boolean)
-                              : []
-                          }
-                          onChange={(e) => {
-                            const values = Array.from(e.target.selectedOptions).map((opt) => opt.value);
-                            setSelectedItem((prev: any) => ({
-                              ...prev,
-                              [key]: values.join(","),
-                            }));
-                            setSaveStatus(null);
-                          }}
-                          style={{ ...selectStyle, minHeight: 120 }}
-                        >
-                          {aisSelectOptions[key].map((option) => (
-                            <option key={option} value={option}>{option}</option>
-                          ))}
-                        </select>
+                        <details style={{ position: "relative" }}>
+                          <summary
+                            style={{
+                              ...selectStyle,
+                              cursor: "pointer",
+                              listStyle: "none",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "space-between",
+                            }}
+                          >
+                            {(() => {
+                              const selectedValues = typeof selectedItem[key] === "string"
+                                ? selectedItem[key].split(",").map((v: string) => v.trim()).filter(Boolean)
+                                : [];
+                              return selectedValues.length ? selectedValues.join(", ") : "Scegli";
+                            })()}
+                            <span style={{ marginLeft: 8 }}>▾</span>
+                          </summary>
+                          <div
+                            style={{
+                              position: "absolute",
+                              top: "calc(100% + 6px)",
+                              left: 0,
+                              width: "100%",
+                              zIndex: 20,
+                              border: "1px solid #334155",
+                              borderRadius: 8,
+                              background: "#020617",
+                              padding: 8,
+                              maxHeight: 190,
+                              overflowY: "auto",
+                            }}
+                          >
+                            {aisSelectOptions[key].map((option) => {
+                              const selectedValues = typeof selectedItem[key] === "string"
+                                ? selectedItem[key].split(",").map((v: string) => v.trim()).filter(Boolean)
+                                : [];
+                              const isChecked = selectedValues.includes(option);
+
+                              return (
+                                <label key={option} style={{ display: "flex", gap: 8, alignItems: "center", padding: "6px 4px", cursor: "pointer" }}>
+                                  <input
+                                    type="checkbox"
+                                    checked={isChecked}
+                                    onChange={(e) => {
+                                      const updated = e.target.checked
+                                        ? [...selectedValues, option]
+                                        : selectedValues.filter((value) => value !== option);
+
+                                      setSelectedItem((prev: any) => ({
+                                        ...prev,
+                                        [key]: updated.join(","),
+                                      }));
+                                      setSaveStatus(null);
+                                    }}
+                                  />
+                                  <span>{option}</span>
+                                </label>
+                              );
+                            })}
+                          </div>
+                        </details>
                       ) : (
                         <select
                           value={selectedItem[key] ?? ""}
