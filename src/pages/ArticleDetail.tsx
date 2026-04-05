@@ -240,12 +240,12 @@ export default function ArticleDetail() {
           }
 
           .article-content {
-            font-size: 19px !important;
+            font-size: 18px !important;
           }
           .article-content p,
           .article-content span,
           .article-content li {
-            font-size: 19px !important;
+            font-size: 18px !important;
           }
         }
       `}</style>
