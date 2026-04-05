@@ -152,7 +152,7 @@ export default function Vini() {
         {!list.length ? (
           <p style={{ textAlign: "center", color: "#999" }}>Nessun dato</p>
         ) : (
-          <div className="drink-grid-uniform" style={{ gridTemplateColumns: "repeat(3, minmax(0, 1fr))" }}>
+          <div className="drink-grid-uniform vini-grid">
             {list.map((item) => (
               <article key={item.id} className="drink-card-uniform" onClick={() => navigate(`/vini/${item.id}`)}>
                 {item.immagine ? (
@@ -173,6 +173,11 @@ export default function Vini() {
 
   return (
     <div className="fade-in drink-page-white">
+      <style>{`
+        .vini-grid {
+          grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        }
+      `}</style>
       {renderSection("Rossi", rossi, "rossi")}
       {renderSection("Bianchi", bianchi, "bianchi")}
       {renderSection("Bollicine", bollicine, "bollicine")}
