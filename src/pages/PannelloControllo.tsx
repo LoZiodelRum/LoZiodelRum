@@ -311,6 +311,30 @@ export default function PannelloControllo() {
     return false;
   };
 
+  const aisSelectOptions: Record<string, string[]> = {
+    limpidezza: ["Limpido", "Cristallino", "Velato"],
+    colore: ["Rosso porpora", "Rosso rubino", "Rosso granato", "Rosso aranciato"],
+    consistenza: ["Fluido", "Poco consistente", "Abbastanza consistente", "Consistente", "Viscoso"],
+    effervescenza: ["Assente", "Fine", "Abbastanza fine", "Persistente"],
+    intensita_olfattiva: ["Carenze", "Poco intenso", "Abbastanza intenso", "Intenso", "Molto intenso"],
+    complessita: ["Carenze", "Poco complesso", "Abbastanza complesso", "Complesso", "Ampio"],
+    qualita_olfattiva: ["Comune", "Poco fine", "Abbastanza fine", "Fine", "Eccellente"],
+    descrizione_olfattiva: ["Fruttato", "Floreale", "Speziato", "Erbaceo", "Minerale", "Tostato"],
+    zuccheri: ["Secco", "Abboccato", "Amabile", "Dolce"],
+    alcoli: ["Leggero", "Poco alcolico", "Abbastanza alcolico", "Caldo", "Alcolico"],
+    polialcoli: ["Spigoloso", "Poco morbido", "Abbastanza morbido", "Morbido", "Pastoso"],
+    acidita: ["Piatto", "Poco fresco", "Abbastanza fresco", "Fresco", "Acidulo"],
+    tannini: ["Morbidi", "Poco tannici", "Abbastanza tannici", "Tannici", "Astringenti"],
+    sali_minerali: ["Scipito", "Poco sapido", "Abbastanza sapido", "Sapido"],
+    equilibrio: ["Poco equilibrato", "Abbastanza equilibrato", "Equilibrato"],
+    intensita_gusto: ["Carenze", "Poco intenso", "Abbastanza intenso", "Intenso", "Molto intenso"],
+    persistenza: ["Corto", "Poco persistente", "Abbastanza persistente", "Persistente", "Molto persistente"],
+    qualita_gusto: ["Comune", "Poco fine", "Abbastanza fine", "Fine", "Eccellente"],
+    corpo: ["Magro", "Debole", "Di corpo", "Robusto", "Pesante"],
+    stato_evolutivo: ["Immaturo", "Giovane", "Pronto", "Maturo", "Vecchio"],
+    armonia: ["Poco armonico", "Abbastanza armonico", "Armonico"],
+  };
+
   function openFirstEditor(table: string, data: any[]) {
     if (!Array.isArray(data) || data.length === 0) return;
 
@@ -356,6 +380,50 @@ export default function PannelloControllo() {
       draft.ruolo = roleHint || "utente";
       draft.approvato = false;
       draft.status = draft.status || "in_attesa";
+    }
+
+    if (table === "vini") {
+      const vinoTemplate: Record<string, any> = {
+        name: "",
+        annata: "",
+        cantina: "",
+        vitigno: "",
+        grado_alcolico: "",
+        zona: "",
+        denominazione: "",
+        image: "",
+        limpidezza: "",
+        colore: "",
+        consistenza: "",
+        effervescenza: "",
+        intensita_olfattiva: "",
+        complessita: "",
+        qualita_olfattiva: "",
+        descrizione_olfattiva: "",
+        zuccheri: "",
+        alcoli: "",
+        polialcoli: "",
+        acidita: "",
+        tannini: "",
+        sali_minerali: "",
+        equilibrio: "",
+        intensita_gusto: "",
+        persistenza: "",
+        qualita_gusto: "",
+        corpo: "",
+        stato_evolutivo: "",
+        armonia: "",
+        abbinamenti: "",
+        temperatura_servizio: "",
+        note_personali: "",
+        valutazione: "",
+      };
+
+      Object.keys(vinoTemplate).forEach((k) => {
+        if (draft[k] === undefined) {
+          draft[k] = vinoTemplate[k];
+        }
+      });
     }
 
     setSelectedTable(table);
@@ -535,6 +603,24 @@ export default function PannelloControllo() {
                       >
                         <option value="true">true</option>
                         <option value="false">false</option>
+                      </select>
+                    ) : selectedTable === "vini" && aisSelectOptions[key] ? (
+                      <select
+                        value={selectedItem[key] ?? ""}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          setSelectedItem((prev: any) => ({
+                            ...prev,
+                            [key]: value,
+                          }));
+                          setSaveStatus(null);
+                        }}
+                        style={selectStyle}
+                      >
+                        <option value="">Scegli</option>
+                        {aisSelectOptions[key].map((option) => (
+                          <option key={option} value={option}>{option}</option>
+                        ))}
                       </select>
                     ) : key === "contenuto" ? (
                       <textarea
