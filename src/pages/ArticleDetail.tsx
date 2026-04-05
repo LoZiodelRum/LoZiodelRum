@@ -326,7 +326,7 @@ const hero = {
 const overlay = {
   position: "absolute" as const,
   inset: 0,
-  background: "linear-gradient(rgba(0,0,0,0.0), rgba(0,0,0,0.2))",
+  background: "linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.82) 100%)",
 };
 
 const heroBox = {
@@ -336,7 +336,7 @@ const heroBox = {
   padding: "40px",
   maxWidth: "min(100%, 56rem)",
   width: "90%",
-  marginBottom: -80,
+  marginBottom: -120,
   color: "#fff",
   boxShadow: "0 20px 60px rgba(0,0,0,0.6)",
 };
@@ -372,7 +372,7 @@ const meta = {
 const articleWrapper = {
   display: "flex",
   justifyContent: "center",
-  marginTop: 120,
+  marginTop: 160,
   paddingBottom: 80,
 };
 
