@@ -9,7 +9,7 @@ create table if not exists public.vini (
   grado_alcolico text,
   zona text,
   denominazione text,
-  image text,
+  immagine text,
   limpidezza text,
   colore text,
   consistenza text,

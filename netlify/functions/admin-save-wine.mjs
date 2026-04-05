@@ -38,6 +38,11 @@ export async function handler(event) {
     return { statusCode: 400, body: JSON.stringify({ ok: false, message: "Missing changes payload" }) };
   }
 
+  if (changes.image !== undefined && changes.immagine === undefined) {
+    changes.immagine = changes.image;
+    delete changes.image;
+  }
+
   const hasValidId = id !== undefined && id !== null && String(id).trim() !== "";
   if (mode === "update" && !hasValidId) {
     return { statusCode: 400, body: JSON.stringify({ ok: false, message: "Missing id for update" }) };

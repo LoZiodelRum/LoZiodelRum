@@ -117,6 +117,11 @@ export default function PannelloControllo() {
       cleanData[k] = normalizeValue(dataToUpdate[k]);
     });
 
+    if (selectedTable.toLowerCase() === "vini" && cleanData.image !== undefined) {
+      cleanData.immagine = cleanData.immagine ?? cleanData.image;
+      delete cleanData.image;
+    }
+
     const changedData: any = {};
     if (!isCreating) {
       Object.keys(cleanData).forEach((k) => {
@@ -396,7 +401,6 @@ export default function PannelloControllo() {
 
   const fieldLabelMap: Record<string, string> = {
     name: "nome",
-    image: "immagine",
   };
 
   function openFirstEditor(table: string, data: any[]) {
@@ -455,7 +459,7 @@ export default function PannelloControllo() {
         grado_alcolico: "",
         zona: "",
         denominazione: "",
-        image: "",
+        immagine: "",
         limpidezza: "",
         colore: "",
         consistenza: "",

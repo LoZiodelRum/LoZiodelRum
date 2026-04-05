@@ -10,7 +10,7 @@ const initialVino = {
   grado_alcolico: "",
   zona: "",
   denominazione: "",
-  image: "",
+  immagine: "",
   limpidezza: "Limpido",
   colore: "Rosso rubino",
   consistenza: "Consistente",
@@ -130,7 +130,7 @@ export default function CreaVino() {
 
     const { data } = supabase.storage.from("vini").getPublicUrl(filePath);
 
-    setVino((prev) => ({ ...prev, image: data.publicUrl }));
+    setVino((prev) => ({ ...prev, immagine: data.publicUrl }));
     setUploading(false);
   }
 
@@ -177,7 +177,7 @@ export default function CreaVino() {
             <input name="temperatura_servizio" placeholder="Temperatura servizio" value={vino.temperatura_servizio} onChange={handleChange} style={inputStyle} />
             <input name="note_personali" placeholder="Note personali" value={vino.note_personali} onChange={handleChange} style={inputStyle} />
             <input name="valutazione" placeholder="Valutazione (0-100)" value={vino.valutazione} onChange={handleChange} style={inputStyle} type="number" min="0" max="100" />
-            <input name="image" placeholder="URL immagine" value={vino.image} onChange={handleChange} style={inputStyle} />
+            <input name="immagine" placeholder="URL immagine" value={vino.immagine} onChange={handleChange} style={inputStyle} />
           </div>
 
           <div style={{ marginTop: 12 }}>

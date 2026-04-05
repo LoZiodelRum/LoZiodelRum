@@ -42,6 +42,11 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     return res.status(400).json({ ok: false, message: "Missing changes payload" });
   }
 
+  if (changes.image !== undefined && changes.immagine === undefined) {
+    changes.immagine = changes.image;
+    delete changes.image;
+  }
+
   const hasValidId = id !== undefined && id !== null && String(id).trim() !== "";
   if (mode === "update" && !hasValidId) {
     return res.status(400).json({ ok: false, message: "Missing id for update" });
