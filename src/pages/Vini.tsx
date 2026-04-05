@@ -10,6 +10,7 @@ type VinoCard = {
   categoria: string;
   alcol: string;
   descrizione: string;
+  placeholder?: boolean;
 };
 
 const mockVini = [
@@ -140,6 +141,19 @@ export default function Vini() {
   }
 
   function renderSection(title: string, list: VinoCard[], tipo: string) {
+    const cards = [...list];
+    while (cards.length < 3) {
+      cards.push({
+        id: `placeholder-${tipo}-${cards.length}`,
+        nome: "In arrivo",
+        immagine: null,
+        categoria: "",
+        alcol: "",
+        descrizione: "",
+        placeholder: true,
+      });
+    }
+
     return (
       <section className="drink-section-white" id={tipo}>
         <div className="drink-section-header">
@@ -153,8 +167,15 @@ export default function Vini() {
           <p style={{ textAlign: "center", color: "#999" }}>Nessun dato</p>
         ) : (
           <div className="drink-grid-uniform vini-grid">
-            {list.map((item) => (
-              <article key={item.id} className="drink-card-uniform" onClick={() => navigate(`/vini/${item.id}`)}>
+            {cards.map((item) => (
+              <article
+                key={item.id}
+                className="drink-card-uniform"
+                onClick={() => {
+                  if (!item.placeholder) navigate(`/vini/${item.id}`);
+                }}
+                style={item.placeholder ? { opacity: 0.65, cursor: "default" } : undefined}
+              >
                 {item.immagine ? (
                   <img src={item.immagine} alt={item.nome} />
                 ) : (
