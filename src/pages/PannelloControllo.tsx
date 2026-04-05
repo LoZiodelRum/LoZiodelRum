@@ -13,6 +13,7 @@ export default function PannelloControllo() {
   const [articoli, setArticoli] = useState<any[]>([]);
   const [cocktail, setCocktail] = useState<any[]>([]);
   const [distillati, setDistillati] = useState<any[]>([]);
+  const [vini, setVini] = useState<any[]>([]);
 
   const [bartender, setBartender] = useState<any[]>([]);
   const [proprietari, setProprietari] = useState<any[]>([]);
@@ -44,6 +45,7 @@ export default function PannelloControllo() {
     const { data: articoliData } = await supabase.from("articoli").select("*");
     const { data: cocktailData } = await supabase.from("cocktail").select("*");
     const { data: distillatiData } = await supabase.from("distillati").select("*");
+    const { data: viniData } = await supabase.from("vini").select("*");
 
     const safeUsers = Array.isArray(utentiData) ? utentiData : [];
     const safeCocktail = Array.isArray(cocktailData) ? cocktailData : [];
@@ -57,6 +59,7 @@ export default function PannelloControllo() {
     setArticoli(articoliData || []);
     setCocktail(safeCocktail);
     setDistillati(distillatiData || []);
+    setVini(viniData || []);
 
     setKpi({
       utenti: safeUsers.length,
@@ -418,6 +421,7 @@ export default function PannelloControllo() {
         {Sidebar("Proprietari", proprietari, "profili", "username")}
         {Sidebar("Cocktail", cocktail, "cocktail", "nome")}
         {Sidebar("Distillati", distillati, "distillati", "nome")}
+        {Sidebar("Vini", vini, "vini", "nome")}
         {Sidebar("Articoli", articoli, "articoli", "titolo")}
       </div>
 
@@ -448,35 +452,42 @@ export default function PannelloControllo() {
           <div style={quickActionCardStyle}>
             <h3 style={quickActionTitleStyle}>Aggiunta Cocktail</h3>
             <button style={quickActionBtnStyle} onClick={() => openCreateEditor("cocktail", cocktail)}>
-              Apri scheda modifica cocktail
+              modifica cocktail
             </button>
           </div>
 
           <div style={quickActionCardStyle}>
             <h3 style={quickActionTitleStyle}>Aggiunta Distillati</h3>
             <button style={quickActionBtnStyle} onClick={() => openCreateEditor("distillati", distillati)}>
-              Apri scheda modifica distillati
+              modifica distillati
+            </button>
+          </div>
+
+          <div style={quickActionCardStyle}>
+            <h3 style={quickActionTitleStyle}>Aggiunta Vini</h3>
+            <button style={quickActionBtnStyle} onClick={() => openCreateEditor("vini", vini)}>
+              modifica vini
             </button>
           </div>
 
           <div style={quickActionCardStyle}>
             <h3 style={quickActionTitleStyle}>Aggiunta Locali</h3>
             <button style={quickActionBtnStyle} onClick={() => openCreateEditor("Locali", locali)}>
-              Apri scheda modifica locali
+              modifica locali
             </button>
           </div>
 
           <div style={quickActionCardStyle}>
             <h3 style={quickActionTitleStyle}>Aggiunta Bartender</h3>
             <button style={quickActionBtnStyle} onClick={() => openCreateEditor("profili", bartender, "bartender")}>
-              Apri scheda modifica bartender
+              modifica bartender
             </button>
           </div>
 
           <div style={quickActionCardStyle}>
             <h3 style={quickActionTitleStyle}>Aggiunta Proprietari</h3>
             <button style={quickActionBtnStyle} onClick={() => openCreateEditor("profili", proprietari, "proprietario")}>
-              Apri scheda modifica proprietari
+              modifica proprietari
             </button>
           </div>
         </div>
