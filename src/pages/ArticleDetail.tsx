@@ -197,6 +197,40 @@ export default function ArticleDetail() {
 
   return (
     <div className="page page-full-bleed fade-in">
+      <style>{`
+        @media (max-width: 768px) {
+          .article-hero {
+            border-radius: 0 !important;
+            width: 100vw !important;
+            margin-left: calc(-50vw + 50%) !important;
+          }
+          .article-hero-box {
+            width: calc(100% - 24px) !important;
+            max-width: none !important;
+            padding: 24px 18px !important;
+            margin-bottom: -320px !important;
+            border-radius: 16px !important;
+          }
+          .article-hero-title {
+            font-size: clamp(1.5rem, 7vw, 2rem) !important;
+          }
+          .article-hero-subtitle {
+            font-size: 15px !important;
+          }
+          .article-wrapper {
+            margin-top: 360px !important;
+          }
+          .article-box {
+            width: calc(100% - 24px) !important;
+            max-width: none !important;
+            padding: 24px 18px !important;
+            border-radius: 16px !important;
+          }
+          .article-content {
+            font-size: 16px !important;
+          }
+        }
+      `}</style>
 
       {/* 🔧 EDITOR ADMIN */}
       {isAdmin && form && (
@@ -273,6 +307,7 @@ export default function ArticleDetail() {
 
       {/* HERO */}
       <div
+        className="article-hero"
         style={{
           ...hero,
           backgroundImage: `url(${data.immagine})`,
@@ -280,12 +315,12 @@ export default function ArticleDetail() {
       >
         <div style={overlay} />
 
-        <div style={heroBox}>
+        <div className="article-hero-box" style={heroBox}>
           <span style={badge}>{data.categoria}</span>
 
-          <h1 style={title}>{data.titolo}</h1>
+          <h1 className="article-hero-title" style={title}>{data.titolo}</h1>
 
-          <p style={subtitle}>{data.descrizione}</p>
+          <p className="article-hero-subtitle" style={subtitle}>{data.descrizione}</p>
 
           <div style={meta}>
             <span>Lo Zio del Rum</span>
@@ -294,9 +329,9 @@ export default function ArticleDetail() {
       </div>
 
       {/* 🔥 BOX ARTICOLO COMPLETO */}
-      <div style={articleWrapper}>
-        <div style={articleBox}>
-          <div style={articleContent}>
+      <div className="article-wrapper" style={articleWrapper}>
+        <div className="article-box" style={articleBox}>
+          <div className="article-content" style={articleContent}>
             {renderArticleContent(data.contenuto || "")}
           </div>
         </div>
