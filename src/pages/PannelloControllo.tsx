@@ -335,6 +335,11 @@ export default function PannelloControllo() {
     armonia: ["Poco armonico", "Abbastanza armonico", "Armonico"],
   };
 
+  const fieldLabelMap: Record<string, string> = {
+    name: "nome",
+    image: "immagine",
+  };
+
   function openFirstEditor(table: string, data: any[]) {
     if (!Array.isArray(data) || data.length === 0) return;
 
@@ -587,7 +592,7 @@ export default function PannelloControllo() {
                         : fieldStyle
                     }
                   >
-                    <label style={labelStyle}>{key}</label>
+                    <label style={labelStyle}>{fieldLabelMap[key] ?? key}</label>
                     {booleanFields.has(key) ? (
                       <select
                         value={String(toBoolean(selectedItem[key]))}
