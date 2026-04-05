@@ -222,11 +222,11 @@ export default function ArticleDetail() {
           }
 
           .article-hero-box {
-            margin-bottom: -320px !important;
+            margin-bottom: -90px !important;
           }
 
           .article-hero-title {
-            font-size: clamp(1.5rem, 7vw, 2rem) !important;
+            font-size: clamp(1.35rem, 6.2vw, 1.85rem) !important;
           }
           .article-hero-subtitle {
             font-size: 15px !important;
@@ -234,13 +234,13 @@ export default function ArticleDetail() {
           .article-wrapper {
             width: 100vw !important;
             margin-left: calc(-50vw + 50%) !important;
-            margin-top: 360px !important;
+            margin-top: 140px !important;
             display: flex !important;
             justify-content: center !important;
           }
 
           .article-content {
-            font-size: 16px !important;
+            font-size: 17px !important;
           }
         }
       `}</style>
