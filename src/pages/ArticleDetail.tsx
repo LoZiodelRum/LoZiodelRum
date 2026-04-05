@@ -222,7 +222,7 @@ export default function ArticleDetail() {
           }
 
           .article-hero-box {
-            margin-bottom: -120px !important;
+            margin-bottom: -60px !important;
           }
 
           .article-hero-title {
@@ -234,7 +234,7 @@ export default function ArticleDetail() {
           .article-wrapper {
             width: 100vw !important;
             margin-left: calc(-50vw + 50%) !important;
-            margin-top: 170px !important;
+            margin-top: 110px !important;
             display: flex !important;
             justify-content: center !important;
           }
