@@ -43,7 +43,8 @@ function renderInlineLinks(text: string, keyBase: string) {
 
 function renderArticleContent(raw: string) {
   const content = raw || "";
-  const imageRegex = /!\[([^\]]*)\]\((https?:\/\/[\s\S]*?)\)/g;
+  // Capture the full URL on the same line to support URLs containing parentheses.
+  const imageRegex = /!\[([^\]]*)\]\((https?:\/\/[^\n]+)\)/g;
   const nodes: React.ReactNode[] = [];
 
   let lastIndex = 0;
