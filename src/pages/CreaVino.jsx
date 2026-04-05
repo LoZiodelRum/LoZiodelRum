@@ -3,7 +3,7 @@ import { useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 
 const initialVino = {
-  name: "",
+  nome: "",
   annata: "",
   cantina: "",
   vitigno: "",
@@ -166,7 +166,7 @@ export default function CreaVino() {
         <fieldset style={fieldsetStyle}>
           <legend style={{ color: "#f59e0b", padding: "0 6px" }}>Dati Base</legend>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))", gap: 10 }}>
-            <input name="name" placeholder="Nome vino" value={vino.name} onChange={handleChange} style={inputStyle} required />
+            <input name="nome" placeholder="Nome vino" value={vino.nome} onChange={handleChange} style={inputStyle} required />
             <input name="annata" placeholder="Annata" value={vino.annata} onChange={handleChange} style={inputStyle} />
             <input name="cantina" placeholder="Cantina" value={vino.cantina} onChange={handleChange} style={inputStyle} />
             <input name="vitigno" placeholder="Vitigno" value={vino.vitigno} onChange={handleChange} style={inputStyle} />

@@ -47,6 +47,11 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     delete changes.image;
   }
 
+  if (changes.name !== undefined && changes.nome === undefined) {
+    changes.nome = changes.name;
+    delete changes.name;
+  }
+
   const hasValidId = id !== undefined && id !== null && String(id).trim() !== "";
   if (mode === "update" && !hasValidId) {
     return res.status(400).json({ ok: false, message: "Missing id for update" });

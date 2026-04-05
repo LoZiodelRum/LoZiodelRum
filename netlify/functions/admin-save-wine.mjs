@@ -43,6 +43,11 @@ export async function handler(event) {
     delete changes.image;
   }
 
+  if (changes.name !== undefined && changes.nome === undefined) {
+    changes.nome = changes.name;
+    delete changes.name;
+  }
+
   const hasValidId = id !== undefined && id !== null && String(id).trim() !== "";
   if (mode === "update" && !hasValidId) {
     return { statusCode: 400, body: JSON.stringify({ ok: false, message: "Missing id for update" }) };

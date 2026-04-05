@@ -122,6 +122,11 @@ export default function PannelloControllo() {
       delete cleanData.image;
     }
 
+    if (selectedTable.toLowerCase() === "vini" && cleanData.name !== undefined) {
+      cleanData.nome = cleanData.nome ?? cleanData.name;
+      delete cleanData.name;
+    }
+
     const changedData: any = {};
     if (!isCreating) {
       Object.keys(cleanData).forEach((k) => {
@@ -452,7 +457,7 @@ export default function PannelloControllo() {
 
     if (table.toLowerCase() === "vini") {
       const vinoTemplate: Record<string, any> = {
-        name: "",
+        nome: "",
         annata: "",
         cantina: "",
         vitigno: "",

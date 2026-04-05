@@ -2,7 +2,7 @@ create extension if not exists pgcrypto;
 
 create table if not exists public.vini (
   id uuid primary key default gen_random_uuid(),
-  name text,
+  nome text,
   annata text,
   cantina text,
   vitigno text,
