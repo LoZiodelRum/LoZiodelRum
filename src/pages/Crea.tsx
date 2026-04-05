@@ -1,9 +1,11 @@
 import "../App.css";
 import { useUser } from "../context/UserContext";
 import SignupInviteBox from "../components/SignupInviteBox";
+import { useNavigate } from "react-router-dom";
 
 export default function Crea() {
   const { isAuthenticated, loading } = useUser();
+  const navigate = useNavigate();
 
   if (loading) {
     return (
@@ -25,6 +27,9 @@ export default function Crea() {
   return (
     <div className="page fade-in" style={{ padding: 40 }}>
       <h1>Crea</h1>
+      <div style={{ marginTop: 20, display: "flex", gap: 10, flexWrap: "wrap" }}>
+        <button className="btn-primary" onClick={() => navigate("/crea/vino")}>Registra Vino Rosso (AIS)</button>
+      </div>
     </div>
   );
 }

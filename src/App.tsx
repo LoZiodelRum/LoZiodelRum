@@ -9,6 +9,7 @@ import Home from "./pages/Home";
 import Auth from "./pages/Auth";
 import Community from "./pages/Community";
 import Crea from "./pages/Crea";
+import CreaVino from "./pages/CreaVino";
 import Drink from "./pages/Drink";
 import Vini from "./pages/Vini";
 import DrinkDetail from "./pages/DrinkDetail";
@@ -183,6 +184,14 @@ function AppContent() {
           element={
             <PageShell>
               <Crea />
+            </PageShell>
+          }
+        />
+        <Route
+          path="/crea/vino"
+          element={
+            <PageShell>
+              <CreaVino />
             </PageShell>
           }
         />
