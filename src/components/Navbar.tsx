@@ -108,6 +108,7 @@ export default function Navbar() {
         <Link to="/" style={linkStyle("/")}>Home</Link>
         <Link to="/mappa" style={linkStyle("/mappa")}>Mappa</Link>
         <Link to="/drink" style={linkStyle("/drink")}>Drink</Link>
+        <Link to="/vini" style={linkStyle("/vini")}>Vini</Link>
         <Link to="/magazine" style={linkStyle("/magazine")}>Magazine</Link>
         <Link to="/community" style={linkStyle("/community")}>Community</Link>
         <Link to="/crea" style={linkStyle("/crea")}>Crea</Link>
@@ -211,6 +212,7 @@ export default function Navbar() {
         <Link to="/" onClick={closeMobileMenu} style={{ ...linkStyle("/"), padding: "12px 0", borderBottom: "1px solid #333" }}>Home</Link>
         <Link to="/mappa" onClick={closeMobileMenu} style={{ ...linkStyle("/mappa"), padding: "12px 0", borderBottom: "1px solid #333" }}>Mappa</Link>
         <Link to="/drink" onClick={closeMobileMenu} style={{ ...linkStyle("/drink"), padding: "12px 0", borderBottom: "1px solid #333" }}>Drink</Link>
+        <Link to="/vini" onClick={closeMobileMenu} style={{ ...linkStyle("/vini"), padding: "12px 0", borderBottom: "1px solid #333" }}>Vini</Link>
         <Link to="/magazine" onClick={closeMobileMenu} style={{ ...linkStyle("/magazine"), padding: "12px 0", borderBottom: "1px solid #333" }}>Magazine</Link>
         <Link to="/community" onClick={closeMobileMenu} style={{ ...linkStyle("/community"), padding: "12px 0", borderBottom: "1px solid #333" }}>Community</Link>
         <Link to="/crea" onClick={closeMobileMenu} style={{ ...linkStyle("/crea"), padding: "12px 0", borderBottom: "1px solid #333" }}>Crea</Link>
