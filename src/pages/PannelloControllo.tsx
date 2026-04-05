@@ -610,23 +610,47 @@ export default function PannelloControllo() {
                         <option value="false">false</option>
                       </select>
                     ) : selectedTable === "vini" && aisSelectOptions[key] ? (
-                      <select
-                        value={selectedItem[key] ?? ""}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          setSelectedItem((prev: any) => ({
-                            ...prev,
-                            [key]: value,
-                          }));
-                          setSaveStatus(null);
-                        }}
-                        style={selectStyle}
-                      >
-                        <option value="">Scegli</option>
-                        {aisSelectOptions[key].map((option) => (
-                          <option key={option} value={option}>{option}</option>
-                        ))}
-                      </select>
+                      key === "descrizione_olfattiva" ? (
+                        <select
+                          multiple
+                          value={
+                            typeof selectedItem[key] === "string"
+                              ? selectedItem[key].split(",").map((v: string) => v.trim()).filter(Boolean)
+                              : []
+                          }
+                          onChange={(e) => {
+                            const values = Array.from(e.target.selectedOptions).map((opt) => opt.value);
+                            setSelectedItem((prev: any) => ({
+                              ...prev,
+                              [key]: values.join(","),
+                            }));
+                            setSaveStatus(null);
+                          }}
+                          style={{ ...selectStyle, minHeight: 120 }}
+                        >
+                          {aisSelectOptions[key].map((option) => (
+                            <option key={option} value={option}>{option}</option>
+                          ))}
+                        </select>
+                      ) : (
+                        <select
+                          value={selectedItem[key] ?? ""}
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            setSelectedItem((prev: any) => ({
+                              ...prev,
+                              [key]: value,
+                            }));
+                            setSaveStatus(null);
+                          }}
+                          style={selectStyle}
+                        >
+                          <option value="">Scegli</option>
+                          {aisSelectOptions[key].map((option) => (
+                            <option key={option} value={option}>{option}</option>
+                          ))}
+                        </select>
+                      )
                     ) : key === "contenuto" ? (
                       <textarea
                         rows={6}
