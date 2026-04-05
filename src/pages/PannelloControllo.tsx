@@ -14,6 +14,7 @@ export default function PannelloControllo() {
   const [cocktail, setCocktail] = useState<any[]>([]);
   const [distillati, setDistillati] = useState<any[]>([]);
   const [vini, setVini] = useState<any[]>([]);
+  const [wineTableName, setWineTableName] = useState<string>("vini");
 
   const [bartender, setBartender] = useState<any[]>([]);
   const [proprietari, setProprietari] = useState<any[]>([]);
@@ -45,7 +46,20 @@ export default function PannelloControllo() {
     const { data: articoliData } = await supabase.from("articoli").select("*");
     const { data: cocktailData } = await supabase.from("cocktail").select("*");
     const { data: distillatiData } = await supabase.from("distillati").select("*");
-    const { data: viniData } = await supabase.from("vini").select("*");
+    let viniData: any[] | null = null;
+    let detectedWineTable = "vini";
+
+    const viniTryLower = await supabase.from("vini").select("*");
+    if (!viniTryLower.error) {
+      viniData = viniTryLower.data || [];
+      detectedWineTable = "vini";
+    } else {
+      const viniTryUpper = await supabase.from("Vini").select("*");
+      if (!viniTryUpper.error) {
+        viniData = viniTryUpper.data || [];
+        detectedWineTable = "Vini";
+      }
+    }
 
     const safeUsers = Array.isArray(utentiData) ? utentiData : [];
     const safeCocktail = Array.isArray(cocktailData) ? cocktailData : [];
@@ -60,6 +74,7 @@ export default function PannelloControllo() {
     setCocktail(safeCocktail);
     setDistillati(distillatiData || []);
     setVini(viniData || []);
+    setWineTableName(detectedWineTable);
 
     setKpi({
       utenti: safeUsers.length,
@@ -123,6 +138,7 @@ export default function PannelloControllo() {
 
     const hasValidId = id !== undefined && id !== null && String(id).trim() !== "";
     const fallbackSlug = typeof selectedItem?.slug === "string" ? selectedItem.slug.trim() : "";
+    const isWineTable = selectedTable.toLowerCase() === "vini";
 
     if (isCreating) {
       if (!cleanData.id) {
@@ -169,6 +185,49 @@ export default function PannelloControllo() {
                   id: hasValidId ? id : null,
                   slug: fallbackSlug || null,
                   changes: changedData,
+                }),
+              });
+
+              const payload = await response.json().catch(() => ({}));
+              if (response.ok && payload?.ok) {
+                lastMessage = "";
+                break;
+              }
+
+              lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
+            } catch (e: any) {
+              lastMessage = e?.message || `Errore di rete su ${endpoint}`;
+            }
+          }
+
+          if (lastMessage) {
+            error = { message: lastMessage };
+          }
+        }
+      } else if (isWineTable) {
+        if (!adminPassword) {
+          error = { message: "Password admin non disponibile. Esci e rientra come admin." };
+        } else {
+          const endpoints = [
+            "/api/admin-save-wine",
+            "/.netlify/functions/admin-save-wine",
+          ];
+
+          let lastMessage = "Salvataggio vino fallito lato server.";
+
+          for (const endpoint of endpoints) {
+            try {
+              const response = await fetch(endpoint, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "x-admin-password": adminPassword,
+                },
+                body: JSON.stringify({
+                  mode: isCreating ? "create" : "update",
+                  table: wineTableName,
+                  id: hasValidId ? id : null,
+                  changes: isCreating ? cleanData : changedData,
                 }),
               });
 
@@ -387,7 +446,7 @@ export default function PannelloControllo() {
       draft.status = draft.status || "in_attesa";
     }
 
-    if (table === "vini") {
+    if (table.toLowerCase() === "vini") {
       const vinoTemplate: Record<string, any> = {
         name: "",
         annata: "",
@@ -494,7 +553,7 @@ export default function PannelloControllo() {
         {Sidebar("Proprietari", proprietari, "profili", "username")}
         {Sidebar("Cocktail", cocktail, "cocktail", "nome")}
         {Sidebar("Distillati", distillati, "distillati", "nome")}
-        {Sidebar("Vini", vini, "vini", "nome")}
+        {Sidebar("Vini", vini, wineTableName, "nome")}
         {Sidebar("Articoli", articoli, "articoli", "titolo")}
       </div>
 
@@ -538,7 +597,7 @@ export default function PannelloControllo() {
 
           <div style={quickActionCardStyle}>
             <h3 style={quickActionTitleStyle}>Aggiunta Vini</h3>
-            <button style={quickActionBtnStyle} onClick={() => openCreateEditor("vini", vini)}>
+            <button style={quickActionBtnStyle} onClick={() => openCreateEditor(wineTableName, vini)}>
               modifica vini
             </button>
           </div>

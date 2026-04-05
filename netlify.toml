@@ -11,6 +11,11 @@
   status = 200
 
 [[redirects]]
+  from = "/api/admin-save-wine"
+  to = "/.netlify/functions/admin-save-wine"
+  status = 200
+
+[[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
