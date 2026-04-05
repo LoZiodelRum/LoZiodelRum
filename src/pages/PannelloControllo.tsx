@@ -78,7 +78,10 @@ export default function PannelloControllo() {
   async function salvaModifiche() {
     if (!selectedItem || !selectedTable) return;
 
-    const adminPassword = localStorage.getItem("adminPassword") || "";
+    const adminPassword =
+      localStorage.getItem("adminPassword") ||
+      import.meta.env.VITE_ADMIN_PASSWORD ||
+      "";
 
     const {
       data: { session },
@@ -141,22 +144,46 @@ export default function PannelloControllo() {
     } else {
       // Per gli articoli usiamo endpoint serverless admin: evita blocchi RLS lato client.
       if (selectedTable === "articoli") {
-        const response = await fetch("/api/admin-update-article", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-admin-password": adminPassword,
-          },
-          body: JSON.stringify({
-            id: hasValidId ? id : null,
-            slug: fallbackSlug || null,
-            changes: changedData,
-          }),
-        });
+        if (!adminPassword) {
+          error = { message: "Password admin non disponibile. Esci e rientra come admin." };
+        } else {
+          const endpoints = [
+            "/api/admin-update-article",
+            "/.netlify/functions/admin-update-article",
+          ];
 
-        const payload = await response.json().catch(() => ({}));
-        if (!response.ok || !payload?.ok) {
-          error = { message: payload?.message || "Salvataggio articolo fallito lato server." };
+          let lastMessage = "Salvataggio articolo fallito lato server.";
+
+          for (const endpoint of endpoints) {
+            try {
+              const response = await fetch(endpoint, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "x-admin-password": adminPassword,
+                },
+                body: JSON.stringify({
+                  id: hasValidId ? id : null,
+                  slug: fallbackSlug || null,
+                  changes: changedData,
+                }),
+              });
+
+              const payload = await response.json().catch(() => ({}));
+              if (response.ok && payload?.ok) {
+                lastMessage = "";
+                break;
+              }
+
+              lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
+            } catch (e: any) {
+              lastMessage = e?.message || `Errore di rete su ${endpoint}`;
+            }
+          }
+
+          if (lastMessage) {
+            error = { message: lastMessage };
+          }
         }
       } else {
         if (!session) {

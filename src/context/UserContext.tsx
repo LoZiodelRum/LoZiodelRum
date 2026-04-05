@@ -89,6 +89,14 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   }
 
   useEffect(() => {
+    // Backfill cached admin password for old sessions created before this key was introduced.
+    if (
+      localStorage.getItem(ADMIN_SESSION_KEY) === "true" &&
+      !localStorage.getItem(ADMIN_PASSWORD_CACHE_KEY)
+    ) {
+      localStorage.setItem(ADMIN_PASSWORD_CACHE_KEY, ADMIN_PASSWORD);
+    }
+
     checkUser();
 
     const {
