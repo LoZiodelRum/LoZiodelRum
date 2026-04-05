@@ -152,7 +152,7 @@ export default function Vini() {
         {!list.length ? (
           <p style={{ textAlign: "center", color: "#999" }}>Nessun dato</p>
         ) : (
-          <div className="drink-grid-uniform">
+          <div className="drink-grid-uniform" style={{ gridTemplateColumns: "repeat(3, minmax(0, 1fr))" }}>
             {list.map((item) => (
               <article key={item.id} className="drink-card-uniform" onClick={() => navigate(`/vini/${item.id}`)}>
                 {item.immagine ? (
