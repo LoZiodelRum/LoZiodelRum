@@ -18,6 +18,7 @@ export default function PannelloControllo() {
   const [proprietari, setProprietari] = useState<any[]>([]);
 
   const [selectedItem, setSelectedItem] = useState<any>(null);
+  const [selectedOriginalItem, setSelectedOriginalItem] = useState<any>(null);
   const [selectedTable, setSelectedTable] = useState<string>("");
   const [isCreating, setIsCreating] = useState(false);
   const [createRoleHint, setCreateRoleHint] = useState<string | null>(null);
@@ -79,17 +80,32 @@ export default function PannelloControllo() {
 
     const { id, ...dataToUpdate } = selectedItem;
 
+    const normalizeValue = (value: any) => {
+      if (value === "") return null;
+      return value ?? null;
+    };
+
     const cleanData: any = {};
     Object.keys(dataToUpdate).forEach(k => {
-      const value = dataToUpdate[k];
+      cleanData[k] = normalizeValue(dataToUpdate[k]);
+    });
 
-      if (value === "") {
-        cleanData[k] = null;
+    const changedData: any = {};
+    if (!isCreating) {
+      Object.keys(cleanData).forEach((k) => {
+        const current = cleanData[k];
+        const previous = normalizeValue(selectedOriginalItem?.[k]);
+        if (JSON.stringify(current) !== JSON.stringify(previous)) {
+          changedData[k] = current;
+        }
+      });
+
+      if (Object.keys(changedData).length === 0) {
+        setSaveStatus("ok");
+        setTimeout(() => setSaveStatus(null), 2000);
         return;
       }
-
-      cleanData[k] = value ?? null;
-    });
+    }
 
     let error: any = null;
 
@@ -116,7 +132,7 @@ export default function PannelloControllo() {
     } else {
       const result = await supabase
         .from(selectedTable)
-        .update(cleanData)
+        .update(changedData)
         .eq("id", id)
         .select("id");
 
@@ -143,6 +159,19 @@ export default function PannelloControllo() {
     setIsCreating(false);
     setCreateRoleHint(null);
 
+    if (!isCreating) {
+      const { data: refreshedItem } = await supabase
+        .from(selectedTable)
+        .select("*")
+        .eq("id", id)
+        .maybeSingle();
+
+      if (refreshedItem) {
+        setSelectedItem(refreshedItem);
+        setSelectedOriginalItem(refreshedItem);
+      }
+    }
+
     await loadData();
   }
 
@@ -166,6 +195,7 @@ export default function PannelloControllo() {
     }, 2000);
 
     setSelectedItem(null);
+    setSelectedOriginalItem(null);
     await loadData();
   }
 
@@ -193,6 +223,7 @@ export default function PannelloControllo() {
 
     setSelectedTable(table);
     setSelectedItem(firstItem);
+    setSelectedOriginalItem(firstItem);
     setSaveStatus(null);
     setIsCreating(false);
     setCreateRoleHint(null);
@@ -231,6 +262,7 @@ export default function PannelloControllo() {
 
     setSelectedTable(table);
     setSelectedItem(draft);
+    setSelectedOriginalItem(null);
     setSaveStatus(null);
     setIsCreating(true);
     setCreateRoleHint(roleHint || null);
@@ -253,9 +285,12 @@ export default function PannelloControllo() {
             const value = e.target.value;
             const item = data.find(d => String(d.id) === value);
             if (table === "Locali" && item) {
-              setSelectedItem({ ...item, recensioni: item.recensioni ?? "" });
+              const normalizedItem = { ...item, recensioni: item.recensioni ?? "" };
+              setSelectedItem(normalizedItem);
+              setSelectedOriginalItem(normalizedItem);
             } else {
               setSelectedItem(item || null);
+              setSelectedOriginalItem(item || null);
             }
             setSelectedTable(table);
             setSaveStatus(null);
