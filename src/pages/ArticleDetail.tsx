@@ -336,7 +336,7 @@ const heroBox = {
   padding: "40px",
   maxWidth: "min(100%, 56rem)",
   width: "90%",
-  marginBottom: -120,
+  marginBottom: -200,
   color: "#fff",
   boxShadow: "0 20px 60px rgba(0,0,0,0.6)",
 };
@@ -372,7 +372,7 @@ const meta = {
 const articleWrapper = {
   display: "flex",
   justifyContent: "center",
-  marginTop: 160,
+  marginTop: 240,
   paddingBottom: 80,
 };
 
