@@ -163,31 +163,27 @@ export default function Vini() {
           </button>
         </div>
 
-        {!list.length ? (
-          <p style={{ textAlign: "center", color: "#999" }}>Nessun dato</p>
-        ) : (
-          <div className="drink-grid-uniform vini-grid">
-            {cards.map((item) => (
-              <article
-                key={item.id}
-                className="drink-card-uniform"
-                onClick={() => {
-                  if (!item.placeholder) navigate(`/vini/${item.id}`);
-                }}
-                style={item.placeholder ? { opacity: 0.65, cursor: "default" } : undefined}
-              >
-                {item.immagine ? (
-                  <img src={item.immagine} alt={item.nome} />
-                ) : (
-                  <div className="no-img-placeholder">NO IMG</div>
-                )}
-                <div className="drink-card-caption">
-                  <h3>{item.nome}</h3>
-                </div>
-              </article>
-            ))}
-          </div>
-        )}
+        <div className="drink-grid-uniform vini-grid">
+          {cards.map((item) => (
+            <article
+              key={item.id}
+              className="drink-card-uniform"
+              onClick={() => {
+                if (!item.placeholder) navigate(`/vini/${item.id}`);
+              }}
+              style={item.placeholder ? { opacity: 0.65, cursor: "default" } : undefined}
+            >
+              {item.immagine ? (
+                <img src={item.immagine} alt={item.nome} />
+              ) : (
+                <div className="no-img-placeholder">NO IMG</div>
+              )}
+              <div className="drink-card-caption">
+                <h3>{item.nome}</h3>
+              </div>
+            </article>
+          ))}
+        </div>
       </section>
     );
   }
