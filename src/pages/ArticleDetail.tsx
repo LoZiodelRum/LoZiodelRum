@@ -240,7 +240,7 @@ export default function ArticleDetail() {
           }
 
           .article-content {
-            font-size: 18px !important;
+            font-size: 20px !important;
           }
         }
       `}</style>
