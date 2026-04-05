@@ -202,6 +202,8 @@ export default function ArticleDetail() {
         .article-box {
           width: min(94vw, 64rem) !important;
           max-width: none !important;
+          margin-left: auto !important;
+          margin-right: auto !important;
         }
 
         @media (max-width: 768px) {
@@ -210,13 +212,19 @@ export default function ArticleDetail() {
             width: 100vw !important;
             margin-left: calc(-50vw + 50%) !important;
           }
-          .article-hero-box {
+
+          .article-hero-box,
+          .article-box {
             width: calc(100vw - 16px) !important;
             max-width: none !important;
             padding: 24px 18px !important;
-            margin-bottom: -320px !important;
             border-radius: 16px !important;
           }
+
+          .article-hero-box {
+            margin-bottom: -320px !important;
+          }
+
           .article-hero-title {
             font-size: clamp(1.5rem, 7vw, 2rem) !important;
           }
@@ -224,14 +232,13 @@ export default function ArticleDetail() {
             font-size: 15px !important;
           }
           .article-wrapper {
+            width: 100vw !important;
+            margin-left: calc(-50vw + 50%) !important;
             margin-top: 360px !important;
+            display: flex !important;
+            justify-content: center !important;
           }
-          .article-box {
-            width: calc(100vw - 16px) !important;
-            max-width: none !important;
-            padding: 24px 18px !important;
-            border-radius: 16px !important;
-          }
+
           .article-content {
             font-size: 16px !important;
           }
