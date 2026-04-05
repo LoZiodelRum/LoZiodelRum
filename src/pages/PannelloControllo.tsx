@@ -652,7 +652,8 @@ export default function PannelloControllo() {
                               const isChecked = selectedValues.includes(option);
 
                               return (
-                                <label key={option} style={{ display: "flex", gap: 8, alignItems: "center", padding: "6px 4px", cursor: "pointer" }}>
+                                <label key={option} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 4px", cursor: "pointer" }}>
+                                  <span>{option}</span>
                                   <input
                                     type="checkbox"
                                     checked={isChecked}
@@ -668,7 +669,6 @@ export default function PannelloControllo() {
                                       setSaveStatus(null);
                                     }}
                                   />
-                                  <span>{option}</span>
                                 </label>
                               );
                             })}
