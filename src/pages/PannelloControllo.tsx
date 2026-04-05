@@ -402,6 +402,7 @@ export default function PannelloControllo() {
     corpo: ["Magro", "Debole", "Di corpo", "Robusto", "Pesante"],
     stato_evolutivo: ["Immaturo", "Giovane", "Pronto", "Maturo", "Vecchio"],
     armonia: ["Poco armonico", "Abbastanza armonico", "Armonico"],
+    categoria: ["rosso", "bianco", "bollicine", "altri vini"],
   };
 
   const fieldLabelMap: Record<string, string> = {
@@ -458,6 +459,7 @@ export default function PannelloControllo() {
     if (table.toLowerCase() === "vini") {
       const vinoTemplate: Record<string, any> = {
         nome: "",
+        categoria: "",
         annata: "",
         cantina: "",
         vitigno: "",
