@@ -61,7 +61,11 @@ export default function Magazine() {
       <div className="cocktail-grid">
         {others.map((a) => (
           <Link key={a.id} to={`/magazine/${a.id}`} className="drink-card">
-            <img src={a.immagine || fallbackArticleImage} alt={a.titolo || "Articolo"} />
+            <img
+              src={a.immagine || fallbackArticleImage}
+              alt={a.titolo || "Articolo"}
+              style={{ transform: "scale(0.9)", transformOrigin: "center" }}
+            />
             <div className="drink-card-overlay">
               {a.categoria && <span className="badge-category">{a.categoria}</span>}
               <h3>{a.titolo || "Articolo senza titolo"}</h3>
