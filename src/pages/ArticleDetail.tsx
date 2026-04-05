@@ -198,6 +198,12 @@ export default function ArticleDetail() {
   return (
     <div className="page page-full-bleed fade-in">
       <style>{`
+        .article-hero-box,
+        .article-box {
+          width: min(94vw, 64rem) !important;
+          max-width: none !important;
+        }
+
         @media (max-width: 768px) {
           .article-hero {
             border-radius: 0 !important;
@@ -205,7 +211,7 @@ export default function ArticleDetail() {
             margin-left: calc(-50vw + 50%) !important;
           }
           .article-hero-box {
-            width: calc(100vw - 24px) !important;
+            width: calc(100vw - 16px) !important;
             max-width: none !important;
             padding: 24px 18px !important;
             margin-bottom: -320px !important;
@@ -221,7 +227,7 @@ export default function ArticleDetail() {
             margin-top: 360px !important;
           }
           .article-box {
-            width: calc(100vw - 24px) !important;
+            width: calc(100vw - 16px) !important;
             max-width: none !important;
             padding: 24px 18px !important;
             border-radius: 16px !important;
