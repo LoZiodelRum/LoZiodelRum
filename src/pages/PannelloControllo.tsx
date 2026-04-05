@@ -360,7 +360,14 @@ export default function PannelloControllo() {
             <div style={formGridStyle}>
               {Object.keys(selectedItem).map(key =>
                 key !== "id" && (
-                  <div key={key} style={fieldStyle}>
+                  <div
+                    key={key}
+                    style={
+                      key === "contenuto"
+                        ? { ...fieldStyle, gridColumn: "1 / -1" }
+                        : fieldStyle
+                    }
+                  >
                     <label style={labelStyle}>{key}</label>
                     {booleanFields.has(key) ? (
                       <select
@@ -378,6 +385,20 @@ export default function PannelloControllo() {
                         <option value="true">true</option>
                         <option value="false">false</option>
                       </select>
+                    ) : key === "contenuto" ? (
+                      <textarea
+                        rows={6}
+                        value={selectedItem[key] ?? ""}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          setSelectedItem((prev: any) => ({
+                            ...prev,
+                            [key]: value,
+                          }));
+                          setSaveStatus(null);
+                        }}
+                        style={{ ...inputStyle, width: "100%", resize: "vertical" }}
+                      />
                     ) : (
                       <input
                         value={selectedItem[key] ?? ""}
