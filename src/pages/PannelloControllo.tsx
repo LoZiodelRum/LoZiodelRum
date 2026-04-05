@@ -105,16 +105,26 @@ export default function PannelloControllo() {
 
       const result = await supabase
         .from(selectedTable)
-        .insert([cleanData]);
+        .insert([cleanData])
+        .select("id");
 
       error = result.error;
+
+      if (!error && (!result.data || result.data.length === 0)) {
+        error = { message: "Nessun record creato. Verifica i permessi di scrittura." };
+      }
     } else {
       const result = await supabase
         .from(selectedTable)
         .update(cleanData)
-        .eq("id", id);
+        .eq("id", id)
+        .select("id");
 
       error = result.error;
+
+      if (!error && (!result.data || result.data.length === 0)) {
+        error = { message: "Nessuna modifica salvata. Verifica permessi o id record." };
+      }
     }
 
     if (error) {
