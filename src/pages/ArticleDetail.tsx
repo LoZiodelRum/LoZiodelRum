@@ -240,7 +240,7 @@ export default function ArticleDetail() {
           }
 
           .article-content {
-            font-size: 17px !important;
+            font-size: 18px !important;
           }
         }
       `}</style>
@@ -434,7 +434,7 @@ const articleBox = {
 };
 
 const articleContent = {
-  fontSize: 18,
+  fontSize: 19,
   lineHeight: 1.8,
   color: "#ddd",
 };
