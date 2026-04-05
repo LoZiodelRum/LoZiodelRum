@@ -109,6 +109,9 @@ export default function PannelloControllo() {
 
     let error: any = null;
 
+    const hasValidId = id !== undefined && id !== null && String(id).trim() !== "";
+    const fallbackSlug = typeof selectedItem?.slug === "string" ? selectedItem.slug.trim() : "";
+
     if (isCreating) {
       if (!cleanData.id) {
         cleanData.id = crypto.randomUUID();
@@ -130,16 +133,26 @@ export default function PannelloControllo() {
         error = { message: "Nessun record creato. Verifica i permessi di scrittura." };
       }
     } else {
-      const result = await supabase
+      let query = supabase
         .from(selectedTable)
-        .update(changedData)
-        .eq("id", id)
-        .select("id");
+        .update(changedData);
+
+      if (hasValidId) {
+        query = query.eq("id", id);
+      } else if (selectedTable === "articoli" && fallbackSlug) {
+        query = query.eq("slug", fallbackSlug);
+      } else {
+        error = { message: "Impossibile salvare: record senza id/slug valido." };
+      }
+
+      const result = error
+        ? { data: null, error }
+        : await query.select("id,slug");
 
       error = result.error;
 
       if (!error && (!result.data || result.data.length === 0)) {
-        error = { message: "Nessuna modifica salvata. Verifica permessi o id record." };
+        error = { message: "Nessuna modifica salvata. Verifica permessi o chiave record (id/slug)." };
       }
     }
 
@@ -160,11 +173,17 @@ export default function PannelloControllo() {
     setCreateRoleHint(null);
 
     if (!isCreating) {
-      const { data: refreshedItem } = await supabase
+      let refreshQuery = supabase
         .from(selectedTable)
-        .select("*")
-        .eq("id", id)
-        .maybeSingle();
+        .select("*");
+
+      if (hasValidId) {
+        refreshQuery = refreshQuery.eq("id", id);
+      } else if (selectedTable === "articoli" && fallbackSlug) {
+        refreshQuery = refreshQuery.eq("slug", fallbackSlug);
+      }
+
+      const { data: refreshedItem } = await refreshQuery.maybeSingle();
 
       if (refreshedItem) {
         setSelectedItem(refreshedItem);
@@ -178,10 +197,24 @@ export default function PannelloControllo() {
   async function eliminaElemento() {
     if (!selectedItem || !selectedTable || isCreating) return;
 
-    const { error } = await supabase
+    const hasValidId = selectedItem.id !== undefined && selectedItem.id !== null && String(selectedItem.id).trim() !== "";
+    const fallbackSlug = typeof selectedItem?.slug === "string" ? selectedItem.slug.trim() : "";
+
+    let query = supabase
       .from(selectedTable)
-      .delete()
-      .eq("id", selectedItem.id);
+      .delete();
+
+    if (hasValidId) {
+      query = query.eq("id", selectedItem.id);
+    } else if (selectedTable === "articoli" && fallbackSlug) {
+      query = query.eq("slug", fallbackSlug);
+    } else {
+      setSaveStatus("error");
+      alert("Impossibile eliminare: record senza id/slug valido.");
+      return;
+    }
+
+    const { error } = await query;
 
     if (error) {
       setSaveStatus("error");
