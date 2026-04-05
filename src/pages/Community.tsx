@@ -8,10 +8,8 @@ import {
   Circle,
   Flame,
   MessageSquareText,
-  ShoppingBag,
   Sparkles,
   Trophy,
-  TrendingUp,
   Users,
 } from "lucide-react";
 import { useState } from "react";
@@ -35,13 +33,6 @@ export default function Community() {
   ];
 
   const aromas = ["Vaniglia", "Tropicale", "Spezie", "Affumicato", "Cacao", "Agrumato", "Mela", "Erbaceo"];
-
-  const samples = [
-    { name: "Hampden 8y", ml: "30 ml" },
-    { name: "Foursquare ECS", ml: "50 ml" },
-    { name: "Neisson Bio", ml: "20 ml" },
-    { name: "Worthy Park", ml: "30 ml" },
-  ];
 
   const labRecipes = [
     "Smoked Daiquiri",
@@ -138,11 +129,6 @@ export default function Community() {
         .span-6 { grid-column: span 6; }
         .span-7 { grid-column: span 7; }
         .span-8 { grid-column: span 8; }
-        .sparkline {
-          width: 100%;
-          height: 86px;
-          margin-top: 8px;
-        }
         .word-cloud {
           display: flex;
           flex-wrap: wrap;
@@ -255,30 +241,6 @@ export default function Community() {
             <div className="community-meta" style={{ marginTop: 10 }}>
               Sentore selezionato: <strong style={{ color: "#fcd34d" }}>{selectedAroma}</strong>
             </div>
-          </motion.section>
-
-          {/* BLOCCO 5 - Mercatino Sample */}
-          <motion.section className="community-card span-4" variants={cardVariants}>
-            <h3 style={{ display: "flex", alignItems: "center", gap: 8 }}><ShoppingBag size={18} color="#f5a623" /> Mercatino Sample</h3>
-            <div style={{ display: "grid", gridTemplateColumns: "repeat(2, minmax(0,1fr))", gap: 8 }}>
-              {samples.map((s) => (
-                <div key={s.name} style={{ background: "rgba(12,10,9,0.55)", borderRadius: 12, padding: 10 }}>
-                  <div style={{ width: 26, height: 46, borderRadius: 8, background: "linear-gradient(180deg,#f5a623,#7c2d12)", marginBottom: 6 }} />
-                  <div style={{ fontSize: 13, fontWeight: 600 }}>{s.name}</div>
-                  <div className="community-meta" style={{ fontSize: 12 }}>{s.ml}</div>
-                </div>
-              ))}
-            </div>
-          </motion.section>
-
-          {/* BLOCCO 6 - Termometro Prezzi */}
-          <motion.section className="community-card span-4" variants={cardVariants}>
-            <h3 style={{ display: "flex", alignItems: "center", gap: 8 }}><TrendingUp size={18} color="#f5a623" /> Termometro Prezzi</h3>
-            <div style={{ fontWeight: 700 }}>Caroni 1998</div>
-            <div className="community-meta">Ultimi 30 giorni</div>
-            <svg className="sparkline" viewBox="0 0 320 86" preserveAspectRatio="none">
-              <polyline fill="none" stroke="#f59e0b" strokeWidth="3" points="0,70 40,62 80,64 120,48 160,50 200,44 240,31 280,34 320,24" />
-            </svg>
           </motion.section>
 
           {/* BLOCCO 7 - Mixology Lab */}
