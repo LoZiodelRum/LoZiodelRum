@@ -117,19 +117,14 @@ export default function VinoDetail() {
   }, [vino]);
 
   const heroImageStyleForWine = useMemo(() => {
-    const name = String(vino?.nome || "").toLowerCase();
-    if (name.includes("amarone") || name.includes("barolo")) {
-      return {
-        ...heroImageStyle,
-        objectFit: "contain" as const,
-        transform: "scale(0.76)",
-        transformOrigin: "center",
-        background: "#020617",
-      };
-    }
-
-    return heroImageStyle;
-  }, [vino]);
+    return {
+      ...heroImageStyle,
+      objectFit: "contain" as const,
+      transform: "scale(0.8)",
+      transformOrigin: "center",
+      background: "#020617",
+    };
+  }, []);
 
   function renderSection(title: string, fields: Array<{ key: string; label: string }>) {
     return (

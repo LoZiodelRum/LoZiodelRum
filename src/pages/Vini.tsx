@@ -141,18 +141,14 @@ export default function Vini() {
   }
 
   function getPreviewImageStyle(item: VinoCard): React.CSSProperties | undefined {
-    const lowerName = item.nome.toLowerCase();
+    if (item.placeholder) return undefined;
 
-    if (lowerName.includes("barolo") || lowerName.includes("amarone")) {
-      return {
-        objectFit: "contain",
-        transform: "scale(0.74)",
-        transformOrigin: "center",
-        background: "#020617",
-      };
-    }
-
-    return undefined;
+    return {
+      objectFit: "contain",
+      transform: "scale(0.78)",
+      transformOrigin: "center",
+      background: "#020617",
+    };
   }
 
   function renderSection(title: string, list: VinoCard[], tipo: string) {
