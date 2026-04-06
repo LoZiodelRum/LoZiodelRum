@@ -532,6 +532,7 @@ export default function PannelloControllo() {
       "vodka",
       "whisky",
       "brandy",
+      "sherry",
       "tequila",
       "mezcal",
     ],
