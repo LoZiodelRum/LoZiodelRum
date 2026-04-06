@@ -116,6 +116,21 @@ export default function VinoDetail() {
     return vino?.immagine || vino?.immagine_url || vino?.image || vino?.img || null;
   }, [vino]);
 
+  const heroImageStyleForWine = useMemo(() => {
+    const name = String(vino?.nome || "").toLowerCase();
+    if (name.includes("amarone") || name.includes("barolo")) {
+      return {
+        ...heroImageStyle,
+        objectFit: "contain" as const,
+        transform: "scale(0.76)",
+        transformOrigin: "center",
+        background: "#020617",
+      };
+    }
+
+    return heroImageStyle;
+  }, [vino]);
+
   function renderSection(title: string, fields: Array<{ key: string; label: string }>) {
     return (
       <section className="vino-detail-section" style={sectionStyle}>
@@ -236,7 +251,7 @@ export default function VinoDetail() {
 
       <section className="vino-detail-hero" style={heroStyle}>
         {imageUrl ? (
-          <img className="vino-detail-hero-image" src={imageUrl} alt={normalizeValue(vino?.nome)} style={heroImageStyle} />
+          <img className="vino-detail-hero-image" src={imageUrl} alt={normalizeValue(vino?.nome)} style={heroImageStyleForWine} />
         ) : (
           <div className="vino-detail-hero-placeholder" style={heroImagePlaceholderStyle}>NO IMG</div>
         )}

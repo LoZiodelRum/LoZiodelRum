@@ -144,7 +144,12 @@ export default function Vini() {
     const lowerName = item.nome.toLowerCase();
 
     if (lowerName.includes("barolo") || lowerName.includes("amarone")) {
-      return { transform: "scale(0.72)", transformOrigin: "center" };
+      return {
+        objectFit: "contain",
+        transform: "scale(0.74)",
+        transformOrigin: "center",
+        background: "#020617",
+      };
     }
 
     return undefined;
