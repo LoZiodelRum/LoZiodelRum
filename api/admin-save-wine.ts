@@ -58,9 +58,6 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       if (!changes.created_at) {
         changes.created_at = nowIso;
       }
-      if (!changes.updated_at) {
-        changes.updated_at = nowIso;
-      }
     }
   }
 

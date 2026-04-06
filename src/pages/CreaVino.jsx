@@ -145,7 +145,6 @@ export default function CreaVino() {
       ...vino,
       valutazione: vino.valutazione ? Number(vino.valutazione) : null,
       created_at: nowIso,
-      updated_at: nowIso,
     };
 
     const { error } = await supabase.from("vini").insert([payload]);

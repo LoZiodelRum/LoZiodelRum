@@ -54,9 +54,6 @@ export async function handler(event) {
       if (!changes.created_at) {
         changes.created_at = nowIso;
       }
-      if (!changes.updated_at) {
-        changes.updated_at = nowIso;
-      }
     }
   }
 

@@ -156,9 +156,6 @@ export default function PannelloControllo() {
         if (!cleanData.created_at) {
           cleanData.created_at = nowIso;
         }
-        if (!cleanData.updated_at) {
-          cleanData.updated_at = nowIso;
-        }
       }
 
       if (!cleanData.id) {
