@@ -1,6 +1,7 @@
 import "../App.css";
 import { useMemo, useState } from "react";
 import { useUser } from "../context/UserContext";
+import { supabase } from "../lib/supabaseClient";
 import {
   getCocktailSuggestions,
   type CocktailPreferences,
@@ -14,6 +15,8 @@ export default function Crea() {
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [openGeneratedForms, setOpenGeneratedForms] = useState<Record<string, boolean>>({});
+  const [savingNames, setSavingNames] = useState<Record<string, boolean>>({});
+  const [savedNames, setSavedNames] = useState<Record<string, boolean>>({});
 
   const selectedCount = useMemo(
     () => Object.values(preferences).filter((value) => String(value || "").trim()).length,
@@ -44,6 +47,87 @@ export default function Crea() {
 
   function toggleGeneratedForm(name: string) {
     setOpenGeneratedForms((prev) => ({ ...prev, [name]: !prev[name] }));
+  }
+
+  async function saveGeneratedCocktail(cocktail: SuggestedCocktail) {
+    setSavingNames((prev) => ({ ...prev, [cocktail.name]: true }));
+
+    const nowIso = new Date().toISOString();
+    const italianPayloads = [
+      {
+        nome: cocktail.name,
+        ingredienti: cocktail.ingredients.join("; "),
+        descrizione: cocktail.description,
+        preparazione: `${cocktail.technique}. ${cocktail.doses.map((dose, index) => `${dose} ${cocktail.ingredients[index] || ""}`.trim()).join(", ")}`,
+        bicchiere: cocktail.glass,
+        guarnizione: cocktail.garnish,
+        categoria: "cocktail",
+        base_alcolica: preferences.base_alcolica || cocktail.base_spirit,
+        intensita_alcolica: preferences.intensita_alcolica || null,
+        profilo_gustativo: preferences.profilo_gustativo || null,
+        profilo_aromatico: preferences.profilo_aromatico || null,
+        texture: preferences.texture || null,
+        stile_consumo: preferences.stile_consumo || null,
+        carattere: preferences.carattere || null,
+        created_at: nowIso,
+      },
+      {
+        nome: cocktail.name,
+        ingredienti: cocktail.ingredients.join("; "),
+        descrizione: cocktail.description,
+        preparazione: `${cocktail.technique}. ${cocktail.doses.map((dose, index) => `${dose} ${cocktail.ingredients[index] || ""}`.trim()).join(", ")}`,
+        bicchiere: cocktail.glass,
+        guarnizione: cocktail.garnish,
+        categoria: "cocktail",
+      },
+    ];
+
+    const englishPayloads = [
+      {
+        name: cocktail.name,
+        ingredients: cocktail.ingredients,
+        doses: cocktail.doses,
+        base_alcolica: preferences.base_alcolica || cocktail.base_spirit,
+        intensita_alcolica: preferences.intensita_alcolica || null,
+        profilo_gustativo: preferences.profilo_gustativo || null,
+        profilo_aromatico: preferences.profilo_aromatico || null,
+        texture: preferences.texture || null,
+        stile_consumo: preferences.stile_consumo || null,
+        carattere: preferences.carattere || null,
+        description: cocktail.description,
+        technique: cocktail.technique,
+        glass: cocktail.glass,
+        garnish: cocktail.garnish,
+      },
+      {
+        name: cocktail.name,
+        description: cocktail.description,
+      },
+    ];
+
+    const attempts: Array<{ table: string; payloads: Record<string, any>[] }> = [
+      { table: "cocktail", payloads: italianPayloads },
+      { table: "cocktails", payloads: englishPayloads },
+    ];
+
+    let lastMessage = "Impossibile salvare il cocktail generato.";
+
+    for (const attempt of attempts) {
+      for (const payload of attempt.payloads) {
+        const { error: insertError } = await supabase.from(attempt.table).insert([payload]);
+        if (!insertError) {
+          setSavedNames((prev) => ({ ...prev, [cocktail.name]: true }));
+          setSavingNames((prev) => ({ ...prev, [cocktail.name]: false }));
+          alert("Cocktail salvato nel catalogo ✅");
+          return;
+        }
+
+        lastMessage = insertError.message || lastMessage;
+      }
+    }
+
+    setSavingNames((prev) => ({ ...prev, [cocktail.name]: false }));
+    alert(lastMessage);
   }
 
   const createdBy = user?.email || user?.id || "utente Lo Zio";
@@ -181,6 +265,20 @@ export default function Crea() {
                     <div style={generatedFieldStyle}>
                       <label style={labelStyle}>Data</label>
                       <input value={createdDate} readOnly style={inputStyle} />
+                    </div>
+                    <div style={{ ...generatedFieldStyle, gridColumn: "1 / -1" }}>
+                      <button
+                        className="btn-primary"
+                        type="button"
+                        onClick={() => saveGeneratedCocktail(cocktail)}
+                        disabled={Boolean(savingNames[cocktail.name] || savedNames[cocktail.name])}
+                      >
+                        {savedNames[cocktail.name]
+                          ? "Cocktail salvato"
+                          : savingNames[cocktail.name]
+                            ? "Salvataggio..."
+                            : "Salva nel catalogo"}
+                      </button>
                     </div>
                   </div>
                 )}
