@@ -1,5 +1,6 @@
 import "../App.css";
 import { useMemo, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import { supabase } from "../lib/supabaseClient";
 import {
@@ -10,6 +11,7 @@ import {
 
 export default function Crea() {
   const { user } = useUser();
+  const navigate = useNavigate();
   const [preferences, setPreferences] = useState<CocktailPreferences>({});
   const [suggestions, setSuggestions] = useState<SuggestedCocktail[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -114,11 +116,21 @@ export default function Crea() {
 
     for (const attempt of attempts) {
       for (const payload of attempt.payloads) {
-        const { error: insertError } = await supabase.from(attempt.table).insert([payload]);
+        const { data: insertedRows, error: insertError } = await supabase
+          .from(attempt.table)
+          .insert([payload])
+          .select("id");
+
         if (!insertError) {
+          const insertedId = Array.isArray(insertedRows) && insertedRows[0]?.id ? String(insertedRows[0].id) : null;
           setSavedNames((prev) => ({ ...prev, [cocktail.name]: true }));
           setSavingNames((prev) => ({ ...prev, [cocktail.name]: false }));
           alert("Cocktail salvato nel catalogo ✅");
+
+          if (insertedId && attempt.table === "cocktail") {
+            navigate(`/drink/${insertedId}`);
+          }
+
           return;
         }
 
