@@ -49,6 +49,12 @@ type ValidationResult = {
   activeKeys: Array<keyof CocktailPreferences>;
 };
 
+type RankedCatalogEntry = {
+  cocktail: CatalogCocktail;
+  score: number;
+  ingredientAffinity: number;
+};
+
 const preferenceKeys: Array<keyof CocktailPreferences> = [
   "base_alcolica",
   "intensita_alcolica",
@@ -250,6 +256,15 @@ export function scoreCocktails(cocktail: CatalogCocktail, preferences: CocktailP
   return score;
 }
 
+function scoreIngredientAffinity(cocktail: CatalogCocktail, referenceIngredients: string[]) {
+  if (!referenceIngredients.length || !cocktail.ingredients.length) return 0;
+
+  const normalizedReference = new Set(referenceIngredients.map((ingredient) => normalizeText(ingredient)));
+  return cocktail.ingredients.reduce((total, ingredient) => {
+    return total + (normalizedReference.has(normalizeText(ingredient)) ? 1 : 0);
+  }, 0);
+}
+
 export function filterCocktails(catalog: CatalogCocktail[], preferences: CocktailPreferences): SuggestedCocktail[] {
   const base = determineBaseSpirit(preferences);
   const preferBase = normalizeText(preferences.base_alcolica);
@@ -258,12 +273,29 @@ export function filterCocktails(catalog: CatalogCocktail[], preferences: Cocktai
     ? catalog.filter((cocktail) => normalizeText(cocktail.base_alcolica) === normalizeText(preferences.base_alcolica))
     : catalog;
 
-  const ranked = scopedCatalog
-    .map((cocktail) => ({ cocktail, score: scoreCocktails(cocktail, { ...preferences, base_alcolica: preferBase ? preferences.base_alcolica : base }) }))
+  const primaryRanked = scopedCatalog
+    .map((cocktail) => ({
+      cocktail,
+      score: scoreCocktails(cocktail, { ...preferences, base_alcolica: preferBase ? preferences.base_alcolica : base }),
+      ingredientAffinity: 0,
+    }))
     .filter((entry) => entry.score >= 2)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 2)
-    .map(({ cocktail, score }) => ({
+    .sort((a, b) => b.score - a.score);
+
+  const referenceIngredients = primaryRanked[0]?.cocktail.ingredients || [];
+
+  const ranked = primaryRanked
+    .map((entry) => ({
+      ...entry,
+      ingredientAffinity: scoreIngredientAffinity(entry.cocktail, referenceIngredients),
+    }))
+    .sort((a, b) => {
+      if (b.score !== a.score) return b.score - a.score;
+      if (b.ingredientAffinity !== a.ingredientAffinity) return b.ingredientAffinity - a.ingredientAffinity;
+      return a.cocktail.name.localeCompare(b.cocktail.name);
+    })
+    .slice(0, 4)
+    .map(({ cocktail, score, ingredientAffinity }) => ({
       name: cocktail.name,
       base_spirit: cocktail.base_alcolica || base,
       ingredients: cocktail.ingredients,
@@ -275,7 +307,7 @@ export function filterCocktails(catalog: CatalogCocktail[], preferences: Cocktai
       tasting_notes: cocktail.tasting_notes?.length ? cocktail.tasting_notes : buildTastingNotes(cocktail.base_alcolica || base, preferences),
       balance_explanation: explainBalance(cocktail.base_alcolica || base, preferences),
       source: "database" as const,
-      matchScore: score,
+      matchScore: score + ingredientAffinity,
       originalRecord: cocktail.originalRecord,
     }));
 
@@ -452,12 +484,8 @@ export async function getCocktailSuggestions(preferences: CocktailPreferences) {
   const catalog = await fetchCatalog();
   const databaseSuggestions = filterCocktails(catalog, preferences);
 
-  const cocktails = [...databaseSuggestions];
-  let variant = 0;
-  while (cocktails.length < 2) {
-    cocktails.push(generateCocktail(preferences, variant));
-    variant += 1;
-  }
+  const generatedSuggestions = [generateCocktail(preferences, 0), generateCocktail(preferences, 1)];
+  const cocktails = [...databaseSuggestions, ...generatedSuggestions];
 
   console.info("[Lo Zio Configurator] suggestions", {
     preferences,
@@ -466,8 +494,10 @@ export async function getCocktailSuggestions(preferences: CocktailPreferences) {
   });
 
   return {
-    cocktails: cocktails.slice(0, 2),
-    usedFallback: cocktails.some((cocktail) => cocktail.source === "generated"),
+    cocktails,
+    databaseCocktails: databaseSuggestions,
+    generatedCocktails: generatedSuggestions,
+    usedFallback: true,
     error: null as string | null,
   };
 }

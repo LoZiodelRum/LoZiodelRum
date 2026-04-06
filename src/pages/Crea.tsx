@@ -1,5 +1,5 @@
 import "../App.css";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import { supabase } from "../lib/supabaseClient";
@@ -25,23 +25,45 @@ export default function Crea() {
     [preferences]
   );
 
-  async function handleSubmit(event: React.FormEvent) {
-    event.preventDefault();
-    setLoading(true);
-    setError(null);
+  useEffect(() => {
+    let active = true;
 
-    const result = await getCocktailSuggestions(preferences);
+    async function loadSuggestions() {
+      if (selectedCount === 0) {
+        setSuggestions([]);
+        setError(null);
+        return;
+      }
 
-    if (result.error) {
-      setSuggestions([]);
-      setError(result.error);
+      if (selectedCount < 2) {
+        setSuggestions([]);
+        setError("Seleziona almeno 2 preferenze");
+        return;
+      }
+
+      setLoading(true);
+      setError(null);
+
+      const result = await getCocktailSuggestions(preferences);
+      if (!active) return;
+
+      if (result.error) {
+        setSuggestions([]);
+        setError(result.error);
+        setLoading(false);
+        return;
+      }
+
+      setSuggestions(result.cocktails);
       setLoading(false);
-      return;
     }
 
-    setSuggestions(result.cocktails);
-    setLoading(false);
-  }
+    void loadSuggestions();
+
+    return () => {
+      active = false;
+    };
+  }, [preferences, selectedCount]);
 
   function updatePreference(key: keyof CocktailPreferences, value: string) {
     setPreferences((prev) => ({ ...prev, [key]: value }));
@@ -151,16 +173,12 @@ export default function Crea() {
           <h1 style={titleStyle}>Crea</h1>
           <p style={introStyle}>
             Seleziona almeno 2 preferenze tra i 7 menu e lascia che Lo Zio trovi i cocktail piu coerenti dal database.
-            Se il catalogo non basta, genera due ricette nuove con bilanciamento professionale.
+            Appena completi almeno 2 campi, il sistema apre 4 cocktail gia presenti in catalogo e aggiunge 2 ricette nuove bilanciate.
           </p>
-        </div>
-        <div style={counterBoxStyle}>
-          <span style={counterLabelStyle}>Preferenze selezionate</span>
-          <strong style={counterValueStyle}>{selectedCount}/7</strong>
         </div>
       </div>
 
-      <form onSubmit={handleSubmit} style={panelStyle}>
+      <div style={panelStyle}>
         <div style={gridStyle}>
           {preferenceFields.map((field) => (
             <div key={field.key} style={fieldStyle}>
@@ -184,9 +202,6 @@ export default function Crea() {
         {error && <div style={errorBoxStyle}>{error}</div>}
 
         <div style={actionsStyle}>
-          <button className="btn-primary" type="submit" disabled={loading}>
-            {loading ? "Analisi in corso..." : "Trova 2 cocktail"}
-          </button>
           <button
             className="btn-primary"
             type="button"
@@ -201,7 +216,7 @@ export default function Crea() {
             Reset
           </button>
         </div>
-      </form>
+      </div>
 
       <div style={resultsStyle}>
         {suggestions.map((cocktail) => (
@@ -299,7 +314,7 @@ export default function Crea() {
 
         {!suggestions.length && !loading && !error && (
           <div style={emptyStateStyle}>
-            Seleziona almeno 2 preferenze e avvia il configuratore per vedere i cocktail suggeriti.
+            Seleziona almeno 2 preferenze per vedere automaticamente 4 cocktail del catalogo e 2 proposte originali.
           </div>
         )}
       </div>
@@ -321,12 +336,7 @@ const preferenceFields: Array<{
 ];
 
 const heroBoxStyle: React.CSSProperties = {
-  display: "flex",
-  justifyContent: "space-between",
-  gap: 20,
-  alignItems: "flex-start",
   marginBottom: 20,
-  flexWrap: "wrap",
 };
 
 const eyebrowStyle: React.CSSProperties = {
@@ -345,26 +355,6 @@ const titleStyle: React.CSSProperties = {
 const introStyle: React.CSSProperties = {
   maxWidth: 760,
   color: "#cbd5e1",
-};
-
-const counterBoxStyle: React.CSSProperties = {
-  minWidth: 170,
-  background: "#111827",
-  border: "1px solid #374151",
-  borderRadius: 16,
-  padding: 16,
-};
-
-const counterLabelStyle: React.CSSProperties = {
-  display: "block",
-  color: "#94a3b8",
-  fontSize: 12,
-  marginBottom: 8,
-};
-
-const counterValueStyle: React.CSSProperties = {
-  fontSize: 30,
-  color: "#f8fafc",
 };
 
 const panelStyle: React.CSSProperties = {
