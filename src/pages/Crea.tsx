@@ -1,5 +1,5 @@
 import "../App.css";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import { supabase } from "../lib/supabaseClient";
@@ -20,22 +20,19 @@ export default function Crea() {
   const [savingNames, setSavingNames] = useState<Record<string, boolean>>({});
   const [savedNames, setSavedNames] = useState<Record<string, boolean>>({});
 
-  const selectedCount = useMemo(
-    () => Object.values(preferences).filter((value) => String(value || "").trim()).length,
-    [preferences]
-  );
-
   useEffect(() => {
     let active = true;
 
     async function loadSuggestions() {
-      if (selectedCount === 0) {
+      const activePreferences = Object.values(preferences).filter((value) => String(value || "").trim()).length;
+
+      if (activePreferences === 0) {
         setSuggestions([]);
         setError(null);
         return;
       }
 
-      if (selectedCount < 2) {
+      if (activePreferences < 2) {
         setSuggestions([]);
         setError("Seleziona almeno 2 preferenze");
         return;
@@ -63,7 +60,7 @@ export default function Crea() {
     return () => {
       active = false;
     };
-  }, [preferences, selectedCount]);
+  }, [preferences]);
 
   function updatePreference(key: keyof CocktailPreferences, value: string) {
     setPreferences((prev) => ({ ...prev, [key]: value }));
@@ -166,8 +163,8 @@ export default function Crea() {
   const createdDate = new Date().toLocaleDateString("it-IT");
 
   return (
-    <div className="page fade-in" style={{ maxWidth: 1180 }}>
-      <div style={heroBoxStyle}>
+    <div className="page fade-in" style={{ maxWidth: 1180 }} data-page-version="crea-configurator-v2">
+      <div style={{ marginBottom: 20 }}>
         <div>
           <p style={eyebrowStyle}>Lo Zio Cocktail Configurator</p>
           <h1 style={titleStyle}>Crea</h1>
@@ -334,10 +331,6 @@ const preferenceFields: Array<{
   { key: "stile_consumo", label: "Stile consumo", options: ["aperitivo", "after dinner", "highball", "tiki", "signature", "day drinking"] },
   { key: "carattere", label: "Carattere", options: ["elegante", "deciso", "esotico", "sperimentale", "meditativo", "funky"] },
 ];
-
-const heroBoxStyle: React.CSSProperties = {
-  marginBottom: 20,
-};
 
 const eyebrowStyle: React.CSSProperties = {
   margin: 0,
