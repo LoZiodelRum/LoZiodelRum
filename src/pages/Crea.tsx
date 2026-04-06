@@ -16,6 +16,7 @@ export default function Crea() {
   const [suggestions, setSuggestions] = useState<SuggestedCocktail[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [openMultiSelects, setOpenMultiSelects] = useState<Record<string, boolean>>({});
   const [openGeneratedForms, setOpenGeneratedForms] = useState<Record<string, boolean>>({});
   const [savingNames, setSavingNames] = useState<Record<string, boolean>>({});
   const [savedNames, setSavedNames] = useState<Record<string, boolean>>({});
@@ -71,6 +72,26 @@ export default function Crea() {
 
   function updateMultiPreference(key: keyof CocktailPreferences, values: string[]) {
     setPreferences((prev) => ({ ...prev, [key]: values }));
+  }
+
+  function toggleMultiSelect(key: keyof CocktailPreferences) {
+    setOpenMultiSelects((prev) => ({ ...prev, [key]: !prev[key] }));
+  }
+
+  function toggleMultiOption(key: keyof CocktailPreferences, option: string) {
+    const currentValues = Array.isArray(preferences[key]) ? preferences[key] as string[] : [];
+    const nextValues = currentValues.includes(option)
+      ? currentValues.filter((value) => value !== option)
+      : [...currentValues, option];
+
+    updateMultiPreference(key, nextValues);
+  }
+
+  function getMultiSelectSummary(key: keyof CocktailPreferences) {
+    const values = Array.isArray(preferences[key]) ? preferences[key] as string[] : [];
+    if (!values.length) return "Scegli";
+    if (values.length <= 2) return values.join(", ");
+    return `${values.slice(0, 2).join(", ")} +${values.length - 2}`;
   }
 
   function serializePreferenceValue(value: string | string[] | undefined | null) {
@@ -196,18 +217,35 @@ export default function Crea() {
             <div key={field.key} style={fieldStyle}>
               <label style={labelStyle}>{field.label}</label>
               {field.multi ? (
-                <select
-                  multiple
-                  value={Array.isArray(preferences[field.key]) ? preferences[field.key] as string[] : []}
-                  onChange={(event) => updateMultiPreference(field.key, Array.from(event.target.selectedOptions).map((option) => option.value))}
-                  style={{ ...selectStyle, minHeight: 140 }}
-                >
-                  {field.options.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
+                <div style={multiSelectWrapperStyle}>
+                  <button
+                    type="button"
+                    onClick={() => toggleMultiSelect(field.key)}
+                    style={multiSelectTriggerStyle}
+                  >
+                    <span style={multiSelectSummaryStyle}>{getMultiSelectSummary(field.key)}</span>
+                    <span style={multiSelectCaretStyle}>{openMultiSelects[field.key] ? "▲" : "▼"}</span>
+                  </button>
+
+                  {openMultiSelects[field.key] && (
+                    <div style={multiSelectMenuStyle}>
+                      {field.options.map((option) => {
+                        const selected = Array.isArray(preferences[field.key]) && (preferences[field.key] as string[]).includes(option);
+
+                        return (
+                          <label key={option} style={multiSelectOptionStyle}>
+                            <span>{option}</span>
+                            <input
+                              type="checkbox"
+                              checked={selected}
+                              onChange={() => toggleMultiOption(field.key, option)}
+                            />
+                          </label>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
               ) : (
                 <select
                   value={typeof preferences[field.key] === "string" ? preferences[field.key] as string : ""}
@@ -222,7 +260,7 @@ export default function Crea() {
                   ))}
                 </select>
               )}
-              {field.multi && <span style={helperTextStyle}>Puoi selezionare piu valori tenendo premuto Cmd.</span>}
+              {field.multi && <span style={helperTextStyle}>Puoi selezionare piu valori dal menu a tendina.</span>}
             </div>
           ))}
         </div>
@@ -398,6 +436,7 @@ const gridStyle: React.CSSProperties = {
 const fieldStyle: React.CSSProperties = {
   display: "grid",
   gap: 6,
+  position: "relative",
 };
 
 const labelStyle: React.CSSProperties = {
@@ -409,6 +448,62 @@ const labelStyle: React.CSSProperties = {
 const helperTextStyle: React.CSSProperties = {
   color: "#94a3b8",
   fontSize: 12,
+};
+
+const multiSelectWrapperStyle: React.CSSProperties = {
+  position: "relative",
+};
+
+const multiSelectTriggerStyle: React.CSSProperties = {
+  width: "100%",
+  background: "#020617",
+  border: "1px solid #334155",
+  color: "#f8fafc",
+  borderRadius: 12,
+  padding: "12px 14px",
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  textAlign: "left",
+};
+
+const multiSelectSummaryStyle: React.CSSProperties = {
+  overflow: "hidden",
+  textOverflow: "ellipsis",
+  whiteSpace: "nowrap",
+  paddingRight: 12,
+};
+
+const multiSelectCaretStyle: React.CSSProperties = {
+  fontSize: 11,
+  color: "#94a3b8",
+};
+
+const multiSelectMenuStyle: React.CSSProperties = {
+  position: "absolute",
+  top: "calc(100% + 8px)",
+  left: 0,
+  right: 0,
+  background: "#0f172a",
+  border: "1px solid #334155",
+  borderRadius: 12,
+  padding: 10,
+  display: "grid",
+  gap: 6,
+  zIndex: 20,
+  boxShadow: "0 18px 42px rgba(2, 6, 23, 0.55)",
+};
+
+const multiSelectOptionStyle: React.CSSProperties = {
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "space-between",
+  gap: 12,
+  padding: "8px 10px",
+  borderRadius: 10,
+  background: "#111827",
+  color: "#e2e8f0",
+  fontSize: 14,
 };
 
 const selectStyle: React.CSSProperties = {
