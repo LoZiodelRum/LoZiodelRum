@@ -331,8 +331,79 @@ export default function PannelloControllo() {
   async function eliminaElemento() {
     if (!selectedItem || !selectedTable || isCreating) return;
 
+    const adminPassword =
+      localStorage.getItem("adminPassword") ||
+      import.meta.env.VITE_ADMIN_PASSWORD ||
+      "";
+
     const hasValidId = selectedItem.id !== undefined && selectedItem.id !== null && String(selectedItem.id).trim() !== "";
     const fallbackSlug = typeof selectedItem?.slug === "string" ? selectedItem.slug.trim() : "";
+    const isWineTable = selectedTable.toLowerCase() === "vini";
+
+    if (isWineTable) {
+      if (!adminPassword) {
+        setSaveStatus("error");
+        alert("Password admin non disponibile. Esci e rientra come admin.");
+        return;
+      }
+
+      if (!hasValidId) {
+        setSaveStatus("error");
+        alert("Impossibile eliminare vino: id record mancante.");
+        return;
+      }
+
+      const endpoints = [
+        "/api/admin-save-wine",
+        "/.netlify/functions/admin-save-wine",
+      ];
+
+      let lastMessage = "Eliminazione vino fallita lato server.";
+
+      for (const endpoint of endpoints) {
+        try {
+          const response = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-admin-password": adminPassword,
+            },
+            body: JSON.stringify({
+              mode: "delete",
+              table: wineTableName,
+              id: selectedItem.id,
+            }),
+          });
+
+          const payload = await response.json().catch(() => ({}));
+          if (response.ok && payload?.ok) {
+            lastMessage = "";
+            break;
+          }
+
+          lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
+        } catch (e: any) {
+          lastMessage = e?.message || `Errore di rete su ${endpoint}`;
+        }
+      }
+
+      if (lastMessage) {
+        setSaveStatus("error");
+        alert(lastMessage);
+        return;
+      }
+
+      setSaveStatus("ok");
+
+      setTimeout(() => {
+        setSaveStatus(null);
+      }, 2000);
+
+      setSelectedItem(null);
+      setSelectedOriginalItem(null);
+      await loadData();
+      return;
+    }
 
     let query = supabase
       .from(selectedTable)
