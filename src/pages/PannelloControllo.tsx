@@ -489,7 +489,19 @@ export default function PannelloControllo() {
 
   const aisSelectOptions: Record<string, string[]> = {
     limpidezza: ["Limpido", "Cristallino", "Velato"],
-    colore: ["Rosso porpora", "Rosso rubino", "Rosso granato", "Rosso aranciato"],
+    colore: [
+      "Giallo verdolino",
+      "Giallo paglierino",
+      "Giallo dorato",
+      "Giallo ambrato",
+      "Rosa tenue",
+      "Rosa cerasuolo",
+      "Rosa chiaretto",
+      "Rosso porpora",
+      "Rosso rubino",
+      "Rosso granato",
+      "Rosso aranciato",
+    ],
     consistenza: ["Fluido", "Poco consistente", "Abbastanza consistente", "Consistente", "Viscoso"],
     effervescenza: ["Assente", "Fine", "Abbastanza fine", "Persistente"],
     intensita_olfattiva: ["Carenze", "Poco intenso", "Abbastanza intenso", "Intenso", "Molto intenso"],
