@@ -524,6 +524,41 @@ export default function PannelloControllo() {
     categoria: ["rosso", "bianco", "rosato", "bollicine", "altri vini"],
   };
 
+  const cocktailMultiSelectOptions: Record<string, string[]> = {
+    intensita_alcolica: [
+      "Bassa (session drink)",
+      "Medio-bassa",
+      "Media",
+      "Medio-alta",
+      "Alta",
+      "Spirit forward (molto alcolico, dominante)",
+    ],
+    profilo_gustativo: [
+      "Dolce",
+      "Acidulo / fresco",
+      "Amaro",
+      "Secco",
+      "Umami / sapido",
+      "Equilibrato",
+    ],
+    famiglia_aromatica: [
+      "Fruttato",
+      "Agrumato",
+      "Floreale",
+      "Erbaceo / botanico",
+      "Speziato",
+      "Tostato / legnoso",
+    ],
+    profilo_aromatico: [
+      "Fruttato",
+      "Agrumato",
+      "Floreale",
+      "Erbaceo / botanico",
+      "Speziato",
+      "Tostato / legnoso",
+    ],
+  };
+
   const fieldLabelMap: Record<string, string> = {
     name: "nome",
   };
@@ -882,6 +917,80 @@ export default function PannelloControllo() {
                           ))}
                         </select>
                       )
+                    ) : selectedTable === "cocktail" && cocktailMultiSelectOptions[key] ? (
+                      <details style={{ position: "relative" }}>
+                        <summary
+                          style={{
+                            ...selectStyle,
+                            cursor: "pointer",
+                            listStyle: "none",
+                            display: "flex",
+                            alignItems: "center",
+                            justifyContent: "space-between",
+                          }}
+                        >
+                          {(() => {
+                            const selectedValues = typeof selectedItem[key] === "string"
+                              ? selectedItem[key].split(",").map((v: string) => v.trim()).filter(Boolean)
+                              : [];
+                            return selectedValues.length ? selectedValues.join(", ") : "Scegli";
+                          })()}
+                          <span style={{ marginLeft: 8 }}>▾</span>
+                        </summary>
+
+                        <div
+                          style={{
+                            position: "absolute",
+                            top: "calc(100% + 6px)",
+                            left: 0,
+                            width: "100%",
+                            zIndex: 20,
+                            border: "1px solid #334155",
+                            borderRadius: 8,
+                            background: "#020617",
+                            padding: 8,
+                            maxHeight: 220,
+                            overflowY: "auto",
+                          }}
+                        >
+                          {cocktailMultiSelectOptions[key].map((option) => {
+                            const selectedValues = typeof selectedItem[key] === "string"
+                              ? selectedItem[key].split(",").map((v: string) => v.trim()).filter(Boolean)
+                              : [];
+                            const isChecked = selectedValues.includes(option);
+
+                            return (
+                              <label
+                                key={option}
+                                style={{
+                                  display: "flex",
+                                  justifyContent: "space-between",
+                                  alignItems: "center",
+                                  padding: "6px 4px",
+                                  cursor: "pointer",
+                                }}
+                              >
+                                <span>{option}</span>
+                                <input
+                                  type="checkbox"
+                                  checked={isChecked}
+                                  onChange={(e) => {
+                                    const updated = e.target.checked
+                                      ? [...selectedValues, option]
+                                      : selectedValues.filter((value) => value !== option);
+
+                                    setSelectedItem((prev: any) => ({
+                                      ...prev,
+                                      [key]: updated.join(","),
+                                    }));
+                                    setSaveStatus(null);
+                                  }}
+                                />
+                              </label>
+                            );
+                          })}
+                        </div>
+                      </details>
                     ) : key === "contenuto" ? (
                       <textarea
                         rows={6}
