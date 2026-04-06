@@ -48,6 +48,16 @@ export async function handler(event) {
       changes.nome = changes.name;
       delete changes.name;
     }
+
+    if (mode === "create") {
+      const nowIso = new Date().toISOString();
+      if (!changes.created_at) {
+        changes.created_at = nowIso;
+      }
+      if (!changes.updated_at) {
+        changes.updated_at = nowIso;
+      }
+    }
   }
 
   const hasValidId = id !== undefined && id !== null && String(id).trim() !== "";

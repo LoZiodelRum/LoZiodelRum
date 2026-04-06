@@ -151,6 +151,16 @@ export default function PannelloControllo() {
     const isWineTable = selectedTable.toLowerCase() === "vini";
 
     if (isCreating) {
+      if (selectedTable.toLowerCase() === "vini") {
+        const nowIso = new Date().toISOString();
+        if (!cleanData.created_at) {
+          cleanData.created_at = nowIso;
+        }
+        if (!cleanData.updated_at) {
+          cleanData.updated_at = nowIso;
+        }
+      }
+
       if (!cleanData.id) {
         cleanData.id = crypto.randomUUID();
       }
