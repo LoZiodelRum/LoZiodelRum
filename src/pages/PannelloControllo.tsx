@@ -525,6 +525,16 @@ export default function PannelloControllo() {
   };
 
   const cocktailMultiSelectOptions: Record<string, string[]> = {
+    base_alcolica: [
+      "rum",
+      "rum scuro",
+      "gin",
+      "vodka",
+      "whisky",
+      "brandy",
+      "tequila",
+      "mezcal",
+    ],
     intensita_alcolica: [
       "Bassa (session drink)",
       "Medio-bassa",
@@ -556,6 +566,13 @@ export default function PannelloControllo() {
       "Erbaceo / botanico",
       "Speziato",
       "Tostato / legnoso",
+    ],
+    texture: [
+      "Frizzante",
+      "Setosa",
+      "Vellutata",
+      "Pulita",
+      "Strutturata",
     ],
   };
 
@@ -876,10 +893,21 @@ export default function PannelloControllo() {
                               const isChecked = selectedValues.includes(option);
 
                               return (
-                                <label key={option} style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "6px 4px", cursor: "pointer" }}>
+                                <label
+                                  key={option}
+                                  style={{
+                                    display: "grid",
+                                    gridTemplateColumns: "1fr 24px",
+                                    alignItems: "center",
+                                    padding: "6px 4px",
+                                    columnGap: 8,
+                                    cursor: "pointer",
+                                  }}
+                                >
                                   <span>{option}</span>
                                   <input
                                     type="checkbox"
+                                    style={{ margin: 0, width: 18, height: 18, justifySelf: "center" }}
                                     checked={isChecked}
                                     onChange={(e) => {
                                       const updated = e.target.checked
@@ -963,16 +991,18 @@ export default function PannelloControllo() {
                               <label
                                 key={option}
                                 style={{
-                                  display: "flex",
-                                  justifyContent: "space-between",
+                                  display: "grid",
+                                  gridTemplateColumns: "1fr 24px",
                                   alignItems: "center",
                                   padding: "6px 4px",
+                                  columnGap: 8,
                                   cursor: "pointer",
                                 }}
                               >
                                 <span>{option}</span>
                                 <input
                                   type="checkbox"
+                                  style={{ margin: 0, width: 18, height: 18, justifySelf: "center" }}
                                   checked={isChecked}
                                   onChange={(e) => {
                                     const updated = e.target.checked
