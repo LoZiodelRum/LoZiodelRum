@@ -331,6 +331,16 @@ export default function PannelloControllo() {
   async function eliminaElemento() {
     if (!selectedItem || !selectedTable || isCreating) return;
 
+    const label =
+      selectedItem?.nome ||
+      selectedItem?.name ||
+      selectedItem?.titolo ||
+      selectedItem?.username ||
+      "questo elemento";
+
+    const confirmed = window.confirm(`Confermi l'eliminazione di ${label}? Questa azione non puo essere annullata.`);
+    if (!confirmed) return;
+
     const adminPassword =
       localStorage.getItem("adminPassword") ||
       import.meta.env.VITE_ADMIN_PASSWORD ||
