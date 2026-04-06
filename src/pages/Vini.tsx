@@ -140,6 +140,14 @@ export default function Vini() {
     return <div className="page fade-in">Caricamento...</div>;
   }
 
+  function getPreviewImageStyle(item: VinoCard): React.CSSProperties | undefined {
+    if (item.nome.toLowerCase().includes("barolo")) {
+      return { transform: "scale(0.9)", transformOrigin: "center" };
+    }
+
+    return undefined;
+  }
+
   function renderSection(title: string, list: VinoCard[], tipo: string) {
     const cards = [...list];
     while (cards.length < 6) {
@@ -182,7 +190,7 @@ export default function Vini() {
               style={item.placeholder ? { opacity: 0.65, cursor: "default" } : undefined}
             >
               {item.immagine ? (
-                <img src={item.immagine} alt={item.nome} />
+                <img src={item.immagine} alt={item.nome} style={getPreviewImageStyle(item)} />
               ) : (
                 <div className="no-img-placeholder">NO IMG</div>
               )}
