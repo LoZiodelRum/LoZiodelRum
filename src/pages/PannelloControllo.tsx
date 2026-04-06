@@ -149,6 +149,7 @@ export default function PannelloControllo() {
     const hasValidId = id !== undefined && id !== null && String(id).trim() !== "";
     const fallbackSlug = typeof selectedItem?.slug === "string" ? selectedItem.slug.trim() : "";
     const isWineTable = selectedTable.toLowerCase() === "vini";
+    const isCocktailTable = selectedTable.toLowerCase() === "cocktail";
 
     if (isCreating) {
       if (selectedTable.toLowerCase() === "vini") {
@@ -167,15 +168,59 @@ export default function PannelloControllo() {
         cleanData.approvato = cleanData.approvato ?? false;
       }
 
-      const result = await supabase
-        .from(selectedTable)
-        .insert([cleanData])
-        .select("id");
+      if (isCocktailTable) {
+        if (!adminPassword) {
+          error = { message: "Password admin non disponibile. Esci e rientra come admin." };
+        } else {
+          const endpoints = [
+            "/api/admin-save-cocktail",
+            "/.netlify/functions/admin-save-cocktail",
+          ];
 
-      error = result.error;
+          let lastMessage = "Creazione cocktail fallita lato server.";
 
-      if (!error && (!result.data || result.data.length === 0)) {
-        error = { message: "Nessun record creato. Verifica i permessi di scrittura." };
+          for (const endpoint of endpoints) {
+            try {
+              const response = await fetch(endpoint, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "x-admin-password": adminPassword,
+                },
+                body: JSON.stringify({
+                  mode: "create",
+                  id: null,
+                  changes: cleanData,
+                }),
+              });
+
+              const payload = await response.json().catch(() => ({}));
+              if (response.ok && payload?.ok) {
+                lastMessage = "";
+                break;
+              }
+
+              lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
+            } catch (e: any) {
+              lastMessage = e?.message || `Errore di rete su ${endpoint}`;
+            }
+          }
+
+          if (lastMessage) {
+            error = { message: lastMessage };
+          }
+        }
+      } else {
+        const result = await supabase
+          .from(selectedTable)
+          .insert([cleanData])
+          .select("id");
+
+        error = result.error;
+
+        if (!error && (!result.data || result.data.length === 0)) {
+          error = { message: "Nessun record creato. Verifica i permessi di scrittura." };
+        }
       }
     } else {
       // Per gli articoli usiamo endpoint serverless admin: evita blocchi RLS lato client.
@@ -245,6 +290,48 @@ export default function PannelloControllo() {
                   table: wineTableName,
                   id: hasValidId ? id : null,
                   changes: isCreating ? cleanData : changedData,
+                }),
+              });
+
+              const payload = await response.json().catch(() => ({}));
+              if (response.ok && payload?.ok) {
+                lastMessage = "";
+                break;
+              }
+
+              lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
+            } catch (e: any) {
+              lastMessage = e?.message || `Errore di rete su ${endpoint}`;
+            }
+          }
+
+          if (lastMessage) {
+            error = { message: lastMessage };
+          }
+        }
+      } else if (isCocktailTable) {
+        if (!adminPassword) {
+          error = { message: "Password admin non disponibile. Esci e rientra come admin." };
+        } else {
+          const endpoints = [
+            "/api/admin-save-cocktail",
+            "/.netlify/functions/admin-save-cocktail",
+          ];
+
+          let lastMessage = "Salvataggio cocktail fallito lato server.";
+
+          for (const endpoint of endpoints) {
+            try {
+              const response = await fetch(endpoint, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "x-admin-password": adminPassword,
+                },
+                body: JSON.stringify({
+                  mode: "update",
+                  id: hasValidId ? id : null,
+                  changes: changedData,
                 }),
               });
 
@@ -356,6 +443,71 @@ export default function PannelloControllo() {
     const hasValidId = selectedItem.id !== undefined && selectedItem.id !== null && String(selectedItem.id).trim() !== "";
     const fallbackSlug = typeof selectedItem?.slug === "string" ? selectedItem.slug.trim() : "";
     const isWineTable = selectedTable.toLowerCase() === "vini";
+    const isCocktailTable = selectedTable.toLowerCase() === "cocktail";
+
+    if (isCocktailTable) {
+      if (!hasValidId) {
+        setSaveStatus("error");
+        alert("Impossibile eliminare cocktail: id record mancante.");
+        return;
+      }
+
+      if (!adminPassword) {
+        setSaveStatus("error");
+        alert("Password admin non disponibile. Esci e rientra come admin.");
+        return;
+      }
+
+      const endpoints = [
+        "/api/admin-save-cocktail",
+        "/.netlify/functions/admin-save-cocktail",
+      ];
+
+      let lastMessage = "Eliminazione cocktail fallita lato server.";
+
+      for (const endpoint of endpoints) {
+        try {
+          const response = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-admin-password": adminPassword,
+            },
+            body: JSON.stringify({
+              mode: "delete",
+              id: selectedItem.id,
+            }),
+          });
+
+          const payload = await response.json().catch(() => ({}));
+          if (response.ok && payload?.ok) {
+            lastMessage = "";
+            break;
+          }
+
+          lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
+        } catch (e: any) {
+          lastMessage = e?.message || `Errore di rete su ${endpoint}`;
+        }
+      }
+
+      if (lastMessage) {
+        setSaveStatus("error");
+        alert(lastMessage);
+        return;
+      }
+
+      setSaveStatus("ok");
+
+      setTimeout(() => {
+        setSaveStatus(null);
+      }, 2000);
+
+      setSelectedItem(null);
+      setSelectedOriginalItem(null);
+      await loadData();
+      return;
+    }
 
     if (isWineTable) {
       if (!hasValidId) {
