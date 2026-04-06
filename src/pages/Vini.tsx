@@ -130,9 +130,15 @@ export default function Vini() {
 
   const rossi = useMemo(() => vini.filter((vino) => vino.categoria.toLowerCase().includes("rosso")).slice(0, 6), [vini]);
   const bianchi = useMemo(() => vini.filter((vino) => vino.categoria.toLowerCase().includes("bianco")).slice(0, 6), [vini]);
+  const rosati = useMemo(() => vini.filter((vino) => vino.categoria.toLowerCase().includes("rosat")).slice(0, 6), [vini]);
   const bollicine = useMemo(() => vini.filter((vino) => vino.categoria.toLowerCase().includes("bollic")).slice(0, 6), [vini]);
   const altri = useMemo(
-    () => vini.filter((vino) => !vino.categoria.toLowerCase().includes("rosso") && !vino.categoria.toLowerCase().includes("bianco") && !vino.categoria.toLowerCase().includes("bollic")).slice(0, 6),
+    () => vini.filter((vino) =>
+      !vino.categoria.toLowerCase().includes("rosso") &&
+      !vino.categoria.toLowerCase().includes("bianco") &&
+      !vino.categoria.toLowerCase().includes("rosat") &&
+      !vino.categoria.toLowerCase().includes("bollic")
+    ).slice(0, 6),
     [vini]
   );
 
@@ -216,6 +222,7 @@ export default function Vini() {
       `}</style>
       {renderSection("Rossi", rossi, "rossi")}
       {renderSection("Bianchi", bianchi, "bianchi")}
+      {renderSection("Rosati", rosati, "rosati")}
       {renderSection("Bollicine", bollicine, "bollicine")}
       {renderSection("Altri vini", altri, "altri-vini")}
     </div>

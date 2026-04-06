@@ -288,6 +288,7 @@ export default function CreaVino() {
               <option value="">Scegli</option>
               <option value="rosso">rosso</option>
               <option value="bianco">bianco</option>
+              <option value="rosato">rosato</option>
               <option value="bollicine">bollicine</option>
               <option value="altri vini">altri vini</option>
             </select>
