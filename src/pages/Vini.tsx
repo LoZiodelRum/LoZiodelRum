@@ -168,8 +168,16 @@ export default function Vini() {
             <article
               key={item.id}
               className="drink-card-uniform"
+              role={item.placeholder ? undefined : "button"}
+              tabIndex={item.placeholder ? -1 : 0}
               onClick={() => {
                 if (!item.placeholder) navigate(`/vini/${item.id}`);
+              }}
+              onKeyDown={(e) => {
+                if (!item.placeholder && (e.key === "Enter" || e.key === " ")) {
+                  e.preventDefault();
+                  navigate(`/vini/${item.id}`);
+                }
               }}
               style={item.placeholder ? { opacity: 0.65, cursor: "default" } : undefined}
             >

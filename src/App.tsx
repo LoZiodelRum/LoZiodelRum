@@ -12,6 +12,7 @@ import Crea from "./pages/Crea";
 import CreaVino from "./pages/CreaVino";
 import Drink from "./pages/Drink";
 import Vini from "./pages/Vini";
+import VinoDetail from "./pages/VinoDetail";
 import DrinkDetail from "./pages/DrinkDetail";
 import Category from "./pages/Category";
 import Magazine from "./pages/Magazine";
@@ -90,7 +91,7 @@ function AppContent() {
         <Route path="/drink" element={<PageShell><Drink /></PageShell>} />
         <Route path="/drinks" element={<PageShell><Drink /></PageShell>} />
         <Route path="/vini" element={<PageShell><Vini /></PageShell>} />
-        <Route path="/vini/:id" element={<PageShell><Vini /></PageShell>} />
+        <Route path="/vini/:id" element={<PageShell><VinoDetail /></PageShell>} />
         <Route path="/drink/:id" element={<PageShell><DrinkDetail /></PageShell>} />
         <Route path="/categoria/:categoria" element={<PageShell><Category /></PageShell>} />
 
