@@ -141,7 +141,9 @@ export default function Vini() {
   }
 
   function getPreviewImageStyle(item: VinoCard): React.CSSProperties | undefined {
-    if (item.nome.toLowerCase().includes("barolo")) {
+    const lowerName = item.nome.toLowerCase();
+
+    if (lowerName.includes("barolo") || lowerName.includes("amarone")) {
       return { transform: "scale(0.9)", transformOrigin: "center" };
     }
 
