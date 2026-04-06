@@ -5,7 +5,6 @@ export type CocktailPreferences = {
   intensita_alcolica?: string;
   profilo_gustativo?: string;
   profilo_aromatico?: string;
-  texture?: string;
   stile_consumo?: string;
   carattere?: string;
 };
@@ -34,7 +33,6 @@ type CatalogCocktail = {
   intensita_alcolica?: string;
   profilo_gustativo?: string;
   profilo_aromatico?: string;
-  texture?: string;
   stile_consumo?: string;
   carattere?: string;
   description?: string;
@@ -56,7 +54,6 @@ const preferenceKeys: Array<keyof CocktailPreferences> = [
   "intensita_alcolica",
   "profilo_gustativo",
   "profilo_aromatico",
-  "texture",
   "stile_consumo",
   "carattere",
 ];
@@ -185,7 +182,6 @@ function normalizeCatalogRecord(record: Record<string, any>): CatalogCocktail {
     intensita_alcolica: record.intensita_alcolica,
     profilo_gustativo: record.profilo_gustativo,
     profilo_aromatico: record.profilo_aromatico,
-    texture: record.texture,
     stile_consumo: record.stile_consumo,
     carattere: record.carattere,
     description: record.description || record.descrizione,
@@ -287,10 +283,9 @@ export function filterCocktails(catalog: CatalogCocktail[], preferences: Cocktai
 }
 
 function defaultTechnique(preferences: CocktailPreferences) {
-  const texture = normalizeText(preferences.texture);
   const stile = normalizeText(preferences.stile_consumo);
-  if (texture.includes("frizzante") || stile.includes("highball")) return "build";
-  if (texture.includes("vellutata") || texture.includes("morbida")) return "shake";
+  if (stile.includes("highball") || stile.includes("aperitivo")) return "build";
+  if (stile.includes("tiki") || stile.includes("signature")) return "shake";
   return "stir";
 }
 
@@ -315,7 +310,7 @@ function buildGeneratedRecipe(baseSpirit: string, preferences: CocktailPreferenc
   const isStrong = normalizeText(preferences.intensita_alcolica).includes("alta") || normalizeText(preferences.intensita_alcolica).includes("strong");
   const isSweet = normalizeText(preferences.profilo_gustativo).includes("dolce");
   const isBitter = normalizeText(preferences.profilo_gustativo).includes("amaro");
-  const isSparkling = normalizeText(preferences.texture).includes("frizz") || normalizeText(preferences.stile_consumo).includes("highball");
+  const isSparkling = normalizeText(preferences.stile_consumo).includes("highball") || normalizeText(preferences.profilo_gustativo).includes("fresco");
 
   const baseMl = isStrong ? 55 : 45 + variant * 5;
   const acidMl = isBitter ? 15 : 20;
@@ -378,7 +373,6 @@ function buildTastingNotes(baseSpirit: string, preferences: CocktailPreferences)
   const notes = [
     normalizeText(preferences.profilo_aromatico),
     normalizeText(preferences.profilo_gustativo),
-    normalizeText(preferences.texture),
     defaultFlavorBySpirit(baseSpirit),
     normalizeText(preferences.carattere),
   ]
@@ -406,9 +400,9 @@ function defaultMoment(preferences: CocktailPreferences) {
 }
 
 function explainBalance(baseSpirit: string, preferences: CocktailPreferences) {
-  const texture = normalizeText(preferences.texture) || "lineare";
   const taste = normalizeText(preferences.profilo_gustativo) || "equilibrato";
-  return `Bilanciamento costruito con base alcolica tra 45 e 55 ml, parte acida intorno ai 15-20 ml e supporto dolce tra 12 e 18 ml. Il risultato mantiene una trama ${texture} e un profilo ${taste}, senza perdere bevibilita e definizione aromatica.`;
+  const style = normalizeText(preferences.stile_consumo) || "contemporaneo";
+  return `Bilanciamento costruito con base alcolica tra 45 e 55 ml, parte acida intorno ai 15-20 ml e supporto dolce tra 12 e 18 ml. Il risultato mantiene una bevuta ${style} e un profilo ${taste}, senza perdere bevibilita e definizione aromatica.`;
 }
 
 export function generateCocktail(preferences: CocktailPreferences, variant = 0): SuggestedCocktail {

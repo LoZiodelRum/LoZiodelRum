@@ -68,7 +68,6 @@ export default function Crea() {
         intensita_alcolica: preferences.intensita_alcolica || null,
         profilo_gustativo: preferences.profilo_gustativo || null,
         profilo_aromatico: preferences.profilo_aromatico || null,
-        texture: preferences.texture || null,
         stile_consumo: preferences.stile_consumo || null,
         carattere: preferences.carattere || null,
         created_at: nowIso,
@@ -93,7 +92,6 @@ export default function Crea() {
         intensita_alcolica: preferences.intensita_alcolica || null,
         profilo_gustativo: preferences.profilo_gustativo || null,
         profilo_aromatico: preferences.profilo_aromatico || null,
-        texture: preferences.texture || null,
         stile_consumo: preferences.stile_consumo || null,
         carattere: preferences.carattere || null,
         description: cocktail.description,
@@ -318,7 +316,6 @@ const preferenceFields: Array<{
   { key: "intensita_alcolica", label: "Intensita alcolica", options: ["leggera", "media", "alta", "strong", "strong & bold"] },
   { key: "profilo_gustativo", label: "Profilo gustativo", options: ["secco", "dolce", "amaro", "agrumato", "fresco", "speziato"] },
   { key: "profilo_aromatico", label: "Profilo aromatico", options: ["erbaceo", "floreale", "tropicale", "agrumato", "affumicato", "fruttato"] },
-  { key: "texture", label: "Texture", options: ["frizzante", "setosa", "vellutata", "pulita", "strutturata"] },
   { key: "stile_consumo", label: "Stile consumo", options: ["aperitivo", "after dinner", "highball", "tiki", "signature", "day drinking"] },
   { key: "carattere", label: "Carattere", options: ["elegante", "deciso", "esotico", "sperimentale", "meditativo", "funky"] },
 ];
