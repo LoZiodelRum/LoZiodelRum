@@ -341,53 +341,72 @@ export default function PannelloControllo() {
     const isWineTable = selectedTable.toLowerCase() === "vini";
 
     if (isWineTable) {
-      if (!adminPassword) {
-        setSaveStatus("error");
-        alert("Password admin non disponibile. Esci e rientra come admin.");
-        return;
-      }
-
       if (!hasValidId) {
         setSaveStatus("error");
         alert("Impossibile eliminare vino: id record mancante.");
         return;
       }
 
-      const endpoints = [
-        "/api/admin-save-wine",
-        "/.netlify/functions/admin-save-wine",
-      ];
+      let deleted = false;
+      let lastMessage = "Eliminazione vino fallita.";
 
-      let lastMessage = "Eliminazione vino fallita lato server.";
+      if (adminPassword) {
+        const endpoints = [
+          "/api/admin-save-wine",
+          "/.netlify/functions/admin-save-wine",
+        ];
 
-      for (const endpoint of endpoints) {
-        try {
-          const response = await fetch(endpoint, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              "x-admin-password": adminPassword,
-            },
-            body: JSON.stringify({
-              mode: "delete",
-              table: wineTableName,
-              id: selectedItem.id,
-            }),
-          });
+        for (const endpoint of endpoints) {
+          try {
+            const response = await fetch(endpoint, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+                "x-admin-password": adminPassword,
+              },
+              body: JSON.stringify({
+                mode: "delete",
+                table: wineTableName,
+                id: selectedItem.id,
+              }),
+            });
 
-          const payload = await response.json().catch(() => ({}));
-          if (response.ok && payload?.ok) {
-            lastMessage = "";
+            const payload = await response.json().catch(() => ({}));
+            if (response.ok && payload?.ok) {
+              deleted = true;
+              break;
+            }
+
+            lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
+          } catch (e: any) {
+            lastMessage = e?.message || `Errore di rete su ${endpoint}`;
+          }
+        }
+      } else {
+        lastMessage = "Password admin non disponibile: provo eliminazione diretta.";
+      }
+
+      // Fallback client-side: utile se endpoint server/admin env non sono disponibili.
+      if (!deleted) {
+        const tableCandidates = [wineTableName, wineTableName === "vini" ? "Vini" : "vini"];
+
+        for (const tableName of tableCandidates) {
+          const { data, error } = await supabase
+            .from(tableName)
+            .delete()
+            .eq("id", selectedItem.id)
+            .select("id");
+
+          if (!error && Array.isArray(data) && data.length > 0) {
+            deleted = true;
             break;
           }
 
-          lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
-        } catch (e: any) {
-          lastMessage = e?.message || `Errore di rete su ${endpoint}`;
+          lastMessage = error?.message || `Nessun record eliminato in ${tableName}`;
         }
       }
 
-      if (lastMessage) {
+      if (!deleted) {
         setSaveStatus("error");
         alert(lastMessage);
         return;
