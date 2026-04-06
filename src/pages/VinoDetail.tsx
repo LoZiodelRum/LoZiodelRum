@@ -118,13 +118,13 @@ export default function VinoDetail() {
 
   function renderSection(title: string, fields: Array<{ key: string; label: string }>) {
     return (
-      <section style={sectionStyle}>
-        <h2 style={sectionTitleStyle}>{title}</h2>
-        <div style={gridStyle}>
+      <section className="vino-detail-section" style={sectionStyle}>
+        <h2 className="vino-detail-section-title" style={sectionTitleStyle}>{title}</h2>
+        <div className="vino-detail-grid" style={gridStyle}>
           {fields.map((field) => (
-            <article key={field.key} style={cardStyle}>
-              <h3 style={labelStyle}>{field.label}</h3>
-              <p style={valueStyle}>{normalizeValue(vino?.[field.key])}</p>
+            <article key={field.key} className="vino-detail-card" style={cardStyle}>
+              <h3 className="vino-detail-label" style={labelStyle}>{field.label}</h3>
+              <p className="vino-detail-value" style={valueStyle}>{normalizeValue(vino?.[field.key])}</p>
             </article>
           ))}
         </div>
@@ -150,25 +150,104 @@ export default function VinoDetail() {
   }
 
   return (
-    <div className="page fade-in" style={{ maxWidth: 1200, margin: "0 auto", padding: 24 }}>
-      <button className="btn-primary" onClick={() => navigate("/vini")} style={{ marginBottom: 16 }}>
+    <div className="page fade-in vino-detail-page" style={{ maxWidth: 1200, margin: "0 auto", padding: 24 }}>
+      <style>{`
+        @media (max-width: 768px) {
+          .vino-detail-page {
+            padding: 12px !important;
+          }
+
+          .vino-detail-back-btn {
+            width: 100%;
+            margin-bottom: 12px !important;
+          }
+
+          .vino-detail-hero {
+            grid-template-columns: 1fr !important;
+            gap: 12px !important;
+            padding: 10px !important;
+            border-radius: 12px !important;
+            margin-bottom: 12px !important;
+          }
+
+          .vino-detail-hero-image,
+          .vino-detail-hero-placeholder {
+            height: 210px !important;
+            border-radius: 10px !important;
+          }
+
+          .vino-detail-title {
+            font-size: 1.45rem !important;
+            line-height: 1.2;
+          }
+
+          .vino-detail-sub {
+            margin: 6px 0 8px !important;
+            font-size: 0.95rem;
+          }
+
+          .vino-detail-meta {
+            display: grid !important;
+            grid-template-columns: 1fr !important;
+            gap: 6px !important;
+          }
+
+          .vino-detail-badge {
+            border-radius: 10px !important;
+            padding: 8px 10px !important;
+            font-size: 12px !important;
+          }
+
+          .vino-detail-section {
+            padding: 10px !important;
+            margin-bottom: 12px !important;
+            border-radius: 12px !important;
+          }
+
+          .vino-detail-section-title {
+            font-size: 1.05rem;
+            margin-bottom: 8px !important;
+          }
+
+          .vino-detail-grid {
+            grid-template-columns: 1fr !important;
+            gap: 8px !important;
+          }
+
+          .vino-detail-card {
+            padding: 9px !important;
+            border-radius: 10px !important;
+          }
+
+          .vino-detail-label {
+            font-size: 12px !important;
+            margin-bottom: 3px !important;
+          }
+
+          .vino-detail-value {
+            font-size: 14px !important;
+            line-height: 1.4;
+          }
+        }
+      `}</style>
+      <button className="btn-primary vino-detail-back-btn" onClick={() => navigate("/vini")} style={{ marginBottom: 16 }}>
         Torna ai vini
       </button>
 
-      <section style={heroStyle}>
+      <section className="vino-detail-hero" style={heroStyle}>
         {imageUrl ? (
-          <img src={imageUrl} alt={normalizeValue(vino?.nome)} style={heroImageStyle} />
+          <img className="vino-detail-hero-image" src={imageUrl} alt={normalizeValue(vino?.nome)} style={heroImageStyle} />
         ) : (
-          <div style={heroImagePlaceholderStyle}>NO IMG</div>
+          <div className="vino-detail-hero-placeholder" style={heroImagePlaceholderStyle}>NO IMG</div>
         )}
 
         <div>
-          <h1 style={heroTitleStyle}>{normalizeValue(vino?.nome)}</h1>
-          <p style={heroSubStyle}>Scheda completa AIS</p>
-          <div style={heroMetaStyle}>
-            <span style={badgeStyle}>Categoria: {normalizeValue(vino?.categoria)}</span>
-            <span style={badgeStyle}>Annata: {normalizeValue(vino?.annata)}</span>
-            <span style={badgeStyle}>Cantina: {normalizeValue(vino?.cantina)}</span>
+          <h1 className="vino-detail-title" style={heroTitleStyle}>{normalizeValue(vino?.nome)}</h1>
+          <p className="vino-detail-sub" style={heroSubStyle}>Scheda completa AIS</p>
+          <div className="vino-detail-meta" style={heroMetaStyle}>
+            <span className="vino-detail-badge" style={badgeStyle}>Categoria: {normalizeValue(vino?.categoria)}</span>
+            <span className="vino-detail-badge" style={badgeStyle}>Annata: {normalizeValue(vino?.annata)}</span>
+            <span className="vino-detail-badge" style={badgeStyle}>Cantina: {normalizeValue(vino?.cantina)}</span>
           </div>
         </div>
       </section>
