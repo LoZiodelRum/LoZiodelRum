@@ -24,7 +24,10 @@ export default function Crea() {
     let active = true;
 
     async function loadSuggestions() {
-      const activePreferences = Object.values(preferences).filter((value) => String(value || "").trim()).length;
+      const activePreferences = Object.values(preferences).filter((value) => {
+        if (Array.isArray(value)) return value.length > 0;
+        return String(value || "").trim().length > 0;
+      }).length;
 
       if (activePreferences === 0) {
         setSuggestions([]);
@@ -66,6 +69,18 @@ export default function Crea() {
     setPreferences((prev) => ({ ...prev, [key]: value }));
   }
 
+  function updateMultiPreference(key: keyof CocktailPreferences, values: string[]) {
+    setPreferences((prev) => ({ ...prev, [key]: values }));
+  }
+
+  function serializePreferenceValue(value: string | string[] | undefined | null) {
+    if (Array.isArray(value)) {
+      return value.length ? value.join(", ") : null;
+    }
+
+    return value || null;
+  }
+
   function toggleGeneratedForm(name: string) {
     setOpenGeneratedForms((prev) => ({ ...prev, [name]: !prev[name] }));
   }
@@ -84,9 +99,9 @@ export default function Crea() {
         guarnizione: cocktail.garnish,
         categoria: "cocktail",
         base_alcolica: preferences.base_alcolica || cocktail.base_spirit,
-        intensita_alcolica: preferences.intensita_alcolica || null,
-        profilo_gustativo: preferences.profilo_gustativo || null,
-        profilo_aromatico: preferences.profilo_aromatico || null,
+        intensita_alcolica: serializePreferenceValue(preferences.intensita_alcolica),
+        profilo_gustativo: serializePreferenceValue(preferences.profilo_gustativo),
+        profilo_aromatico: serializePreferenceValue(preferences.profilo_aromatico),
         stile_consumo: preferences.stile_consumo || null,
         carattere: preferences.carattere || null,
         created_at: nowIso,
@@ -108,9 +123,9 @@ export default function Crea() {
         ingredients: cocktail.ingredients,
         doses: cocktail.doses,
         base_alcolica: preferences.base_alcolica || cocktail.base_spirit,
-        intensita_alcolica: preferences.intensita_alcolica || null,
-        profilo_gustativo: preferences.profilo_gustativo || null,
-        profilo_aromatico: preferences.profilo_aromatico || null,
+        intensita_alcolica: serializePreferenceValue(preferences.intensita_alcolica),
+        profilo_gustativo: serializePreferenceValue(preferences.profilo_gustativo),
+        profilo_aromatico: serializePreferenceValue(preferences.profilo_aromatico),
         stile_consumo: preferences.stile_consumo || null,
         carattere: preferences.carattere || null,
         description: cocktail.description,
@@ -180,18 +195,34 @@ export default function Crea() {
           {preferenceFields.map((field) => (
             <div key={field.key} style={fieldStyle}>
               <label style={labelStyle}>{field.label}</label>
-              <select
-                value={preferences[field.key] || ""}
-                onChange={(event) => updatePreference(field.key, event.target.value)}
-                style={selectStyle}
-              >
-                <option value="">Scegli</option>
-                {field.options.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
+              {field.multi ? (
+                <select
+                  multiple
+                  value={Array.isArray(preferences[field.key]) ? preferences[field.key] as string[] : []}
+                  onChange={(event) => updateMultiPreference(field.key, Array.from(event.target.selectedOptions).map((option) => option.value))}
+                  style={{ ...selectStyle, minHeight: 140 }}
+                >
+                  {field.options.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              ) : (
+                <select
+                  value={typeof preferences[field.key] === "string" ? preferences[field.key] as string : ""}
+                  onChange={(event) => updatePreference(field.key, event.target.value)}
+                  style={selectStyle}
+                >
+                  <option value="">Scegli</option>
+                  {field.options.map((option) => (
+                    <option key={option} value={option}>
+                      {option}
+                    </option>
+                  ))}
+                </select>
+              )}
+              {field.multi && <span style={helperTextStyle}>Puoi selezionare piu valori tenendo premuto Cmd.</span>}
             </div>
           ))}
         </div>
@@ -323,11 +354,12 @@ const preferenceFields: Array<{
   key: keyof CocktailPreferences;
   label: string;
   options: string[];
+  multi?: boolean;
 }> = [
   { key: "base_alcolica", label: "Base alcolica", options: ["rum", "rum scuro", "gin", "vodka", "whisky", "brandy", "tequila", "mezcal"] },
-  { key: "intensita_alcolica", label: "Intensita alcolica", options: ["leggera", "media", "alta", "strong", "strong & bold"] },
-  { key: "profilo_gustativo", label: "Profilo gustativo", options: ["secco", "dolce", "amaro", "agrumato", "fresco", "speziato"] },
-  { key: "profilo_aromatico", label: "Profilo aromatico", options: ["erbaceo", "floreale", "tropicale", "agrumato", "affumicato", "fruttato"] },
+  { key: "intensita_alcolica", label: "Intensita alcolica", multi: true, options: ["Bassa (session drink)", "Medio-bassa", "Media", "Medio-alta", "Alta", "Spirit forward (molto alcolico, dominante)"] },
+  { key: "profilo_gustativo", label: "Profilo gustativo", multi: true, options: ["Dolce", "Acidulo / fresco", "Amaro", "Secco", "Umami / sapido", "Equilibrato"] },
+  { key: "profilo_aromatico", label: "Famiglia aromatica", multi: true, options: ["Fruttato", "Agrumato", "Floreale", "Erbaceo / botanico", "Speziato", "Tostato / legnoso"] },
   { key: "stile_consumo", label: "Stile consumo", options: ["aperitivo", "after dinner", "highball", "tiki", "signature", "day drinking"] },
   { key: "carattere", label: "Carattere", options: ["elegante", "deciso", "esotico", "sperimentale", "meditativo", "funky"] },
 ];
@@ -372,6 +404,11 @@ const labelStyle: React.CSSProperties = {
   color: "#e2e8f0",
   fontSize: 13,
   fontWeight: 600,
+};
+
+const helperTextStyle: React.CSSProperties = {
+  color: "#94a3b8",
+  fontSize: 12,
 };
 
 const selectStyle: React.CSSProperties = {
