@@ -482,7 +482,7 @@ export function generateCocktail(preferences: CocktailPreferences, variant = 0):
 }
 
 async function fetchCatalog(): Promise<CatalogCocktail[]> {
-  const tables = ["cocktails", "cocktail"];
+  const tables = ["cocktail"];
 
   for (const tableName of tables) {
     const { data, error } = await supabase.from(tableName).select("*");
