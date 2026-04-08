@@ -29,6 +29,27 @@ export default function Category() {
       return obj.immagine || obj.immagine_url || obj.image || obj.img || null;
     }
 
+    function normalize(value: any) {
+      return String(value || "").toLowerCase().trim();
+    }
+
+    function distillatoCategoryText(d: any) {
+      const categoria = [
+        d.categoria,
+        d.tipologia,
+        d.tipo,
+        d.tipo_distillato,
+        d.categoria_distillato,
+        d.category,
+        d.base_alcolica,
+      ]
+        .map(normalize)
+        .find((value) => value.length > 0) || "";
+
+      const nomeMarca = `${normalize(d.nome)} ${normalize(d.marca)}`.trim();
+      return `${categoria} ${nomeMarca}`.trim();
+    }
+
     // RESET
     setItems([]);
 
@@ -57,33 +78,62 @@ export default function Category() {
     else if (selectedType === "rum" || selectedType === "whisky" || selectedType === "altri") {
       const { data, error } = await supabase.from("distillati").select("*");
 
+      let distillatiRows: any[] = Array.isArray(data) ? data : [];
+
+      if ((!distillatiRows.length && error) || !distillatiRows.length) {
+        const { data: distillatoData } = await supabase.from("distillato").select("*");
+        if (Array.isArray(distillatoData) && distillatoData.length) {
+          distillatiRows = distillatoData;
+        }
+      }
+
       if (error) console.error(error);
 
-      if (data) {
-        const normalize = (c: string) => c?.toLowerCase().trim();
+      if (distillatiRows.length) {
+        const mapped = distillatiRows.map((d: any) => ({
+          id: d.id,
+          nome: d.nome || d.name || "Distillato",
+          marca: d.marca,
+          immagine: getImage(d),
+          categoria_testo: distillatoCategoryText(d),
+        }));
 
-        let filtered = data;
+        let filtered = mapped;
 
         if (selectedType === "rum") {
-          filtered = data.filter((d: any) =>
-            normalize(d.categoria).includes("rum")
+          filtered = mapped.filter((d: any) =>
+            d.categoria_testo.includes("rum") ||
+            d.categoria_testo.includes("rhum") ||
+            d.categoria_testo.includes("ron") ||
+            d.categoria_testo.includes("cachaca")
           );
         }
 
         if (selectedType === "whisky") {
-          filtered = data.filter(
+          filtered = mapped.filter(
             (d: any) =>
-              normalize(d.categoria).includes("whisky") ||
-              normalize(d.categoria).includes("whiskey")
+              d.categoria_testo.includes("whisky") ||
+              d.categoria_testo.includes("whiskey") ||
+              d.categoria_testo.includes("scotch") ||
+              d.categoria_testo.includes("bourbon") ||
+              d.categoria_testo.includes("rye") ||
+              d.categoria_testo.includes("single malt")
           );
         }
 
         if (selectedType === "altri") {
-          filtered = data.filter(
+          filtered = mapped.filter(
             (d: any) =>
-              !normalize(d.categoria).includes("rum") &&
-              !normalize(d.categoria).includes("whisky") &&
-              !normalize(d.categoria).includes("whiskey")
+              !d.categoria_testo.includes("rum") &&
+              !d.categoria_testo.includes("rhum") &&
+              !d.categoria_testo.includes("ron") &&
+              !d.categoria_testo.includes("cachaca") &&
+              !d.categoria_testo.includes("whisky") &&
+              !d.categoria_testo.includes("whiskey") &&
+              !d.categoria_testo.includes("scotch") &&
+              !d.categoria_testo.includes("bourbon") &&
+              !d.categoria_testo.includes("rye") &&
+              !d.categoria_testo.includes("single malt")
           );
         }
 

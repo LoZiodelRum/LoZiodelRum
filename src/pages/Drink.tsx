@@ -86,62 +86,21 @@ export default function Drink() {
         }))
         .sort((a, b) => a.nome.localeCompare(b.nome));
 
-      const pool = [...mappedDistillati];
-
       const containsAny = (text: string, words: string[]) => words.some((word) => text.includes(word));
       const rumWords = ["rum", "rhum", "ron", "cachaca"];
       const whiskyWords = ["whisky", "whiskey", "scotch", "bourbon", "rye", "single malt"];
 
-      const rumCandidates = pool.filter((d) => containsAny(d.categoria, rumWords));
-      const whiskyCandidates = pool.filter((d) => containsAny(d.categoria, whiskyWords));
-      const altriCandidates = pool.filter((d) => !containsAny(d.categoria, rumWords) && !containsAny(d.categoria, whiskyWords));
+      const rumCandidates = mappedDistillati.filter((d) => containsAny(d.categoria, rumWords));
+      const whiskyCandidates = mappedDistillati.filter((d) => containsAny(d.categoria, whiskyWords));
+      const altriCandidates = mappedDistillati.filter((d) => !containsAny(d.categoria, rumWords) && !containsAny(d.categoria, whiskyWords));
 
-      const topUp = (base: Distillato[], source: Distillato[]) => {
-        const used = new Set(base.map((item) => String(item.id)));
-        const merged = [...base];
-        for (const item of source) {
-          if (merged.length >= 6) break;
-          if (used.has(String(item.id))) continue;
-          merged.push(item);
-          used.add(String(item.id));
-        }
-        return merged;
-      };
-
-      const generic = mappedDistillati.slice(0, 6);
-
-      const rumFinal = topUp(rumCandidates.slice(0, 6), generic);
-      const whiskyFinal = topUp(whiskyCandidates.slice(0, 6), generic);
-      const altriFinal = topUp(altriCandidates.slice(0, 6), generic);
-
-      setRum(rumFinal);
-      setWhisky(whiskyFinal);
-      setAltri(altriFinal);
+      setRum(rumCandidates.slice(0, 6));
+      setWhisky(whiskyCandidates.slice(0, 6));
+      setAltri(altriCandidates.slice(0, 6));
     } else {
-      const containsAny = (text: string, words: string[]) => words.some((word) => text.includes(word));
-      const rumWords = ["rum", "rhum", "ron", "cachaca"];
-      const whiskyWords = ["whisky", "whiskey", "scotch", "bourbon", "rye", "single malt"];
-
-      const cocktailFallback: Distillato[] = (cocktailData || [])
-        .map((c: any) => {
-          const categoryText = `${normalize(c.base_alcolica)} ${normalize(c.nome)}`.trim();
-          return {
-            id: c.id,
-            nome: c.nome || c.name || "Drink",
-            marca: "",
-            categoria: categoryText,
-            immagine: getImage(c),
-          };
-        })
-        .sort((a: Distillato, b: Distillato) => a.nome.localeCompare(b.nome));
-
-      setRum(cocktailFallback.filter((d) => containsAny(d.categoria, rumWords)).slice(0, 6));
-      setWhisky(cocktailFallback.filter((d) => containsAny(d.categoria, whiskyWords)).slice(0, 6));
-      setAltri(
-        cocktailFallback
-          .filter((d) => d.categoria.length > 0 && !containsAny(d.categoria, rumWords) && !containsAny(d.categoria, whiskyWords))
-          .slice(0, 6)
-      );
+      setRum([]);
+      setWhisky([]);
+      setAltri([]);
     }
 
     setLoading(false);
