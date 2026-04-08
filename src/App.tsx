@@ -123,7 +123,9 @@ function AppContent() {
           path="/community"
           element={
             <PageShell>
-              <Community />
+              <Protected>
+                <Community />
+              </Protected>
             </PageShell>
           }
         />
@@ -184,7 +186,9 @@ function AppContent() {
           path="/crea"
           element={
             <PageShell>
-              <Crea />
+              <Protected>
+                <Crea />
+              </Protected>
             </PageShell>
           }
         />
@@ -192,7 +196,9 @@ function AppContent() {
           path="/crea/vino"
           element={
             <PageShell>
-              <CreaVino />
+              <Protected>
+                <CreaVino />
+              </Protected>
             </PageShell>
           }
         />
@@ -200,7 +206,9 @@ function AppContent() {
           path="/crea-vino"
           element={
             <PageShell>
-              <CreaVino />
+              <Protected>
+                <CreaVino />
+              </Protected>
             </PageShell>
           }
         />
