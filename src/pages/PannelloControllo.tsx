@@ -1294,36 +1294,38 @@ export default function PannelloControllo() {
             </div>
 
             {selectedTable === "Locali" && (
-              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 15, marginBottom: 16 }}>
-                <div style={fieldStyle}>
-                  <label style={labelStyle}>Carica immagine locale</label>
-                  <input
-                    type="file"
-                    accept="image/*"
-                    style={{ ...inputStyle, cursor: "pointer" }}
-                    disabled={uploadingLocaleImage}
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) handleLocaleImageUpload(file);
-                    }}
-                  />
-                  {uploadingLocaleImage && <span style={{ fontSize: 12, color: "#94a3b8", marginTop: 4 }}>Caricamento...</span>}
-                  {selectedItem?.image_url && <span style={{ fontSize: 11, color: "#4ade80", marginTop: 4, wordBreak: "break-all" }}>✓ {selectedItem.image_url}</span>}
+              <div style={{ display: "flex", gap: 20, flexWrap: "wrap", marginBottom: 16 }}>
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <span style={labelStyle}>Carica foto</span>
+                  <label style={{ ...btnSaveStyle, padding: "8px 14px", fontSize: 13, cursor: "pointer", opacity: uploadingLocaleImage ? 0.6 : 1 }}>
+                    {uploadingLocaleImage ? "Caricamento..." : "Scegli file"}
+                    <input
+                      type="file"
+                      accept="image/*"
+                      style={{ display: "none" }}
+                      disabled={uploadingLocaleImage}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleLocaleImageUpload(file);
+                      }}
+                    />
+                  </label>
                 </div>
-                <div style={fieldStyle}>
-                  <label style={labelStyle}>Carica video locale</label>
-                  <input
-                    type="file"
-                    accept="video/*"
-                    style={{ ...inputStyle, cursor: "pointer" }}
-                    disabled={uploadingLocaleVideo}
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) handleLocaleVideoUpload(file);
-                    }}
-                  />
-                  {uploadingLocaleVideo && <span style={{ fontSize: 12, color: "#94a3b8", marginTop: 4 }}>Caricamento...</span>}
-                  {selectedItem?.video_url && <span style={{ fontSize: 11, color: "#4ade80", marginTop: 4, wordBreak: "break-all" }}>✓ {selectedItem.video_url}</span>}
+                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+                  <span style={labelStyle}>Carica video</span>
+                  <label style={{ ...btnSaveStyle, padding: "8px 14px", fontSize: 13, cursor: "pointer", opacity: uploadingLocaleVideo ? 0.6 : 1 }}>
+                    {uploadingLocaleVideo ? "Caricamento..." : "Scegli file"}
+                    <input
+                      type="file"
+                      accept="video/*"
+                      style={{ display: "none" }}
+                      disabled={uploadingLocaleVideo}
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) handleLocaleVideoUpload(file);
+                      }}
+                    />
+                  </label>
                 </div>
               </div>
             )}
