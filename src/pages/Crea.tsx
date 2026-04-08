@@ -92,7 +92,7 @@ export default function Crea() {
     const famiglia = filters.p_famiglia || "Neutro";
     const profilo = filters.p_profilo || "equilibrato";
     const intensita = filters.p_intensita || "Media";
-    const metodo = filters.p_metodo || "On the rocks";
+    const metodo = filters.p_metodo || "Sour";
     const texture = filters.p_texture || "Liscia";
 
     const spiritMap: Record<string, { modifier: string; sour: string; sweet: string }> = {
@@ -132,16 +132,17 @@ export default function Crea() {
     const familyIng = familyMap[famiglia] || "Bitter aromatico";
     const garnish1 = garnishMap[famiglia] || "Scorza d'arancia";
 
-    const technique1 = intensita === "Molto alta" || metodo === "Straight up"
+    const technique1 = intensita === "Molto alta" || metodo === "Stirred (miscelati)"
       ? "Stir & strain"
       : "Shake & double strain";
     const glass1 = metodo === "Highball" ? "Highball" :
-      metodo === "Straight up" ? "Nick & Nora" :
-      metodo === "Frozen" ? "Frozen cup" : "Coppetta";
+      metodo === "Stirred (miscelati)" ? "Nick & Nora" :
+      metodo === "Frozen" ? "Frozen cup" :
+      metodo === "Pestati" ? "Tumbler" : "Coppetta";
 
     const technique2 = texture === "Cremosa" ? "Dry shake + wet shake" :
       texture === "Frizzante" ? "Build in glass" : "Stir & fat-wash";
-    const glass2 = metodo === "On the rocks" ? "Old Fashioned" :
+    const glass2 = metodo === "Pestati" ? "Old Fashioned" :
       metodo === "Highball" ? "Collins" : "Calice da vino";
     const ingExtra2 = texture === "Cremosa" ? "Albume d'uovo" :
       texture === "Frizzante" ? "Soda seltz" : "Olio di oliva extra vergine infuso";
@@ -173,7 +174,7 @@ export default function Crea() {
       ingredients: [base, sp.modifier, familyIng, ingExtra2],
       doses: ["45ml", "20ml", "10ml", "5ml"],
       garnish: garnish2,
-      description: `Reinterpretazione moderna con ${base} in chiave ${metodo === "Straight up" ? "spirit-forward" : "texturale"}. ${sp.modifier} apporta complessità e lunghezza palatale. ${familyIng} definisce il carattere aromatico ${famiglia.toLowerCase()}. La tecnica ${technique2.toLowerCase()} lavora la texture verso un risultato ${texture.toLowerCase()}.`,
+      description: `Reinterpretazione moderna con ${base} in chiave ${metodo === "Stirred (miscelati)" ? "spirit-forward" : "texturale"}. ${sp.modifier} apporta complessità e lunghezza palatale. ${familyIng} definisce il carattere aromatico ${famiglia.toLowerCase()}. La tecnica ${technique2.toLowerCase()} lavora la texture verso un risultato ${texture.toLowerCase()}.`,
       tasting_notes: [sp.modifier.split(" ")[0], famiglia, `${texture} finish`],
       balance_explanation: `Architettura spirit-forward: la dolcezza di ${sp.modifier} contrasta con la complessità aromatica di ${familyIng}. Finish ${texture.toLowerCase()} persistente.`,
     };
@@ -420,7 +421,7 @@ const preferenceFields: Array<{
   { key: "intensita_alcolica", label: "Intensita alcolica", options: ["Bassa", "Media", "Alta", "Molto alta"] },
   { key: "profilo_gustativo", label: "Profilo gustativo", options: ["Dolce", "Secco", "Amaro", "Agrodolce", "Acido", "Fresco"] },
   { key: "famiglia_aromatica", label: "Famiglia aromatica", options: ["Agrumato", "Fruttato", "Speziato", "Erbaceo", "Floreale", "Tostato", "Neutro"] },
-  { key: "stile_consumo", label: "Metodo di servizio", options: ["On the rocks", "Straight up", "Highball", "Frozen", "Warm/Hot"] },
+  { key: "stile_consumo", label: "Genere", options: ["Sour", "Highball", "Stirred (miscelati)", "Pestati", "Frozen"] },
   { key: "texture", label: "Texture", options: ["Liscia", "Frizzante", "Cremosa", "Densa", "Leggera"] },
 ];
 

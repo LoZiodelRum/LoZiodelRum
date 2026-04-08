@@ -712,11 +712,11 @@ export default function PannelloControllo() {
       "Neutro",
     ],
     stile_consumo: [
-      "On the rocks",
-      "Straight up",
+      "Sour",
       "Highball",
+      "Stirred (miscelati)",
+      "Pestati",
       "Frozen",
-      "Warm/Hot",
     ],
     texture: [
       "Liscia",

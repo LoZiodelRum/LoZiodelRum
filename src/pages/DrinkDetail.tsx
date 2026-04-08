@@ -194,7 +194,7 @@ export default function DrinkDetail() {
               {input("profilo_gustativo", "Profilo gustativo")}
               {input("famiglia_aromatica", "Famiglia aromatica")}
               {input("profilo_aromatico", "Profilo aromatico")}
-              {input("stile_consumo", "Metodo di servizio")}
+              {input("stile_consumo", "Genere")}
               {input("texture", "Texture")}
               {input("data_creazione", "Data creazione")}
             </>
@@ -368,7 +368,7 @@ export default function DrinkDetail() {
               {data.profilo_gustativo && <p style={row}>Profilo gustativo: {data.profilo_gustativo}</p>}
               {data.famiglia_aromatica && <p style={row}>Famiglia aromatica: {data.famiglia_aromatica}</p>}
               {data.profilo_aromatico && <p style={row}>Profilo aromatico: {data.profilo_aromatico}</p>}
-              {data.stile_consumo && <p style={row}>Metodo di servizio: {data.stile_consumo}</p>}
+              {data.stile_consumo && <p style={row}>Genere: {data.stile_consumo}</p>}
               {data.texture && <p style={row}>Texture: {data.texture}</p>}
               {data.data_creazione && <p style={row}>Data creazione: {String(data.data_creazione)}</p>}
             </div>

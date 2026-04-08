@@ -72,7 +72,7 @@ const autoBaseRules: Array<{
   { keys: ["stile_consumo", "famiglia_aromatica"], values: ["Frozen", "Fruttato"], suggestions: ["Rum"] },
   { keys: ["intensita_alcolica", "profilo_gustativo"], values: ["Molto alta", "Secco"], suggestions: ["Whisky"] },
   { keys: ["stile_consumo", "profilo_gustativo"], values: ["Highball", "Fresco"], suggestions: ["Gin"] },
-  { keys: ["stile_consumo", "profilo_gustativo"], values: ["Warm/Hot", "Dolce"], suggestions: ["Brandy/Cognac"] },
+  { keys: ["stile_consumo", "profilo_gustativo"], values: ["Stirred (miscelati)", "Dolce"], suggestions: ["Brandy/Cognac"] },
   { keys: ["intensita_alcolica", "texture"], values: ["Bassa", "Leggera"], suggestions: ["Analcolico"] },
 ];
 
@@ -329,15 +329,16 @@ export function filterCocktails(catalog: CatalogCocktail[], preferences: Cocktai
 
 function defaultTechnique(preferences: CocktailPreferences) {
   const stile = normalizeText(preferences.stile_consumo);
-  if (stile.includes("highball") || stile.includes("on the rocks")) return "build";
+  if (stile.includes("highball") || stile.includes("pestati")) return "build";
   if (stile.includes("frozen")) return "blend";
+  if (stile.includes("sour")) return "shake";
   return "stir";
 }
 
 function defaultGlass(preferences: CocktailPreferences, baseSpirit: string) {
   const style = normalizeText(preferences.stile_consumo);
-  if (style.includes("on the rocks")) return "old fashioned";
-  if (style.includes("straight up") || normalizeText(baseSpirit).includes("gin")) return "coupette";
+  if (style.includes("pestati")) return "old fashioned";
+  if (style.includes("stirred") || style.includes("miscelati") || normalizeText(baseSpirit).includes("gin")) return "coupette";
   return "highball";
 }
 
@@ -366,10 +367,12 @@ function buildGeneratedRecipe(baseSpirit: string, preferences: CocktailPreferenc
   const isStrong = intensita.some((value) => value.includes("alta"));
   const isSweet = gusto.some((value) => value.includes("dolce") || value.includes("agrodolce"));
   const isBitter = gusto.some((value) => value.includes("amaro") || value.includes("secco"));
-  const isSparkling = normalizeText(preferences.stile_consumo).includes("highball") || gusto.some((value) => value.includes("fresco") || value.includes("acido"));
+  const normalizedStyle = normalizeText(preferences.stile_consumo);
+  const isSparkling = normalizedStyle.includes("highball") || gusto.some((value) => value.includes("fresco") || value.includes("acido"));
+  const isSourStyle = normalizedStyle.includes("sour");
 
   const baseMl = isStrong ? 55 : 45 + variant * 5;
-  const acidMl = isBitter ? 15 : 20;
+  const acidMl = isSourStyle ? 25 : (isBitter ? 15 : 20);
   const sweetMl = isSweet ? 18 : 12 + variant * 2;
   const modifierMl = isSparkling ? 60 : 10;
 
@@ -450,8 +453,9 @@ function defaultFlavorBySpirit(baseSpirit: string) {
 
 function defaultMoment(preferences: CocktailPreferences) {
   const style = normalizeText(preferences.stile_consumo);
-  if (style.includes("warm/hot")) return "nelle ore fredde, come servizio di comfort";
-  if (style.includes("highball") || style.includes("on the rocks")) return "in servizio rapido e fresco";
+  if (style.includes("frozen")) return "in servizio estivo e rilassato";
+  if (style.includes("highball") || style.includes("pestati")) return "in servizio rapido e fresco";
+  if (style.includes("sour")) return "in aperitivo o pre-cena";
   return "in servizio serale, sia come signature sia come twist contemporaneo";
 }
 
