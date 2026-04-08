@@ -18,13 +18,30 @@ export default function DrinkDetail() {
   }, [id]);
 
   async function load() {
+    const normalize = (value: any) => String(value || "").toLowerCase().trim();
+    const isDistillatoLike = (record: any) => {
+      const cat = normalize(record?.categoria);
+      const hasDistillatoCategory = cat.includes("distillat");
+      const hasDistillatoFields = [
+        record?.distilleria,
+        record?.invecchiamento,
+        record?.tipo_botte,
+        record?.esame_visivo,
+        record?.esame_olfattivo,
+        record?.esame_gustativo,
+        record?.note_aromatiche,
+        record?.sottocategoria,
+      ].some((value) => normalize(value).length > 0);
+      return hasDistillatoCategory || hasDistillatoFields;
+    };
+
     const { data: cocktail } = await supabase
       .from("cocktail")
       .select("*")
       .eq("id", id)
       .single();
 
-    if (cocktail) {
+    if (cocktail && !isDistillatoLike(cocktail)) {
       const obj = { ...cocktail, type: "cocktail" };
       setData(obj);
       setForm(obj);
@@ -39,6 +56,26 @@ export default function DrinkDetail() {
 
     if (distillato) {
       const obj = { ...distillato, type: "distillato" };
+      setData(obj);
+      setForm(obj);
+      return;
+    }
+
+    const { data: distillatoAlt } = await supabase
+      .from("distillato")
+      .select("*")
+      .eq("id", id)
+      .single();
+
+    if (distillatoAlt) {
+      const obj = { ...distillatoAlt, type: "distillato" };
+      setData(obj);
+      setForm(obj);
+      return;
+    }
+
+    if (cocktail && isDistillatoLike(cocktail)) {
+      const obj = { ...cocktail, type: "distillato" };
       setData(obj);
       setForm(obj);
     }

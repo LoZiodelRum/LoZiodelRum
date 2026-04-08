@@ -50,6 +50,22 @@ export default function Category() {
       return `${categoria} ${nomeMarca}`.trim();
     }
 
+    function isDistillatoLike(record: any) {
+      const cat = normalize(record?.categoria);
+      const hasDistillatoCategory = cat.includes("distillat");
+      const hasDistillatoFields = [
+        record?.distilleria,
+        record?.invecchiamento,
+        record?.tipo_botte,
+        record?.esame_visivo,
+        record?.esame_olfattivo,
+        record?.esame_gustativo,
+        record?.note_aromatiche,
+        record?.sottocategoria,
+      ].some((value) => normalize(value).length > 0);
+      return hasDistillatoCategory || hasDistillatoFields;
+    }
+
     // RESET
     setItems([]);
 
@@ -89,13 +105,37 @@ export default function Category() {
 
       if (error) console.error(error);
 
-      if (distillatiRows.length) {
-        const mapped = distillatiRows.map((d: any) => ({
+      const mappedDistillati = distillatiRows.map((d: any) => ({
+        id: d.id,
+        nome: d.nome || d.name || "Distillato",
+        marca: d.marca || "",
+        immagine: getImage(d),
+        categoria_testo: distillatoCategoryText(d),
+      }));
+
+      let mappedCocktailDistillati: any[] = [];
+      if (!mappedDistillati.length) {
+        const { data: cocktailData } = await supabase.from("cocktail").select("*");
+        mappedCocktailDistillati = (cocktailData || [])
+          .filter((record: any) => isDistillatoLike(record))
+          .map((d: any) => ({
+            id: d.id,
+            nome: d.nome || d.name || "Distillato",
+            marca: d.marca || d.distilleria || "",
+            immagine: getImage(d),
+            categoria_testo: distillatoCategoryText(d),
+          }));
+      }
+
+      const source = mappedDistillati.length ? mappedDistillati : mappedCocktailDistillati;
+
+      if (source.length) {
+        const mapped = source.map((d: any) => ({
           id: d.id,
-          nome: d.nome || d.name || "Distillato",
+          nome: d.nome,
           marca: d.marca,
           immagine: getImage(d),
-          categoria_testo: distillatoCategoryText(d),
+          categoria_testo: d.categoria_testo,
         }));
 
         let filtered = mapped;
