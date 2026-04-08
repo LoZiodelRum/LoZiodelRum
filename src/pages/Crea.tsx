@@ -44,17 +44,76 @@ export default function Crea() {
     setLoading(true);
     setError(null);
 
-    const result = await getCocktailSuggestions(preferences);
+    const filters = {
+      p_base: preferences.base_alcolica || null,
+      p_profilo: preferences.profilo_gustativo || null,
+      p_intensita: preferences.intensita_alcolica || null,
+      p_famiglia: preferences.famiglia_aromatica || null,
+      p_metodo: preferences.stile_consumo || null,
+      p_texture: preferences.texture || null,
+    };
 
-    if (result.error) {
+    const { data, error } = await supabase.rpc("match_cocktails", filters);
+
+    if (error) {
       setSuggestions([]);
-      setError(result.error);
+      setError(error.message);
       setLoading(false);
       return;
     }
 
-    setSuggestions(result.cocktails);
+    const databaseCocktails = (data || []).map((c: any) => ({
+      name: c.nome,
+      source: "database" as const,
+      matchScore: c.score,
+      base_spirit: filters.p_base || "Mix",
+      technique: "Da definire",
+      glass: "Da definire",
+      ingredients: [],
+      doses: [],
+      garnish: "",
+      description: "",
+      tasting_notes: [],
+      balance_explanation: ""
+    }));
+
+    const generated = generateSignatureCocktails(filters);
+
+    setSuggestions([
+      ...databaseCocktails,
+      ...generated
+    ]);
+
     setLoading(false);
+  }
+
+  function generateSignatureCocktails(filters: any): SuggestedCocktail[] {
+    return [1, 2].map((i) => ({
+      name: `Zio Signature ${i}`,
+      source: "generated" as const,
+      matchScore: 0,
+      base_spirit: filters.p_base || "Mix",
+      technique: "Shake & strain",
+      glass: "Coppetta",
+      ingredients: [
+        filters.p_base || "Distillato base",
+        "Agrume fresco",
+        "Componente dolce",
+        "Modifier aromatico"
+      ],
+      doses: ["45ml", "20ml", "15ml", "5ml"],
+      garnish: "Scorza agrume",
+      description: `Cocktail costruito su base ${filters.p_base || "alcolica"}.
+Profilo gustativo ${filters.p_profilo || "equilibrato"}.
+Intensità ${filters.p_intensita || "media"}.
+Famiglia aromatica ${filters.p_famiglia || "dominante"}.
+Metodo ${filters.p_metodo || "classico"} con texture ${filters.p_texture || "liscia"}.`,
+      tasting_notes: [
+        filters.p_famiglia || "aromatico",
+        filters.p_texture || "strutturato"
+      ],
+      balance_explanation: "Equilibrio tra componente alcolica, acida e dolce"
+    }));
   }
 
   function toggleGeneratedForm(name: string) {
