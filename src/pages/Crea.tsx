@@ -235,6 +235,7 @@ export default function Crea() {
                               type="checkbox"
                               checked={selected}
                               onChange={() => toggleMultiOption(field.key, option)}
+                              style={{ flexShrink: 0, width: 16, height: 16, cursor: "pointer" }}
                             />
                           </label>
                         );
@@ -497,6 +498,8 @@ const multiSelectOptionStyle: React.CSSProperties = {
   background: "#111827",
   color: "#e2e8f0",
   fontSize: 14,
+  whiteSpace: "nowrap",
+  cursor: "pointer",
 };
 
 const selectStyle: React.CSSProperties = {
