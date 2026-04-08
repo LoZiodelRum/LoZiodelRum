@@ -271,7 +271,12 @@ export default function DrinkDetail() {
       <div style={layout} className="drink-detail-layout">
 
         <div style={left} className="drink-detail-left">
-          <h1 style={title}>{data.nome}</h1>
+          <h1
+            style={title}
+            className={data.type === "cocktail" ? "drink-detail-cocktail-main-title" : undefined}
+          >
+            {data.nome}
+          </h1>
 
           {data.descrizione && (
             <p style={description}>{data.descrizione}</p>
@@ -387,6 +392,12 @@ export default function DrinkDetail() {
         <div style={right} className="drink-detail-right">
           {getImage(data) && <img src={getImage(data)} style={image} />}
 
+          {data.type === "cocktail" && (
+            <h1 className="drink-detail-mobile-cocktail-title" style={mobileCocktailTitle}>
+              {data.nome}
+            </h1>
+          )}
+
           {data.type === "cocktail" && data.ingredienti && (
             <div style={box}>
               <h3 style={boxTitle}>Ingredienti</h3>
@@ -450,6 +461,13 @@ const right = { flex: "1 1 320px" };
 const title = {
   fontSize: "clamp(1.8rem, 5vw, 2.25rem)",
   marginBottom: 20,
+  color: "#4b2e1f",
+};
+
+const mobileCocktailTitle = {
+  display: "none",
+  fontSize: "clamp(1.6rem, 6vw, 2rem)",
+  margin: "8px 0 14px",
   color: "#4b2e1f",
 };
 

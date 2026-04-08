@@ -1142,6 +1142,14 @@ button[style*="#c47a2c"] {
     width: 100%;
   }
 
+  .drink-detail-cocktail-main-title {
+    display: none;
+  }
+
+  .drink-detail-mobile-cocktail-title {
+    display: block !important;
+  }
+
   h1 { font-size: clamp(1.4rem, 5vw, 1.8rem); }
   h2 { font-size: 16px; }
   h3 { font-size: 13px; }
