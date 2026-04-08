@@ -40,15 +40,41 @@ export default function Drink() {
       return obj.immagine || obj.immagine_url || obj.image || obj.img || null;
     }
 
+    function normalize(value: any) {
+      return String(value || "").toLowerCase().trim();
+    }
+
+    function distillatoCategoryText(d: any) {
+      const categoria = [
+        d.categoria,
+        d.tipologia,
+        d.tipo,
+        d.tipo_distillato,
+        d.categoria_distillato,
+        d.category,
+        d.base_alcolica,
+      ]
+        .map(normalize)
+        .find((value) => value.length > 0) || "";
+
+      const nomeMarca = `${normalize(d.nome)} ${normalize(d.marca)}`.trim();
+      return `${categoria} ${nomeMarca}`.trim();
+    }
+
     if (cocktailData) {
       const sorted = cocktailData.sort((a: any, b: any) => a.nome.localeCompare(b.nome));
       setCocktail(sorted.slice(0, 6).map((c: any) => ({ id: c.id, nome: c.nome, immagine: getImage(c) })));
     }
 
     if (distillatiData) {
-      const normalize = (c: string) => c?.toLowerCase().trim();
       const mapped = distillatiData
-        .map((d: any) => ({ id: d.id, nome: d.nome, marca: d.marca, categoria: normalize(d.categoria), immagine: getImage(d) }))
+        .map((d: any) => ({
+          id: d.id,
+          nome: d.nome,
+          marca: d.marca,
+          categoria: distillatoCategoryText(d),
+          immagine: getImage(d),
+        }))
         .sort((a, b) => a.nome.localeCompare(b.nome));
 
       setRum(mapped.filter(d => d.categoria.includes("rum")).slice(0, 6));
