@@ -350,8 +350,8 @@ function defaultGarnish(baseSpirit: string) {
 function resolveProfileKey(baseSpirit: string) {
   const normalized = normalizeText(baseSpirit);
   if (normalized === "cognac") return "brandy";
-  if (normalized === "aperitivo bitter (campari, aperol)") return "gin";
-  if (normalized === "liquore (generico)") return "vodka";
+  if (normalized === "aperitivo bitter (campari, aperol)" || normalized === "aperitivo bitter") return "gin";
+  if (normalized === "liquore (generico)" || normalized === "liquore") return "vodka";
   if (normalized === "vermouth") return "gin";
   if (normalized === "vermouth rosso") return "whisky";
   if (normalized === "sherry") return "whisky";
@@ -359,7 +359,7 @@ function resolveProfileKey(baseSpirit: string) {
   if (normalized === "spumante/champagne") return "gin";
   if (normalized === "vino") return "gin";
   if (normalized === "birra") return "gin";
-  if (normalized === "mix (multi base)") return "gin";
+  if (normalized === "mix (multi base)" || normalized === "mix") return "gin";
   if (normalized === "analcolico") return "gin";
   return normalized;
 }

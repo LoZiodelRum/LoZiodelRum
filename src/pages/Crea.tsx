@@ -157,7 +157,7 @@ export default function Crea() {
   }
 
   function generateSignatureCocktails(filters: any): SuggestedCocktail[] {
-    const base = filters.p_base || "Mix (multi base)";
+    const base = filters.p_base || "Mix";
     const famiglia = filters.p_famiglia || "Neutro";
     const profilo = filters.p_profilo || "equilibrato";
     const intensita = filters.p_intensita || "Media";
@@ -173,17 +173,17 @@ export default function Crea() {
       "Mezcal":                       { modifier: "Aperitivo bitter",         sour: "Succo di lime",      sweet: "Sciroppo di agave" },
       "Brandy":                       { modifier: "Grand Marnier",            sour: "Succo di limone",    sweet: "Sciroppo di zucchero" },
       "Cognac":                       { modifier: "Grand Marnier",            sour: "Succo di limone",    sweet: "Sciroppo di zucchero" },
-      "Aperitivo bitter (Campari, Aperol)": { modifier: "Vermouth rosso",     sour: "Succo di pompelmo",  sweet: "Sciroppo di cardamomo" },
+      "Aperitivo bitter":            { modifier: "Vermouth rosso",     sour: "Succo di pompelmo",  sweet: "Sciroppo di cardamomo" },
       "Vermouth":                     { modifier: "Bitter aromatico",         sour: "Succo di limone",    sweet: "Sciroppo semplice" },
       "Vermouth rosso":              { modifier: "Bitter aromatico",         sour: "Succo di arancia",   sweet: "Sciroppo semplice" },
       "Sherry":                       { modifier: "Amaro gentile",            sour: "Succo di limone",    sweet: "Sciroppo di miele" },
-      "Liquore (generico)":           { modifier: "Crème de cacao white",     sour: "Succo di lime",      sweet: "Sciroppo alla vaniglia" },
+      "Liquore":                      { modifier: "Crème de cacao white",     sour: "Succo di lime",      sweet: "Sciroppo alla vaniglia" },
       "Amaro":                        { modifier: "Vermouth dry",             sour: "Succo di limone",    sweet: "Sciroppo di canna" },
       "Spumante/Champagne":           { modifier: "Liqueur d'expedition",     sour: "Succo di limone",    sweet: "Sciroppo semplice" },
       "Vino":                         { modifier: "Liquore all'arancia",       sour: "Succo di limone",    sweet: "Miele chiaro" },
       "Birra":                        { modifier: "Amaro gentile",            sour: "Succo di limone",    sweet: "Sciroppo di malto" },
       "Analcolico":                   { modifier: "Ginger beer artigianale",  sour: "Succo di lime",      sweet: "Sciroppo di zenzero" },
-      "Mix (multi base)":             { modifier: "Vermouth dry",             sour: "Succo di limone",    sweet: "Sciroppo semplice" },
+      "Mix":                          { modifier: "Vermouth dry",             sour: "Succo di limone",    sweet: "Sciroppo semplice" },
     };
 
     const familyMap: Record<string, string> = {
@@ -206,7 +206,7 @@ export default function Crea() {
       "Neutro":   "Scorza d'arancia",
     };
 
-    const sp = spiritMap[base] || spiritMap["Mix (multi base)"];
+    const sp = spiritMap[base] || spiritMap["Mix"];
     const familyIng = familyMap[famiglia] || "Bitter aromatico";
     const garnish1 = garnishMap[famiglia] || "Scorza d'arancia";
 
@@ -496,7 +496,7 @@ const preferenceFields: Array<{
   label: string;
   options: string[];
 }> = [
-  { key: "base_alcolica", label: "Base alcolica", options: ["Rum", "Gin", "Vodka", "Whisky", "Tequila", "Mezcal", "Brandy", "Cognac", "Aperitivo bitter (Campari, Aperol)", "Vermouth", "Vermouth rosso", "Sherry", "Liquore (generico)", "Amaro", "Spumante/Champagne", "Vino", "Birra", "Analcolico", "Mix (multi base)"] },
+  { key: "base_alcolica", label: "Base alcolica", options: ["Rum", "Gin", "Vodka", "Whisky", "Tequila", "Mezcal", "Brandy", "Cognac", "Aperitivo bitter", "Vermouth", "Vermouth rosso", "Sherry", "Liquore", "Amaro", "Spumante/Champagne", "Vino", "Birra", "Analcolico", "Mix"] },
   { key: "intensita_alcolica", label: "Intensita alcolica", options: ["Bassa", "Media", "Alta", "Molto alta"] },
   { key: "profilo_gustativo", label: "Profilo gustativo", options: ["Dolce", "Secco", "Amaro", "Agrodolce", "Acido", "Fresco"] },
   { key: "famiglia_aromatica", label: "Famiglia aromatica", options: ["Agrumato", "Fruttato", "Speziato", "Erbaceo", "Floreale", "Tostato", "Neutro"] },
