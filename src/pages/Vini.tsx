@@ -153,7 +153,7 @@ export default function Vini() {
       objectFit: "contain",
       transform: "scale(0.78)",
       transformOrigin: "center",
-      background: "#020617",
+      background: "#ffffff",
     };
   }
 
