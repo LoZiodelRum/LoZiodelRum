@@ -204,10 +204,7 @@ export default function Crea() {
         <div>
           <p style={eyebrowStyle}>Lo Zio Cocktail Configurator</p>
           <h1 style={titleStyle}>Crea</h1>
-          <p style={introStyle}>
-            Seleziona almeno 2 preferenze tra i 7 menu e lascia che Lo Zio trovi i cocktail piu coerenti dal database.
-            Appena completi almeno 2 campi, il sistema apre 4 cocktail gia presenti in catalogo e aggiunge 2 ricette nuove bilanciate.
-          </p>
+
         </div>
       </div>
 
@@ -378,11 +375,7 @@ export default function Crea() {
           </article>
         ))}
 
-        {!suggestions.length && !loading && !error && (
-          <div style={emptyStateStyle}>
-            Seleziona almeno 2 preferenze per vedere automaticamente 4 cocktail del catalogo e 2 proposte originali.
-          </div>
-        )}
+
       </div>
     </div>
   );
