@@ -157,7 +157,7 @@ export default function Crea() {
   }
 
   function generateSignatureCocktails(filters: any): SuggestedCocktail[] {
-    const base = filters.p_base || "Mix";
+    const base = filters.p_base || "Mix (multi base)";
     const famiglia = filters.p_famiglia || "Neutro";
     const profilo = filters.p_profilo || "equilibrato";
     const intensita = filters.p_intensita || "Media";
@@ -165,16 +165,23 @@ export default function Crea() {
     const texture = filters.p_texture || "Liscia";
 
     const spiritMap: Record<string, { modifier: string; sour: string; sweet: string }> = {
-      "Rum":          { modifier: "Falernum",              sour: "Succo di lime",       sweet: "Sciroppo di canna" },
-      "Gin":          { modifier: "Aperol",                sour: "Succo di limone",     sweet: "Sciroppo di sambuco" },
-      "Vodka":        { modifier: "Liquore al litchi",     sour: "Succo di lime",       sweet: "Sciroppo di rose" },
-      "Whisky":       { modifier: "Benedictine",           sour: "Succo di limone",     sweet: "Miele di acacia" },
-      "Tequila":      { modifier: "Triple Sec",            sour: "Succo di lime",       sweet: "Sciroppo di agave" },
-      "Brandy/Cognac":{ modifier: "Grand Marnier",         sour: "Succo di limone",     sweet: "Sciroppo di zucchero" },
-      "Aperitivo":    { modifier: "Prosecco",              sour: "Succo di pompelmo",   sweet: "Sciroppo di cardamomo" },
-      "Liquore":      { modifier: "Crème de cacao white",  sour: "Succo di lime",       sweet: "Sciroppo alla vaniglia" },
-      "Analcolico":   { modifier: "Ginger beer artigianale", sour: "Succo di lime",     sweet: "Sciroppo di zenzero" },
-      "Mix":          { modifier: "Vermouth dry",          sour: "Succo di limone",     sweet: "Sciroppo semplice" },
+      "Rum":                          { modifier: "Falernum",                 sour: "Succo di lime",      sweet: "Sciroppo di canna" },
+      "Gin":                          { modifier: "Aperol",                   sour: "Succo di limone",    sweet: "Sciroppo di sambuco" },
+      "Vodka":                        { modifier: "Liquore al litchi",        sour: "Succo di lime",      sweet: "Sciroppo di rose" },
+      "Whisky":                       { modifier: "Benedictine",              sour: "Succo di limone",    sweet: "Miele di acacia" },
+      "Tequila":                      { modifier: "Triple Sec",               sour: "Succo di lime",      sweet: "Sciroppo di agave" },
+      "Mezcal":                       { modifier: "Aperitivo bitter",         sour: "Succo di lime",      sweet: "Sciroppo di agave" },
+      "Brandy":                       { modifier: "Grand Marnier",            sour: "Succo di limone",    sweet: "Sciroppo di zucchero" },
+      "Cognac":                       { modifier: "Grand Marnier",            sour: "Succo di limone",    sweet: "Sciroppo di zucchero" },
+      "Aperitivo bitter (Campari, Aperol)": { modifier: "Vermouth rosso",     sour: "Succo di pompelmo",  sweet: "Sciroppo di cardamomo" },
+      "Vermouth":                     { modifier: "Bitter aromatico",         sour: "Succo di limone",    sweet: "Sciroppo semplice" },
+      "Liquore (generico)":           { modifier: "Crème de cacao white",     sour: "Succo di lime",      sweet: "Sciroppo alla vaniglia" },
+      "Amaro":                        { modifier: "Vermouth dry",             sour: "Succo di limone",    sweet: "Sciroppo di canna" },
+      "Spumante/Champagne":           { modifier: "Liqueur d'expedition",     sour: "Succo di limone",    sweet: "Sciroppo semplice" },
+      "Vino":                         { modifier: "Liquore all'arancia",       sour: "Succo di limone",    sweet: "Miele chiaro" },
+      "Birra":                        { modifier: "Amaro gentile",            sour: "Succo di limone",    sweet: "Sciroppo di malto" },
+      "Analcolico":                   { modifier: "Ginger beer artigianale",  sour: "Succo di lime",      sweet: "Sciroppo di zenzero" },
+      "Mix (multi base)":             { modifier: "Vermouth dry",             sour: "Succo di limone",    sweet: "Sciroppo semplice" },
     };
 
     const familyMap: Record<string, string> = {
@@ -197,7 +204,7 @@ export default function Crea() {
       "Neutro":   "Scorza d'arancia",
     };
 
-    const sp = spiritMap[base] || spiritMap["Mix"];
+    const sp = spiritMap[base] || spiritMap["Mix (multi base)"];
     const familyIng = familyMap[famiglia] || "Bitter aromatico";
     const garnish1 = garnishMap[famiglia] || "Scorza d'arancia";
 
@@ -487,7 +494,7 @@ const preferenceFields: Array<{
   label: string;
   options: string[];
 }> = [
-  { key: "base_alcolica", label: "Base alcolica", options: ["Rum", "Gin", "Vodka", "Whisky", "Tequila", "Brandy/Cognac", "Aperitivo", "Liquore", "Analcolico"] },
+  { key: "base_alcolica", label: "Base alcolica", options: ["Rum", "Gin", "Vodka", "Whisky", "Tequila", "Mezcal", "Brandy", "Cognac", "Aperitivo bitter (Campari, Aperol)", "Vermouth", "Liquore (generico)", "Amaro", "Spumante/Champagne", "Vino", "Birra", "Analcolico", "Mix (multi base)"] },
   { key: "intensita_alcolica", label: "Intensita alcolica", options: ["Bassa", "Media", "Alta", "Molto alta"] },
   { key: "profilo_gustativo", label: "Profilo gustativo", options: ["Dolce", "Secco", "Amaro", "Agrodolce", "Acido", "Fresco"] },
   { key: "famiglia_aromatica", label: "Famiglia aromatica", options: ["Agrumato", "Fruttato", "Speziato", "Erbaceo", "Floreale", "Tostato", "Neutro"] },

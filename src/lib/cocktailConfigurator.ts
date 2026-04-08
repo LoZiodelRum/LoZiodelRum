@@ -72,7 +72,7 @@ const autoBaseRules: Array<{
   { keys: ["stile_consumo", "famiglia_aromatica"], values: ["Frozen", "Fruttato"], suggestions: ["Rum"] },
   { keys: ["intensita_alcolica", "profilo_gustativo"], values: ["Molto alta", "Secco"], suggestions: ["Whisky"] },
   { keys: ["stile_consumo", "profilo_gustativo"], values: ["Highball", "Fresco"], suggestions: ["Gin"] },
-  { keys: ["stile_consumo", "profilo_gustativo"], values: ["Stirred (miscelati)", "Dolce"], suggestions: ["Brandy/Cognac"] },
+  { keys: ["stile_consumo", "profilo_gustativo"], values: ["Stirred (miscelati)", "Dolce"], suggestions: ["Brandy"] },
   { keys: ["intensita_alcolica", "texture"], values: ["Bassa", "Leggera"], suggestions: ["Analcolico"] },
 ];
 
@@ -349,9 +349,15 @@ function defaultGarnish(baseSpirit: string) {
 
 function resolveProfileKey(baseSpirit: string) {
   const normalized = normalizeText(baseSpirit);
-  if (normalized === "brandy/cognac") return "brandy";
-  if (normalized === "aperitivo") return "gin";
-  if (normalized === "liquore") return "vodka";
+  if (normalized === "cognac") return "brandy";
+  if (normalized === "aperitivo bitter (campari, aperol)") return "gin";
+  if (normalized === "liquore (generico)") return "vodka";
+  if (normalized === "vermouth") return "gin";
+  if (normalized === "amaro") return "whisky";
+  if (normalized === "spumante/champagne") return "gin";
+  if (normalized === "vino") return "gin";
+  if (normalized === "birra") return "gin";
+  if (normalized === "mix (multi base)") return "gin";
   if (normalized === "analcolico") return "gin";
   return normalized;
 }
