@@ -221,12 +221,12 @@ export default function Crea() {
       metodo === "Shakerato" ? "Coppetta" :
       metodo === "Pestati" ? "Tumbler" : "Coppetta";
 
-    const technique2 = texture === "Cremosa" ? "Dry shake + wet shake" :
+    const technique2 = texture === "Cremosa" || texture === "Vellutata" ? "Dry shake + wet shake" :
       metodo === "Shakerato" ? "Shake & strain" :
       texture === "Frizzante" ? "Build in glass" : "Stir & fat-wash";
     const glass2 = metodo === "Pestati" ? "Old Fashioned" :
       metodo === "Highball" ? "Collins" : "Calice da vino";
-    const ingExtra2 = texture === "Cremosa" ? "Albume d'uovo" :
+    const ingExtra2 = texture === "Cremosa" || texture === "Vellutata" ? "Albume d'uovo" :
       texture === "Frizzante" ? "Soda seltz" : "Olio di oliva extra vergine infuso";
     const garnish2 = famiglia === "Tostato" ? "Cacao amaro e scorza d'arancia" :
       famiglia === "Erbaceo" ? "Rosmarino bruciato" : "Fiocco di sale marino";
@@ -505,7 +505,7 @@ const preferenceFields: Array<{
   { key: "profilo_gustativo", label: "Profilo gustativo", options: ["Dolce", "Secco", "Amaro", "Agrodolce", "Acido", "Fresco"] },
   { key: "famiglia_aromatica", label: "Famiglia aromatica", options: ["Agrumato", "Fruttato", "Speziato", "Erbaceo", "Floreale", "Tostato", "Neutro"] },
   { key: "Genere", label: "Genere", options: ["Sour", "Highball", "Stirred (miscelati)", "Pestati", "Frozen", "Shakerato"] },
-  { key: "texture", label: "Texture", options: ["Liscia", "Frizzante", "Cremosa", "Densa", "Leggera"] },
+  { key: "texture", label: "Texture", options: ["Liscia", "Frizzante", "Cremosa", "Vellutata", "Densa", "Leggera"] },
 ];
 
 const eyebrowStyle: React.CSSProperties = {

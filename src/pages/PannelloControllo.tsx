@@ -733,6 +733,7 @@ export default function PannelloControllo() {
       "Liscia",
       "Frizzante",
       "Cremosa",
+      "Vellutata",
       "Densa",
       "Leggera",
     ],
