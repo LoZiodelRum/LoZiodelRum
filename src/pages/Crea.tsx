@@ -202,7 +202,6 @@ export default function Crea() {
     <div className="page fade-in" style={{ maxWidth: 1180 }} data-page-version="crea-configurator-v2">
       <div style={{ marginBottom: 20 }}>
         <div>
-          <p style={eyebrowStyle}>Lo Zio Cocktail Configurator</p>
           <h1 style={titleStyle}>Crea</h1>
 
         </div>
