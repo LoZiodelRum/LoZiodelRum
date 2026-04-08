@@ -232,9 +232,9 @@ export default function DrinkDetail() {
       )}
 
       {/* 🔥 UI ORIGINALE */}
-      <div style={layout}>
+      <div style={layout} className="drink-detail-layout">
 
-        <div style={left}>
+        <div style={left} className="drink-detail-left">
           <h1 style={title}>{data.nome}</h1>
 
           {data.descrizione && (
@@ -348,7 +348,7 @@ export default function DrinkDetail() {
           )}
         </div>
 
-        <div style={right}>
+        <div style={right} className="drink-detail-right">
           {getImage(data) && <img src={getImage(data)} style={image} />}
 
           {data.type === "cocktail" && data.ingredienti && (
