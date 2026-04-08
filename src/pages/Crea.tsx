@@ -212,13 +212,17 @@ export default function Crea() {
 
     const technique1 = intensita === "Molto alta" || metodo === "Stirred (miscelati)"
       ? "Stir & strain"
+      : metodo === "Shakerato"
+        ? "Shake & strain"
       : "Shake & double strain";
     const glass1 = metodo === "Highball" ? "Highball" :
       metodo === "Stirred (miscelati)" ? "Nick & Nora" :
       metodo === "Frozen" ? "Frozen cup" :
+      metodo === "Shakerato" ? "Coppetta" :
       metodo === "Pestati" ? "Tumbler" : "Coppetta";
 
     const technique2 = texture === "Cremosa" ? "Dry shake + wet shake" :
+      metodo === "Shakerato" ? "Shake & strain" :
       texture === "Frizzante" ? "Build in glass" : "Stir & fat-wash";
     const glass2 = metodo === "Pestati" ? "Old Fashioned" :
       metodo === "Highball" ? "Collins" : "Calice da vino";
@@ -500,7 +504,7 @@ const preferenceFields: Array<{
   { key: "intensita_alcolica", label: "Intensita alcolica", options: ["Bassa", "Media", "Alta", "Molto alta"] },
   { key: "profilo_gustativo", label: "Profilo gustativo", options: ["Dolce", "Secco", "Amaro", "Agrodolce", "Acido", "Fresco"] },
   { key: "famiglia_aromatica", label: "Famiglia aromatica", options: ["Agrumato", "Fruttato", "Speziato", "Erbaceo", "Floreale", "Tostato", "Neutro"] },
-  { key: "Genere", label: "Genere", options: ["Sour", "Highball", "Stirred (miscelati)", "Pestati", "Frozen"] },
+  { key: "Genere", label: "Genere", options: ["Sour", "Highball", "Stirred (miscelati)", "Pestati", "Frozen", "Shakerato"] },
   { key: "texture", label: "Texture", options: ["Liscia", "Frizzante", "Cremosa", "Densa", "Leggera"] },
 ];
 

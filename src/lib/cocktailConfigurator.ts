@@ -331,6 +331,7 @@ function defaultTechnique(preferences: CocktailPreferences) {
   const stile = normalizeText(preferences.Genere);
   if (stile.includes("highball") || stile.includes("pestati")) return "build";
   if (stile.includes("frozen")) return "blend";
+  if (stile.includes("shakerato")) return "shake";
   if (stile.includes("sour")) return "shake";
   return "stir";
 }
@@ -338,6 +339,7 @@ function defaultTechnique(preferences: CocktailPreferences) {
 function defaultGlass(preferences: CocktailPreferences, baseSpirit: string) {
   const style = normalizeText(preferences.Genere);
   if (style.includes("pestati")) return "old fashioned";
+  if (style.includes("shakerato")) return "coupette";
   if (style.includes("stirred") || style.includes("miscelati") || normalizeText(baseSpirit).includes("gin")) return "coupette";
   return "highball";
 }
@@ -463,6 +465,7 @@ function defaultMoment(preferences: CocktailPreferences) {
   const style = normalizeText(preferences.Genere);
   if (style.includes("frozen")) return "in servizio estivo e rilassato";
   if (style.includes("highball") || style.includes("pestati")) return "in servizio rapido e fresco";
+  if (style.includes("shakerato")) return "in servizio pre-serale, fresco e dinamico";
   if (style.includes("sour")) return "in aperitivo o pre-cena";
   return "in servizio serale, sia come signature sia come twist contemporaneo";
 }

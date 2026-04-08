@@ -727,6 +727,7 @@ export default function PannelloControllo() {
       "Stirred (miscelati)",
       "Pestati",
       "Frozen",
+      "Shakerato",
     ],
     texture: [
       "Liscia",
