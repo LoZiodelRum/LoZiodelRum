@@ -1,5 +1,5 @@
 import "../App.css";
-import { useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useUser } from "../context/UserContext";
 
@@ -1062,10 +1062,11 @@ export default function PannelloControllo() {
             )}
 
             <div style={formGridStyle}>
-              {Object.keys(selectedItem).map(key =>
-                key !== "id" && !(selectedTable === "cocktail" && (key === "data_creazione" || key === "created_at")) && (
+              {Object.keys(selectedItem).map(key => {
+                if (key === "id" || (selectedTable === "cocktail" && (key === "data_creazione" || key === "created_at"))) return null;
+                return (
+                  <React.Fragment key={key}>
                   <div
-                    key={key}
                     style={
                       key === "contenuto"
                         ? { ...fieldStyle, gridColumn: "1 / -1" }
@@ -1344,8 +1345,9 @@ export default function PannelloControllo() {
                       </div>
                     </>
                   )}
-                )
-              )}
+                  </React.Fragment>
+                );
+              })}
             </div>
 
             <div style={buttonRowStyle}>
