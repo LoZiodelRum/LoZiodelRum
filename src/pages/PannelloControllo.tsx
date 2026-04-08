@@ -731,6 +731,7 @@ export default function PannelloControllo() {
       "Shakerato",
       "Agitato",
       "Tiki",
+      "Built (Costruito in bicchiere)",
       "A strati (Layered)",
     ],
     texture: [

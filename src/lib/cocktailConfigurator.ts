@@ -333,6 +333,7 @@ function defaultTechnique(preferences: CocktailPreferences) {
   if (stile.includes("frozen")) return "blend";
   if (stile.includes("shakerato") || stile.includes("agitato")) return "shake";
   if (stile.includes("tiki")) return "shake";
+  if (stile.includes("built") || stile.includes("costruito")) return "build";
   if (stile.includes("layered") || stile.includes("strati")) return "layer";
   if (stile.includes("sour")) return "shake";
   return "stir";
