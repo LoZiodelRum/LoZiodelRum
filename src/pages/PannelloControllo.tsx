@@ -741,10 +741,44 @@ export default function PannelloControllo() {
     name: "nome",
   };
 
+  function normalizeCocktailMultiValue(key: string, rawValue: unknown): string {
+    const options = cocktailMultiSelectOptions[key];
+    if (!options) return String(rawValue ?? "");
+
+    const normalizedOptions = new Map(options.map((option) => [option.toLowerCase(), option]));
+
+    const cleaned = String(rawValue ?? "")
+      .split(",")
+      .map((value) => value.trim())
+      .filter(Boolean)
+      .map((value) => {
+        const lower = value.toLowerCase();
+        if (key === "intensita_alcolica" && lower === "bassa (session drink)") {
+          return "Bassa";
+        }
+        return normalizedOptions.get(lower) || "";
+      })
+      .filter(Boolean);
+
+    return Array.from(new Set(cleaned)).join(",");
+  }
+
+  function normalizeCocktailItemValues(item: any) {
+    if (!item) return item;
+
+    const normalizedItem = { ...item };
+    Object.keys(cocktailMultiSelectOptions).forEach((key) => {
+      if (normalizedItem[key] !== undefined && normalizedItem[key] !== null) {
+        normalizedItem[key] = normalizeCocktailMultiValue(key, normalizedItem[key]);
+      }
+    });
+    return normalizedItem;
+  }
+
   function openFirstEditor(table: string, data: any[]) {
     if (!Array.isArray(data) || data.length === 0) return;
 
-    const firstItem = { ...data[0] };
+    const firstItem = table === "cocktail" ? normalizeCocktailItemValues(data[0]) : { ...data[0] };
     if (table === "Locali" && firstItem.recensioni === undefined) {
       firstItem.recensioni = "";
     }
@@ -859,6 +893,10 @@ export default function PannelloControllo() {
             const item = data.find(d => String(d.id) === value);
             if (table === "Locali" && item) {
               const normalizedItem = { ...item, recensioni: item.recensioni ?? "" };
+              setSelectedItem(normalizedItem);
+              setSelectedOriginalItem(normalizedItem);
+            } else if (table === "cocktail" && item) {
+              const normalizedItem = normalizeCocktailItemValues(item);
               setSelectedItem(normalizedItem);
               setSelectedOriginalItem(normalizedItem);
             } else {
