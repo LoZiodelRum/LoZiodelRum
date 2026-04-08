@@ -411,7 +411,7 @@ export default function Crea() {
 
               <section className="crea-recipe-block" style={recipeBlockStyle}>
                 <h3 className="crea-section-title" style={sectionTitleStyle}>Profilo</h3>
-                <p className="crea-body" style={bodyStyle}>{cocktail.description}</p>
+                <p className="crea-body crea-description" style={bodyStyle}>{cocktail.description}</p>
                 <p className="crea-body" style={bodyStyle}><strong>Guarnizione:</strong> {cocktail.garnish}</p>
                 <p className="crea-body" style={bodyStyle}><strong>Bilanciamento:</strong> {cocktail.balance_explanation}</p>
               </section>

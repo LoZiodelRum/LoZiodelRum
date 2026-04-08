@@ -873,6 +873,7 @@ button[style*="#c47a2c"] {
     font-size: clamp(1.8rem, 8vw, 2.4rem) !important;
     line-height: 1.08;
     margin-bottom: 4px !important;
+    color: #f5a623 !important;
   }
 
   [data-page-version="crea-configurator-v2"] .crea-panel {
@@ -932,6 +933,7 @@ button[style*="#c47a2c"] {
     font-size: clamp(1.35rem, 6vw, 1.8rem) !important;
     margin: 4px 0 !important;
     line-height: 1.15;
+    color: #f5a623 !important;
   }
 
   [data-page-version="crea-configurator-v2"] .crea-meta {
@@ -959,6 +961,7 @@ button[style*="#c47a2c"] {
   [data-page-version="crea-configurator-v2"] .crea-section-title {
     font-size: 16px !important;
     margin-bottom: 8px !important;
+    color: #f5a623 !important;
   }
 
   [data-page-version="crea-configurator-v2"] .crea-list-item {
@@ -970,6 +973,14 @@ button[style*="#c47a2c"] {
     font-size: 14px;
     line-height: 1.55;
     margin-bottom: 8px !important;
+  }
+
+  [data-page-version="crea-configurator-v2"] .crea-description {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 5;
+    line-clamp: 5;
+    overflow: hidden;
   }
 
   [data-page-version="crea-configurator-v2"] .crea-notes {
@@ -1075,6 +1086,7 @@ button[style*="#c47a2c"] {
 
   [data-page-version="crea-configurator-v2"] .crea-title {
     font-size: clamp(1.6rem, 8vw, 2rem) !important;
+    color: #f5a623 !important;
   }
 
   [data-page-version="crea-configurator-v2"] .crea-panel {
@@ -1091,10 +1103,12 @@ button[style*="#c47a2c"] {
 
   [data-page-version="crea-configurator-v2"] .crea-card-title {
     font-size: 1.45rem !important;
+    color: #f5a623 !important;
   }
 
   [data-page-version="crea-configurator-v2"] .crea-section-title {
     font-size: 15px !important;
+    color: #f5a623 !important;
   }
 
   [data-page-version="crea-configurator-v2"] .crea-body,
@@ -1105,6 +1119,11 @@ button[style*="#c47a2c"] {
 
   [data-page-version="crea-configurator-v2"] .crea-note-chip {
     font-size: 11px !important;
+  }
+
+  [data-page-version="crea-configurator-v2"] .crea-description {
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
   }
 
   .drink-detail-layout {
