@@ -1221,17 +1221,3 @@ body:has(.crea-page) {
   background-attachment: fixed;
   background-repeat: no-repeat;
 }
-
-body:has(.crea-page)::before {
-  content: "";
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.55);
-  z-index: 0;
-  pointer-events: none;
-}
-
-body:has(.crea-page) #root {
-  position: relative;
-  z-index: 1;
-}
