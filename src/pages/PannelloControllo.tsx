@@ -794,9 +794,10 @@ export default function PannelloControllo() {
   async function handleLocaleImageUpload(file: File) {
     if (!file) return;
     setUploadingLocaleImage(true);
-    const fileName = `locale-img-${Date.now()}-${file.name}`;
-    const { error } = await supabase.storage.from("drink-images").upload(fileName, file);
-    if (error) { alert("Errore upload immagine"); setUploadingLocaleImage(false); return; }
+    const ext = file.name.split(".").pop();
+    const fileName = `locale-img-${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from("drink-images").upload(fileName, file, { upsert: true, contentType: file.type || "image/jpeg" });
+    if (error) { alert("Errore upload immagine: " + error.message); setUploadingLocaleImage(false); return; }
     const { data } = supabase.storage.from("drink-images").getPublicUrl(fileName);
     setSelectedItem((prev: any) => ({ ...prev, image_url: data.publicUrl }));
     setSaveStatus(null);
@@ -806,9 +807,10 @@ export default function PannelloControllo() {
   async function handleLocaleVideoUpload(file: File) {
     if (!file) return;
     setUploadingLocaleVideo(true);
-    const fileName = `locale-vid-${Date.now()}-${file.name}`;
-    const { error } = await supabase.storage.from("drink-images").upload(fileName, file);
-    if (error) { alert("Errore upload video"); setUploadingLocaleVideo(false); return; }
+    const ext = file.name.split(".").pop();
+    const fileName = `locale-vid-${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from("drink-images").upload(fileName, file, { upsert: true, contentType: file.type || "video/mp4" });
+    if (error) { alert("Errore upload video: " + error.message); setUploadingLocaleVideo(false); return; }
     const { data } = supabase.storage.from("drink-images").getPublicUrl(fileName);
     setSelectedItem((prev: any) => ({ ...prev, video_url: data.publicUrl }));
     setSaveStatus(null);
