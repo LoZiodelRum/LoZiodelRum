@@ -719,7 +719,7 @@ export default function PannelloControllo() {
       "Tostato",
       "Neutro",
     ],
-    stile_consumo: [
+    Genere: [
       "Sour",
       "Highball",
       "Stirred (miscelati)",

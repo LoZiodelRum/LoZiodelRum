@@ -5,7 +5,7 @@ export type CocktailPreferences = {
   intensita_alcolica?: string;
   profilo_gustativo?: string;
   famiglia_aromatica?: string;
-  stile_consumo?: string;
+  Genere?: string;
   texture?: string;
 };
 
@@ -33,7 +33,7 @@ type CatalogCocktail = {
   intensita_alcolica?: string;
   profilo_gustativo?: string;
   famiglia_aromatica?: string;
-  stile_consumo?: string;
+  Genere?: string;
   texture?: string;
   description?: string;
   technique?: string;
@@ -60,7 +60,7 @@ const preferenceKeys: Array<keyof CocktailPreferences> = [
   "intensita_alcolica",
   "profilo_gustativo",
   "famiglia_aromatica",
-  "stile_consumo",
+  "Genere",
   "texture",
 ];
 
@@ -69,10 +69,10 @@ const autoBaseRules: Array<{
   values: string[];
   suggestions: string[];
 }> = [
-  { keys: ["stile_consumo", "famiglia_aromatica"], values: ["Frozen", "Fruttato"], suggestions: ["Rum"] },
+  { keys: ["Genere", "famiglia_aromatica"], values: ["Frozen", "Fruttato"], suggestions: ["Rum"] },
   { keys: ["intensita_alcolica", "profilo_gustativo"], values: ["Molto alta", "Secco"], suggestions: ["Whisky"] },
-  { keys: ["stile_consumo", "profilo_gustativo"], values: ["Highball", "Fresco"], suggestions: ["Gin"] },
-  { keys: ["stile_consumo", "profilo_gustativo"], values: ["Stirred (miscelati)", "Dolce"], suggestions: ["Brandy"] },
+  { keys: ["Genere", "profilo_gustativo"], values: ["Highball", "Fresco"], suggestions: ["Gin"] },
+  { keys: ["Genere", "profilo_gustativo"], values: ["Stirred (miscelati)", "Dolce"], suggestions: ["Brandy"] },
   { keys: ["intensita_alcolica", "texture"], values: ["Bassa", "Leggera"], suggestions: ["Analcolico"] },
 ];
 
@@ -197,7 +197,7 @@ function normalizeCatalogRecord(record: Record<string, any>): CatalogCocktail {
     intensita_alcolica: record.intensita_alcolica,
     profilo_gustativo: record.profilo_gustativo,
     famiglia_aromatica: record.famiglia_aromatica || record.profilo_aromatico,
-    stile_consumo: record.stile_consumo,
+    Genere: record.Genere,
     texture: record.texture,
     description: record.description || record.descrizione,
     technique: record.technique || record.tecnica,
@@ -328,7 +328,7 @@ export function filterCocktails(catalog: CatalogCocktail[], preferences: Cocktai
 }
 
 function defaultTechnique(preferences: CocktailPreferences) {
-  const stile = normalizeText(preferences.stile_consumo);
+  const stile = normalizeText(preferences.Genere);
   if (stile.includes("highball") || stile.includes("pestati")) return "build";
   if (stile.includes("frozen")) return "blend";
   if (stile.includes("sour")) return "shake";
@@ -336,7 +336,7 @@ function defaultTechnique(preferences: CocktailPreferences) {
 }
 
 function defaultGlass(preferences: CocktailPreferences, baseSpirit: string) {
-  const style = normalizeText(preferences.stile_consumo);
+  const style = normalizeText(preferences.Genere);
   if (style.includes("pestati")) return "old fashioned";
   if (style.includes("stirred") || style.includes("miscelati") || normalizeText(baseSpirit).includes("gin")) return "coupette";
   return "highball";
@@ -373,7 +373,7 @@ function buildGeneratedRecipe(baseSpirit: string, preferences: CocktailPreferenc
   const isStrong = intensita.some((value) => value.includes("alta"));
   const isSweet = gusto.some((value) => value.includes("dolce") || value.includes("agrodolce"));
   const isBitter = gusto.some((value) => value.includes("amaro") || value.includes("secco"));
-  const normalizedStyle = normalizeText(preferences.stile_consumo);
+  const normalizedStyle = normalizeText(preferences.Genere);
   const isSparkling = normalizedStyle.includes("highball") || gusto.some((value) => value.includes("fresco") || value.includes("acido"));
   const isSourStyle = normalizedStyle.includes("sour");
 
@@ -458,7 +458,7 @@ function defaultFlavorBySpirit(baseSpirit: string) {
 }
 
 function defaultMoment(preferences: CocktailPreferences) {
-  const style = normalizeText(preferences.stile_consumo);
+  const style = normalizeText(preferences.Genere);
   if (style.includes("frozen")) return "in servizio estivo e rilassato";
   if (style.includes("highball") || style.includes("pestati")) return "in servizio rapido e fresco";
   if (style.includes("sour")) return "in aperitivo o pre-cena";
@@ -467,7 +467,7 @@ function defaultMoment(preferences: CocktailPreferences) {
 
 function explainBalance(baseSpirit: string, preferences: CocktailPreferences) {
   const taste = getPreferenceTokens(preferences.profilo_gustativo)[0] || "equilibrato";
-  const style = normalizeText(preferences.stile_consumo) || "contemporaneo";
+  const style = normalizeText(preferences.Genere) || "contemporaneo";
   return `Bilanciamento costruito con base alcolica tra 45 e 55 ml, parte acida intorno ai 15-20 ml e supporto dolce tra 12 e 18 ml. Il risultato mantiene una bevuta ${style} e un profilo ${taste}, senza perdere bevibilita e definizione aromatica.`;
 }
 

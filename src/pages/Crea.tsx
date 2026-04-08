@@ -49,7 +49,7 @@ export default function Crea() {
       p_profilo: preferences.profilo_gustativo || null,
       p_intensita: preferences.intensita_alcolica || null,
       p_famiglia: preferences.famiglia_aromatica || null,
-      p_metodo: preferences.stile_consumo || null,
+      p_metodo: preferences.Genere || null,
       p_texture: preferences.texture || null,
     };
 
@@ -71,7 +71,7 @@ export default function Crea() {
     if (names.length > 0) {
       const { data: detailRows } = await supabase
         .from("cocktail")
-        .select("nome, base_alcolica, profilo_gustativo, intensita_alcolica, famiglia_aromatica, stile_consumo, texture")
+        .select("nome, base_alcolica, profilo_gustativo, intensita_alcolica, famiglia_aromatica, Genere, texture")
         .in("nome", names);
 
       detailsByName = (detailRows || []).reduce((acc: Record<string, any>, row: any) => {
@@ -118,7 +118,7 @@ export default function Crea() {
       { label: "Profilo", filter: filters.p_profilo, db: cocktail?.profilo_gustativo },
       { label: "Intensita", filter: filters.p_intensita, db: cocktail?.intensita_alcolica },
       { label: "Famiglia", filter: filters.p_famiglia, db: cocktail?.famiglia_aromatica },
-      { label: "Genere", filter: filters.p_metodo, db: cocktail?.stile_consumo },
+      { label: "Genere", filter: filters.p_metodo, db: cocktail?.Genere },
       { label: "Texture", filter: filters.p_texture, db: cocktail?.texture },
     ];
 
@@ -279,7 +279,7 @@ export default function Crea() {
         intensita_alcolica: serializePreferenceValue(preferences.intensita_alcolica),
         profilo_gustativo: serializePreferenceValue(preferences.profilo_gustativo),
         famiglia_aromatica: serializePreferenceValue(preferences.famiglia_aromatica),
-        stile_consumo: preferences.stile_consumo || null,
+        Genere: preferences.Genere || null,
         texture: preferences.texture || null,
         created_at: nowIso,
       },
@@ -498,7 +498,7 @@ const preferenceFields: Array<{
   { key: "intensita_alcolica", label: "Intensita alcolica", options: ["Bassa", "Media", "Alta", "Molto alta"] },
   { key: "profilo_gustativo", label: "Profilo gustativo", options: ["Dolce", "Secco", "Amaro", "Agrodolce", "Acido", "Fresco"] },
   { key: "famiglia_aromatica", label: "Famiglia aromatica", options: ["Agrumato", "Fruttato", "Speziato", "Erbaceo", "Floreale", "Tostato", "Neutro"] },
-  { key: "stile_consumo", label: "Genere", options: ["Sour", "Highball", "Stirred (miscelati)", "Pestati", "Frozen"] },
+  { key: "Genere", label: "Genere", options: ["Sour", "Highball", "Stirred (miscelati)", "Pestati", "Frozen"] },
   { key: "texture", label: "Texture", options: ["Liscia", "Frizzante", "Cremosa", "Densa", "Leggera"] },
 ];
 
