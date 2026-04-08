@@ -331,7 +331,7 @@ function defaultTechnique(preferences: CocktailPreferences) {
   const stile = normalizeText(preferences.Genere);
   if (stile.includes("highball") || stile.includes("pestati")) return "build";
   if (stile.includes("frozen")) return "blend";
-  if (stile.includes("shakerato")) return "shake";
+  if (stile.includes("shakerato") || stile.includes("agitato")) return "shake";
   if (stile.includes("layered") || stile.includes("strati")) return "layer";
   if (stile.includes("sour")) return "shake";
   return "stir";
@@ -340,7 +340,7 @@ function defaultTechnique(preferences: CocktailPreferences) {
 function defaultGlass(preferences: CocktailPreferences, baseSpirit: string) {
   const style = normalizeText(preferences.Genere);
   if (style.includes("pestati")) return "old fashioned";
-  if (style.includes("shakerato")) return "coupette";
+  if (style.includes("shakerato") || style.includes("agitato")) return "coupette";
   if (style.includes("stirred") || style.includes("miscelati") || normalizeText(baseSpirit).includes("gin")) return "coupette";
   return "highball";
 }

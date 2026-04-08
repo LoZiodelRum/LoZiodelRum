@@ -729,6 +729,7 @@ export default function PannelloControllo() {
       "Pestati",
       "Frozen",
       "Shakerato",
+      "Agitato",
       "A strati (Layered)",
     ],
     texture: [
