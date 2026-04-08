@@ -183,6 +183,7 @@ export default function Crea() {
       "Vino":                         { modifier: "Liquore all'arancia",       sour: "Succo di limone",    sweet: "Miele chiaro" },
       "Birra":                        { modifier: "Amaro gentile",            sour: "Succo di limone",    sweet: "Sciroppo di malto" },
       "Analcolico":                   { modifier: "Ginger beer artigianale",  sour: "Succo di lime",      sweet: "Sciroppo di zenzero" },
+      "Bitter":                       { modifier: "Vermouth rosso",           sour: "Succo di pompelmo",  sweet: "Sciroppo di cardamomo" },
       "Mix":                          { modifier: "Vermouth dry",             sour: "Succo di limone",    sweet: "Sciroppo semplice" },
     };
 
@@ -502,7 +503,7 @@ const preferenceFields: Array<{
   label: string;
   options: string[];
 }> = [
-  { key: "base_alcolica", label: "Base alcolica", options: ["Rum", "Gin", "Vodka", "Whisky", "Tequila", "Mezcal", "Brandy", "Cognac", "Aperitivo bitter", "Vermouth", "Vermouth rosso", "Sherry", "Liquore", "Amaro", "Spumante/Champagne", "Vino", "Birra", "Analcolico", "Mix"] },
+  { key: "base_alcolica", label: "Base alcolica", options: ["Rum", "Gin", "Vodka", "Whisky", "Tequila", "Mezcal", "Brandy", "Cognac", "Aperitivo bitter", "Bitter", "Vermouth", "Vermouth rosso", "Sherry", "Liquore", "Amaro", "Spumante/Champagne", "Vino", "Birra", "Analcolico", "Mix"] },
   { key: "intensita_alcolica", label: "Intensita alcolica", options: ["Bassa", "Media", "Alta", "Molto alta"] },
   { key: "profilo_gustativo", label: "Profilo gustativo", options: ["Dolce", "Secco", "Amaro", "Agrodolce", "Acido", "Fresco"] },
   { key: "famiglia_aromatica", label: "Famiglia aromatica", options: ["Agrumato", "Fruttato", "Speziato", "Erbaceo", "Floreale", "Tostato", "Neutro"] },

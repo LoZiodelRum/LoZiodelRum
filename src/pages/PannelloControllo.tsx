@@ -687,6 +687,7 @@ export default function PannelloControllo() {
       "Brandy",
       "Cognac",
       "Aperitivo bitter",
+      "Bitter",
       "Vermouth",
       "Vermouth rosso",
       "Sherry",

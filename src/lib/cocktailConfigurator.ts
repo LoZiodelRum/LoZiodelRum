@@ -354,6 +354,7 @@ function resolveProfileKey(baseSpirit: string) {
   const normalized = normalizeText(baseSpirit);
   if (normalized === "cognac") return "brandy";
   if (normalized === "aperitivo bitter (campari, aperol)" || normalized === "aperitivo bitter") return "gin";
+  if (normalized === "bitter") return "gin";
   if (normalized === "liquore (generico)" || normalized === "liquore") return "vodka";
   if (normalized === "vermouth") return "gin";
   if (normalized === "vermouth rosso") return "whisky";
