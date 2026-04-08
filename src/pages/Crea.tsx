@@ -80,40 +80,105 @@ export default function Crea() {
     const generated = generateSignatureCocktails(filters);
 
     setSuggestions([
-      ...databaseCocktails,
-      ...generated
+      ...generated,
+      ...databaseCocktails
     ]);
 
     setLoading(false);
   }
 
   function generateSignatureCocktails(filters: any): SuggestedCocktail[] {
-    return [1, 2].map((i) => ({
-      name: `Zio Signature ${i}`,
+    const base = filters.p_base || "Mix";
+    const famiglia = filters.p_famiglia || "Neutro";
+    const profilo = filters.p_profilo || "equilibrato";
+    const intensita = filters.p_intensita || "Media";
+    const metodo = filters.p_metodo || "On the rocks";
+    const texture = filters.p_texture || "Liscia";
+
+    const spiritMap: Record<string, { modifier: string; sour: string; sweet: string }> = {
+      "Rum":          { modifier: "Falernum",              sour: "Succo di lime",       sweet: "Sciroppo di canna" },
+      "Gin":          { modifier: "Aperol",                sour: "Succo di limone",     sweet: "Sciroppo di sambuco" },
+      "Vodka":        { modifier: "Liquore al litchi",     sour: "Succo di lime",       sweet: "Sciroppo di rose" },
+      "Whisky":       { modifier: "Benedictine",           sour: "Succo di limone",     sweet: "Miele di acacia" },
+      "Tequila":      { modifier: "Triple Sec",            sour: "Succo di lime",       sweet: "Sciroppo di agave" },
+      "Brandy/Cognac":{ modifier: "Grand Marnier",         sour: "Succo di limone",     sweet: "Sciroppo di zucchero" },
+      "Aperitivo":    { modifier: "Prosecco",              sour: "Succo di pompelmo",   sweet: "Sciroppo di cardamomo" },
+      "Liquore":      { modifier: "Crème de cacao white",  sour: "Succo di lime",       sweet: "Sciroppo alla vaniglia" },
+      "Analcolico":   { modifier: "Ginger beer artigianale", sour: "Succo di lime",     sweet: "Sciroppo di zenzero" },
+      "Mix":          { modifier: "Vermouth dry",          sour: "Succo di limone",     sweet: "Sciroppo semplice" },
+    };
+
+    const familyMap: Record<string, string> = {
+      "Agrumato":  "Cordial al bergamotto",
+      "Fruttato":  "Purea di frutto della passione",
+      "Speziato":  "Tintura di pepe lungo",
+      "Erbaceo":   "Infusione di timo fresco",
+      "Floreale":  "Acqua di fiori d'arancio",
+      "Tostato":   "Cold brew concentrate",
+      "Neutro":    "Bitter aromatico",
+    };
+
+    const garnishMap: Record<string, string> = {
+      "Agrumato": "Twist di limone",
+      "Fruttato": "Fetta di frutto della passione",
+      "Speziato": "Pepe di Sichuan macinato al momento",
+      "Erbaceo":  "Rametto di timo fresco",
+      "Floreale": "Fiore edule",
+      "Tostato":  "Cacao amaro grattugiato",
+      "Neutro":   "Scorza d'arancia",
+    };
+
+    const sp = spiritMap[base] || spiritMap["Mix"];
+    const familyIng = familyMap[famiglia] || "Bitter aromatico";
+    const garnish1 = garnishMap[famiglia] || "Scorza d'arancia";
+
+    const technique1 = intensita === "Molto alta" || metodo === "Straight up"
+      ? "Stir & strain"
+      : "Shake & double strain";
+    const glass1 = metodo === "Highball" ? "Highball" :
+      metodo === "Straight up" ? "Nick & Nora" :
+      metodo === "Frozen" ? "Frozen cup" : "Coppetta";
+
+    const technique2 = texture === "Cremosa" ? "Dry shake + wet shake" :
+      texture === "Frizzante" ? "Build in glass" : "Stir & fat-wash";
+    const glass2 = metodo === "On the rocks" ? "Old Fashioned" :
+      metodo === "Highball" ? "Collins" : "Calice da vino";
+    const ingExtra2 = texture === "Cremosa" ? "Albume d'uovo" :
+      texture === "Frizzante" ? "Soda seltz" : "Olio di oliva extra vergine infuso";
+    const garnish2 = famiglia === "Tostato" ? "Cacao amaro e scorza d'arancia" :
+      famiglia === "Erbaceo" ? "Rosmarino bruciato" : "Fiocco di sale marino";
+
+    const sig1: SuggestedCocktail = {
+      name: "Zio Signature 1",
       source: "generated" as const,
       matchScore: 0,
-      base_spirit: filters.p_base || "Mix",
-      technique: "Shake & strain",
-      glass: "Coppetta",
-      ingredients: [
-        filters.p_base || "Distillato base",
-        "Agrume fresco",
-        "Componente dolce",
-        "Modifier aromatico"
-      ],
-      doses: ["45ml", "20ml", "15ml", "5ml"],
-      garnish: "Scorza agrume",
-      description: `Cocktail costruito su base ${filters.p_base || "alcolica"}.
-Profilo gustativo ${filters.p_profilo || "equilibrato"}.
-Intensità ${filters.p_intensita || "media"}.
-Famiglia aromatica ${filters.p_famiglia || "dominante"}.
-Metodo ${filters.p_metodo || "classico"} con texture ${filters.p_texture || "liscia"}.`,
-      tasting_notes: [
-        filters.p_famiglia || "aromatico",
-        filters.p_texture || "strutturato"
-      ],
-      balance_explanation: "Equilibrio tra componente alcolica, acida e dolce"
-    }));
+      base_spirit: base,
+      technique: technique1,
+      glass: glass1,
+      ingredients: [base, sp.sour, sp.sweet, familyIng],
+      doses: ["50ml", "25ml", "15ml", "5ml"],
+      garnish: garnish1,
+      description: `Signature classica costruita su ${base} come asse portante. La componente acida di ${sp.sour} bilancia la dolcezza di ${sp.sweet}, mentre ${familyIng} aggiunge complessità aromatica ${famiglia.toLowerCase()}. Profilo ${profilo.toLowerCase()}, intensità ${intensita.toLowerCase()}, texture ${texture.toLowerCase()}.`,
+      tasting_notes: [profilo, famiglia, `${intensita} intensity`],
+      balance_explanation: `Struttura sour: ${base} / ${sp.sour} / ${sp.sweet} in rapporto 2:1:0.6. ${familyIng} opera da accent modifier senza coprire la base.`,
+    };
+
+    const sig2: SuggestedCocktail = {
+      name: "Zio Signature 2",
+      source: "generated" as const,
+      matchScore: 0,
+      base_spirit: base,
+      technique: technique2,
+      glass: glass2,
+      ingredients: [base, sp.modifier, familyIng, ingExtra2],
+      doses: ["45ml", "20ml", "10ml", "5ml"],
+      garnish: garnish2,
+      description: `Reinterpretazione moderna con ${base} in chiave ${metodo === "Straight up" ? "spirit-forward" : "texturale"}. ${sp.modifier} apporta complessità e lunghezza palatale. ${familyIng} definisce il carattere aromatico ${famiglia.toLowerCase()}. La tecnica ${technique2.toLowerCase()} lavora la texture verso un risultato ${texture.toLowerCase()}.`,
+      tasting_notes: [sp.modifier.split(" ")[0], famiglia, `${texture} finish`],
+      balance_explanation: `Architettura spirit-forward: la dolcezza di ${sp.modifier} contrasta con la complessità aromatica di ${familyIng}. Finish ${texture.toLowerCase()} persistente.`,
+    };
+
+    return [sig1, sig2];
   }
 
   function toggleGeneratedForm(name: string) {
