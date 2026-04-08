@@ -388,7 +388,7 @@ const preferenceFields: Array<{
   multi?: boolean;
 }> = [
   { key: "base_alcolica", label: "Base alcolica", options: ["rum", "rum scuro", "gin", "vodka", "whisky", "brandy", "tequila", "mezcal"] },
-  { key: "intensita_alcolica", label: "Intensita alcolica", multi: true, options: ["Bassa (session drink)", "Medio-bassa", "Media", "Medio-alta", "Alta", "Spirit forward (molto alcolico, dominante)"] },
+  { key: "intensita_alcolica", label: "Intensita alcolica", multi: true, options: ["Bassa", "Medio-bassa", "Media", "Medio-alta", "Alta"] },
   { key: "profilo_gustativo", label: "Profilo gustativo", multi: true, options: ["Dolce", "Acidulo / fresco", "Amaro", "Secco", "Umami / sapido", "Equilibrato"] },
   { key: "profilo_aromatico", label: "Famiglia aromatica", multi: true, options: ["Fruttato", "Agrumato", "Floreale", "Erbaceo / botanico", "Speziato", "Tostato / legnoso"] },
   { key: "stile_consumo", label: "Stile consumo", options: ["aperitivo", "after dinner", "highball", "tiki", "signature", "day drinking"] },
@@ -486,6 +486,8 @@ const multiSelectMenuStyle: React.CSSProperties = {
   gap: 6,
   zIndex: 20,
   boxShadow: "0 18px 42px rgba(2, 6, 23, 0.55)",
+  boxSizing: "border-box",
+  overflow: "hidden",
 };
 
 const multiSelectOptionStyle: React.CSSProperties = {
