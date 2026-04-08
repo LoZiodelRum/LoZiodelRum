@@ -256,7 +256,7 @@ export default function Crea() {
                   ))}
                 </select>
               )}
-              {field.multi && <span style={helperTextStyle}>Puoi selezionare piu valori dal menu a tendina.</span>}
+
             </div>
           ))}
         </div>
@@ -421,7 +421,7 @@ const panelStyle: React.CSSProperties = {
 
 const gridStyle: React.CSSProperties = {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+  gridTemplateColumns: "repeat(3, 1fr)",
   gap: 14,
 };
 
@@ -448,6 +448,7 @@ const multiSelectWrapperStyle: React.CSSProperties = {
 
 const multiSelectTriggerStyle: React.CSSProperties = {
   width: "100%",
+  height: 50,
   background: "#020617",
   border: "1px solid #334155",
   color: "#f8fafc",
@@ -500,6 +501,7 @@ const multiSelectOptionStyle: React.CSSProperties = {
 
 const selectStyle: React.CSSProperties = {
   width: "100%",
+  height: 50,
   background: "#020617",
   border: "1px solid #334155",
   color: "#f8fafc",
