@@ -33,6 +33,8 @@ export default function PannelloControllo() {
   });
 
   const [saveStatus, setSaveStatus] = useState<"ok" | "error" | null>(null);
+  const [uploadingLocaleImage, setUploadingLocaleImage] = useState(false);
+  const [uploadingLocaleVideo, setUploadingLocaleVideo] = useState(false);
 
   useEffect(() => {
     if (!loading && isAdmin) {
@@ -789,6 +791,30 @@ export default function PannelloControllo() {
     return normalizedItem;
   }
 
+  async function handleLocaleImageUpload(file: File) {
+    if (!file) return;
+    setUploadingLocaleImage(true);
+    const fileName = `locale-img-${Date.now()}-${file.name}`;
+    const { error } = await supabase.storage.from("drink-images").upload(fileName, file);
+    if (error) { alert("Errore upload immagine"); setUploadingLocaleImage(false); return; }
+    const { data } = supabase.storage.from("drink-images").getPublicUrl(fileName);
+    setSelectedItem((prev: any) => ({ ...prev, image_url: data.publicUrl }));
+    setSaveStatus(null);
+    setUploadingLocaleImage(false);
+  }
+
+  async function handleLocaleVideoUpload(file: File) {
+    if (!file) return;
+    setUploadingLocaleVideo(true);
+    const fileName = `locale-vid-${Date.now()}-${file.name}`;
+    const { error } = await supabase.storage.from("drink-images").upload(fileName, file);
+    if (error) { alert("Errore upload video"); setUploadingLocaleVideo(false); return; }
+    const { data } = supabase.storage.from("drink-images").getPublicUrl(fileName);
+    setSelectedItem((prev: any) => ({ ...prev, video_url: data.publicUrl }));
+    setSaveStatus(null);
+    setUploadingLocaleVideo(false);
+  }
+
   function openFirstEditor(table: string, data: any[]) {
     if (!Array.isArray(data) || data.length === 0) return;
 
@@ -1266,6 +1292,41 @@ export default function PannelloControllo() {
                 )
               )}
             </div>
+
+            {selectedTable === "Locali" && (
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 15, marginBottom: 16 }}>
+                <div style={fieldStyle}>
+                  <label style={labelStyle}>Carica immagine locale</label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    style={{ ...inputStyle, cursor: "pointer" }}
+                    disabled={uploadingLocaleImage}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleLocaleImageUpload(file);
+                    }}
+                  />
+                  {uploadingLocaleImage && <span style={{ fontSize: 12, color: "#94a3b8", marginTop: 4 }}>Caricamento...</span>}
+                  {selectedItem?.image_url && <span style={{ fontSize: 11, color: "#4ade80", marginTop: 4, wordBreak: "break-all" }}>✓ {selectedItem.image_url}</span>}
+                </div>
+                <div style={fieldStyle}>
+                  <label style={labelStyle}>Carica video locale</label>
+                  <input
+                    type="file"
+                    accept="video/*"
+                    style={{ ...inputStyle, cursor: "pointer" }}
+                    disabled={uploadingLocaleVideo}
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) handleLocaleVideoUpload(file);
+                    }}
+                  />
+                  {uploadingLocaleVideo && <span style={{ fontSize: 12, color: "#94a3b8", marginTop: 4 }}>Caricamento...</span>}
+                  {selectedItem?.video_url && <span style={{ fontSize: 11, color: "#4ade80", marginTop: 4, wordBreak: "break-all" }}>✓ {selectedItem.video_url}</span>}
+                </div>
+              </div>
+            )}
 
             <div style={buttonRowStyle}>
               <button style={btnSaveStyle} onClick={salvaModifiche}>
