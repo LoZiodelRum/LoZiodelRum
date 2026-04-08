@@ -888,6 +888,7 @@ button[style*="#c47a2c"] {
 
   [data-page-version="crea-configurator-v2"] .crea-label {
     font-size: 13px !important;
+    color: #f5a623 !important;
   }
 
   [data-page-version="crea-configurator-v2"] .crea-select {
