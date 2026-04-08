@@ -1023,7 +1023,7 @@ export default function PannelloControllo() {
 
             <div style={formGridStyle}>
               {Object.keys(selectedItem).map(key =>
-                key !== "id" && (
+                key !== "id" && !(selectedTable === "cocktail" && (key === "data_creazione" || key === "created_at")) && (
                   <div
                     key={key}
                     style={
