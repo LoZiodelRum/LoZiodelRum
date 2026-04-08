@@ -118,9 +118,30 @@ export default function Drink() {
       setWhisky(whiskyFinal);
       setAltri(altriFinal);
     } else {
-      setRum([]);
-      setWhisky([]);
-      setAltri([]);
+      const containsAny = (text: string, words: string[]) => words.some((word) => text.includes(word));
+      const rumWords = ["rum", "rhum", "ron", "cachaca"];
+      const whiskyWords = ["whisky", "whiskey", "scotch", "bourbon", "rye", "single malt"];
+
+      const cocktailFallback: Distillato[] = (cocktailData || [])
+        .map((c: any) => {
+          const categoryText = `${normalize(c.base_alcolica)} ${normalize(c.nome)}`.trim();
+          return {
+            id: c.id,
+            nome: c.nome || c.name || "Drink",
+            marca: "",
+            categoria: categoryText,
+            immagine: getImage(c),
+          };
+        })
+        .sort((a: Distillato, b: Distillato) => a.nome.localeCompare(b.nome));
+
+      setRum(cocktailFallback.filter((d) => containsAny(d.categoria, rumWords)).slice(0, 6));
+      setWhisky(cocktailFallback.filter((d) => containsAny(d.categoria, whiskyWords)).slice(0, 6));
+      setAltri(
+        cocktailFallback
+          .filter((d) => d.categoria.length > 0 && !containsAny(d.categoria, rumWords) && !containsAny(d.categoria, whiskyWords))
+          .slice(0, 6)
+      );
     }
 
     setLoading(false);
