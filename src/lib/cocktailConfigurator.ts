@@ -353,6 +353,8 @@ function resolveProfileKey(baseSpirit: string) {
   if (normalized === "aperitivo bitter (campari, aperol)") return "gin";
   if (normalized === "liquore (generico)") return "vodka";
   if (normalized === "vermouth") return "gin";
+  if (normalized === "vermouth rosso") return "whisky";
+  if (normalized === "sherry") return "whisky";
   if (normalized === "amaro") return "whisky";
   if (normalized === "spumante/champagne") return "gin";
   if (normalized === "vino") return "gin";

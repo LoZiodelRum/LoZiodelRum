@@ -688,6 +688,8 @@ export default function PannelloControllo() {
       "Cognac",
       "Aperitivo bitter (Campari, Aperol)",
       "Vermouth",
+      "Vermouth rosso",
+      "Sherry",
       "Liquore (generico)",
       "Amaro",
       "Spumante/Champagne",
