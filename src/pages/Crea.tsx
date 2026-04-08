@@ -1,5 +1,5 @@
 import "../App.css";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import { supabase } from "../lib/supabaseClient";
@@ -16,90 +16,45 @@ export default function Crea() {
   const [suggestions, setSuggestions] = useState<SuggestedCocktail[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
-  const [openMultiSelects, setOpenMultiSelects] = useState<Record<string, boolean>>({});
   const [openGeneratedForms, setOpenGeneratedForms] = useState<Record<string, boolean>>({});
   const [savingNames, setSavingNames] = useState<Record<string, boolean>>({});
   const [savedNames, setSavedNames] = useState<Record<string, boolean>>({});
-
-  useEffect(() => {
-    let active = true;
-
-    async function loadSuggestions() {
-      const activePreferences = Object.values(preferences).filter((value) => {
-        if (Array.isArray(value)) return value.length > 0;
-        return String(value || "").trim().length > 0;
-      }).length;
-
-      if (activePreferences === 0) {
-        setSuggestions([]);
-        setError(null);
-        return;
-      }
-
-      if (activePreferences < 2) {
-        setSuggestions([]);
-        setError(null);
-        return;
-      }
-
-      setLoading(true);
-      setError(null);
-
-      const result = await getCocktailSuggestions(preferences);
-      if (!active) return;
-
-      if (result.error) {
-        setSuggestions([]);
-        setError(result.error);
-        setLoading(false);
-        return;
-      }
-
-      setSuggestions(result.cocktails);
-      setLoading(false);
-    }
-
-    void loadSuggestions();
-
-    return () => {
-      active = false;
-    };
-  }, [preferences]);
 
   function updatePreference(key: keyof CocktailPreferences, value: string) {
     setPreferences((prev) => ({ ...prev, [key]: value }));
   }
 
-  function updateMultiPreference(key: keyof CocktailPreferences, values: string[]) {
-    setPreferences((prev) => ({ ...prev, [key]: values }));
+  function serializePreferenceValue(value: string | undefined | null) {
+    return value || null;
   }
 
-  function toggleMultiSelect(key: keyof CocktailPreferences) {
-    setOpenMultiSelects((prev) => ({ ...prev, [key]: !prev[key] }));
+  function getActivePreferenceCount() {
+    return Object.values(preferences).filter((value) => String(value || "").trim().length > 0).length;
   }
 
-  function toggleMultiOption(key: keyof CocktailPreferences, option: string) {
-    const currentValues = Array.isArray(preferences[key]) ? preferences[key] as string[] : [];
-    const nextValues = currentValues.includes(option)
-      ? currentValues.filter((value) => value !== option)
-      : [...currentValues, option];
+  async function handleSearch() {
+    const activePreferences = getActivePreferenceCount();
 
-    updateMultiPreference(key, nextValues);
-  }
-
-  function getMultiSelectSummary(key: keyof CocktailPreferences) {
-    const values = Array.isArray(preferences[key]) ? preferences[key] as string[] : [];
-    if (!values.length) return "Scegli";
-    if (values.length <= 2) return values.join(", ");
-    return `${values.slice(0, 2).join(", ")} +${values.length - 2}`;
-  }
-
-  function serializePreferenceValue(value: string | string[] | undefined | null) {
-    if (Array.isArray(value)) {
-      return value.length ? value.join(", ") : null;
+    if (activePreferences < 2) {
+      setSuggestions([]);
+      setError("Seleziona almeno 2 preferenze");
+      return;
     }
 
-    return value || null;
+    setLoading(true);
+    setError(null);
+
+    const result = await getCocktailSuggestions(preferences);
+
+    if (result.error) {
+      setSuggestions([]);
+      setError(result.error);
+      setLoading(false);
+      return;
+    }
+
+    setSuggestions(result.cocktails);
+    setLoading(false);
   }
 
   function toggleGeneratedForm(name: string) {
@@ -122,9 +77,9 @@ export default function Crea() {
         base_alcolica: preferences.base_alcolica || cocktail.base_spirit,
         intensita_alcolica: serializePreferenceValue(preferences.intensita_alcolica),
         profilo_gustativo: serializePreferenceValue(preferences.profilo_gustativo),
-        profilo_aromatico: serializePreferenceValue(preferences.profilo_aromatico),
+        famiglia_aromatica: serializePreferenceValue(preferences.famiglia_aromatica),
         stile_consumo: preferences.stile_consumo || null,
-        carattere: preferences.carattere || null,
+        texture: preferences.texture || null,
         created_at: nowIso,
       },
       {
@@ -138,31 +93,8 @@ export default function Crea() {
       },
     ];
 
-    const englishPayloads = [
-      {
-        name: cocktail.name,
-        ingredients: cocktail.ingredients,
-        doses: cocktail.doses,
-        base_alcolica: preferences.base_alcolica || cocktail.base_spirit,
-        intensita_alcolica: serializePreferenceValue(preferences.intensita_alcolica),
-        profilo_gustativo: serializePreferenceValue(preferences.profilo_gustativo),
-        profilo_aromatico: serializePreferenceValue(preferences.profilo_aromatico),
-        stile_consumo: preferences.stile_consumo || null,
-        carattere: preferences.carattere || null,
-        description: cocktail.description,
-        technique: cocktail.technique,
-        glass: cocktail.glass,
-        garnish: cocktail.garnish,
-      },
-      {
-        name: cocktail.name,
-        description: cocktail.description,
-      },
-    ];
-
     const attempts: Array<{ table: string; payloads: Record<string, any>[] }> = [
       { table: "cocktail", payloads: italianPayloads },
-      { table: "cocktails", payloads: englishPayloads },
     ];
 
     let lastMessage = "Impossibile salvare il cocktail generato.";
@@ -212,51 +144,18 @@ export default function Crea() {
           {preferenceFields.map((field) => (
             <div key={field.key} style={fieldStyle}>
               <label style={labelStyle}>{field.label}</label>
-              {field.multi ? (
-                <div style={multiSelectWrapperStyle}>
-                  <button
-                    type="button"
-                    onClick={() => toggleMultiSelect(field.key)}
-                    style={multiSelectTriggerStyle}
-                  >
-                    <span style={multiSelectSummaryStyle}>{getMultiSelectSummary(field.key)}</span>
-                    <span style={multiSelectCaretStyle}>{openMultiSelects[field.key] ? "▲" : "▼"}</span>
-                  </button>
-
-                  {openMultiSelects[field.key] && (
-                    <div style={multiSelectMenuStyle}>
-                      {field.options.map((option) => {
-                        const selected = Array.isArray(preferences[field.key]) && (preferences[field.key] as string[]).includes(option);
-
-                        return (
-                          <label key={option} style={multiSelectOptionStyle}>
-                            <span>{option}</span>
-                            <input
-                              type="checkbox"
-                              checked={selected}
-                              onChange={() => toggleMultiOption(field.key, option)}
-                              style={{ flexShrink: 0, width: 16, height: 16, cursor: "pointer" }}
-                            />
-                          </label>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-              ) : (
-                <select
-                  value={typeof preferences[field.key] === "string" ? preferences[field.key] as string : ""}
-                  onChange={(event) => updatePreference(field.key, event.target.value)}
-                  style={selectStyle}
-                >
-                  <option value="">Scegli</option>
-                  {field.options.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
-              )}
+              <select
+                value={typeof preferences[field.key] === "string" ? preferences[field.key] as string : ""}
+                onChange={(event) => updatePreference(field.key, event.target.value)}
+                style={selectStyle}
+              >
+                <option value="">Scegli</option>
+                {field.options.map((option) => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+                ))}
+              </select>
 
             </div>
           ))}
@@ -265,6 +164,13 @@ export default function Crea() {
         {error && <div style={errorBoxStyle}>{error}</div>}
 
         <div style={actionsStyle}>
+          <button
+            className="btn-primary"
+            type="button"
+            onClick={() => void handleSearch()}
+          >
+            Trova cocktail
+          </button>
           <button
             className="btn-primary"
             type="button"
@@ -385,14 +291,13 @@ const preferenceFields: Array<{
   key: keyof CocktailPreferences;
   label: string;
   options: string[];
-  multi?: boolean;
 }> = [
-  { key: "base_alcolica", label: "Base alcolica", options: ["rum", "rum scuro", "gin", "vodka", "whisky", "brandy", "tequila", "mezcal"] },
-  { key: "intensita_alcolica", label: "Intensita alcolica", multi: true, options: ["Bassa", "Medio-bassa", "Media", "Medio-alta", "Alta"] },
-  { key: "profilo_gustativo", label: "Profilo gustativo", multi: true, options: ["Dolce", "Acidulo / fresco", "Amaro", "Secco", "Umami / sapido", "Equilibrato"] },
-  { key: "profilo_aromatico", label: "Famiglia aromatica", multi: true, options: ["Fruttato", "Agrumato", "Floreale", "Erbaceo / botanico", "Speziato", "Tostato / legnoso"] },
-  { key: "stile_consumo", label: "Stile consumo", options: ["aperitivo", "after dinner", "highball", "tiki", "signature", "day drinking"] },
-  { key: "carattere", label: "Carattere", options: ["elegante", "deciso", "esotico", "sperimentale", "meditativo", "funky"] },
+  { key: "base_alcolica", label: "Base alcolica", options: ["Rum", "Gin", "Vodka", "Whisky", "Tequila", "Brandy/Cognac", "Aperitivo", "Liquore", "Analcolico"] },
+  { key: "intensita_alcolica", label: "Intensita alcolica", options: ["Bassa", "Media", "Alta", "Molto alta"] },
+  { key: "profilo_gustativo", label: "Profilo gustativo", options: ["Dolce", "Secco", "Amaro", "Agrodolce", "Acido", "Fresco"] },
+  { key: "famiglia_aromatica", label: "Famiglia aromatica", options: ["Agrumato", "Fruttato", "Speziato", "Erbaceo", "Floreale", "Tostato", "Neutro"] },
+  { key: "stile_consumo", label: "Metodo di servizio", options: ["On the rocks", "Straight up", "Highball", "Frozen", "Warm/Hot"] },
+  { key: "texture", label: "Texture", options: ["Liscia", "Frizzante", "Cremosa", "Densa", "Leggera"] },
 ];
 
 const eyebrowStyle: React.CSSProperties = {
@@ -436,72 +341,6 @@ const labelStyle: React.CSSProperties = {
   color: "#e2e8f0",
   fontSize: 13,
   fontWeight: 600,
-};
-
-const helperTextStyle: React.CSSProperties = {
-  color: "#94a3b8",
-  fontSize: 12,
-};
-
-const multiSelectWrapperStyle: React.CSSProperties = {
-  position: "relative",
-};
-
-const multiSelectTriggerStyle: React.CSSProperties = {
-  width: "100%",
-  height: 50,
-  background: "#020617",
-  border: "1px solid #334155",
-  color: "#f8fafc",
-  borderRadius: 12,
-  padding: "12px 14px",
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  textAlign: "left",
-};
-
-const multiSelectSummaryStyle: React.CSSProperties = {
-  overflow: "hidden",
-  textOverflow: "ellipsis",
-  whiteSpace: "nowrap",
-  paddingRight: 12,
-};
-
-const multiSelectCaretStyle: React.CSSProperties = {
-  fontSize: 11,
-  color: "#94a3b8",
-};
-
-const multiSelectMenuStyle: React.CSSProperties = {
-  position: "absolute",
-  top: "calc(100% + 8px)",
-  left: 0,
-  right: 0,
-  background: "#0f172a",
-  border: "1px solid #334155",
-  borderRadius: 12,
-  padding: 10,
-  display: "grid",
-  gap: 6,
-  zIndex: 20,
-  boxShadow: "0 18px 42px rgba(2, 6, 23, 0.55)",
-  boxSizing: "border-box",
-  overflow: "hidden",
-};
-
-const multiSelectOptionStyle: React.CSSProperties = {
-  display: "flex",
-  alignItems: "center",
-  justifyContent: "space-between",
-  gap: 12,
-  padding: "8px 10px",
-  borderRadius: 10,
-  background: "#111827",
-  color: "#e2e8f0",
-  fontSize: 14,
-  whiteSpace: "nowrap",
-  cursor: "pointer",
 };
 
 const selectStyle: React.CSSProperties = {

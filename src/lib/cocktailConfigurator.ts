@@ -2,11 +2,11 @@ import { supabase } from "./supabaseClient";
 
 export type CocktailPreferences = {
   base_alcolica?: string;
-  intensita_alcolica?: string[];
-  profilo_gustativo?: string[];
-  profilo_aromatico?: string[];
+  intensita_alcolica?: string;
+  profilo_gustativo?: string;
+  famiglia_aromatica?: string;
   stile_consumo?: string;
-  carattere?: string;
+  texture?: string;
 };
 
 export type SuggestedCocktail = {
@@ -32,9 +32,9 @@ type CatalogCocktail = {
   base_alcolica?: string;
   intensita_alcolica?: string;
   profilo_gustativo?: string;
-  profilo_aromatico?: string;
+  famiglia_aromatica?: string;
   stile_consumo?: string;
-  carattere?: string;
+  texture?: string;
   description?: string;
   technique?: string;
   glass?: string;
@@ -59,9 +59,9 @@ const preferenceKeys: Array<keyof CocktailPreferences> = [
   "base_alcolica",
   "intensita_alcolica",
   "profilo_gustativo",
-  "profilo_aromatico",
+  "famiglia_aromatica",
   "stile_consumo",
-  "carattere",
+  "texture",
 ];
 
 const autoBaseRules: Array<{
@@ -69,11 +69,11 @@ const autoBaseRules: Array<{
   values: string[];
   suggestions: string[];
 }> = [
-  { keys: ["stile_consumo", "carattere", "profilo_aromatico"], values: ["tiki", "esotico", "tropicale"], suggestions: ["rum"] },
-  { keys: ["intensita_alcolica", "carattere"], values: ["strong", "bold", "strong & bold", "deciso"], suggestions: ["whisky", "rum scuro"] },
-  { keys: ["profilo_gustativo", "profilo_aromatico", "stile_consumo"], values: ["fresco", "agrumato", "refreshing", "day drinking"], suggestions: ["gin", "vodka"] },
-  { keys: ["stile_consumo", "carattere"], values: ["after dinner", "meditativo", "elegante"], suggestions: ["brandy", "whisky"] },
-  { keys: ["carattere", "profilo_aromatico"], values: ["sperimentale", "affumicato", "funky"], suggestions: ["tequila", "mezcal"] },
+  { keys: ["stile_consumo", "famiglia_aromatica"], values: ["Frozen", "Fruttato"], suggestions: ["Rum"] },
+  { keys: ["intensita_alcolica", "profilo_gustativo"], values: ["Molto alta", "Secco"], suggestions: ["Whisky"] },
+  { keys: ["stile_consumo", "profilo_gustativo"], values: ["Highball", "Fresco"], suggestions: ["Gin"] },
+  { keys: ["stile_consumo", "profilo_gustativo"], values: ["Warm/Hot", "Dolce"], suggestions: ["Brandy/Cognac"] },
+  { keys: ["intensita_alcolica", "texture"], values: ["Bassa", "Leggera"], suggestions: ["Analcolico"] },
 ];
 
 const spiritProfiles: Record<string, {
@@ -166,10 +166,6 @@ function normalizeText(value: unknown) {
 }
 
 function getPreferenceTokens(value: unknown): string[] {
-  if (Array.isArray(value)) {
-    return value.map((item) => normalizeText(item)).filter(Boolean);
-  }
-
   const normalized = normalizeText(value);
   return normalized ? [normalized] : [];
 }
@@ -200,9 +196,9 @@ function normalizeCatalogRecord(record: Record<string, any>): CatalogCocktail {
     base_alcolica: record.base_alcolica,
     intensita_alcolica: record.intensita_alcolica,
     profilo_gustativo: record.profilo_gustativo,
-    profilo_aromatico: record.profilo_aromatico,
+    famiglia_aromatica: record.famiglia_aromatica || record.profilo_aromatico,
     stile_consumo: record.stile_consumo,
-    carattere: record.carattere,
+    texture: record.texture,
     description: record.description || record.descrizione,
     technique: record.technique || record.tecnica,
     glass: record.glass || record.bicchiere,
@@ -234,7 +230,10 @@ export function determineBaseSpirit(preferences: CocktailPreferences): string {
   for (const rule of autoBaseRules) {
     const matched = rule.keys.some((key) => {
       const tokens = getPreferenceTokens(preferences[key]);
-      return rule.values.some((value) => tokens.some((token) => token.includes(value)));
+      return rule.values.some((value) => {
+        const normalizedValue = normalizeText(value);
+        return tokens.some((token) => token === normalizedValue);
+      });
     });
     if (matched) {
       return rule.suggestions[0];
@@ -242,29 +241,22 @@ export function determineBaseSpirit(preferences: CocktailPreferences): string {
   }
 
   const gusto = getPreferenceTokens(preferences.profilo_gustativo);
-  if (gusto.some((value) => value.includes("amaro") || value.includes("secco"))) return "whisky";
-  if (gusto.some((value) => value.includes("dolce") || value.includes("speziato"))) return "rum";
-  return "gin";
+  if (gusto.some((value) => value.includes("amaro") || value.includes("secco"))) return "Whisky";
+  if (gusto.some((value) => value.includes("dolce") || value.includes("agrodolce"))) return "Rum";
+  return "Gin";
 }
 
 export function scoreCocktails(cocktail: CatalogCocktail, preferences: CocktailPreferences) {
   let score = 0;
 
   for (const key of preferenceKeys) {
-    const wantedValues = getPreferenceTokens(preferences[key]);
+    const wanted = normalizeText(preferences[key]);
     const actual = normalizeText(cocktail[key]);
-    if (!wantedValues.length || !actual) continue;
+    if (!wanted || !actual) continue;
 
-    let fieldScore = 0;
-    for (const wanted of wantedValues) {
-      if (actual === wanted) {
-        fieldScore += key === "base_alcolica" ? 3 : 2;
-      } else if (actual.includes(wanted) || wanted.includes(actual)) {
-        fieldScore += key === "base_alcolica" ? 2 : 1;
-      }
+    if (actual === wanted) {
+      score += key === "base_alcolica" ? 4 : 3;
     }
-
-    score += key === "base_alcolica" ? Math.min(fieldScore, 4) : Math.min(fieldScore, 3);
   }
 
   if (!normalizeText(preferences.base_alcolica)) {
@@ -337,21 +329,30 @@ export function filterCocktails(catalog: CatalogCocktail[], preferences: Cocktai
 
 function defaultTechnique(preferences: CocktailPreferences) {
   const stile = normalizeText(preferences.stile_consumo);
-  if (stile.includes("highball") || stile.includes("aperitivo")) return "build";
-  if (stile.includes("tiki") || stile.includes("signature")) return "shake";
+  if (stile.includes("highball") || stile.includes("on the rocks")) return "build";
+  if (stile.includes("frozen")) return "blend";
   return "stir";
 }
 
 function defaultGlass(preferences: CocktailPreferences, baseSpirit: string) {
   const style = normalizeText(preferences.stile_consumo);
-  if (style.includes("after dinner") || style.includes("meditazione")) return "old fashioned";
-  if (style.includes("aperitivo") || normalizeText(baseSpirit).includes("gin")) return "coupette";
+  if (style.includes("on the rocks")) return "old fashioned";
+  if (style.includes("straight up") || normalizeText(baseSpirit).includes("gin")) return "coupette";
   return "highball";
 }
 
 function defaultGarnish(baseSpirit: string) {
-  const profile = spiritProfiles[normalizeText(baseSpirit)] || spiritProfiles.gin;
+  const profile = spiritProfiles[resolveProfileKey(baseSpirit)] || spiritProfiles.gin;
   return profile.garnishes[0];
+}
+
+function resolveProfileKey(baseSpirit: string) {
+  const normalized = normalizeText(baseSpirit);
+  if (normalized === "brandy/cognac") return "brandy";
+  if (normalized === "aperitivo") return "gin";
+  if (normalized === "liquore") return "vodka";
+  if (normalized === "analcolico") return "gin";
+  return normalized;
 }
 
 function pickByIndex(list: string[], index: number) {
@@ -359,13 +360,13 @@ function pickByIndex(list: string[], index: number) {
 }
 
 function buildGeneratedRecipe(baseSpirit: string, preferences: CocktailPreferences, variant: number) {
-  const profile = spiritProfiles[normalizeText(baseSpirit)] || spiritProfiles.gin;
+  const profile = spiritProfiles[resolveProfileKey(baseSpirit)] || spiritProfiles.gin;
   const intensita = getPreferenceTokens(preferences.intensita_alcolica);
   const gusto = getPreferenceTokens(preferences.profilo_gustativo);
-  const isStrong = intensita.some((value) => value.includes("alta") || value.includes("spirit") || value.includes("strong"));
-  const isSweet = gusto.some((value) => value.includes("dolce") || value.includes("equilibrato"));
+  const isStrong = intensita.some((value) => value.includes("alta"));
+  const isSweet = gusto.some((value) => value.includes("dolce") || value.includes("agrodolce"));
   const isBitter = gusto.some((value) => value.includes("amaro") || value.includes("secco"));
-  const isSparkling = normalizeText(preferences.stile_consumo).includes("highball") || gusto.some((value) => value.includes("fresco") || value.includes("acidulo"));
+  const isSparkling = normalizeText(preferences.stile_consumo).includes("highball") || gusto.some((value) => value.includes("fresco") || value.includes("acido"));
 
   const baseMl = isStrong ? 55 : 45 + variant * 5;
   const acidMl = isBitter ? 15 : 20;
@@ -404,10 +405,10 @@ function buildGeneratedRecipe(baseSpirit: string, preferences: CocktailPreferenc
 
 function buildGeneratedName(baseSpirit: string, preferences: CocktailPreferences, variant: number) {
   const taste = getPreferenceTokens(preferences.profilo_gustativo)[0] || "signature";
-  const aroma = getPreferenceTokens(preferences.profilo_aromatico)[0] || "house";
-  const character = normalizeText(preferences.carattere) || "lo zio";
+  const aroma = getPreferenceTokens(preferences.famiglia_aromatica)[0] || "house";
+  const texture = normalizeText(preferences.texture) || "lo zio";
 
-  const first = [taste, aroma, character]
+  const first = [taste, aroma, texture]
     .find(Boolean)
     ?.split(/[\s&/-]+/)
     .filter(Boolean)
@@ -426,10 +427,10 @@ function buildDescription(name: string, baseSpirit: string, preferences: Cocktai
 
 function buildTastingNotes(baseSpirit: string, preferences: CocktailPreferences) {
   const notes = [
-    ...getPreferenceTokens(preferences.profilo_aromatico),
+    ...getPreferenceTokens(preferences.famiglia_aromatica),
     ...getPreferenceTokens(preferences.profilo_gustativo),
     defaultFlavorBySpirit(baseSpirit),
-    normalizeText(preferences.carattere),
+    normalizeText(preferences.texture),
   ]
     .filter(Boolean)
     .slice(0, 5)
@@ -449,8 +450,8 @@ function defaultFlavorBySpirit(baseSpirit: string) {
 
 function defaultMoment(preferences: CocktailPreferences) {
   const style = normalizeText(preferences.stile_consumo);
-  if (style.includes("after dinner")) return "a fine serata o come drink da conversazione";
-  if (style.includes("aperitivo")) return "prima di cena, quando serve tensione e freschezza";
+  if (style.includes("warm/hot")) return "nelle ore fredde, come servizio di comfort";
+  if (style.includes("highball") || style.includes("on the rocks")) return "in servizio rapido e fresco";
   return "in servizio serale, sia come signature sia come twist contemporaneo";
 }
 

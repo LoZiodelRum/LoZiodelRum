@@ -50,7 +50,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 
-  const tableCandidates = ["cocktail", "cocktails"];
+  const tableCandidates = ["cocktail"];
   let lastError = "Could not save cocktail";
 
   for (const tableName of tableCandidates) {

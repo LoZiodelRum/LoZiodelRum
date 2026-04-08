@@ -37,17 +37,20 @@ export default function MapPage() {
   async function fetchLocali() {
     const { data } = await supabase
       .from("Locali")
-      .select("*")
-      .eq("status", "approved");
+      .select("*");
 
     setLocali(data || []);
   }
 
   function getCoords(l: Locale): [number, number] | null {
-    if (!l.latitudine || !l.longitudine) return null;
+    if (l.latitudine === null || l.latitudine === undefined || l.latitudine === "") return null;
+    if (l.longitudine === null || l.longitudine === undefined || l.longitudine === "") return null;
 
-    const lat = Number(l.latitudine);
-    const lng = Number(l.longitudine);
+    const latRaw = String(l.latitudine).replace(",", ".").trim();
+    const lngRaw = String(l.longitudine).replace(",", ".").trim();
+
+    const lat = Number(latRaw);
+    const lng = Number(lngRaw);
 
     if (isNaN(lat) || isNaN(lng)) return null;
 
