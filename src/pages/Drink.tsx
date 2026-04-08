@@ -75,7 +75,7 @@ export default function Drink() {
       setCocktail(sorted.slice(0, 6).map((c: any) => ({ id: c.id, nome: c.nome, immagine: getImage(c) })));
     }
 
-    if (distillatiRows.length || cocktailData?.length) {
+    if (distillatiRows.length) {
       const mappedDistillati = distillatiRows
         .map((d: any) => ({
           id: d.id,
@@ -86,17 +86,7 @@ export default function Drink() {
         }))
         .sort((a, b) => a.nome.localeCompare(b.nome));
 
-      const mappedCocktails = (cocktailData || [])
-        .map((c: any) => ({
-          id: c.id,
-          nome: c.nome || c.name || "Cocktail",
-          marca: "",
-          categoria: `${normalize(c.base_alcolica)} ${normalize(c.nome)}`.trim(),
-          immagine: getImage(c),
-        }))
-        .sort((a: any, b: any) => a.nome.localeCompare(b.nome));
-
-      const pool = [...mappedDistillati, ...mappedCocktails];
+      const pool = [...mappedDistillati];
 
       const containsAny = (text: string, words: string[]) => words.some((word) => text.includes(word));
       const rumWords = ["rum", "rhum", "ron", "cachaca"];
@@ -118,7 +108,7 @@ export default function Drink() {
         return merged;
       };
 
-      const generic = pool.slice(0, 6);
+      const generic = mappedDistillati.slice(0, 6);
 
       const rumFinal = topUp(rumCandidates.slice(0, 6), generic);
       const whiskyFinal = topUp(whiskyCandidates.slice(0, 6), generic);
@@ -127,6 +117,10 @@ export default function Drink() {
       setRum(rumFinal);
       setWhisky(whiskyFinal);
       setAltri(altriFinal);
+    } else {
+      setRum([]);
+      setWhisky([]);
+      setAltri([]);
     }
 
     setLoading(false);
