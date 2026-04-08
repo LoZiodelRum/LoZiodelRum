@@ -162,7 +162,7 @@ export default function Crea() {
     const profilo = filters.p_profilo || "equilibrato";
     const intensita = filters.p_intensita || "Media";
     const metodo = filters.p_metodo || "Sour";
-    const texture = filters.p_texture || "Liscia";
+    const texture = filters.p_texture || "Liscio";
 
     const spiritMap: Record<string, { modifier: string; sour: string; sweet: string }> = {
       "Rum":                          { modifier: "Falernum",                 sour: "Succo di lime",      sweet: "Sciroppo di canna" },
@@ -221,12 +221,14 @@ export default function Crea() {
       metodo === "Shakerato" ? "Coppetta" :
       metodo === "Pestati" ? "Tumbler" : "Coppetta";
 
-    const technique2 = texture === "Cremosa" || texture === "Vellutata" ? "Dry shake + wet shake" :
+    const isSoftTexture = ["Cremoso", "Vellutato", "Cremosa", "Vellutata"].includes(texture);
+
+    const technique2 = isSoftTexture ? "Dry shake + wet shake" :
       metodo === "Shakerato" ? "Shake & strain" :
       texture === "Frizzante" ? "Build in glass" : "Stir & fat-wash";
     const glass2 = metodo === "Pestati" ? "Old Fashioned" :
       metodo === "Highball" ? "Collins" : "Calice da vino";
-    const ingExtra2 = texture === "Cremosa" || texture === "Vellutata" ? "Albume d'uovo" :
+    const ingExtra2 = isSoftTexture ? "Albume d'uovo" :
       texture === "Frizzante" ? "Soda seltz" : "Olio di oliva extra vergine infuso";
     const garnish2 = famiglia === "Tostato" ? "Cacao amaro e scorza d'arancia" :
       famiglia === "Erbaceo" ? "Rosmarino bruciato" : "Fiocco di sale marino";
@@ -505,7 +507,7 @@ const preferenceFields: Array<{
   { key: "profilo_gustativo", label: "Profilo gustativo", options: ["Dolce", "Secco", "Amaro", "Agrodolce", "Acido", "Fresco"] },
   { key: "famiglia_aromatica", label: "Famiglia aromatica", options: ["Agrumato", "Fruttato", "Speziato", "Erbaceo", "Floreale", "Tostato", "Neutro"] },
   { key: "Genere", label: "Genere", options: ["Sour", "Highball", "Stirred (miscelati)", "Pestati", "Frozen", "Shakerato"] },
-  { key: "texture", label: "Texture", options: ["Liscia", "Frizzante", "Cremosa", "Vellutata", "Densa", "Leggera"] },
+  { key: "texture", label: "Texture", options: ["Liscio", "Frizzante", "Cremoso", "Vellutato", "Denso", "Leggero"] },
 ];
 
 const eyebrowStyle: React.CSSProperties = {

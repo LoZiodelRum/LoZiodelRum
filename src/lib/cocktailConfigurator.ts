@@ -73,7 +73,7 @@ const autoBaseRules: Array<{
   { keys: ["intensita_alcolica", "profilo_gustativo"], values: ["Molto alta", "Secco"], suggestions: ["Whisky"] },
   { keys: ["Genere", "profilo_gustativo"], values: ["Highball", "Fresco"], suggestions: ["Gin"] },
   { keys: ["Genere", "profilo_gustativo"], values: ["Stirred (miscelati)", "Dolce"], suggestions: ["Brandy"] },
-  { keys: ["intensita_alcolica", "texture"], values: ["Bassa", "Leggera"], suggestions: ["Analcolico"] },
+  { keys: ["intensita_alcolica", "texture"], values: ["Bassa", "Leggero"], suggestions: ["Analcolico"] },
 ];
 
 const spiritProfiles: Record<string, {

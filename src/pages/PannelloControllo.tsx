@@ -730,12 +730,12 @@ export default function PannelloControllo() {
       "Shakerato",
     ],
     texture: [
-      "Liscia",
+      "Liscio",
       "Frizzante",
-      "Cremosa",
-      "Vellutata",
-      "Densa",
-      "Leggera",
+      "Cremoso",
+      "Vellutato",
+      "Denso",
+      "Leggero",
     ],
   };
 
@@ -757,6 +757,13 @@ export default function PannelloControllo() {
         const lower = value.toLowerCase();
         if (key === "intensita_alcolica" && lower === "bassa (session drink)") {
           return "Bassa";
+        }
+        if (key === "texture") {
+          if (lower === "liscia") return "Liscio";
+          if (lower === "cremosa") return "Cremoso";
+          if (lower === "vellutata") return "Vellutato";
+          if (lower === "densa") return "Denso";
+          if (lower === "leggera") return "Leggero";
         }
         return normalizedOptions.get(lower) || "";
       })
