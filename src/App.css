@@ -1210,3 +1210,28 @@ button[style*="#c47a2c"] {
   .nav-logo span { font-size: 0.8rem !important; }
   .logo { height: 36px; }
 }
+
+/* ============================================================
+   CREA PAGE - BACKGROUND
+   ============================================================ */
+body:has(.crea-page) {
+  background-image: url("https://www.bar.it/wp-content/uploads/2021/03/bar-4789760_1920.jpg");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
+
+body:has(.crea-page)::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  z-index: 0;
+  pointer-events: none;
+}
+
+body:has(.crea-page) #root {
+  position: relative;
+  z-index: 1;
+}
