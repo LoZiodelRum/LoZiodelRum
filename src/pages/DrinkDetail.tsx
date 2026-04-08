@@ -233,7 +233,6 @@ export default function DrinkDetail() {
               {input("profilo_aromatico", "Profilo aromatico")}
               {input("Genere", "Genere")}
               {input("texture", "Texture")}
-              {input("data_creazione", "Data creazione")}
             </>
           )}
 
@@ -418,7 +417,6 @@ export default function DrinkDetail() {
               {data.profilo_aromatico && <p style={row}>Profilo aromatico: {data.profilo_aromatico}</p>}
               {data.Genere && <p style={row}>Genere: {data.Genere}</p>}
               {data.texture && <p style={row}>Texture: {data.texture}</p>}
-              {data.data_creazione && <p style={row}>Data creazione: {String(data.data_creazione)}</p>}
             </div>
           )}
 
