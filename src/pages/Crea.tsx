@@ -325,22 +325,23 @@ export default function Crea() {
   const createdDate = new Date().toLocaleDateString("it-IT");
 
   return (
-    <div className="page fade-in" style={{ maxWidth: 1180 }} data-page-version="crea-configurator-v2">
-      <div style={{ marginBottom: 20 }}>
+    <div className="page fade-in crea-page" style={{ maxWidth: 1180 }} data-page-version="crea-configurator-v2">
+      <div className="crea-header" style={{ marginBottom: 20 }}>
         <div>
-          <h1 style={titleStyle}>Crea</h1>
+          <h1 className="crea-title" style={titleStyle}>Crea</h1>
 
         </div>
       </div>
 
-      <div style={panelStyle}>
-        <div style={gridStyle}>
+      <div className="crea-panel" style={panelStyle}>
+        <div className="crea-grid" style={gridStyle}>
           {preferenceFields.map((field) => (
-            <div key={field.key} style={fieldStyle}>
-              <label style={labelStyle}>{field.label}</label>
+            <div key={field.key} className="crea-field" style={fieldStyle}>
+              <label className="crea-label" style={labelStyle}>{field.label}</label>
               <select
                 value={typeof preferences[field.key] === "string" ? preferences[field.key] as string : ""}
                 onChange={(event) => updatePreference(field.key, event.target.value)}
+                className="crea-select"
                 style={selectStyle}
               >
                 <option value="">Scegli</option>
@@ -355,9 +356,9 @@ export default function Crea() {
           ))}
         </div>
 
-        {error && <div style={errorBoxStyle}>{error}</div>}
+        {error && <div className="crea-error" style={errorBoxStyle}>{error}</div>}
 
-        <div style={actionsStyle}>
+        <div className="crea-actions" style={actionsStyle}>
           <button
             className="btn-primary"
             type="button"
@@ -381,26 +382,26 @@ export default function Crea() {
         </div>
       </div>
 
-      <div style={resultsStyle}>
+      <div className="crea-results" style={resultsStyle}>
         {suggestions.map((cocktail) => (
-          <article key={cocktail.name} style={cardStyle}>
-            <div style={cardHeaderStyle}>
+          <article key={cocktail.name} className="crea-card" style={cardStyle}>
+            <div className="crea-card-header" style={cardHeaderStyle}>
               <div>
-                <p style={sourceTagStyle}>{cocktail.source === "database" ? "DAL DATABASE" : "GENERATO"}</p>
-                <h2 style={cardTitleStyle}>{cocktail.name}</h2>
-                <p style={metaStyle}>
+                <p className="crea-source" style={sourceTagStyle}>{cocktail.source === "database" ? "DAL DATABASE" : "GENERATO"}</p>
+                <h2 className="crea-card-title" style={cardTitleStyle}>{cocktail.name}</h2>
+                <p className="crea-meta" style={metaStyle}>
                   Base: {cocktail.base_spirit} · Tecnica: {cocktail.technique} · Bicchiere: {cocktail.glass}
                 </p>
               </div>
-              <div style={scoreBadgeStyle}>Score {cocktail.matchScore}</div>
+              <div className="crea-score" style={scoreBadgeStyle}>Score {cocktail.matchScore}</div>
             </div>
 
-            <div style={recipeGridStyle}>
-              <section style={recipeBlockStyle}>
-                <h3 style={sectionTitleStyle}>Ingredienti e dosi</h3>
-                <ul style={listStyle}>
+            <div className="crea-recipe-grid" style={recipeGridStyle}>
+              <section className="crea-recipe-block" style={recipeBlockStyle}>
+                <h3 className="crea-section-title" style={sectionTitleStyle}>Ingredienti e dosi</h3>
+                <ul className="crea-list" style={listStyle}>
                   {cocktail.ingredients.map((ingredient, index) => (
-                    <li key={`${cocktail.name}-${ingredient}-${index}`} style={listItemStyle}>
+                    <li key={`${cocktail.name}-${ingredient}-${index}`} className="crea-list-item" style={listItemStyle}>
                       <span>{ingredient}</span>
                       <strong>{cocktail.doses[index] || "q.b."}</strong>
                     </li>
@@ -408,50 +409,50 @@ export default function Crea() {
                 </ul>
               </section>
 
-              <section style={recipeBlockStyle}>
-                <h3 style={sectionTitleStyle}>Profilo</h3>
-                <p style={bodyStyle}>{cocktail.description}</p>
-                <p style={bodyStyle}><strong>Guarnizione:</strong> {cocktail.garnish}</p>
-                <p style={bodyStyle}><strong>Bilanciamento:</strong> {cocktail.balance_explanation}</p>
+              <section className="crea-recipe-block" style={recipeBlockStyle}>
+                <h3 className="crea-section-title" style={sectionTitleStyle}>Profilo</h3>
+                <p className="crea-body" style={bodyStyle}>{cocktail.description}</p>
+                <p className="crea-body" style={bodyStyle}><strong>Guarnizione:</strong> {cocktail.garnish}</p>
+                <p className="crea-body" style={bodyStyle}><strong>Bilanciamento:</strong> {cocktail.balance_explanation}</p>
               </section>
             </div>
 
-            <section style={notesBoxStyle}>
-              <h3 style={sectionTitleStyle}>Tasting notes</h3>
-              <div style={notesRowStyle}>
+            <section className="crea-notes" style={notesBoxStyle}>
+              <h3 className="crea-section-title" style={sectionTitleStyle}>Tasting notes</h3>
+              <div className="crea-notes-row" style={notesRowStyle}>
                 {cocktail.tasting_notes.map((note) => (
-                  <span key={`${cocktail.name}-${note}`} style={noteChipStyle}>{note}</span>
+                  <span key={`${cocktail.name}-${note}`} className="crea-note-chip" style={noteChipStyle}>{note}</span>
                 ))}
               </div>
             </section>
 
             {cocktail.source === "generated" && (
-              <section style={fallbackStyle}>
-                <p style={fallbackTextStyle}>Questo cocktail non e ancora nel catalogo</p>
+              <section className="crea-fallback" style={fallbackStyle}>
+                <p className="crea-fallback-text" style={fallbackTextStyle}>Questo cocktail non e ancora nel catalogo</p>
                 <button className="btn-primary" type="button" onClick={() => toggleGeneratedForm(cocktail.name)}>
                   CREA NUOVO COCKTAIL
                 </button>
 
                 {openGeneratedForms[cocktail.name] && (
-                  <div style={generatedFormStyle}>
-                    <div style={generatedFieldStyle}>
-                      <label style={labelStyle}>Nome</label>
+                  <div className="crea-generated-form" style={generatedFormStyle}>
+                    <div className="crea-generated-field" style={generatedFieldStyle}>
+                      <label className="crea-label" style={labelStyle}>Nome</label>
                       <input value={cocktail.name} readOnly style={inputStyle} />
                     </div>
-                    <div style={generatedFieldStyle}>
-                      <label style={labelStyle}>Ingredienti</label>
+                    <div className="crea-generated-field" style={generatedFieldStyle}>
+                      <label className="crea-label" style={labelStyle}>Ingredienti</label>
                       <textarea value={cocktail.ingredients.join(", ")} readOnly style={textareaStyle} />
                     </div>
-                    <div style={generatedFieldStyle}>
-                      <label style={labelStyle}>Dosi</label>
+                    <div className="crea-generated-field" style={generatedFieldStyle}>
+                      <label className="crea-label" style={labelStyle}>Dosi</label>
                       <textarea value={cocktail.doses.join(", ")} readOnly style={textareaStyle} />
                     </div>
-                    <div style={generatedFieldStyle}>
-                      <label style={labelStyle}>Creato da</label>
+                    <div className="crea-generated-field" style={generatedFieldStyle}>
+                      <label className="crea-label" style={labelStyle}>Creato da</label>
                       <input value={createdBy} readOnly style={inputStyle} />
                     </div>
-                    <div style={generatedFieldStyle}>
-                      <label style={labelStyle}>Data</label>
+                    <div className="crea-generated-field" style={generatedFieldStyle}>
+                      <label className="crea-label" style={labelStyle}>Data</label>
                       <input value={createdDate} readOnly style={inputStyle} />
                     </div>
                     <div style={{ ...generatedFieldStyle, gridColumn: "1 / -1" }}>
