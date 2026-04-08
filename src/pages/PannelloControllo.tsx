@@ -1289,46 +1289,64 @@ export default function PannelloControllo() {
                       />
                     )}
                   </div>
+
+                  {/* Upload foto+video dopo il campo recensioni, solo per Locali */}
+                  {selectedTable === "Locali" && key === "recensioni" && (
+                    <>
+                      {/* Carica foto */}
+                      <div style={fieldStyle}>
+                        <label style={labelStyle}>Carica foto</label>
+                        <label style={{ ...btnSaveStyle, padding: "8px 14px", fontSize: 13, cursor: "pointer", display: "inline-block", textAlign: "center", opacity: uploadingLocaleImage ? 0.6 : 1 }}>
+                          {uploadingLocaleImage ? "Caricamento..." : "Scegli file"}
+                          <input
+                            type="file"
+                            accept="image/*"
+                            style={{ display: "none" }}
+                            disabled={uploadingLocaleImage}
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) handleLocaleImageUpload(file);
+                            }}
+                          />
+                        </label>
+                        {selectedItem?.image_url && (
+                          <img
+                            src={selectedItem.image_url}
+                            alt="Anteprima"
+                            style={{ marginTop: 8, width: "100%", maxHeight: 140, objectFit: "cover", borderRadius: 8, border: "1px solid #334155" }}
+                          />
+                        )}
+                      </div>
+
+                      {/* Carica video */}
+                      <div style={fieldStyle}>
+                        <label style={labelStyle}>Carica video</label>
+                        <label style={{ ...btnSaveStyle, padding: "8px 14px", fontSize: 13, cursor: "pointer", display: "inline-block", textAlign: "center", opacity: uploadingLocaleVideo ? 0.6 : 1 }}>
+                          {uploadingLocaleVideo ? "Caricamento..." : "Scegli file"}
+                          <input
+                            type="file"
+                            accept="video/*"
+                            style={{ display: "none" }}
+                            disabled={uploadingLocaleVideo}
+                            onChange={(e) => {
+                              const file = e.target.files?.[0];
+                              if (file) handleLocaleVideoUpload(file);
+                            }}
+                          />
+                        </label>
+                        {selectedItem?.video_url && (
+                          <video
+                            src={selectedItem.video_url}
+                            controls
+                            style={{ marginTop: 8, width: "100%", maxHeight: 140, borderRadius: 8, border: "1px solid #334155" }}
+                          />
+                        )}
+                      </div>
+                    </>
+                  )}
                 )
               )}
             </div>
-
-            {selectedTable === "Locali" && (
-              <div style={{ display: "flex", gap: 20, flexWrap: "wrap", marginBottom: 16 }}>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <span style={labelStyle}>Carica foto</span>
-                  <label style={{ ...btnSaveStyle, padding: "8px 14px", fontSize: 13, cursor: "pointer", opacity: uploadingLocaleImage ? 0.6 : 1 }}>
-                    {uploadingLocaleImage ? "Caricamento..." : "Scegli file"}
-                    <input
-                      type="file"
-                      accept="image/*"
-                      style={{ display: "none" }}
-                      disabled={uploadingLocaleImage}
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) handleLocaleImageUpload(file);
-                      }}
-                    />
-                  </label>
-                </div>
-                <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-                  <span style={labelStyle}>Carica video</span>
-                  <label style={{ ...btnSaveStyle, padding: "8px 14px", fontSize: 13, cursor: "pointer", opacity: uploadingLocaleVideo ? 0.6 : 1 }}>
-                    {uploadingLocaleVideo ? "Caricamento..." : "Scegli file"}
-                    <input
-                      type="file"
-                      accept="video/*"
-                      style={{ display: "none" }}
-                      disabled={uploadingLocaleVideo}
-                      onChange={(e) => {
-                        const file = e.target.files?.[0];
-                        if (file) handleLocaleVideoUpload(file);
-                      }}
-                    />
-                  </label>
-                </div>
-              </div>
-            )}
 
             <div style={buttonRowStyle}>
               <button style={btnSaveStyle} onClick={salvaModifiche}>
