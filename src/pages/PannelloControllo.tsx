@@ -730,6 +730,7 @@ export default function PannelloControllo() {
       "Frozen",
       "Shakerato",
       "Agitato",
+      "Tiki",
       "A strati (Layered)",
     ],
     texture: [
