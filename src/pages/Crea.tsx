@@ -38,7 +38,7 @@ export default function Crea() {
 
       if (activePreferences < 2) {
         setSuggestions([]);
-        setError("Seleziona almeno 2 preferenze");
+        setError(null);
         return;
       }
 
