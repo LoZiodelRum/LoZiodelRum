@@ -113,8 +113,6 @@ export default function RecensioneDetail() {
   const venueImage = reviewLocale?.image_url || reviewLocale?.image || "https://via.placeholder.com/1600x900";
   const venueCity = reviewLocale?.citta || "";
   const venueAddress = reviewLocale?.indirizzo || "";
-  const ratingRaw = review.rating ?? review.overall_rating;
-  const rating = typeof ratingRaw === "number" ? ratingRaw.toFixed(1) : "N/A";
   const title = review.titolo || review.title || `Recensione di ${venueName}`;
   const content = review.commento || review.content || review.descrizione || "Nessun testo disponibile.";
   const author = review.autore || review.author_name || "Utente";
@@ -164,20 +162,8 @@ export default function RecensioneDetail() {
             padding: "20px clamp(16px, 3.5vw, 30px)",
           }}
         >
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: 12, marginBottom: 14 }}>
+          <div style={{ marginBottom: 14 }}>
             <h2 style={{ margin: 0, color: "#fff", fontSize: "clamp(22px, 3vw, 34px)" }}>{title}</h2>
-            <span
-              style={{
-                background: "#f5a623",
-                color: "#111",
-                fontWeight: 700,
-                borderRadius: 10,
-                padding: "6px 10px",
-                whiteSpace: "nowrap",
-              }}
-            >
-              {`★ ${rating}`}
-            </span>
           </div>
 
           <p style={{ color: "#c9c9c9", marginBottom: 18 }}>{`Di ${author} - ${formatDate(dateValue)}`}</p>
