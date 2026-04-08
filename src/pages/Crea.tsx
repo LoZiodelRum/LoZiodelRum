@@ -62,20 +62,45 @@ export default function Crea() {
       return;
     }
 
-    const databaseCocktails = (data || []).map((c: any) => ({
-      name: c.nome,
-      source: "database" as const,
-      matchScore: c.score,
-      base_spirit: filters.p_base || "Mix",
-      technique: "Da definire",
-      glass: "Da definire",
-      ingredients: [],
-      doses: [],
-      garnish: "",
-      description: "",
-      tasting_notes: [],
-      balance_explanation: ""
-    }));
+    const names = (data || [])
+      .map((item: any) => String(item?.nome || "").trim())
+      .filter((name: string) => name.length > 0);
+
+    let detailsByName: Record<string, any> = {};
+
+    if (names.length > 0) {
+      const { data: detailRows } = await supabase
+        .from("cocktail")
+        .select("nome, base_alcolica, profilo_gustativo, intensita_alcolica, famiglia_aromatica, stile_consumo, texture")
+        .in("nome", names);
+
+      detailsByName = (detailRows || []).reduce((acc: Record<string, any>, row: any) => {
+        const key = String(row?.nome || "").trim();
+        if (key) acc[key] = row;
+        return acc;
+      }, {});
+    }
+
+    const databaseCocktails = (data || []).map((c: any) => {
+      const detail = detailsByName[String(c?.nome || "").trim()] || null;
+      const comparison = buildDatabasePreferenceComparison(filters, detail);
+
+      return {
+        name: c.nome,
+        source: "database" as const,
+        matchScore: c.score,
+        base_spirit: detail?.base_alcolica || filters.p_base || "Mix",
+        technique: "Da definire",
+        glass: "Da definire",
+        ingredients: [],
+        doses: [],
+        garnish: "",
+        description: comparison.description,
+        tasting_notes: comparison.tastingNotes,
+        balance_explanation: comparison.balance,
+        originalRecord: detail,
+      };
+    });
 
     const generated = generateSignatureCocktails(filters);
 
@@ -85,6 +110,50 @@ export default function Crea() {
     ]);
 
     setLoading(false);
+  }
+
+  function buildDatabasePreferenceComparison(filters: any, cocktail: any) {
+    const schema = [
+      { label: "Base", filter: filters.p_base, db: cocktail?.base_alcolica },
+      { label: "Profilo", filter: filters.p_profilo, db: cocktail?.profilo_gustativo },
+      { label: "Intensita", filter: filters.p_intensita, db: cocktail?.intensita_alcolica },
+      { label: "Famiglia", filter: filters.p_famiglia, db: cocktail?.famiglia_aromatica },
+      { label: "Genere", filter: filters.p_metodo, db: cocktail?.stile_consumo },
+      { label: "Texture", filter: filters.p_texture, db: cocktail?.texture },
+    ];
+
+    const normalize = (value: string | null | undefined) => String(value || "").trim().toLowerCase();
+    const active = schema.filter((item) => normalize(item.filter).length > 0);
+
+    if (!cocktail || active.length === 0) {
+      return {
+        description: "Dettagli comparativi non disponibili per questo cocktail del database.",
+        tastingNotes: ["Confronto non disponibile"],
+        balance: "Nessun confronto applicato rispetto alle preferenze selezionate.",
+      };
+    }
+
+    const matched = active.filter((item) => normalize(item.filter) === normalize(item.db));
+    const different = active.filter((item) => normalize(item.filter) !== normalize(item.db));
+
+    const affinitaText = matched.length
+      ? matched.map((item) => `${item.label}: ${item.db}`).join(" · ")
+      : "Nessuna affinità diretta";
+
+    const differenzeText = different.length
+      ? different.map((item) => `${item.label} scelto ${item.filter} / cocktail ${item.db || "non definito"}`).join(" · ")
+      : "Nessuna differenza rilevante";
+
+    return {
+      description: `Affinita con le tue scelte: ${affinitaText}. Differenze principali: ${differenzeText}.`,
+      tastingNotes: [
+        `Affinita ${matched.length}/${active.length}`,
+        `Differenze ${different.length}/${active.length}`,
+      ],
+      balance: matched.length >= different.length
+        ? "Coerenza alta con il tuo profilo: cocktail vicino alle preferenze impostate."
+        : "Coerenza parziale: cocktail interessante per esplorare varianti rispetto alle preferenze impostate.",
+    };
   }
 
   function generateSignatureCocktails(filters: any): SuggestedCocktail[] {
