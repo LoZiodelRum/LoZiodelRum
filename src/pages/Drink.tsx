@@ -34,7 +34,16 @@ export default function Drink() {
     setLoading(true);
 
     const { data: cocktailData } = await supabase.from("cocktail").select("*");
-    const { data: distillatiData } = await supabase.from("distillati").select("*");
+    const { data: distillatiData, error: distillatiError } = await supabase.from("distillati").select("*");
+
+    let distillatiRows: any[] = Array.isArray(distillatiData) ? distillatiData : [];
+
+    if ((!distillatiRows.length && distillatiError) || !distillatiRows.length) {
+      const { data: distillatoData } = await supabase.from("distillato").select("*");
+      if (Array.isArray(distillatoData) && distillatoData.length) {
+        distillatiRows = distillatoData;
+      }
+    }
 
     function getImage(obj: any) {
       return obj.immagine || obj.immagine_url || obj.image || obj.img || null;
@@ -66,11 +75,11 @@ export default function Drink() {
       setCocktail(sorted.slice(0, 6).map((c: any) => ({ id: c.id, nome: c.nome, immagine: getImage(c) })));
     }
 
-    if (distillatiData) {
-      const mapped = distillatiData
+    if (distillatiRows.length) {
+      const mapped = distillatiRows
         .map((d: any) => ({
           id: d.id,
-          nome: d.nome,
+          nome: d.nome || d.name || "Distillato",
           marca: d.marca,
           categoria: distillatoCategoryText(d),
           immagine: getImage(d),
@@ -80,6 +89,20 @@ export default function Drink() {
       setRum(mapped.filter(d => d.categoria.includes("rum")).slice(0, 6));
       setWhisky(mapped.filter(d => d.categoria.includes("whisky") || d.categoria.includes("whiskey")).slice(0, 6));
       setAltri(mapped.filter(d => !d.categoria.includes("rum") && !d.categoria.includes("whisky") && !d.categoria.includes("whiskey")).slice(0, 6));
+    } else if (cocktailData?.length) {
+      const cocktailMapped = cocktailData
+        .map((c: any) => ({
+          id: c.id,
+          nome: c.nome || c.name || "Cocktail",
+          marca: "",
+          categoria: normalize(c.base_alcolica),
+          immagine: getImage(c),
+        }))
+        .sort((a: any, b: any) => a.nome.localeCompare(b.nome));
+
+      setRum(cocktailMapped.filter((d: any) => d.categoria.includes("rum")).slice(0, 6));
+      setWhisky(cocktailMapped.filter((d: any) => d.categoria.includes("whisky") || d.categoria.includes("whiskey")).slice(0, 6));
+      setAltri(cocktailMapped.filter((d: any) => !d.categoria.includes("rum") && !d.categoria.includes("whisky") && !d.categoria.includes("whiskey")).slice(0, 6));
     }
 
     setLoading(false);
