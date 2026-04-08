@@ -181,12 +181,23 @@ export default function DrinkDetail() {
 
           {form.type === "cocktail" && (
             <>
+              {input("categoria", "Categoria")}
               {textarea("preparazione", "Preparazione")}
+              {textarea("storia", "Storia")}
               {textarea("consigli", "Consigli")}
               {input("bicchiere", "Bicchiere")}
               {input("guarnizione", "Guarnizione")}
               {input("gradazione_alcolica", "Gradazione", "number")}
               {textarea("ingredienti", "Ingredienti (separati da ;)")}
+              {input("base_alcolica", "Base alcolica")}
+              {input("intensita_alcolica", "Intensita alcolica")}
+              {input("profilo_gustativo", "Profilo gustativo")}
+              {input("famiglia_aromatica", "Famiglia aromatica")}
+              {input("profilo_aromatico", "Profilo aromatico")}
+              {input("stile_consumo", "Stile consumo")}
+              {input("carattere", "Carattere")}
+              {input("texture", "Texture")}
+              {input("data_creazione", "Data creazione")}
             </>
           )}
 
@@ -266,6 +277,13 @@ export default function DrinkDetail() {
                   <p style={text}>{data.gradazione_alcolica}°</p>
                 </>
               )}
+
+              {data.storia && (
+                <>
+                  <h2 style={sectionTitle}>Storia</h2>
+                  <p style={text}>{data.storia}</p>
+                </>
+              )}
             </>
           )}
 
@@ -339,6 +357,22 @@ export default function DrinkDetail() {
               {data.ingredienti.split(";").map((ing: string, i: number) => (
                 <div key={i} style={row}>{ing}</div>
               ))}
+            </div>
+          )}
+
+          {data.type === "cocktail" && (
+            <div style={box}>
+              <h3 style={boxTitle}>Dettagli cocktail</h3>
+              {data.categoria && <p style={row}>Categoria: {data.categoria}</p>}
+              {data.base_alcolica && <p style={row}>Base alcolica: {data.base_alcolica}</p>}
+              {data.intensita_alcolica && <p style={row}>Intensita alcolica: {data.intensita_alcolica}</p>}
+              {data.profilo_gustativo && <p style={row}>Profilo gustativo: {data.profilo_gustativo}</p>}
+              {data.famiglia_aromatica && <p style={row}>Famiglia aromatica: {data.famiglia_aromatica}</p>}
+              {data.profilo_aromatico && <p style={row}>Profilo aromatico: {data.profilo_aromatico}</p>}
+              {data.stile_consumo && <p style={row}>Stile consumo: {data.stile_consumo}</p>}
+              {data.carattere && <p style={row}>Carattere: {data.carattere}</p>}
+              {data.texture && <p style={row}>Texture: {data.texture}</p>}
+              {data.data_creazione && <p style={row}>Data creazione: {String(data.data_creazione)}</p>}
             </div>
           )}
 
