@@ -72,7 +72,7 @@ const autoBaseRules: Array<{
   { keys: ["Genere", "famiglia_aromatica"], values: ["Frozen", "Fruttato"], suggestions: ["Rum"] },
   { keys: ["intensita_alcolica", "profilo_gustativo"], values: ["Molto alta", "Secco"], suggestions: ["Whisky"] },
   { keys: ["Genere", "profilo_gustativo"], values: ["Highball", "Fresco"], suggestions: ["Gin"] },
-  { keys: ["Genere", "profilo_gustativo"], values: ["Stirred (mescolato)", "Dolce"], suggestions: ["Brandy"] },
+  { keys: ["Genere", "profilo_gustativo"], values: ["Stirred (mescolati)", "Dolce"], suggestions: ["Brandy"] },
   { keys: ["intensita_alcolica", "texture"], values: ["Bassa", "Leggero"], suggestions: ["Analcolico"] },
 ];
 
@@ -343,7 +343,7 @@ function defaultGlass(preferences: CocktailPreferences, baseSpirit: string) {
   const style = normalizeText(preferences.Genere);
   if (style.includes("pestati")) return "old fashioned";
   if (style.includes("shakerato") || style.includes("agitato")) return "coupette";
-  if (style.includes("stirred") || style.includes("miscelati") || normalizeText(baseSpirit).includes("gin")) return "coupette";
+  if (style.includes("stirred") || style.includes("mescolati") || style.includes("miscelati") || normalizeText(baseSpirit).includes("gin")) return "coupette";
   return "highball";
 }
 
