@@ -508,7 +508,6 @@ const preferenceFields: Array<{
   { key: "profilo_gustativo", label: "Profilo gustativo", options: ["Dolce", "Secco", "Amaro", "Agrodolce", "Acido", "Fresco"] },
   { key: "famiglia_aromatica", label: "Famiglia aromatica", options: ["Agrumato", "Fruttato", "Speziato", "Erbaceo", "Floreale", "Tostato", "Neutro"] },
   { key: "Genere", label: "Genere", options: ["Sour", "Highball", "Stirred (miscelati)", "Pestati", "Frozen", "Shakerato", "Agitato", "Tiki", "Built (Costruito in bicchiere)", "A strati (Layered)"] },
-  { key: "texture", label: "Texture", options: ["Liscio", "Frizzante", "Cremoso", "Vellutato", "Denso", "Leggero"] },
 ];
 
 const eyebrowStyle: React.CSSProperties = {
