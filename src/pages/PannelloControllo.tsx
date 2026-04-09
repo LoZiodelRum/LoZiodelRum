@@ -1282,16 +1282,19 @@ export default function PannelloControllo() {
                           background: "#0b1220",
                         }}
                       >
-                        <div
+                        <img
+                          src={selectedItem.immagine}
+                          alt="Anteprima"
+                          draggable={false}
                           style={{
                             width: "100%",
                             height: "100%",
-                            backgroundImage: `url(${selectedItem.immagine})`,
-                            backgroundPosition: "center",
-                            backgroundSize: "cover",
+                            objectFit: "cover",
                             transform: `translate(${imageOffset.x}px, ${imageOffset.y}px) scale(${imageZoom})`,
                             transformOrigin: "center center",
                             transition: dragAnchor ? "none" : "transform 0.08s ease",
+                            userSelect: "none",
+                            pointerEvents: "none",
                           }}
                         />
                       </div>
