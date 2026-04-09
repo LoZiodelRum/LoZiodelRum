@@ -35,6 +35,8 @@ export default function PannelloControllo() {
   const [saveStatus, setSaveStatus] = useState<"ok" | "error" | null>(null);
   const [uploadingLocaleImage, setUploadingLocaleImage] = useState(false);
   const [uploadingLocaleVideo, setUploadingLocaleVideo] = useState(false);
+  const [uploadingCocktailImage, setUploadingCocktailImage] = useState(false);
+  const [uploadingDistillatoImage, setUploadingDistillatoImage] = useState(false);
 
   useEffect(() => {
     if (!loading && isAdmin) {
@@ -803,6 +805,32 @@ export default function PannelloControllo() {
     setUploadingLocaleVideo(false);
   }
 
+  async function handleCocktailImageUpload(file: File) {
+    if (!file) return;
+    setUploadingCocktailImage(true);
+    const ext = file.name.split(".").pop();
+    const fileName = `cocktail-img-${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from("drink-images").upload(fileName, file, { upsert: true, contentType: file.type || "image/jpeg" });
+    if (error) { alert("Errore upload immagine: " + error.message); setUploadingCocktailImage(false); return; }
+    const { data } = supabase.storage.from("drink-images").getPublicUrl(fileName);
+    setSelectedItem((prev: any) => ({ ...prev, immagine: data.publicUrl }));
+    setSaveStatus(null);
+    setUploadingCocktailImage(false);
+  }
+
+  async function handleDistillatoImageUpload(file: File) {
+    if (!file) return;
+    setUploadingDistillatoImage(true);
+    const ext = file.name.split(".").pop();
+    const fileName = `distillato-img-${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from("drink-images").upload(fileName, file, { upsert: true, contentType: file.type || "image/jpeg" });
+    if (error) { alert("Errore upload immagine: " + error.message); setUploadingDistillatoImage(false); return; }
+    const { data } = supabase.storage.from("drink-images").getPublicUrl(fileName);
+    setSelectedItem((prev: any) => ({ ...prev, immagine: data.publicUrl }));
+    setSaveStatus(null);
+    setUploadingDistillatoImage(false);
+  }
+
   function openFirstEditor(table: string, data: any[]) {
     if (!Array.isArray(data) || data.length === 0) return;
 
@@ -1332,6 +1360,38 @@ export default function PannelloControllo() {
                         )}
                       </div>
                     </>
+                  )}
+
+                  {(selectedTable === "cocktail" || selectedTable === "distillati") && key === "immagine" && (
+                    <div style={fieldStyle}>
+                      <label style={labelStyle}>Carica immagine</label>
+                      <label style={{ ...btnSaveStyle, padding: "8px 14px", fontSize: 13, cursor: "pointer", display: "inline-block", textAlign: "center", opacity: (selectedTable === "cocktail" ? uploadingCocktailImage : uploadingDistillatoImage) ? 0.6 : 1 }}>
+                        {(selectedTable === "cocktail" ? uploadingCocktailImage : uploadingDistillatoImage) ? "Caricamento..." : "Scegli file"}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          style={{ display: "none" }}
+                          disabled={(selectedTable === "cocktail" ? uploadingCocktailImage : uploadingDistillatoImage)}
+                          onChange={(e) => {
+                            const file = e.target.files?.[0];
+                            if (file) {
+                              if (selectedTable === "cocktail") {
+                                handleCocktailImageUpload(file);
+                              } else if (selectedTable === "distillati") {
+                                handleDistillatoImageUpload(file);
+                              }
+                            }
+                          }}
+                        />
+                      </label>
+                      {selectedItem?.immagine && (
+                        <img
+                          src={selectedItem.immagine}
+                          alt="Anteprima"
+                          style={{ marginTop: 8, width: "100%", maxHeight: 140, objectFit: "cover", borderRadius: 8, border: "1px solid #334155" }}
+                        />
+                      )}
+                    </div>
                   )}
                   </React.Fragment>
                 );
