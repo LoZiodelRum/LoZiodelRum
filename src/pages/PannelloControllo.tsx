@@ -722,6 +722,7 @@ export default function PannelloControllo() {
       "Erbaceo",
       "Floreale",
       "Tostato",
+      "Piccante",
       "Neutro",
     ],
     Genere: [
