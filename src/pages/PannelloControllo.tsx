@@ -1323,30 +1323,6 @@ export default function PannelloControllo() {
                           </div>
                         )}
                       </div>
-
-                      <div style={{ ...fieldStyle, marginBottom: 12 }}>
-                        <label style={labelStyle}>Zoom</label>
-                        <input
-                          type="range"
-                          min={0.4}
-                          max={3}
-                          step={0.05}
-                          value={imageZoom}
-                          onChange={(e) => {
-                            const nextZoom = Number(e.target.value);
-                            setImageZoom(nextZoom);
-                            setImageOffset((prev) => clampPreviewOffset(prev.x, prev.y, nextZoom));
-                          }}
-                        />
-                        <button
-                          type="button"
-                          className="btn-primary btn-small"
-                          onClick={resetPreviewTransform}
-                          style={{ marginTop: 8 }}
-                        >
-                          Reset posizione
-                        </button>
-                      </div>
                     </>
                   )}
                   <label style={{ ...btnSaveStyle, padding: "8px 14px", fontSize: 13, cursor: "pointer", display: "block", textAlign: "center", width: "100%", opacity: isImageUploading ? 0.6 : 1 }}>{isImageUploading ? "Caricamento..." : "Carica immagine"}<input type="file" accept="image/*" style={{ display: "none" }} disabled={isImageUploading} onChange={(e) => { const file = e.target.files?.[0]; if (file) { if (selectedTable === "cocktail") handleCocktailImageUpload(file); else if (selectedTable === "distillati") handleDistillatoImageUpload(file); else if (isWineTable) handleWineImageUpload(file); } }} /></label>
