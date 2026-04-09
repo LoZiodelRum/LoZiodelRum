@@ -43,6 +43,7 @@ export default function PannelloControllo() {
   const [imageZoom, setImageZoom] = useState(1);
   const [imageOffset, setImageOffset] = useState({ x: 0, y: 0 });
   const [dragAnchor, setDragAnchor] = useState<{ x: number; y: number } | null>(null);
+  const [imagePreviewError, setImagePreviewError] = useState(false);
 
   useEffect(() => {
     if (!loading && isAdmin) {
@@ -1012,7 +1013,7 @@ export default function PannelloControllo() {
   }
 
   function handlePreviewPointerDown(event: React.PointerEvent<HTMLDivElement>) {
-    if (!selectedItem?.immagine) return;
+    if (!selectedItem?.immagine || imagePreviewError) return;
 
     event.currentTarget.setPointerCapture(event.pointerId);
     setDragAnchor({
@@ -1043,6 +1044,7 @@ export default function PannelloControllo() {
 
   useEffect(() => {
     resetPreviewTransform();
+    setImagePreviewError(false);
   }, [selectedItem?.id, selectedItem?.immagine, selectedTable]);
 
   return (
@@ -1277,15 +1279,18 @@ export default function PannelloControllo() {
                           border: "1px solid #334155",
                           marginBottom: 10,
                           overflow: "hidden",
-                          cursor: dragAnchor ? "grabbing" : "grab",
+                          cursor: imagePreviewError ? "default" : (dragAnchor ? "grabbing" : "grab"),
                           touchAction: "none",
                           background: "#0b1220",
+                          position: "relative",
                         }}
                       >
                         <img
                           src={selectedItem.immagine}
                           alt="Anteprima"
                           draggable={false}
+                          onLoad={() => setImagePreviewError(false)}
+                          onError={() => setImagePreviewError(true)}
                           style={{
                             width: "100%",
                             height: "100%",
@@ -1295,8 +1300,28 @@ export default function PannelloControllo() {
                             transition: dragAnchor ? "none" : "transform 0.08s ease",
                             userSelect: "none",
                             pointerEvents: "none",
+                            opacity: imagePreviewError ? 0 : 1,
                           }}
                         />
+                        {imagePreviewError && (
+                          <div
+                            style={{
+                              position: "absolute",
+                              inset: 0,
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              textAlign: "center",
+                              padding: 16,
+                              color: "#e2e8f0",
+                              fontSize: 14,
+                              fontWeight: 600,
+                              background: "rgba(2, 6, 23, 0.65)",
+                            }}
+                          >
+                            Immagine non caricabile (URL non valido o non accessibile)
+                          </div>
+                        )}
                       </div>
 
                       <div style={{ ...fieldStyle, marginBottom: 12 }}>
