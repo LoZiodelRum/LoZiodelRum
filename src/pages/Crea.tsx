@@ -530,7 +530,7 @@ const introStyle: React.CSSProperties = {
 
 const panelStyle: React.CSSProperties = {
   background: "#0f172a",
-  border: "1px solid #334155",
+  border: "1px solid rgba(255, 255, 255, 0.75)",
   borderRadius: 20,
   padding: 20,
 };
