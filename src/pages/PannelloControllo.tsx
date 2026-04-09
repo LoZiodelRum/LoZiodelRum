@@ -1218,6 +1218,22 @@ export default function PannelloControllo() {
                 <div style={{ width: 280, flexShrink: 0 }}>
                   {selectedItem?.immagine && (<img src={selectedItem.immagine} alt="Anteprima" style={{ width: "100%", height: 280, objectFit: "cover", borderRadius: 8, border: "1px solid #334155", marginBottom: 12 }} />)}
                   <label style={{ ...btnSaveStyle, padding: "8px 14px", fontSize: 13, cursor: "pointer", display: "block", textAlign: "center", width: "100%", opacity: isImageUploading ? 0.6 : 1 }}>{isImageUploading ? "Caricamento..." : "Carica immagine"}<input type="file" accept="image/*" style={{ display: "none" }} disabled={isImageUploading} onChange={(e) => { const file = e.target.files?.[0]; if (file) { if (selectedTable === "cocktail") handleCocktailImageUpload(file); else if (selectedTable === "distillati") handleDistillatoImageUpload(file); else if (isWineTable) handleWineImageUpload(file); } }} /></label>
+                  <div style={{ ...fieldStyle, marginTop: 12 }}>
+                    <label style={labelStyle}>URL immagine</label>
+                    <input
+                      value={selectedItem?.immagine ?? ""}
+                      onChange={(e) => {
+                        const value = e.target.value;
+                        setSelectedItem((prev: any) => ({
+                          ...prev,
+                          immagine: value,
+                        }));
+                        setSaveStatus(null);
+                      }}
+                      placeholder="Incolla URL immagine"
+                      style={inputStyle}
+                    />
+                  </div>
                 </div>
               </div>
             ) : (
