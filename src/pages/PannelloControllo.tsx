@@ -730,7 +730,7 @@ export default function PannelloControllo() {
     Genere: [
       "Sour",
       "Highball",
-      "Stirred (miscelati)",
+      "Stirred (mescolato)",
       "Pestati",
       "Frozen",
       "Shakerato",

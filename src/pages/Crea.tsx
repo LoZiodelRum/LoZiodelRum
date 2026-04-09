@@ -211,13 +211,13 @@ export default function Crea() {
     const familyIng = familyMap[famiglia] || "Bitter aromatico";
     const garnish1 = garnishMap[famiglia] || "Scorza d'arancia";
 
-    const technique1 = intensita === "Molto alta" || metodo === "Stirred (miscelati)"
+    const technique1 = intensita === "Molto alta" || metodo === "Stirred (mescolato)"
       ? "Stir & strain"
       : metodo === "Shakerato"
         ? "Shake & strain"
       : "Shake & double strain";
     const glass1 = metodo === "Highball" ? "Highball" :
-      metodo === "Stirred (miscelati)" ? "Nick & Nora" :
+      metodo === "Stirred (mescolato)" ? "Nick & Nora" :
       metodo === "Frozen" ? "Frozen cup" :
       metodo === "Shakerato" ? "Coppetta" :
       metodo === "Pestati" ? "Tumbler" : "Coppetta";
@@ -259,7 +259,7 @@ export default function Crea() {
       ingredients: [base, sp.modifier, familyIng, ingExtra2],
       doses: ["45ml", "20ml", "10ml", "5ml"],
       garnish: garnish2,
-      description: `Reinterpretazione moderna con ${base} in chiave ${metodo === "Stirred (miscelati)" ? "spirit-forward" : "texturale"}. ${sp.modifier} apporta complessità e lunghezza palatale. ${familyIng} definisce il carattere aromatico ${famiglia.toLowerCase()}. La tecnica ${technique2.toLowerCase()} lavora la texture verso un risultato ${texture.toLowerCase()}.`,
+      description: `Reinterpretazione moderna con ${base} in chiave ${metodo === "Stirred (mescolato)" ? "spirit-forward" : "texturale"}. ${sp.modifier} apporta complessità e lunghezza palatale. ${familyIng} definisce il carattere aromatico ${famiglia.toLowerCase()}. La tecnica ${technique2.toLowerCase()} lavora la texture verso un risultato ${texture.toLowerCase()}.`,
       tasting_notes: [sp.modifier.split(" ")[0], famiglia, `${texture} finish`],
       balance_explanation: `Architettura spirit-forward: la dolcezza di ${sp.modifier} contrasta con la complessità aromatica di ${familyIng}. Finish ${texture.toLowerCase()} persistente.`,
     };
@@ -507,7 +507,7 @@ const preferenceFields: Array<{
   { key: "intensita_alcolica", label: "Intensita alcolica", options: ["Bassa", "Media", "Alta", "Molto alta"] },
   { key: "profilo_gustativo", label: "Profilo gustativo", options: ["Dolce", "Secco", "Amaro", "Agrodolce", "Acido", "Fresco"] },
   { key: "famiglia_aromatica", label: "Famiglia aromatica", options: ["Agrumato", "Fruttato", "Speziato", "Erbaceo", "Floreale", "Tostato", "Piccante", "Neutro"] },
-  { key: "Genere", label: "Genere", options: ["Sour", "Highball", "Stirred (miscelati)", "Pestati", "Frozen", "Shakerato", "Agitato", "Tiki", "Build (Costruito in bicchiere)", "A strati (Layered)"] },
+  { key: "Genere", label: "Genere", options: ["Sour", "Highball", "Stirred (mescolato)", "Pestati", "Frozen", "Shakerato", "Agitato", "Tiki", "Build (Costruito in bicchiere)", "A strati (Layered)"] },
 ];
 
 const eyebrowStyle: React.CSSProperties = {

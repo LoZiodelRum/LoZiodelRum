@@ -72,7 +72,7 @@ const autoBaseRules: Array<{
   { keys: ["Genere", "famiglia_aromatica"], values: ["Frozen", "Fruttato"], suggestions: ["Rum"] },
   { keys: ["intensita_alcolica", "profilo_gustativo"], values: ["Molto alta", "Secco"], suggestions: ["Whisky"] },
   { keys: ["Genere", "profilo_gustativo"], values: ["Highball", "Fresco"], suggestions: ["Gin"] },
-  { keys: ["Genere", "profilo_gustativo"], values: ["Stirred (miscelati)", "Dolce"], suggestions: ["Brandy"] },
+  { keys: ["Genere", "profilo_gustativo"], values: ["Stirred (mescolato)", "Dolce"], suggestions: ["Brandy"] },
   { keys: ["intensita_alcolica", "texture"], values: ["Bassa", "Leggero"], suggestions: ["Analcolico"] },
 ];
 
