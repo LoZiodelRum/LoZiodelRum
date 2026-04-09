@@ -1004,7 +1004,7 @@ export default function PannelloControllo() {
       : uploadingWineImage;
 
   function clampPreviewOffset(offsetX: number, offsetY: number, zoom: number) {
-    const max = Math.max(0, ((zoom - 1) * PREVIEW_BOX_SIZE) / 2);
+    const max = Math.abs((zoom - 1) * PREVIEW_BOX_SIZE) / 2;
     return {
       x: Math.min(max, Math.max(-max, offsetX)),
       y: Math.min(max, Math.max(-max, offsetY)),
@@ -1300,7 +1300,7 @@ export default function PannelloControllo() {
                         <label style={labelStyle}>Zoom</label>
                         <input
                           type="range"
-                          min={1}
+                          min={0.4}
                           max={3}
                           step={0.05}
                           value={imageZoom}
