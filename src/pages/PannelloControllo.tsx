@@ -1077,18 +1077,45 @@ export default function PannelloControllo() {
               <div style={badgeErrorStyle}>Modifica non salvata</div>
             )}
 
-            <div style={formGridStyle}>
-              {Object.keys(selectedItem).map(key => {
-                if (key === "id" || (selectedTable === "cocktail" && (key === "data_creazione" || key === "created_at" || key === "texture"))) return null;
-                return (
-                  <React.Fragment key={key}>
-                  <div
-                    style={
-                      key === "contenuto"
-                        ? { ...fieldStyle, gridColumn: "1 / -1" }
-                        : fieldStyle
-                    }
-                  >
+            {(selectedTable === "cocktail" || selectedTable === "distillati") ? (
+              <div style={{ display: "flex", gap: 20, alignItems: "flex-start" }}>
+                <div style={{ flex: 1, display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 15 }}>
+                  {Object.keys(selectedItem).map(key => {
+                    if (key === "id" || (selectedTable === "cocktail" && (key === "data_creazione" || key === "created_at" || key === "texture")) || key === "immagine") return null;
+                    return (
+                      <React.Fragment key={key}>
+                      <div style={fieldStyle}>
+                        <label style={labelStyle}>{fieldLabelMap[key] ?? key}</label>
+                        {booleanFields.has(key) ? (
+                          <select value={String(toBoolean(selectedItem[key]))} onChange={(e) => { const value = e.target.value === "true"; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} style={selectStyle}><option value="true">true</option><option value="false">false</option></select>
+                        ) : selectedTable === "cocktail" && cocktailMultiSelectOptions[key] ? (
+                          <details style={{ position: "relative" }}><summary style={{ ...selectStyle, cursor: "pointer", listStyle: "none", display: "flex", alignItems: "center", justifyContent: "space-between" }}>{(() => { const selectedValues = typeof selectedItem[key] === "string" ? selectedItem[key].split(",").map((v: string) => v.trim()).filter(Boolean) : []; return selectedValues.length ? selectedValues.join(", ") : "Scegli"; })()}<span style={{ marginLeft: 8 }}>▾</span></summary><div style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, width: "100%", zIndex: 20, border: "1px solid #334155", borderRadius: 8, background: "#020617", padding: 8, maxHeight: 220, overflowY: "auto" }}>{cocktailMultiSelectOptions[key].map((option) => { const selectedValues = typeof selectedItem[key] === "string" ? selectedItem[key].split(",").map((v: string) => v.trim()).filter(Boolean) : []; const isChecked = selectedValues.includes(option); return (<label key={option} style={{ display: "grid", gridTemplateColumns: "1fr 24px", alignItems: "center", padding: "6px 4px", columnGap: 8, cursor: "pointer" }}><span>{option}</span><input type="checkbox" style={{ margin: 0, width: 18, height: 18, justifySelf: "center" }} checked={isChecked} onChange={(e) => { const updated = e.target.checked ? [...selectedValues, option] : selectedValues.filter((value) => value !== option); setSelectedItem((prev: any) => ({ ...prev, [key]: updated.join(",") })); setSaveStatus(null); }} /></label>); })}</div></details>
+                        ) : (
+                          <input value={selectedItem[key] ?? ""} onChange={(e) => { setSelectedItem((prev: any) => ({ ...prev, [key]: e.target.value })); setSaveStatus(null); }} style={inputStyle} />
+                        )}
+                      </div>
+                      </React.Fragment>
+                    );
+                  })}
+                </div>
+                <div style={{ width: 280, flexShrink: 0 }}>
+                  {selectedItem?.immagine && (<img src={selectedItem.immagine} alt="Anteprima" style={{ width: "100%", height: 280, objectFit: "cover", borderRadius: 8, border: "1px solid #334155", marginBottom: 12 }} />)}
+                  <label style={{ ...btnSaveStyle, padding: "8px 14px", fontSize: 13, cursor: "pointer", display: "block", textAlign: "center", width: "100%", opacity: (selectedTable === "cocktail" ? uploadingCocktailImage : uploadingDistillatoImage) ? 0.6 : 1 }}>{(selectedTable === "cocktail" ? uploadingCocktailImage : uploadingDistillatoImage) ? "Caricamento..." : "Carica immagine"}<input type="file" accept="image/*" style={{ display: "none" }} disabled={(selectedTable === "cocktail" ? uploadingCocktailImage : uploadingDistillatoImage)} onChange={(e) => { const file = e.target.files?.[0]; if (file) { if (selectedTable === "cocktail") handleCocktailImageUpload(file); else if (selectedTable === "distillati") handleDistillatoImageUpload(file); } }} /></label>
+                </div>
+              </div>
+            ) : (
+              <div style={formGridStyle}>
+                {Object.keys(selectedItem).map(key => {
+                  if (key === "id" || (selectedTable === "cocktail" && (key === "data_creazione" || key === "created_at" || key === "texture"))) return null;
+                  return (
+                    <React.Fragment key={key}>
+                    <div
+                      style={
+                        key === "contenuto"
+                          ? { ...fieldStyle, gridColumn: "1 / -1" }
+                          : fieldStyle
+                      }
+                    >
                     <label style={labelStyle}>{fieldLabelMap[key] ?? key}</label>
                     {booleanFields.has(key) ? (
                       <select
@@ -1363,40 +1390,13 @@ export default function PannelloControllo() {
                   )}
 
                   {(selectedTable === "cocktail" || selectedTable === "distillati") && key === "immagine" && (
-                    <div style={fieldStyle}>
-                      <label style={labelStyle}>Carica immagine</label>
-                      <label style={{ ...btnSaveStyle, padding: "8px 14px", fontSize: 13, cursor: "pointer", display: "inline-block", textAlign: "center", opacity: (selectedTable === "cocktail" ? uploadingCocktailImage : uploadingDistillatoImage) ? 0.6 : 1 }}>
-                        {(selectedTable === "cocktail" ? uploadingCocktailImage : uploadingDistillatoImage) ? "Caricamento..." : "Scegli file"}
-                        <input
-                          type="file"
-                          accept="image/*"
-                          style={{ display: "none" }}
-                          disabled={(selectedTable === "cocktail" ? uploadingCocktailImage : uploadingDistillatoImage)}
-                          onChange={(e) => {
-                            const file = e.target.files?.[0];
-                            if (file) {
-                              if (selectedTable === "cocktail") {
-                                handleCocktailImageUpload(file);
-                              } else if (selectedTable === "distillati") {
-                                handleDistillatoImageUpload(file);
-                              }
-                            }
-                          }}
-                        />
-                      </label>
-                      {selectedItem?.immagine && (
-                        <img
-                          src={selectedItem.immagine}
-                          alt="Anteprima"
-                          style={{ marginTop: 8, width: "100%", maxHeight: 140, objectFit: "cover", borderRadius: 8, border: "1px solid #334155" }}
-                        />
-                      )}
-                    </div>
+                      null
                   )}
                   </React.Fragment>
                 );
               })}
-            </div>
+                </div>
+              )}
 
             <div style={buttonRowStyle}>
               <button style={btnSaveStyle} onClick={salvaModifiche}>
