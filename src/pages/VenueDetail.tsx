@@ -54,8 +54,9 @@ export default function VenueDetail() {
   const { isAdmin } = useUser();
 
   const [locale, setLocale] = useState<Locale | null>(null);
-  const [form, setForm] = useState<any>(null); // ✅ AGGIUNTO
-  const [uploading, setUploading] = useState(false); // ✅ AGGIUNTO
+  const [form, setForm] = useState<any>(null);
+  const [uploading, setUploading] = useState(false);
+  const [isEditorOpen, setIsEditorOpen] = useState(false);
 
   const [recensioni, setRecensioni] = useState<Recensione[]>([]);
   const [media, setMedia] = useState<Media[]>([]);
@@ -74,7 +75,7 @@ export default function VenueDetail() {
       .single();
 
     setLocale(data);
-    setForm(data); // ✅ AGGIUNTO
+    setForm(data);
   }
 
   async function fetchRecensioni() {
@@ -98,16 +99,68 @@ export default function VenueDetail() {
     if (data) setMedia(data);
   }
 
-  // ✅ SAVE
   async function handleSave() {
-    const { error } = await supabase
-      .from("Locali")
-      .update({
-        ...form,
-        image: form.image || form.image_url,
-        image_url: form.image || form.image_url,
-      })
-      .eq("id", form.id);
+    const adminPassword =
+      localStorage.getItem("adminPassword") ||
+      import.meta.env.VITE_ADMIN_PASSWORD ||
+      "";
+
+    let error: any = null;
+
+    if (adminPassword) {
+      const endpoints = [
+        "/api/admin-save-locale",
+        "/.netlify/functions/admin-save-locale",
+      ];
+
+      let lastMessage = "Salvataggio locale fallito lato server.";
+
+      for (const endpoint of endpoints) {
+        try {
+          const response = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-admin-password": adminPassword,
+            },
+            body: JSON.stringify({
+              mode: "update",
+              id: form.id,
+              changes: {
+                ...form,
+                image: form.image || form.image_url,
+                image_url: form.image || form.image_url,
+              },
+            }),
+          });
+
+          const payload = await response.json().catch(() => ({}));
+          if (response.ok && payload?.ok) {
+            lastMessage = "";
+            break;
+          }
+
+          lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
+        } catch (e: any) {
+          lastMessage = e?.message || `Errore di rete su ${endpoint}`;
+        }
+      }
+
+      if (lastMessage) {
+        error = { message: lastMessage };
+      }
+    } else {
+      const result = await supabase
+        .from("Locali")
+        .update({
+          ...form,
+          image: form.image || form.image_url,
+          image_url: form.image || form.image_url,
+        })
+        .eq("id", form.id);
+
+      error = result.error;
+    }
 
     if (error) {
       alert("Errore salvataggio");
@@ -115,20 +168,71 @@ export default function VenueDetail() {
     }
 
     setLocale(form);
+    setIsEditorOpen(false);
     alert("Salvato ✅");
   }
 
-  // ✅ DELETE
   async function handleDelete() {
     const ok = confirm("Eliminare locale?");
     if (!ok) return;
 
-    await supabase.from("Locali").delete().eq("id", form.id);
+    const adminPassword =
+      localStorage.getItem("adminPassword") ||
+      import.meta.env.VITE_ADMIN_PASSWORD ||
+      "";
+
+    let error: any = null;
+
+    if (adminPassword) {
+      const endpoints = [
+        "/api/admin-save-locale",
+        "/.netlify/functions/admin-save-locale",
+      ];
+
+      let lastMessage = "Eliminazione locale fallita lato server.";
+
+      for (const endpoint of endpoints) {
+        try {
+          const response = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-admin-password": adminPassword,
+            },
+            body: JSON.stringify({
+              mode: "delete",
+              id: form.id,
+            }),
+          });
+
+          const payload = await response.json().catch(() => ({}));
+          if (response.ok && payload?.ok) {
+            lastMessage = "";
+            break;
+          }
+
+          lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
+        } catch (e: any) {
+          lastMessage = e?.message || `Errore di rete su ${endpoint}`;
+        }
+      }
+
+      if (lastMessage) {
+        error = { message: lastMessage };
+      }
+    } else {
+      const result = await supabase.from("Locali").delete().eq("id", form.id);
+      error = result.error;
+    }
+
+    if (error) {
+      alert(error.message || "Errore eliminazione");
+      return;
+    }
 
     window.location.href = "/";
   }
 
-  // ✅ UPLOAD IMMAGINE
   async function handleImageUpload(file: File) {
     if (!file) return;
 
@@ -193,35 +297,29 @@ export default function VenueDetail() {
   return (
     <div className="page fade-in venue-detail-page" style={{ color: "white" }}>
 
-      {/* 🔧 EDITOR ADMIN */}
-      {isAdmin && form && (
-        <div style={{ padding: 20, background: "#111", marginBottom: 30 }}>
-          <h2>Editor Locale</h2>
-
-          <input
-            type="file"
-            onChange={(e) => {
-              if (e.target.files?.[0]) handleImageUpload(e.target.files[0]);
-            }}
-          />
-
-          {uploading && <p>Upload...</p>}
-
-          <input value={form.nome || ""} onChange={(e)=>setForm({...form,nome:e.target.value})} placeholder="Nome" />
-          <input value={form.indirizzo || ""} onChange={(e)=>setForm({...form,indirizzo:e.target.value})} placeholder="Indirizzo" />
-          <input value={form.citta || ""} onChange={(e)=>setForm({...form,citta:e.target.value})} placeholder="Città" />
-          <input value={form.telefono || ""} onChange={(e)=>setForm({...form,telefono:e.target.value})} placeholder="Telefono" />
-          <input value={form.sito || ""} onChange={(e)=>setForm({...form,sito:e.target.value})} placeholder="Sito" />
-          <textarea value={form.recensioni || ""} onChange={(e)=>setForm({...form,recensioni:e.target.value})} placeholder="Recensioni" />
-
-          <textarea value={form.descrizione || ""} onChange={(e)=>setForm({...form,descrizione:e.target.value})} />
-          <textarea value={form.descrizione_completa || ""} onChange={(e)=>setForm({...form,descrizione_completa:e.target.value})} />
-
-          <div style={{ marginTop: 10 }}>
-            <button onClick={handleSave} style={{ background:"green",color:"#fff",marginRight:10 }}>Salva</button>
-            <button onClick={handleDelete} style={{ background:"red",color:"#fff" }}>Elimina</button>
-          </div>
-        </div>
+      {isAdmin && (
+        <button
+          type="button"
+          onClick={() => {
+            setForm(locale);
+            setIsEditorOpen(true);
+          }}
+          style={{
+            position: "fixed",
+            right: 20,
+            bottom: 20,
+            zIndex: 1100,
+            background: "#f5a623",
+            color: "#111",
+            border: "none",
+            borderRadius: 10,
+            padding: "10px 14px",
+            fontWeight: 700,
+            cursor: "pointer",
+          }}
+        >
+          Modifica
+        </button>
       )}
 
       {/* HERO */}
@@ -365,6 +463,62 @@ export default function VenueDetail() {
           })}
         </div>
       </div>
+
+      {isAdmin && isEditorOpen && form && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(2,6,23,0.75)",
+            zIndex: 1200,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 20,
+          }}
+          onClick={() => setIsEditorOpen(false)}
+        >
+          <div
+            style={{
+              width: "min(760px, 96vw)",
+              maxHeight: "86vh",
+              overflow: "auto",
+              background: "#0b1220",
+              border: "1px solid #334155",
+              borderRadius: 14,
+              padding: 16,
+              display: "grid",
+              gap: 10,
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <h3 style={{ margin: 0, color: "#f8fafc" }}>Modifica scheda locale</h3>
+
+            <input
+              type="file"
+              onChange={(e) => {
+                if (e.target.files?.[0]) handleImageUpload(e.target.files[0]);
+              }}
+            />
+            {uploading && <p style={{ margin: 0 }}>Upload immagine in corso...</p>}
+
+            <input value={form.nome || ""} onChange={(e) => setForm({ ...form, nome: e.target.value })} placeholder="Nome" style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
+            <input value={form.indirizzo || ""} onChange={(e) => setForm({ ...form, indirizzo: e.target.value })} placeholder="Indirizzo" style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
+            <input value={form.citta || ""} onChange={(e) => setForm({ ...form, citta: e.target.value })} placeholder="Citta" style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
+            <input value={form.telefono || ""} onChange={(e) => setForm({ ...form, telefono: e.target.value })} placeholder="Telefono" style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
+            <input value={form.sito || ""} onChange={(e) => setForm({ ...form, sito: e.target.value })} placeholder="Sito" style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
+            <textarea value={form.recensioni || ""} onChange={(e) => setForm({ ...form, recensioni: e.target.value })} placeholder="Recensioni" rows={2} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
+            <textarea value={form.descrizione || ""} onChange={(e) => setForm({ ...form, descrizione: e.target.value })} placeholder="Descrizione breve" rows={3} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
+            <textarea value={form.descrizione_completa || ""} onChange={(e) => setForm({ ...form, descrizione_completa: e.target.value })} placeholder="Descrizione completa" rows={6} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
+
+            <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
+              <button onClick={handleSave} style={{ background: "#16a34a", color: "#fff", border: "none", borderRadius: 8, padding: "8px 12px", fontWeight: 700, cursor: "pointer" }}>Salva</button>
+              <button onClick={handleDelete} style={{ background: "#dc2626", color: "#fff", border: "none", borderRadius: 8, padding: "8px 12px", fontWeight: 700, cursor: "pointer" }}>Elimina</button>
+              <button onClick={() => setIsEditorOpen(false)} style={{ background: "#334155", color: "#fff", border: "none", borderRadius: 8, padding: "8px 12px", fontWeight: 600, cursor: "pointer" }}>Chiudi</button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   );
