@@ -232,7 +232,6 @@ export default function DrinkDetail() {
               {input("famiglia_aromatica", "Famiglia aromatica")}
               {input("profilo_aromatico", "Profilo aromatico")}
               {input("Genere", "Genere")}
-              {input("texture", "Texture")}
             </>
           )}
 

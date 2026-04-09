@@ -736,14 +736,6 @@ export default function PannelloControllo() {
       "Built (Costruito in bicchiere)",
       "A strati (Layered)",
     ],
-    texture: [
-      "Liscio",
-      "Frizzante",
-      "Cremoso",
-      "Vellutato",
-      "Denso",
-      "Leggero",
-    ],
   };
 
   const fieldLabelMap: Record<string, string> = {
@@ -764,13 +756,6 @@ export default function PannelloControllo() {
         const lower = value.toLowerCase();
         if (key === "intensita_alcolica" && lower === "bassa (session drink)") {
           return "Bassa";
-        }
-        if (key === "texture") {
-          if (lower === "liscia") return "Liscio";
-          if (lower === "cremosa") return "Cremoso";
-          if (lower === "vellutata") return "Vellutato";
-          if (lower === "densa") return "Denso";
-          if (lower === "leggera") return "Leggero";
         }
         return normalizedOptions.get(lower) || "";
       })
@@ -1065,7 +1050,7 @@ export default function PannelloControllo() {
 
             <div style={formGridStyle}>
               {Object.keys(selectedItem).map(key => {
-                if (key === "id" || (selectedTable === "cocktail" && (key === "data_creazione" || key === "created_at"))) return null;
+                if (key === "id" || (selectedTable === "cocktail" && (key === "data_creazione" || key === "created_at" || key === "texture"))) return null;
                 return (
                   <React.Fragment key={key}>
                   <div
