@@ -507,7 +507,7 @@ const preferenceFields: Array<{
   { key: "intensita_alcolica", label: "Intensita alcolica", options: ["Bassa", "Media", "Alta", "Molto alta"] },
   { key: "profilo_gustativo", label: "Profilo gustativo", options: ["Dolce", "Secco", "Amaro", "Agrodolce", "Acido", "Fresco"] },
   { key: "famiglia_aromatica", label: "Famiglia aromatica", options: ["Agrumato", "Fruttato", "Speziato", "Erbaceo", "Floreale", "Tostato", "Neutro"] },
-  { key: "Genere", label: "Genere", options: ["Sour", "Highball", "Stirred (miscelati)", "Pestati", "Frozen", "Shakerato", "Agitato", "Tiki", "Built (Costruito in bicchiere)", "A strati (Layered)"] },
+  { key: "Genere", label: "Genere", options: ["Sour", "Highball", "Stirred (miscelati)", "Pestati", "Frozen", "Shakerato", "Agitato", "Tiki", "Build (Costruito in bicchiere)", "A strati (Layered)"] },
 ];
 
 const eyebrowStyle: React.CSSProperties = {

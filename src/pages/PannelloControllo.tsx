@@ -733,7 +733,7 @@ export default function PannelloControllo() {
       "Shakerato",
       "Agitato",
       "Tiki",
-      "Built (Costruito in bicchiere)",
+      "Build (Costruito in bicchiere)",
       "A strati (Layered)",
     ],
   };
