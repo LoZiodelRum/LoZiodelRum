@@ -218,7 +218,7 @@ export default function Vini() {
       className="fade-in drink-page-white vini-preview-page"
       style={{
         backgroundImage:
-          "linear-gradient(rgba(2, 6, 23, 0.55), rgba(2, 6, 23, 0.55)), url('https://voca-land.sgp1.cdn.digitaloceanspaces.com/-1/1769873282866/66e69a88.jpg')",
+          "url('https://winearound.imgix.net/img/pictures/picture_model_63344ef68d76b976ec644b56_1676976887607.png?fit=crop&w=730&h=360&fm=pjpg')",
         backgroundSize: "cover",
         backgroundPosition: "center",
         backgroundRepeat: "no-repeat",
