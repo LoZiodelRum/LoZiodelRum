@@ -3,6 +3,8 @@ import React, { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useUser } from "../context/UserContext";
 
+const PREVIEW_BOX_SIZE = 280;
+
 export default function PannelloControllo() {
   const { loading } = useUser();
 
@@ -38,6 +40,9 @@ export default function PannelloControllo() {
   const [uploadingCocktailImage, setUploadingCocktailImage] = useState(false);
   const [uploadingDistillatoImage, setUploadingDistillatoImage] = useState(false);
   const [uploadingWineImage, setUploadingWineImage] = useState(false);
+  const [imageZoom, setImageZoom] = useState(1);
+  const [imageOffset, setImageOffset] = useState({ x: 0, y: 0 });
+  const [dragAnchor, setDragAnchor] = useState<{ x: number; y: number } | null>(null);
 
   useEffect(() => {
     if (!loading && isAdmin) {
@@ -998,6 +1003,48 @@ export default function PannelloControllo() {
       ? uploadingDistillatoImage
       : uploadingWineImage;
 
+  function clampPreviewOffset(offsetX: number, offsetY: number, zoom: number) {
+    const max = Math.max(0, ((zoom - 1) * PREVIEW_BOX_SIZE) / 2);
+    return {
+      x: Math.min(max, Math.max(-max, offsetX)),
+      y: Math.min(max, Math.max(-max, offsetY)),
+    };
+  }
+
+  function handlePreviewPointerDown(event: React.PointerEvent<HTMLDivElement>) {
+    if (!selectedItem?.immagine) return;
+
+    event.currentTarget.setPointerCapture(event.pointerId);
+    setDragAnchor({
+      x: event.clientX - imageOffset.x,
+      y: event.clientY - imageOffset.y,
+    });
+  }
+
+  function handlePreviewPointerMove(event: React.PointerEvent<HTMLDivElement>) {
+    if (!dragAnchor) return;
+
+    const nextX = event.clientX - dragAnchor.x;
+    const nextY = event.clientY - dragAnchor.y;
+    setImageOffset(clampPreviewOffset(nextX, nextY, imageZoom));
+  }
+
+  function handlePreviewPointerUp(event: React.PointerEvent<HTMLDivElement>) {
+    if (!dragAnchor) return;
+
+    event.currentTarget.releasePointerCapture(event.pointerId);
+    setDragAnchor(null);
+  }
+
+  function resetPreviewTransform() {
+    setImageZoom(1);
+    setImageOffset({ x: 0, y: 0 });
+  }
+
+  useEffect(() => {
+    resetPreviewTransform();
+  }, [selectedItem?.id, selectedItem?.immagine, selectedTable]);
+
   return (
     <div className="page page-full-bleed fade-in" style={layoutStyle}>
       <div style={sidebarStyle}>
@@ -1216,7 +1263,64 @@ export default function PannelloControllo() {
                   })}
                 </div>
                 <div style={{ width: 280, flexShrink: 0 }}>
-                  {selectedItem?.immagine && (<img src={selectedItem.immagine} alt="Anteprima" style={{ width: "100%", height: 280, objectFit: "cover", borderRadius: 8, border: "1px solid #334155", marginBottom: 12 }} />)}
+                  {selectedItem?.immagine && (
+                    <>
+                      <div
+                        onPointerDown={handlePreviewPointerDown}
+                        onPointerMove={handlePreviewPointerMove}
+                        onPointerUp={handlePreviewPointerUp}
+                        onPointerCancel={handlePreviewPointerUp}
+                        style={{
+                          width: "100%",
+                          height: PREVIEW_BOX_SIZE,
+                          borderRadius: 8,
+                          border: "1px solid #334155",
+                          marginBottom: 10,
+                          overflow: "hidden",
+                          cursor: dragAnchor ? "grabbing" : "grab",
+                          touchAction: "none",
+                          background: "#0b1220",
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: "100%",
+                            height: "100%",
+                            backgroundImage: `url(${selectedItem.immagine})`,
+                            backgroundPosition: "center",
+                            backgroundSize: "cover",
+                            transform: `translate(${imageOffset.x}px, ${imageOffset.y}px) scale(${imageZoom})`,
+                            transformOrigin: "center center",
+                            transition: dragAnchor ? "none" : "transform 0.08s ease",
+                          }}
+                        />
+                      </div>
+
+                      <div style={{ ...fieldStyle, marginBottom: 12 }}>
+                        <label style={labelStyle}>Zoom</label>
+                        <input
+                          type="range"
+                          min={1}
+                          max={3}
+                          step={0.05}
+                          value={imageZoom}
+                          onChange={(e) => {
+                            const nextZoom = Number(e.target.value);
+                            setImageZoom(nextZoom);
+                            setImageOffset((prev) => clampPreviewOffset(prev.x, prev.y, nextZoom));
+                          }}
+                        />
+                        <button
+                          type="button"
+                          className="btn-primary btn-small"
+                          onClick={resetPreviewTransform}
+                          style={{ marginTop: 8 }}
+                        >
+                          Reset posizione
+                        </button>
+                      </div>
+                    </>
+                  )}
                   <label style={{ ...btnSaveStyle, padding: "8px 14px", fontSize: 13, cursor: "pointer", display: "block", textAlign: "center", width: "100%", opacity: isImageUploading ? 0.6 : 1 }}>{isImageUploading ? "Caricamento..." : "Carica immagine"}<input type="file" accept="image/*" style={{ display: "none" }} disabled={isImageUploading} onChange={(e) => { const file = e.target.files?.[0]; if (file) { if (selectedTable === "cocktail") handleCocktailImageUpload(file); else if (selectedTable === "distillati") handleDistillatoImageUpload(file); else if (isWineTable) handleWineImageUpload(file); } }} /></label>
                   <div style={{ ...fieldStyle, marginTop: 12 }}>
                     <label style={labelStyle}>URL immagine</label>
