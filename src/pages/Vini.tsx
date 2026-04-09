@@ -214,7 +214,17 @@ export default function Vini() {
   }
 
   return (
-    <div className="fade-in drink-page-white">
+    <div
+      className="fade-in drink-page-white"
+      style={{
+        backgroundImage:
+          "linear-gradient(rgba(2, 6, 23, 0.55), rgba(2, 6, 23, 0.55)), url('https://voca-land.sgp1.cdn.digitaloceanspaces.com/-1/1769873282866/66e69a88.jpg')",
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundAttachment: "fixed",
+      }}
+    >
       <style>{`
         .vini-grid {
           grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
