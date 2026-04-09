@@ -51,8 +51,7 @@ type Media = {
 
 export default function VenueDetail() {
   const { id } = useParams();
-  const { role } = useUser(); // ✅ AGGIUNTO
-  const isAdmin = role === "admin"; // ✅ AGGIUNTO
+  const { isAdmin } = useUser();
 
   const [locale, setLocale] = useState<Locale | null>(null);
   const [form, setForm] = useState<any>(null); // ✅ AGGIUNTO
