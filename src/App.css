@@ -1070,7 +1070,7 @@ button[style*="#c47a2c"] {
     padding: 0 8px !important;
   }
   .drink-page-white:not(.vini-preview-page) .drink-card-uniform {
-    aspect-ratio: 1 / 1.12;
+    aspect-ratio: 1 / 1.28;
   }
   .drink-page-white .drink-card-uniform img,
   .drink-page-white .drink-card-uniform .no-img-placeholder {
@@ -1188,7 +1188,7 @@ button[style*="#c47a2c"] {
     padding: 0 7px !important;
   }
   .drink-page-white:not(.vini-preview-page) .drink-card-uniform {
-    aspect-ratio: 1 / 1.16;
+    aspect-ratio: 1 / 1.36;
   }
   .drink-page-white .drink-card-uniform img,
   .drink-page-white .drink-card-uniform .no-img-placeholder {
