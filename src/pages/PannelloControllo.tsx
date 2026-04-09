@@ -37,6 +37,7 @@ export default function PannelloControllo() {
   const [uploadingLocaleVideo, setUploadingLocaleVideo] = useState(false);
   const [uploadingCocktailImage, setUploadingCocktailImage] = useState(false);
   const [uploadingDistillatoImage, setUploadingDistillatoImage] = useState(false);
+  const [uploadingWineImage, setUploadingWineImage] = useState(false);
 
   useEffect(() => {
     if (!loading && isAdmin) {
@@ -831,6 +832,19 @@ export default function PannelloControllo() {
     setUploadingDistillatoImage(false);
   }
 
+  async function handleWineImageUpload(file: File) {
+    if (!file) return;
+    setUploadingWineImage(true);
+    const ext = file.name.split(".").pop();
+    const fileName = `wine-img-${Date.now()}.${ext}`;
+    const { error } = await supabase.storage.from("drink-images").upload(fileName, file, { upsert: true, contentType: file.type || "image/jpeg" });
+    if (error) { alert("Errore upload immagine: " + error.message); setUploadingWineImage(false); return; }
+    const { data } = supabase.storage.from("drink-images").getPublicUrl(fileName);
+    setSelectedItem((prev: any) => ({ ...prev, immagine: data.publicUrl }));
+    setSaveStatus(null);
+    setUploadingWineImage(false);
+  }
+
   function openFirstEditor(table: string, data: any[]) {
     if (!Array.isArray(data) || data.length === 0) return;
 
@@ -976,6 +990,14 @@ export default function PannelloControllo() {
     );
   }
 
+  const isWineTable = selectedTable.toLowerCase() === "vini";
+  const isImageSidebarTable = selectedTable === "cocktail" || selectedTable === "distillati" || isWineTable;
+  const isImageUploading = selectedTable === "cocktail"
+    ? uploadingCocktailImage
+    : selectedTable === "distillati"
+      ? uploadingDistillatoImage
+      : uploadingWineImage;
+
   return (
     <div className="page page-full-bleed fade-in" style={layoutStyle}>
       <div style={sidebarStyle}>
@@ -1077,7 +1099,7 @@ export default function PannelloControllo() {
               <div style={badgeErrorStyle}>Modifica non salvata</div>
             )}
 
-            {(selectedTable === "cocktail" || selectedTable === "distillati") ? (
+            {isImageSidebarTable ? (
               <div style={{ display: "flex", gap: 20, alignItems: "flex-start" }}>
                 <div style={{ flex: 1, display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 15 }}>
                   {Object.keys(selectedItem).map(key => {
@@ -1088,6 +1110,101 @@ export default function PannelloControllo() {
                         <label style={labelStyle}>{fieldLabelMap[key] ?? key}</label>
                         {booleanFields.has(key) ? (
                           <select value={String(toBoolean(selectedItem[key]))} onChange={(e) => { const value = e.target.value === "true"; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} style={selectStyle}><option value="true">true</option><option value="false">false</option></select>
+                        ) : isWineTable && aisSelectOptions[key] ? (
+                          key === "descrizione_olfattiva" ? (
+                            <details style={{ position: "relative" }}>
+                              <summary
+                                style={{
+                                  ...selectStyle,
+                                  cursor: "pointer",
+                                  listStyle: "none",
+                                  display: "flex",
+                                  alignItems: "center",
+                                  justifyContent: "space-between",
+                                }}
+                              >
+                                {(() => {
+                                  const selectedValues = typeof selectedItem[key] === "string"
+                                    ? selectedItem[key].split(",").map((v: string) => v.trim()).filter(Boolean)
+                                    : [];
+                                  return selectedValues.length ? selectedValues.join(", ") : "Scegli";
+                                })()}
+                                <span style={{ marginLeft: 8 }}>▾</span>
+                              </summary>
+                              <div
+                                style={{
+                                  position: "absolute",
+                                  top: "calc(100% + 6px)",
+                                  left: 0,
+                                  width: "100%",
+                                  zIndex: 20,
+                                  border: "1px solid #334155",
+                                  borderRadius: 8,
+                                  background: "#020617",
+                                  padding: 8,
+                                  maxHeight: 190,
+                                  overflowY: "auto",
+                                }}
+                              >
+                                {aisSelectOptions[key].map((option) => {
+                                  const selectedValues = typeof selectedItem[key] === "string"
+                                    ? selectedItem[key].split(",").map((v: string) => v.trim()).filter(Boolean)
+                                    : [];
+                                  const isChecked = selectedValues.includes(option);
+
+                                  return (
+                                    <label
+                                      key={option}
+                                      style={{
+                                        display: "grid",
+                                        gridTemplateColumns: "1fr 24px",
+                                        alignItems: "center",
+                                        padding: "6px 4px",
+                                        columnGap: 8,
+                                        cursor: "pointer",
+                                      }}
+                                    >
+                                      <span>{option}</span>
+                                      <input
+                                        type="checkbox"
+                                        style={{ margin: 0, width: 18, height: 18, justifySelf: "center" }}
+                                        checked={isChecked}
+                                        onChange={(e) => {
+                                          const updated = e.target.checked
+                                            ? [...selectedValues, option]
+                                            : selectedValues.filter((value) => value !== option);
+
+                                          setSelectedItem((prev: any) => ({
+                                            ...prev,
+                                            [key]: updated.join(","),
+                                          }));
+                                          setSaveStatus(null);
+                                        }}
+                                      />
+                                    </label>
+                                  );
+                                })}
+                              </div>
+                            </details>
+                          ) : (
+                            <select
+                              value={selectedItem[key] ?? ""}
+                              onChange={(e) => {
+                                const value = e.target.value;
+                                setSelectedItem((prev: any) => ({
+                                  ...prev,
+                                  [key]: value,
+                                }));
+                                setSaveStatus(null);
+                              }}
+                              style={selectStyle}
+                            >
+                              <option value="">Scegli</option>
+                              {aisSelectOptions[key].map((option) => (
+                                <option key={option} value={option}>{option}</option>
+                              ))}
+                            </select>
+                          )
                         ) : selectedTable === "cocktail" && cocktailMultiSelectOptions[key] ? (
                           <details style={{ position: "relative" }}><summary style={{ ...selectStyle, cursor: "pointer", listStyle: "none", display: "flex", alignItems: "center", justifyContent: "space-between" }}>{(() => { const selectedValues = typeof selectedItem[key] === "string" ? selectedItem[key].split(",").map((v: string) => v.trim()).filter(Boolean) : []; return selectedValues.length ? selectedValues.join(", ") : "Scegli"; })()}<span style={{ marginLeft: 8 }}>▾</span></summary><div style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, width: "100%", zIndex: 20, border: "1px solid #334155", borderRadius: 8, background: "#020617", padding: 8, maxHeight: 220, overflowY: "auto" }}>{cocktailMultiSelectOptions[key].map((option) => { const selectedValues = typeof selectedItem[key] === "string" ? selectedItem[key].split(",").map((v: string) => v.trim()).filter(Boolean) : []; const isChecked = selectedValues.includes(option); return (<label key={option} style={{ display: "grid", gridTemplateColumns: "1fr 24px", alignItems: "center", padding: "6px 4px", columnGap: 8, cursor: "pointer" }}><span>{option}</span><input type="checkbox" style={{ margin: 0, width: 18, height: 18, justifySelf: "center" }} checked={isChecked} onChange={(e) => { const updated = e.target.checked ? [...selectedValues, option] : selectedValues.filter((value) => value !== option); setSelectedItem((prev: any) => ({ ...prev, [key]: updated.join(",") })); setSaveStatus(null); }} /></label>); })}</div></details>
                         ) : (
@@ -1100,7 +1217,7 @@ export default function PannelloControllo() {
                 </div>
                 <div style={{ width: 280, flexShrink: 0 }}>
                   {selectedItem?.immagine && (<img src={selectedItem.immagine} alt="Anteprima" style={{ width: "100%", height: 280, objectFit: "cover", borderRadius: 8, border: "1px solid #334155", marginBottom: 12 }} />)}
-                  <label style={{ ...btnSaveStyle, padding: "8px 14px", fontSize: 13, cursor: "pointer", display: "block", textAlign: "center", width: "100%", opacity: (selectedTable === "cocktail" ? uploadingCocktailImage : uploadingDistillatoImage) ? 0.6 : 1 }}>{(selectedTable === "cocktail" ? uploadingCocktailImage : uploadingDistillatoImage) ? "Caricamento..." : "Carica immagine"}<input type="file" accept="image/*" style={{ display: "none" }} disabled={(selectedTable === "cocktail" ? uploadingCocktailImage : uploadingDistillatoImage)} onChange={(e) => { const file = e.target.files?.[0]; if (file) { if (selectedTable === "cocktail") handleCocktailImageUpload(file); else if (selectedTable === "distillati") handleDistillatoImageUpload(file); } }} /></label>
+                  <label style={{ ...btnSaveStyle, padding: "8px 14px", fontSize: 13, cursor: "pointer", display: "block", textAlign: "center", width: "100%", opacity: isImageUploading ? 0.6 : 1 }}>{isImageUploading ? "Caricamento..." : "Carica immagine"}<input type="file" accept="image/*" style={{ display: "none" }} disabled={isImageUploading} onChange={(e) => { const file = e.target.files?.[0]; if (file) { if (selectedTable === "cocktail") handleCocktailImageUpload(file); else if (selectedTable === "distillati") handleDistillatoImageUpload(file); else if (isWineTable) handleWineImageUpload(file); } }} /></label>
                 </div>
               </div>
             ) : (
@@ -1389,7 +1506,7 @@ export default function PannelloControllo() {
                     </>
                   )}
 
-                  {(selectedTable === "cocktail" || selectedTable === "distillati") && key === "immagine" && (
+                    {(selectedTable === "cocktail" || selectedTable === "distillati" || isWineTable) && key === "immagine" && (
                       null
                   )}
                   </React.Fragment>
