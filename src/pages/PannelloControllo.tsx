@@ -40,9 +40,6 @@ export default function PannelloControllo() {
   const [uploadingCocktailImage, setUploadingCocktailImage] = useState(false);
   const [uploadingDistillatoImage, setUploadingDistillatoImage] = useState(false);
   const [uploadingWineImage, setUploadingWineImage] = useState(false);
-  const [imageZoom, setImageZoom] = useState(1);
-  const [imageOffset, setImageOffset] = useState({ x: 0, y: 0 });
-  const [dragAnchor, setDragAnchor] = useState<{ x: number; y: number } | null>(null);
   const [imagePreviewError, setImagePreviewError] = useState(false);
 
   useEffect(() => {
@@ -161,6 +158,7 @@ export default function PannelloControllo() {
     const fallbackSlug = typeof selectedItem?.slug === "string" ? selectedItem.slug.trim() : "";
     const isWineTable = selectedTable.toLowerCase() === "vini";
     const isCocktailTable = selectedTable.toLowerCase() === "cocktail";
+    const isDistillatiTable = selectedTable.toLowerCase() === "distillati";
 
     if (isCreating) {
       if (selectedTable.toLowerCase() === "vini") {
@@ -189,6 +187,48 @@ export default function PannelloControllo() {
           ];
 
           let lastMessage = "Creazione cocktail fallita lato server.";
+
+          for (const endpoint of endpoints) {
+            try {
+              const response = await fetch(endpoint, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "x-admin-password": adminPassword,
+                },
+                body: JSON.stringify({
+                  mode: "create",
+                  id: null,
+                  changes: cleanData,
+                }),
+              });
+
+              const payload = await response.json().catch(() => ({}));
+              if (response.ok && payload?.ok) {
+                lastMessage = "";
+                break;
+              }
+
+              lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
+            } catch (e: any) {
+              lastMessage = e?.message || `Errore di rete su ${endpoint}`;
+            }
+          }
+
+          if (lastMessage) {
+            error = { message: lastMessage };
+          }
+        }
+      } else if (isDistillatiTable) {
+        if (!adminPassword) {
+          error = { message: "Password admin non disponibile. Esci e rientra come admin." };
+        } else {
+          const endpoints = [
+            "/api/admin-save-distillato",
+            "/.netlify/functions/admin-save-distillato",
+          ];
+
+          let lastMessage = "Creazione distillato fallita lato server.";
 
           for (const endpoint of endpoints) {
             try {
@@ -362,6 +402,48 @@ export default function PannelloControllo() {
             error = { message: lastMessage };
           }
         }
+      } else if (isDistillatiTable) {
+        if (!adminPassword) {
+          error = { message: "Password admin non disponibile. Esci e rientra come admin." };
+        } else {
+          const endpoints = [
+            "/api/admin-save-distillato",
+            "/.netlify/functions/admin-save-distillato",
+          ];
+
+          let lastMessage = "Salvataggio distillato fallito lato server.";
+
+          for (const endpoint of endpoints) {
+            try {
+              const response = await fetch(endpoint, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "x-admin-password": adminPassword,
+                },
+                body: JSON.stringify({
+                  mode: "update",
+                  id: hasValidId ? id : null,
+                  changes: changedData,
+                }),
+              });
+
+              const payload = await response.json().catch(() => ({}));
+              if (response.ok && payload?.ok) {
+                lastMessage = "";
+                break;
+              }
+
+              lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
+            } catch (e: any) {
+              lastMessage = e?.message || `Errore di rete su ${endpoint}`;
+            }
+          }
+
+          if (lastMessage) {
+            error = { message: lastMessage };
+          }
+        }
       } else {
         if (!session) {
           setSaveStatus("error");
@@ -455,6 +537,7 @@ export default function PannelloControllo() {
     const fallbackSlug = typeof selectedItem?.slug === "string" ? selectedItem.slug.trim() : "";
     const isWineTable = selectedTable.toLowerCase() === "vini";
     const isCocktailTable = selectedTable.toLowerCase() === "cocktail";
+    const isDistillatiTable = selectedTable.toLowerCase() === "distillati";
 
     if (isCocktailTable) {
       if (!hasValidId) {
@@ -587,6 +670,70 @@ export default function PannelloControllo() {
       }
 
       if (!deleted) {
+        setSaveStatus("error");
+        alert(lastMessage);
+        return;
+      }
+
+      setSaveStatus("ok");
+
+      setTimeout(() => {
+        setSaveStatus(null);
+      }, 2000);
+
+      setSelectedItem(null);
+      setSelectedOriginalItem(null);
+      await loadData();
+      return;
+    }
+
+    if (isDistillatiTable) {
+      if (!hasValidId) {
+        setSaveStatus("error");
+        alert("Impossibile eliminare distillato: id record mancante.");
+        return;
+      }
+
+      if (!adminPassword) {
+        setSaveStatus("error");
+        alert("Password admin non disponibile. Esci e rientra come admin.");
+        return;
+      }
+
+      const endpoints = [
+        "/api/admin-save-distillato",
+        "/.netlify/functions/admin-save-distillato",
+      ];
+
+      let lastMessage = "Eliminazione distillato fallita lato server.";
+
+      for (const endpoint of endpoints) {
+        try {
+          const response = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-admin-password": adminPassword,
+            },
+            body: JSON.stringify({
+              mode: "delete",
+              id: selectedItem.id,
+            }),
+          });
+
+          const payload = await response.json().catch(() => ({}));
+          if (response.ok && payload?.ok) {
+            lastMessage = "";
+            break;
+          }
+
+          lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
+        } catch (e: any) {
+          lastMessage = e?.message || `Errore di rete su ${endpoint}`;
+        }
+      }
+
+      if (lastMessage) {
         setSaveStatus("error");
         alert(lastMessage);
         return;
@@ -1004,46 +1151,7 @@ export default function PannelloControllo() {
       ? uploadingDistillatoImage
       : uploadingWineImage;
 
-  function clampPreviewOffset(offsetX: number, offsetY: number, zoom: number) {
-    const max = Math.abs((zoom - 1) * PREVIEW_BOX_SIZE) / 2;
-    return {
-      x: Math.min(max, Math.max(-max, offsetX)),
-      y: Math.min(max, Math.max(-max, offsetY)),
-    };
-  }
-
-  function handlePreviewPointerDown(event: React.PointerEvent<HTMLDivElement>) {
-    if (!selectedItem?.immagine || imagePreviewError) return;
-
-    event.currentTarget.setPointerCapture(event.pointerId);
-    setDragAnchor({
-      x: event.clientX - imageOffset.x,
-      y: event.clientY - imageOffset.y,
-    });
-  }
-
-  function handlePreviewPointerMove(event: React.PointerEvent<HTMLDivElement>) {
-    if (!dragAnchor) return;
-
-    const nextX = event.clientX - dragAnchor.x;
-    const nextY = event.clientY - dragAnchor.y;
-    setImageOffset(clampPreviewOffset(nextX, nextY, imageZoom));
-  }
-
-  function handlePreviewPointerUp(event: React.PointerEvent<HTMLDivElement>) {
-    if (!dragAnchor) return;
-
-    event.currentTarget.releasePointerCapture(event.pointerId);
-    setDragAnchor(null);
-  }
-
-  function resetPreviewTransform() {
-    setImageZoom(1);
-    setImageOffset({ x: 0, y: 0 });
-  }
-
   useEffect(() => {
-    resetPreviewTransform();
     setImagePreviewError(false);
   }, [selectedItem?.id, selectedItem?.immagine, selectedTable]);
 
@@ -1268,10 +1376,6 @@ export default function PannelloControllo() {
                   {selectedItem?.immagine && (
                     <>
                       <div
-                        onPointerDown={handlePreviewPointerDown}
-                        onPointerMove={handlePreviewPointerMove}
-                        onPointerUp={handlePreviewPointerUp}
-                        onPointerCancel={handlePreviewPointerUp}
                         style={{
                           width: "100%",
                           height: PREVIEW_BOX_SIZE,
@@ -1279,8 +1383,6 @@ export default function PannelloControllo() {
                           border: "1px solid #334155",
                           marginBottom: 10,
                           overflow: "hidden",
-                          cursor: imagePreviewError ? "default" : (dragAnchor ? "grabbing" : "grab"),
-                          touchAction: "none",
                           background: "#0b1220",
                           position: "relative",
                         }}
@@ -1295,9 +1397,6 @@ export default function PannelloControllo() {
                             width: "100%",
                             height: "100%",
                             objectFit: "cover",
-                            transform: `translate(${imageOffset.x}px, ${imageOffset.y}px) scale(${imageZoom})`,
-                            transformOrigin: "center center",
-                            transition: dragAnchor ? "none" : "transform 0.08s ease",
                             userSelect: "none",
                             pointerEvents: "none",
                             opacity: imagePreviewError ? 0 : 1,
