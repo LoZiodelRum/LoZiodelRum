@@ -3,11 +3,14 @@ import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, MapPin } from "lucide-react";
 import { supabase } from "../lib/supabaseClient";
+import { useUser } from "../context/UserContext";
 
 type Locale = {
   id: string;
   nome: string;
   citta: string;
+  descrizione?: string | null;
+  descrizione_completa?: string | null;
   image_url: string | null;
 };
 
@@ -38,9 +41,13 @@ type RecensioneRow = {
 };
 
 export default function Home() {
+  const { isAdmin } = useUser();
   const [locali, setLocali] = useState<Locale[]>([]);
   const [articoli, setArticoli] = useState<Articolo[]>([]);
   const [recensioni, setRecensioni] = useState<Recensione[]>([]);
+  const [editingLocaleId, setEditingLocaleId] = useState<string | null>(null);
+  const [localeDraft, setLocaleDraft] = useState<Partial<Locale> | null>(null);
+  const [savingLocaleId, setSavingLocaleId] = useState<string | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -52,7 +59,7 @@ export default function Home() {
   async function fetchLocali() {
     const { data, error } = await supabase
       .from("Locali")
-      .select("*")
+      .select("id, nome, citta, descrizione, descrizione_completa, image_url")
       .eq("status", "approved")
       .limit(6);
 
@@ -62,6 +69,103 @@ export default function Home() {
     }
 
     setLocali(data ?? []);
+  }
+
+  function startLocaleEdit(locale: Locale) {
+    setEditingLocaleId(locale.id);
+    setLocaleDraft({
+      nome: locale.nome || "",
+      citta: locale.citta || "",
+      descrizione: locale.descrizione || "",
+      descrizione_completa: locale.descrizione_completa || "",
+    });
+  }
+
+  function cancelLocaleEdit() {
+    setEditingLocaleId(null);
+    setLocaleDraft(null);
+  }
+
+  async function saveLocaleEdit(localeId: string) {
+    if (!localeDraft) return;
+
+    const adminPassword =
+      localStorage.getItem("adminPassword") ||
+      import.meta.env.VITE_ADMIN_PASSWORD ||
+      "";
+
+    if (!adminPassword) {
+      alert("Password admin non disponibile. Esci e rientra come admin.");
+      return;
+    }
+
+    const changes = {
+      nome: (localeDraft.nome || "").trim(),
+      citta: (localeDraft.citta || "").trim(),
+      descrizione: (localeDraft.descrizione || "").trim() || null,
+      descrizione_completa: (localeDraft.descrizione_completa || "").trim() || null,
+    };
+
+    if (!changes.nome) {
+      alert("Il nome del locale non puo essere vuoto.");
+      return;
+    }
+
+    setSavingLocaleId(localeId);
+
+    const endpoints = [
+      "/api/admin-save-locale",
+      "/.netlify/functions/admin-save-locale",
+    ];
+
+    let lastMessage = "Salvataggio locale fallito lato server.";
+
+    for (const endpoint of endpoints) {
+      try {
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-admin-password": adminPassword,
+          },
+          body: JSON.stringify({
+            mode: "update",
+            id: localeId,
+            changes,
+          }),
+        });
+
+        const payload = await response.json().catch(() => ({}));
+        if (response.ok && payload?.ok) {
+          lastMessage = "";
+          break;
+        }
+
+        lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
+      } catch (e: any) {
+        lastMessage = e?.message || `Errore di rete su ${endpoint}`;
+      }
+    }
+
+    setSavingLocaleId(null);
+
+    if (lastMessage) {
+      alert(lastMessage);
+      return;
+    }
+
+    setLocali((prev) =>
+      prev.map((locale) =>
+        locale.id === localeId
+          ? {
+              ...locale,
+              ...changes,
+            }
+          : locale
+      )
+    );
+
+    cancelLocaleEdit();
   }
 
   async function fetchArticoli() {
@@ -368,15 +472,13 @@ export default function Home() {
         </div>
         <div className="section-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 20 }}>
           {locali.map((l) => (
-            <Link
+            <article
               key={l.id}
-              to={`/venue/${l.id}`}
               className="card-box"
               style={{
                 position: "relative",
                 borderRadius: 12,
                 overflow: "hidden",
-                cursor: "pointer",
                 textDecoration: "none",
                 height: 220,
                 display: "flex",
@@ -384,13 +486,74 @@ export default function Home() {
                 color: "#fff",
               }}
             >
-              <img src={l.image_url ?? "https://via.placeholder.com/400x300"} alt={l.nome} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }} />
-              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.8), transparent)", zIndex: 1 }} />
-              <div className="card-content" style={{ position: "relative", zIndex: 2, padding: 16, width: "100%" }}>
-                <h3 className="card-title" style={{ margin: "0 0 4px 0", fontSize: 18 }}>{l.nome}</h3>
-                <p className="card-subtitle" style={{ margin: 0, fontSize: 14, opacity: 0.9 }}>{l.citta}</p>
-              </div>
-            </Link>
+              {editingLocaleId === l.id && localeDraft ? (
+                <>
+                  <img src={l.image_url ?? "https://via.placeholder.com/400x300"} alt={l.nome} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }} />
+                  <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.92), rgba(0,0,0,0.55))", zIndex: 1 }} />
+                  <div style={{ position: "relative", zIndex: 2, width: "100%", padding: 12, display: "grid", gap: 8 }}>
+                    <input
+                      value={localeDraft.nome ?? ""}
+                      onChange={(e) => setLocaleDraft((prev) => ({ ...(prev || {}), nome: e.target.value }))}
+                      placeholder="Nome locale"
+                      style={{ borderRadius: 8, border: "1px solid #334155", background: "rgba(2,6,23,0.72)", color: "#fff", padding: "6px 8px", fontSize: 13 }}
+                    />
+                    <input
+                      value={localeDraft.citta ?? ""}
+                      onChange={(e) => setLocaleDraft((prev) => ({ ...(prev || {}), citta: e.target.value }))}
+                      placeholder="Citta"
+                      style={{ borderRadius: 8, border: "1px solid #334155", background: "rgba(2,6,23,0.72)", color: "#fff", padding: "6px 8px", fontSize: 13 }}
+                    />
+                    <textarea
+                      value={localeDraft.descrizione ?? ""}
+                      onChange={(e) => setLocaleDraft((prev) => ({ ...(prev || {}), descrizione: e.target.value }))}
+                      placeholder="Testo breve"
+                      rows={2}
+                      style={{ borderRadius: 8, border: "1px solid #334155", background: "rgba(2,6,23,0.72)", color: "#fff", padding: "6px 8px", fontSize: 12, resize: "none" }}
+                    />
+                    <div style={{ display: "flex", gap: 8 }}>
+                      <button
+                        type="button"
+                        onClick={() => saveLocaleEdit(l.id)}
+                        disabled={savingLocaleId === l.id}
+                        style={{ border: "none", borderRadius: 8, background: "#16a34a", color: "#fff", fontWeight: 700, fontSize: 12, padding: "6px 10px", cursor: "pointer", opacity: savingLocaleId === l.id ? 0.7 : 1 }}
+                      >
+                        {savingLocaleId === l.id ? "Salvataggio..." : "Salva"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={cancelLocaleEdit}
+                        style={{ border: "1px solid #64748b", borderRadius: 8, background: "rgba(15,23,42,0.8)", color: "#fff", fontWeight: 600, fontSize: 12, padding: "6px 10px", cursor: "pointer" }}
+                      >
+                        Annulla
+                      </button>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <Link
+                    to={`/venue/${l.id}`}
+                    style={{ position: "absolute", inset: 0, zIndex: 1 }}
+                    aria-label={`Apri scheda ${l.nome}`}
+                  />
+                  <img src={l.image_url ?? "https://via.placeholder.com/400x300"} alt={l.nome} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }} />
+                  <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.8), transparent)", zIndex: 2 }} />
+                  {isAdmin && (
+                    <button
+                      type="button"
+                      onClick={() => startLocaleEdit(l)}
+                      style={{ position: "absolute", top: 10, left: 10, zIndex: 3, border: "none", borderRadius: 8, background: "rgba(245,166,35,0.95)", color: "#111", fontWeight: 700, fontSize: 12, padding: "6px 10px", cursor: "pointer" }}
+                    >
+                      Modifica
+                    </button>
+                  )}
+                  <div className="card-content" style={{ position: "relative", zIndex: 3, padding: 16, width: "100%" }}>
+                    <h3 className="card-title" style={{ margin: "0 0 4px 0", fontSize: 18 }}>{l.nome}</h3>
+                    <p className="card-subtitle" style={{ margin: 0, fontSize: 14, opacity: 0.9 }}>{l.citta}</p>
+                  </div>
+                </>
+              )}
+            </article>
           ))}
         </div>
       </section>
