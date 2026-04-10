@@ -280,8 +280,11 @@ export default function VenueDetail() {
     return false;
   };
 
-  const giudizio = (value: string | null | undefined) =>
-    value && value !== "" ? value : "Non valutato";
+  const giudizio = (value: string | null | undefined) => {
+    const map: Record<string, string> = { "1": "Scarsa", "2": "Discreta", "3": "Buona", "4": "Ottima", "5": "Eccellente" };
+    if (!value || value === "") return "Non valutato";
+    return map[value] ?? value;
+  };
 
   const imageMain = locale.image_url || locale.image;
   const videoMain =
