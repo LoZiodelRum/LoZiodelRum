@@ -50,6 +50,14 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 
+  const isMissingTableError = (message: string) => {
+    const msg = (message || "").toLowerCase();
+    return (
+      msg.includes("could not find the table") ||
+      msg.includes("relation") && msg.includes("does not exist")
+    );
+  };
+
   const tableCandidates = ["Locali", "locali"];
   let lastError = "Could not save locale";
 
@@ -61,18 +69,27 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
           return res.status(200).json({ ok: true, table: tableName, id: data[0].id });
         }
         lastError = error?.message || `No row inserted into ${tableName}`;
+        if (!isMissingTableError(lastError)) {
+          return res.status(500).json({ ok: false, message: lastError });
+        }
       } else if (mode === "update") {
         const { data, error } = await supabaseAdmin.from(tableName).update(changes).eq("id", id).select("id");
         if (!error && data && data.length > 0) {
           return res.status(200).json({ ok: true, table: tableName, id: data[0].id });
         }
         lastError = error?.message || `No row updated in ${tableName}`;
+        if (!isMissingTableError(lastError)) {
+          return res.status(500).json({ ok: false, message: lastError });
+        }
       } else {
         const { data, error } = await supabaseAdmin.from(tableName).delete().eq("id", id).select("id");
         if (!error && data && data.length > 0) {
           return res.status(200).json({ ok: true, table: tableName, id: data[0].id });
         }
         lastError = error?.message || `No row deleted in ${tableName}`;
+        if (!isMissingTableError(lastError)) {
+          return res.status(500).json({ ok: false, message: lastError });
+        }
       }
     } catch (e: any) {
       lastError = e?.message || String(e);
