@@ -309,7 +309,9 @@ export default function VenueDetail() {
     return map[value] ?? value;
   };
 
-  const imageMain = normalizeImageUrl(locale.image_url) || normalizeImageUrl(locale.image);
+  const firstMediaImage = normalizeImageUrl(media.find((m) => m.tipo === "foto")?.url_file || "");
+  const placeholderHero = "https://via.placeholder.com/1600x900?text=Lo+Zio+del+Rum";
+  const imageMain = normalizeImageUrl(locale.image_url) || normalizeImageUrl(locale.image) || firstMediaImage;
   const videoMain =
     locale.video_url || media.find((m) => m.tipo === "video")?.url_file || "";
   const categoria = locale.categoria || locale.categorie || "Categoria non disponibile";
@@ -350,15 +352,11 @@ export default function VenueDetail() {
 
       {/* HERO */}
       <div className="venue-hero">
-        {imageMain && !imageLoadError ? (
-          <img
-            src={imageMain}
-            alt={locale.nome}
-            onError={() => setImageLoadError(true)}
-          />
-        ) : (
-          <div style={{ width: "100%", height: 220, borderRadius: 14, background: "#0f172a", border: "1px solid #1f2937" }} />
-        )}
+        <img
+          src={imageLoadError ? placeholderHero : (imageMain || placeholderHero)}
+          alt={locale.nome}
+          onError={() => setImageLoadError(true)}
+        />
 
         <div className="venue-hero-info">
           <h1>{locale.nome}</h1>
