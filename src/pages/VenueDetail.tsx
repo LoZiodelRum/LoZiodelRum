@@ -57,6 +57,7 @@ export default function VenueDetail() {
   const [form, setForm] = useState<any>(null);
   const [uploading, setUploading] = useState(false);
   const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const [imageLoadError, setImageLoadError] = useState(false);
 
   const [recensioni, setRecensioni] = useState<Recensione[]>([]);
   const [media, setMedia] = useState<Media[]>([]);
@@ -66,6 +67,21 @@ export default function VenueDetail() {
     fetchRecensioni();
     fetchMedia();
   }, []);
+
+  useEffect(() => {
+    setImageLoadError(false);
+  }, [locale?.id, locale?.image_url, locale?.image]);
+
+  function normalizeImageUrl(value?: string | null) {
+    const raw = (value || "").trim();
+    if (!raw) return "";
+    if (raw.startsWith("http://") || raw.startsWith("https://") || raw.startsWith("data:") || raw.startsWith("blob:") || raw.startsWith("/")) {
+      return raw;
+    }
+    if (raw.startsWith("//")) return `https:${raw}`;
+    if (raw.startsWith("www.")) return `https://${raw}`;
+    return `https://${raw}`;
+  }
 
   async function fetchLocale() {
     const { data } = await supabase
@@ -107,6 +123,8 @@ export default function VenueDetail() {
 
     let error: any = null;
 
+    const normalizedImage = normalizeImageUrl(form.image_url || form.image);
+
     if (adminPassword) {
       const isNetlifyHost = typeof window !== "undefined" && window.location.hostname.includes("netlify");
       const endpoints = isNetlifyHost
@@ -128,8 +146,8 @@ export default function VenueDetail() {
               id: form.id,
               changes: {
                 ...form,
-                image: form.image || form.image_url,
-                image_url: form.image || form.image_url,
+                image: normalizedImage,
+                image_url: normalizedImage,
               },
             }),
           });
@@ -159,8 +177,8 @@ export default function VenueDetail() {
         .from("Locali")
         .update({
           ...form,
-          image: form.image || form.image_url,
-          image_url: form.image || form.image_url,
+          image: normalizedImage,
+          image_url: normalizedImage,
         })
         .eq("id", form.id);
 
@@ -291,7 +309,7 @@ export default function VenueDetail() {
     return map[value] ?? value;
   };
 
-  const imageMain = locale.image_url || locale.image;
+  const imageMain = normalizeImageUrl(locale.image_url) || normalizeImageUrl(locale.image);
   const videoMain =
     locale.video_url || media.find((m) => m.tipo === "video")?.url_file || "";
   const categoria = locale.categoria || locale.categorie || "Categoria non disponibile";
@@ -332,10 +350,15 @@ export default function VenueDetail() {
 
       {/* HERO */}
       <div className="venue-hero">
-        <img
-          src={imageMain}
-          alt={locale.nome}
-        />
+        {imageMain && !imageLoadError ? (
+          <img
+            src={imageMain}
+            alt={locale.nome}
+            onError={() => setImageLoadError(true)}
+          />
+        ) : (
+          <div style={{ width: "100%", height: 220, borderRadius: 14, background: "#0f172a", border: "1px solid #1f2937" }} />
+        )}
 
         <div className="venue-hero-info">
           <h1>{locale.nome}</h1>
