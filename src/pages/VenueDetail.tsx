@@ -510,6 +510,14 @@ export default function VenueDetail() {
             />
             {uploading && <p style={{ margin: 0 }}>Upload immagine in corso...</p>}
 
+            <label style={{ color: "#94a3b8", fontSize: 12, display: "block", marginBottom: 4 }}>URL immagine anteprima</label>
+            <input
+              value={form.image_url || form.image || ""}
+              onChange={(e) => setForm({ ...form, image_url: e.target.value, image: e.target.value })}
+              placeholder="https://..."
+              style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }}
+            />
+
             <input value={form.nome || ""} onChange={(e) => setForm({ ...form, nome: e.target.value })} placeholder="Nome" style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
             <input value={form.indirizzo || ""} onChange={(e) => setForm({ ...form, indirizzo: e.target.value })} placeholder="Indirizzo" style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
             <input value={form.citta || ""} onChange={(e) => setForm({ ...form, citta: e.target.value })} placeholder="Citta" style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
