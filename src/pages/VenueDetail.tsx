@@ -512,14 +512,94 @@ export default function VenueDetail() {
             <textarea value={form.descrizione_completa || ""} onChange={(e) => setForm({ ...form, descrizione_completa: e.target.value })} placeholder="Descrizione completa" rows={6} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
 
             <h4 style={{ margin: "8px 0 4px", color: "#f97316" }}>Dati Tecnici</h4>
-            <input value={form.categorie || ""} onChange={(e) => setForm({ ...form, categorie: e.target.value })} placeholder="Categorie (es. cocktail bar, speakeasy)" style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
-            <input value={form.specialities || ""} onChange={(e) => setForm({ ...form, specialities: e.target.value })} placeholder="Specialità" style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
-            <textarea value={form.orari || ""} onChange={(e) => setForm({ ...form, orari: e.target.value })} placeholder="Orari apertura" rows={2} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
-            <input value={form.price_range || ""} onChange={(e) => setForm({ ...form, price_range: e.target.value })} placeholder="Fascia prezzo (€ / €€ / €€€)" style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
-            <input value={form.qualita_drink || ""} onChange={(e) => setForm({ ...form, qualita_drink: e.target.value })} placeholder="Qualità Drink (es. Eccellente)" style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
-            <input value={form.competenza_staff || ""} onChange={(e) => setForm({ ...form, competenza_staff: e.target.value })} placeholder="Competenza Staff (es. Alta)" style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
-            <input value={form.atmosfera || ""} onChange={(e) => setForm({ ...form, atmosfera: e.target.value })} placeholder="Atmosfera (es. Sofisticata)" style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
-            <input value={form.qualita_prezzo || ""} onChange={(e) => setForm({ ...form, qualita_prezzo: e.target.value })} placeholder="Qualità/Prezzo (es. Buono)" style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
+
+            {/* Categorie — multi-select (salvato come JSON array) */}
+            <div>
+              <label style={{ color: "#94a3b8", fontSize: 12, display: "block", marginBottom: 4 }}>Categorie (tieni ⌘/Ctrl per selezionare più valori)</label>
+              <select
+                multiple
+                value={(() => { try { return JSON.parse(form.categorie || "[]"); } catch { return []; } })()}
+                onChange={(e) => {
+                  const selected = Array.from(e.target.selectedOptions).map((o) => o.value);
+                  setForm({ ...form, categorie: JSON.stringify(selected) });
+                }}
+                style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "8px 12px", width: "100%", minHeight: 90 }}
+              >
+                <option value="cocktail_bar">Cocktail Bar</option>
+                <option value="wine_bar">Wine Bar</option>
+                <option value="speakeasy">Speakeasy</option>
+                <option value="lounge">Lounge Bar</option>
+                <option value="rooftop">Rooftop Bar</option>
+                <option value="pub">Pub</option>
+                <option value="birreria">Birreria</option>
+                <option value="enoteca">Enoteca</option>
+                <option value="ristorante">Ristorante</option>
+              </select>
+            </div>
+
+            {/* Specialità */}
+            <select value={form.specialities || ""} onChange={(e) => setForm({ ...form, specialities: e.target.value })} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }}>
+              <option value="">— Specialità —</option>
+              <option value="Cocktail d'autore">Cocktail d'autore</option>
+              <option value="Rum selection">Rum selection</option>
+              <option value="Whisky selection">Whisky selection</option>
+              <option value="Vini naturali">Vini naturali</option>
+              <option value="Birre artigianali">Birre artigianali</option>
+              <option value="Champagne & Bollicine">Champagne & Bollicine</option>
+              <option value="Miscelazione classica">Miscelazione classica</option>
+              <option value="Cucina & Cocktail">Cucina & Cocktail</option>
+            </select>
+
+            {/* Orari — testo libero */}
+            <textarea value={form.orari || ""} onChange={(e) => setForm({ ...form, orari: e.target.value })} placeholder="Orari apertura (es. Mar-Dom 20:00-03:00)" rows={2} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
+
+            {/* Fascia prezzo */}
+            <select value={form.price_range || ""} onChange={(e) => setForm({ ...form, price_range: e.target.value })} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }}>
+              <option value="">— Fascia prezzo —</option>
+              <option value="€">€ — Economico</option>
+              <option value="€€">€€ — Medio</option>
+              <option value="€€€">€€€ — Alto</option>
+            </select>
+
+            {/* Qualità Drink */}
+            <select value={form.qualita_drink || ""} onChange={(e) => setForm({ ...form, qualita_drink: e.target.value })} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }}>
+              <option value="">— Qualità Drink —</option>
+              <option value="Eccellente">Eccellente</option>
+              <option value="Ottima">Ottima</option>
+              <option value="Buona">Buona</option>
+              <option value="Discreta">Discreta</option>
+              <option value="Scarsa">Scarsa</option>
+            </select>
+
+            {/* Competenza Staff */}
+            <select value={form.competenza_staff || ""} onChange={(e) => setForm({ ...form, competenza_staff: e.target.value })} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }}>
+              <option value="">— Competenza Staff —</option>
+              <option value="Alta">Alta</option>
+              <option value="Media">Media</option>
+              <option value="Bassa">Bassa</option>
+            </select>
+
+            {/* Atmosfera */}
+            <select value={form.atmosfera || ""} onChange={(e) => setForm({ ...form, atmosfera: e.target.value })} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }}>
+              <option value="">— Atmosfera —</option>
+              <option value="Sofisticata">Sofisticata</option>
+              <option value="Elegante">Elegante</option>
+              <option value="Rilassata">Rilassata</option>
+              <option value="Vivace">Vivace</option>
+              <option value="Intima">Intima</option>
+              <option value="Moderna">Moderna</option>
+              <option value="Rustica">Rustica</option>
+              <option value="Industrial">Industrial</option>
+            </select>
+
+            {/* Qualità/Prezzo */}
+            <select value={form.qualita_prezzo || ""} onChange={(e) => setForm({ ...form, qualita_prezzo: e.target.value })} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }}>
+              <option value="">— Qualità/Prezzo —</option>
+              <option value="Ottimo">Ottimo</option>
+              <option value="Buono">Buono</option>
+              <option value="Discreto">Discreto</option>
+              <option value="Scarso">Scarso</option>
+            </select>
             <div style={{ display: "flex", gap: 24 }}>
               <label style={{ display: "flex", alignItems: "center", gap: 8, color: "#ccc" }}>
                 <input type="checkbox" checked={!!form.verificato} onChange={(e) => setForm({ ...form, verificato: e.target.checked })} />
