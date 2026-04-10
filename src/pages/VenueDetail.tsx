@@ -564,25 +564,41 @@ export default function VenueDetail() {
             {/* Qualità Drink */}
             <select value={form.qualita_drink || ""} onChange={(e) => setForm({ ...form, qualita_drink: e.target.value })} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }}>
               <option value="">— Qualità Drink —</option>
-              {[1,2,3,4,5].map((v) => <option key={v} value={v}>{v}</option>)}
+              <option value="Scarsa">Scarsa</option>
+              <option value="Discreta">Discreta</option>
+              <option value="Buona">Buona</option>
+              <option value="Ottima">Ottima</option>
+              <option value="Eccellente">Eccellente</option>
             </select>
 
             {/* Competenza Staff */}
             <select value={form.competenza_staff || ""} onChange={(e) => setForm({ ...form, competenza_staff: e.target.value })} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }}>
               <option value="">— Competenza Staff —</option>
-              {[1,2,3,4,5].map((v) => <option key={v} value={v}>{v}</option>)}
+              <option value="Scarsa">Scarsa</option>
+              <option value="Discreta">Discreta</option>
+              <option value="Buona">Buona</option>
+              <option value="Ottima">Ottima</option>
+              <option value="Eccellente">Eccellente</option>
             </select>
 
             {/* Atmosfera */}
             <select value={form.atmosfera || ""} onChange={(e) => setForm({ ...form, atmosfera: e.target.value })} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }}>
               <option value="">— Atmosfera —</option>
-              {[1,2,3,4,5].map((v) => <option key={v} value={v}>{v}</option>)}
+              <option value="Scarsa">Scarsa</option>
+              <option value="Discreta">Discreta</option>
+              <option value="Buona">Buona</option>
+              <option value="Ottima">Ottima</option>
+              <option value="Eccellente">Eccellente</option>
             </select>
 
             {/* Qualità/Prezzo */}
             <select value={form.qualita_prezzo || ""} onChange={(e) => setForm({ ...form, qualita_prezzo: e.target.value })} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }}>
               <option value="">— Qualità/Prezzo —</option>
-              {[1,2,3,4,5].map((v) => <option key={v} value={v}>{v}</option>)}
+              <option value="Scarso">Scarso</option>
+              <option value="Discreto">Discreto</option>
+              <option value="Buono">Buono</option>
+              <option value="Ottimo">Ottimo</option>
+              <option value="Eccellente">Eccellente</option>
             </select>
             <div style={{ display: "flex", gap: 24 }}>
               <label style={{ display: "flex", alignItems: "center", gap: 8, color: "#ccc" }}>
