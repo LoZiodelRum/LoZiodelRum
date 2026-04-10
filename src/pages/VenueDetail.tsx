@@ -108,10 +108,10 @@ export default function VenueDetail() {
     let error: any = null;
 
     if (adminPassword) {
-      const endpoints = [
-        "/api/admin-save-locale",
-        "/.netlify/functions/admin-save-locale",
-      ];
+      const isNetlifyHost = typeof window !== "undefined" && window.location.hostname.includes("netlify");
+      const endpoints = isNetlifyHost
+        ? ["/.netlify/functions/admin-save-locale", "/api/admin-save-locale"]
+        : ["/api/admin-save-locale", "/.netlify/functions/admin-save-locale"];
 
       let lastMessage = "Salvataggio locale fallito lato server.";
 
@@ -141,6 +141,11 @@ export default function VenueDetail() {
           }
 
           lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
+
+          // Fallback to the alternate platform endpoint only when route is missing.
+          if (response.status !== 404) {
+            break;
+          }
         } catch (e: any) {
           lastMessage = e?.message || `Errore di rete su ${endpoint}`;
         }
