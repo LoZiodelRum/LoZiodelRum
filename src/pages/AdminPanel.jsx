@@ -227,6 +227,33 @@ function LocaleFullCard({ locale, refresh }) {
       <textarea name="orari" value={edit.orari || ""} onChange={change} placeholder="Orari apertura" style={textarea} />
       <textarea name="descrizione_completa" value={edit.descrizione_completa || ""} onChange={change} placeholder="Descrizione completa" style={textarea} />
 
+      <h3 style={{ marginTop: 16, marginBottom: 8, color: "#f97316" }}>Dati Tecnici</h3>
+      <input name="categorie" value={edit.categorie || ""} onChange={change} placeholder="Categorie (es. cocktail bar, speakeasy)" style={input} />
+      <input name="specialities" value={edit.specialities || ""} onChange={change} placeholder="Specialità" style={input} />
+      <input name="qualita_drink" value={edit.qualita_drink || ""} onChange={change} placeholder="Qualità Drink (es. Eccellente)" style={input} />
+      <input name="competenza_staff" value={edit.competenza_staff || ""} onChange={change} placeholder="Competenza Staff (es. Alta)" style={input} />
+      <input name="atmosfera" value={edit.atmosfera || ""} onChange={change} placeholder="Atmosfera (es. Sofisticata)" style={input} />
+      <input name="qualita_prezzo" value={edit.qualita_prezzo || ""} onChange={change} placeholder="Qualità/Prezzo (es. Buono)" style={input} />
+
+      <div style={{ display: "flex", gap: 24, marginBottom: 8 }}>
+        <label style={{ display: "flex", alignItems: "center", gap: 8, color: "#ccc" }}>
+          <input
+            type="checkbox"
+            checked={!!edit.verificato}
+            onChange={(e) => setEdit({ ...edit, verificato: e.target.checked })}
+          />
+          Verificato
+        </label>
+        <label style={{ display: "flex", alignItems: "center", gap: 8, color: "#ccc" }}>
+          <input
+            type="checkbox"
+            checked={!!edit.in_evidenza}
+            onChange={(e) => setEdit({ ...edit, in_evidenza: e.target.checked })}
+          />
+          In Evidenza
+        </label>
+      </div>
+
       <select name="status" value={edit.status || ""} onChange={change} style={select}>
         <option value="pending">In attesa</option>
         <option value="approved">Approvato</option>
