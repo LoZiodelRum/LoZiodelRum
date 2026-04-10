@@ -511,6 +511,26 @@ export default function VenueDetail() {
             <textarea value={form.descrizione || ""} onChange={(e) => setForm({ ...form, descrizione: e.target.value })} placeholder="Descrizione breve" rows={3} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
             <textarea value={form.descrizione_completa || ""} onChange={(e) => setForm({ ...form, descrizione_completa: e.target.value })} placeholder="Descrizione completa" rows={6} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
 
+            <h4 style={{ margin: "8px 0 4px", color: "#f97316" }}>Dati Tecnici</h4>
+            <input value={form.categorie || ""} onChange={(e) => setForm({ ...form, categorie: e.target.value })} placeholder="Categorie (es. cocktail bar, speakeasy)" style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
+            <input value={form.specialities || ""} onChange={(e) => setForm({ ...form, specialities: e.target.value })} placeholder="Specialità" style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
+            <textarea value={form.orari || ""} onChange={(e) => setForm({ ...form, orari: e.target.value })} placeholder="Orari apertura" rows={2} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
+            <input value={form.price_range || ""} onChange={(e) => setForm({ ...form, price_range: e.target.value })} placeholder="Fascia prezzo (€ / €€ / €€€)" style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
+            <input value={form.qualita_drink || ""} onChange={(e) => setForm({ ...form, qualita_drink: e.target.value })} placeholder="Qualità Drink (es. Eccellente)" style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
+            <input value={form.competenza_staff || ""} onChange={(e) => setForm({ ...form, competenza_staff: e.target.value })} placeholder="Competenza Staff (es. Alta)" style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
+            <input value={form.atmosfera || ""} onChange={(e) => setForm({ ...form, atmosfera: e.target.value })} placeholder="Atmosfera (es. Sofisticata)" style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
+            <input value={form.qualita_prezzo || ""} onChange={(e) => setForm({ ...form, qualita_prezzo: e.target.value })} placeholder="Qualità/Prezzo (es. Buono)" style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
+            <div style={{ display: "flex", gap: 24 }}>
+              <label style={{ display: "flex", alignItems: "center", gap: 8, color: "#ccc" }}>
+                <input type="checkbox" checked={!!form.verificato} onChange={(e) => setForm({ ...form, verificato: e.target.checked })} />
+                Verificato
+              </label>
+              <label style={{ display: "flex", alignItems: "center", gap: 8, color: "#ccc" }}>
+                <input type="checkbox" checked={!!form.in_evidenza} onChange={(e) => setForm({ ...form, in_evidenza: e.target.checked })} />
+                In Evidenza
+              </label>
+            </div>
+
             <div style={{ display: "flex", gap: 10, marginTop: 4 }}>
               <button onClick={handleSave} style={{ background: "#16a34a", color: "#fff", border: "none", borderRadius: 8, padding: "8px 12px", fontWeight: 700, cursor: "pointer" }}>Salva</button>
               <button onClick={handleDelete} style={{ background: "#dc2626", color: "#fff", border: "none", borderRadius: 8, padding: "8px 12px", fontWeight: 700, cursor: "pointer" }}>Elimina</button>
