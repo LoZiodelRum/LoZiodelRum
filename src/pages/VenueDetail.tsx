@@ -564,9 +564,11 @@ export default function VenueDetail() {
             <label style={{ color: "#94a3b8", fontSize: 12, display: "block", marginBottom: 4 }}>Fascia prezzo</label>
             <select value={form.price_range || ""} onChange={(e) => setForm({ ...form, price_range: e.target.value })} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }}>
               <option value="">Seleziona</option>
-              <option value="€">€ — Economico</option>
-              <option value="€€">€€ — Medio</option>
-              <option value="€€€">€€€ — Alto</option>
+              <option value="€">€ — Molto economico</option>
+              <option value="€€">€€ — Economico</option>
+              <option value="€€€">€€€ — Medio</option>
+              <option value="€€€€">€€€€ — Alto</option>
+              <option value="€€€€€">€€€€€ — Molto alto</option>
             </select>
 
             <label style={{ color: "#94a3b8", fontSize: 12, display: "block", marginBottom: 4 }}>Qualità Drink</label>
