@@ -545,9 +545,9 @@ export default function VenueDetail() {
               </select>
             </div>
 
-            {/* Specialità */}
+            <label style={{ color: "#94a3b8", fontSize: 12, display: "block", marginBottom: 4 }}>Specialità</label>
             <select value={form.specialities || ""} onChange={(e) => setForm({ ...form, specialities: e.target.value })} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }}>
-              <option value="">— Specialità —</option>
+              <option value="">Seleziona</option>
               <option value="Cocktail d'autore">Cocktail d'autore</option>
               <option value="Rum selection">Rum selection</option>
               <option value="Whisky selection">Whisky selection</option>
@@ -558,20 +558,20 @@ export default function VenueDetail() {
               <option value="Cucina & Cocktail">Cucina & Cocktail</option>
             </select>
 
-            {/* Orari — testo libero */}
+            <label style={{ color: "#94a3b8", fontSize: 12, display: "block", marginBottom: 4 }}>Orari apertura</label>
             <textarea value={form.orari || ""} onChange={(e) => setForm({ ...form, orari: e.target.value })} placeholder="Orari apertura (es. Mar-Dom 20:00-03:00)" rows={2} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
 
-            {/* Fascia prezzo */}
+            <label style={{ color: "#94a3b8", fontSize: 12, display: "block", marginBottom: 4 }}>Fascia prezzo</label>
             <select value={form.price_range || ""} onChange={(e) => setForm({ ...form, price_range: e.target.value })} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }}>
-              <option value="">— Fascia prezzo —</option>
+              <option value="">Seleziona</option>
               <option value="€">€ — Economico</option>
               <option value="€€">€€ — Medio</option>
               <option value="€€€">€€€ — Alto</option>
             </select>
 
-            {/* Qualità Drink */}
+            <label style={{ color: "#94a3b8", fontSize: 12, display: "block", marginBottom: 4 }}>Qualità Drink</label>
             <select value={form.qualita_drink || ""} onChange={(e) => setForm({ ...form, qualita_drink: e.target.value })} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }}>
-              <option value="">— Qualità Drink —</option>
+              <option value="">Seleziona</option>
               <option value="1">Scarsa</option>
               <option value="2">Discreta</option>
               <option value="3">Buona</option>
@@ -579,9 +579,9 @@ export default function VenueDetail() {
               <option value="5">Eccellente</option>
             </select>
 
-            {/* Competenza Staff */}
+            <label style={{ color: "#94a3b8", fontSize: 12, display: "block", marginBottom: 4 }}>Competenza Staff</label>
             <select value={form.competenza_staff || ""} onChange={(e) => setForm({ ...form, competenza_staff: e.target.value })} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }}>
-              <option value="">— Competenza Staff —</option>
+              <option value="">Seleziona</option>
               <option value="1">Scarsa</option>
               <option value="2">Discreta</option>
               <option value="3">Buona</option>
@@ -589,9 +589,9 @@ export default function VenueDetail() {
               <option value="5">Eccellente</option>
             </select>
 
-            {/* Atmosfera */}
+            <label style={{ color: "#94a3b8", fontSize: 12, display: "block", marginBottom: 4 }}>Atmosfera</label>
             <select value={form.atmosfera || ""} onChange={(e) => setForm({ ...form, atmosfera: e.target.value })} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }}>
-              <option value="">— Atmosfera —</option>
+              <option value="">Seleziona</option>
               <option value="1">Scarsa</option>
               <option value="2">Discreta</option>
               <option value="3">Buona</option>
@@ -599,9 +599,9 @@ export default function VenueDetail() {
               <option value="5">Eccellente</option>
             </select>
 
-            {/* Qualità/Prezzo */}
+            <label style={{ color: "#94a3b8", fontSize: 12, display: "block", marginBottom: 4 }}>Qualità/Prezzo</label>
             <select value={form.qualita_prezzo || ""} onChange={(e) => setForm({ ...form, qualita_prezzo: e.target.value })} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }}>
-              <option value="">— Qualità/Prezzo —</option>
+              <option value="">Seleziona</option>
               <option value="1">Scarso</option>
               <option value="2">Discreto</option>
               <option value="3">Buono</option>
