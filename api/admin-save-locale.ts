@@ -58,28 +58,53 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     );
   };
 
+  const extractMissingColumn = (message: string) => {
+    const singleQuoteMatch = message.match(/could not find the '([^']+)' column/i);
+    if (singleQuoteMatch?.[1]) return singleQuoteMatch[1];
+    const doubleQuoteMatch = message.match(/column\s+"([^"]+)"/i);
+    if (doubleQuoteMatch?.[1]) return doubleQuoteMatch[1];
+    return null;
+  };
+
   const tableCandidates = ["Locali", "locali"];
   let lastError = "Could not save locale";
 
   for (const tableName of tableCandidates) {
     try {
+      let safeChanges = mode === "delete" ? null : { ...changes };
       if (mode === "create") {
-        const { data, error } = await supabaseAdmin.from(tableName).insert([changes]).select("id");
-        if (!error && data && data.length > 0) {
-          return res.status(200).json({ ok: true, table: tableName, id: data[0].id });
-        }
-        lastError = error?.message || `No row inserted into ${tableName}`;
-        if (!isMissingTableError(lastError)) {
-          return res.status(500).json({ ok: false, message: lastError });
+        while (true) {
+          const { data, error } = await supabaseAdmin.from(tableName).insert([safeChanges]).select("id");
+          if (!error && data && data.length > 0) {
+            return res.status(200).json({ ok: true, table: tableName, id: data[0].id });
+          }
+          lastError = error?.message || `No row inserted into ${tableName}`;
+          const missingColumn = extractMissingColumn(lastError);
+          if (missingColumn && safeChanges && missingColumn in safeChanges) {
+            delete (safeChanges as Record<string, any>)[missingColumn];
+            continue;
+          }
+          if (!isMissingTableError(lastError)) {
+            return res.status(500).json({ ok: false, message: lastError });
+          }
+          break;
         }
       } else if (mode === "update") {
-        const { data, error } = await supabaseAdmin.from(tableName).update(changes).eq("id", id).select("id");
-        if (!error && data && data.length > 0) {
-          return res.status(200).json({ ok: true, table: tableName, id: data[0].id });
-        }
-        lastError = error?.message || `No row updated in ${tableName}`;
-        if (!isMissingTableError(lastError)) {
-          return res.status(500).json({ ok: false, message: lastError });
+        while (true) {
+          const { data, error } = await supabaseAdmin.from(tableName).update(safeChanges).eq("id", id).select("id");
+          if (!error && data && data.length > 0) {
+            return res.status(200).json({ ok: true, table: tableName, id: data[0].id });
+          }
+          lastError = error?.message || `No row updated in ${tableName}`;
+          const missingColumn = extractMissingColumn(lastError);
+          if (missingColumn && safeChanges && missingColumn in safeChanges) {
+            delete (safeChanges as Record<string, any>)[missingColumn];
+            continue;
+          }
+          if (!isMissingTableError(lastError)) {
+            return res.status(500).json({ ok: false, message: lastError });
+          }
+          break;
         }
       } else {
         const { data, error } = await supabaseAdmin.from(tableName).delete().eq("id", id).select("id");
