@@ -1750,7 +1750,7 @@ export default function PannelloControllo() {
                       {/* Carica video */}
                       <div style={fieldStyle}>
                         <label style={labelStyle}>Carica video</label>
-                        <label style={{ ...btnSaveStyle, padding: "8px 14px", fontSize: 13, cursor: "pointer", display: "inline-block", textAlign: "center", opacity: uploadingLocaleVideo ? 0.6 : 1 }}>
+                        <label style={{ ...btnSaveStyle, flex: "0 0 auto", padding: "8px 14px", fontSize: 13, cursor: "pointer", display: "inline-block", textAlign: "center", opacity: uploadingLocaleVideo ? 0.6 : 1 }}>
                           {uploadingLocaleVideo ? "Caricamento..." : "Scegli file"}
                           <input
                             type="file"
