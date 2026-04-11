@@ -217,12 +217,7 @@ export default function Vini() {
     <div
       className="fade-in drink-page-white vini-preview-page"
       style={{
-        backgroundImage:
-          "url('https://winearound.imgix.net/img/pictures/picture_model_63344ef68d76b976ec644b56_1676976887607.png?fit=crop&w=730&h=360&fm=pjpg')",
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-        backgroundAttachment: "fixed",
+        background: "#0b0b0b",
       }}
     >
       <style>{`
