@@ -624,7 +624,7 @@ button:active { transform: scale(0.98); }
 @media (max-width: 768px) {
   .venue-detail-page {
     max-width: 100%;
-    padding: 8px 2px 14px;
+    padding: 8px 1px 14px;
     border-radius: 0;
   }
 
@@ -636,7 +636,7 @@ button:active { transform: scale(0.98); }
   }
 
   .venue-detail-page .content-wrapper {
-    padding: 14px 12px;
+    padding: 14px 6px;
   }
 
   .venue-detail-page .grid-wrapper {
