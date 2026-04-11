@@ -1002,7 +1002,7 @@ export default function PannelloControllo() {
 
   async function generaCampoAI(campo: string) {
     try {
-      console.log("CLICK AI", campo);
+      console.log("CLICK AI", campo, "nome:", selectedItem?.nome);
       const res = await fetch("/api/ai-storia", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -1010,11 +1010,19 @@ export default function PannelloControllo() {
       });
       const responseData = await res.json();
       console.log("RISPOSTA AI:", responseData);
+      if (!res.ok) {
+        alert("Errore AI: " + (responseData?.errore || `HTTP ${res.status}`));
+        return;
+      }
+      if (!responseData.testo) {
+        alert("Errore AI: risposta vuota dal server");
+        return;
+      }
       setSelectedItem((prev: any) => ({ ...prev, [campo]: responseData.testo }));
       setSaveStatus(null);
     } catch (err) {
       console.error("ERRORE AI:", err);
-      alert("Errore AI");
+      alert("Errore AI: " + (err instanceof Error ? err.message : String(err)));
     }
   }
 
