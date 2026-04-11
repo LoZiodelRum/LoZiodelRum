@@ -12,6 +12,20 @@ import {
 export default function Crea() {
   const { user } = useUser();
   const navigate = useNavigate();
+  const [cocktailForm, setCocktailForm] = useState({
+    nome: "",
+    descrizione: "",
+    preparazione: "",
+    ingredienti: "",
+    storia: "",
+    consigli: "",
+    guarnizione: "",
+    intensita_alcolica: "",
+    profilo_gustativo: "",
+    famiglia_aromatica: "",
+    base_alcolica: "",
+    Genere: "",
+  });
   const [preferences, setPreferences] = useState<CocktailPreferences>({});
   const [suggestions, setSuggestions] = useState<SuggestedCocktail[]>([]);
   const [error, setError] = useState<string | null>(null);
@@ -271,34 +285,44 @@ export default function Crea() {
     setOpenGeneratedForms((prev) => ({ ...prev, [name]: !prev[name] }));
   }
 
-  async function saveGeneratedCocktail(cocktail: SuggestedCocktail) {
-    setSavingNames((prev) => ({ ...prev, [cocktail.name]: true }));
+  async function saveGeneratedCocktail(suggestedCocktail: SuggestedCocktail) {
+    setSavingNames((prev) => ({ ...prev, [suggestedCocktail.name]: true }));
 
     const nowIso = new Date().toISOString();
+    const generatedPreparation = `${suggestedCocktail.technique}. ${suggestedCocktail.doses.map((dose, index) => `${dose} ${suggestedCocktail.ingredients[index] || ""}`.trim()).join(", ")}`;
+
+    const finalName = cocktailForm.nome.trim() || suggestedCocktail.name;
+    const finalIngredients = cocktailForm.ingredienti.trim() || suggestedCocktail.ingredients.join("; ");
+    const finalDescription = cocktailForm.descrizione.trim() || suggestedCocktail.description;
+    const finalPreparation = cocktailForm.preparazione.trim() || generatedPreparation;
+    const finalGarnish = cocktailForm.guarnizione.trim() || suggestedCocktail.garnish;
+
     const italianPayloads = [
       {
-        nome: cocktail.name,
-        ingredienti: cocktail.ingredients.join("; "),
-        descrizione: cocktail.description,
-        preparazione: `${cocktail.technique}. ${cocktail.doses.map((dose, index) => `${dose} ${cocktail.ingredients[index] || ""}`.trim()).join(", ")}`,
-        bicchiere: cocktail.glass,
-        guarnizione: cocktail.garnish,
+        nome: finalName,
+        ingredienti: finalIngredients,
+        descrizione: finalDescription,
+        preparazione: finalPreparation,
+        storia: cocktailForm.storia || null,
+        consigli: cocktailForm.consigli || null,
+        bicchiere: suggestedCocktail.glass,
+        guarnizione: finalGarnish,
         categoria: "cocktail",
-        base_alcolica: preferences.base_alcolica || cocktail.base_spirit,
-        intensita_alcolica: serializePreferenceValue(preferences.intensita_alcolica),
-        profilo_gustativo: serializePreferenceValue(preferences.profilo_gustativo),
-        famiglia_aromatica: serializePreferenceValue(preferences.famiglia_aromatica),
-        Genere: preferences.Genere || null,
+        base_alcolica: cocktailForm.base_alcolica || preferences.base_alcolica || suggestedCocktail.base_spirit,
+        intensita_alcolica: serializePreferenceValue(cocktailForm.intensita_alcolica || preferences.intensita_alcolica),
+        profilo_gustativo: serializePreferenceValue(cocktailForm.profilo_gustativo || preferences.profilo_gustativo),
+        famiglia_aromatica: serializePreferenceValue(cocktailForm.famiglia_aromatica || preferences.famiglia_aromatica),
+        Genere: cocktailForm.Genere || preferences.Genere || null,
         texture: preferences.texture || null,
         created_at: nowIso,
       },
       {
-        nome: cocktail.name,
-        ingredienti: cocktail.ingredients.join("; "),
-        descrizione: cocktail.description,
-        preparazione: `${cocktail.technique}. ${cocktail.doses.map((dose, index) => `${dose} ${cocktail.ingredients[index] || ""}`.trim()).join(", ")}`,
-        bicchiere: cocktail.glass,
-        guarnizione: cocktail.garnish,
+        nome: finalName,
+        ingredienti: finalIngredients,
+        descrizione: finalDescription,
+        preparazione: finalPreparation,
+        bicchiere: suggestedCocktail.glass,
+        guarnizione: finalGarnish,
         categoria: "cocktail",
       },
     ];
@@ -318,8 +342,8 @@ export default function Crea() {
 
         if (!insertError) {
           const insertedId = Array.isArray(insertedRows) && insertedRows[0]?.id ? String(insertedRows[0].id) : null;
-          setSavedNames((prev) => ({ ...prev, [cocktail.name]: true }));
-          setSavingNames((prev) => ({ ...prev, [cocktail.name]: false }));
+          setSavedNames((prev) => ({ ...prev, [suggestedCocktail.name]: true }));
+          setSavingNames((prev) => ({ ...prev, [suggestedCocktail.name]: false }));
           alert("Cocktail salvato nel catalogo ✅");
 
           if (insertedId && attempt.table === "cocktail") {
@@ -333,8 +357,42 @@ export default function Crea() {
       }
     }
 
-    setSavingNames((prev) => ({ ...prev, [cocktail.name]: false }));
+    setSavingNames((prev) => ({ ...prev, [suggestedCocktail.name]: false }));
     alert(lastMessage);
+  }
+
+  async function generaCampoAI(campo: string) {
+    try {
+      console.log("CLICK AI", campo);
+
+      const res = await fetch("http://localhost:3000/api/ai-storia", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          name: cocktailForm.nome,
+          campo: campo
+        })
+      });
+
+      const data = await res.json();
+
+      console.log("RISPOSTA AI:", data);
+
+      setCocktailForm(prev => ({
+        ...prev,
+        [campo]: data.testo
+      }));
+
+    } catch (err) {
+      console.error("ERRORE AI:", err);
+      alert("Errore AI");
+    }
+  }
+
+  function updateCocktailField(key: keyof typeof cocktailForm, value: string) {
+    setCocktailForm((prev) => ({ ...prev, [key]: value }));
   }
 
   const createdBy = user?.email || user?.id || "utente Lo Zio";
@@ -350,6 +408,342 @@ export default function Crea() {
       </div>
 
       <div className="crea-panel" style={panelStyle}>
+        <div style={{ marginBottom: 18 }}>
+          <h2 style={{ marginTop: 0, marginBottom: 12 }}>Compila scheda cocktail</h2>
+          <div className="crea-generated-form" style={generatedFormStyle}>
+            <div className="crea-generated-field" style={generatedFieldStyle}>
+              <label className="crea-label" style={labelStyle}>Nome</label>
+              <input
+                value={cocktailForm.nome}
+                onChange={(event) => updateCocktailField("nome", event.target.value)}
+                style={inputStyle}
+              />
+            </div>
+
+            <div className="crea-generated-field" style={generatedFieldStyle}>
+              <label className="crea-label" style={labelStyle}>Descrizione</label>
+              <textarea
+                value={cocktailForm.descrizione}
+                onChange={(event) => updateCocktailField("descrizione", event.target.value)}
+                style={textareaStyle}
+              />
+              <button
+                type="button"
+                onClick={() => generaCampoAI("descrizione")}
+                style={{
+                  marginTop: 8,
+                  padding: "6px 10px",
+                  borderRadius: 6,
+                  border: "none",
+                  background: "#2e7e79",
+                  color: "#fff",
+                  cursor: "pointer"
+                }}
+              >
+                ✨ AI
+              </button>
+            </div>
+
+            <div className="crea-generated-field" style={generatedFieldStyle}>
+              <label className="crea-label" style={labelStyle}>Preparazione</label>
+              <textarea
+                value={cocktailForm.preparazione}
+                onChange={(event) => updateCocktailField("preparazione", event.target.value)}
+                style={textareaStyle}
+              />
+              <button
+                type="button"
+                onClick={() => generaCampoAI("preparazione")}
+                style={{
+                  marginTop: 8,
+                  padding: "6px 10px",
+                  borderRadius: 6,
+                  border: "none",
+                  background: "#2e7e79",
+                  color: "#fff",
+                  cursor: "pointer"
+                }}
+              >
+                ✨ AI
+              </button>
+            </div>
+
+            <div className="crea-generated-field" style={generatedFieldStyle}>
+              <label className="crea-label" style={labelStyle}>Ingredienti</label>
+              <textarea
+                value={cocktailForm.ingredienti}
+                onChange={(event) => updateCocktailField("ingredienti", event.target.value)}
+                style={textareaStyle}
+              />
+              <button
+                type="button"
+                onClick={() => generaCampoAI("ingredienti")}
+                style={{
+                  marginTop: 8,
+                  padding: "6px 10px",
+                  borderRadius: 6,
+                  border: "none",
+                  background: "#2e7e79",
+                  color: "#fff",
+                  cursor: "pointer"
+                }}
+              >
+                ✨ AI
+              </button>
+            </div>
+
+            <div className="crea-generated-field" style={generatedFieldStyle}>
+              <label className="crea-label" style={labelStyle}>Storia</label>
+              <textarea
+                value={cocktailForm.storia}
+                onChange={(event) => updateCocktailField("storia", event.target.value)}
+                style={textareaStyle}
+              />
+              <button
+                type="button"
+                onClick={() => generaCampoAI("storia")}
+                style={{
+                  marginTop: 8,
+                  padding: "6px 10px",
+                  borderRadius: 6,
+                  border: "none",
+                  background: "#2e7e79",
+                  color: "#fff",
+                  cursor: "pointer"
+                }}
+              >
+                ✨ AI
+              </button>
+            </div>
+
+            <div className="crea-generated-field" style={generatedFieldStyle}>
+              <label className="crea-label" style={labelStyle}>Consigli</label>
+              <textarea
+                value={cocktailForm.consigli}
+                onChange={(event) => updateCocktailField("consigli", event.target.value)}
+                style={textareaStyle}
+              />
+              <button
+                type="button"
+                onClick={() => generaCampoAI("consigli")}
+                style={{
+                  marginTop: 8,
+                  padding: "6px 10px",
+                  borderRadius: 6,
+                  border: "none",
+                  background: "#2e7e79",
+                  color: "#fff",
+                  cursor: "pointer"
+                }}
+              >
+                ✨ AI
+              </button>
+            </div>
+
+            <div className="crea-generated-field" style={generatedFieldStyle}>
+              <label className="crea-label" style={labelStyle}>Guarnizione</label>
+              <input
+                value={cocktailForm.guarnizione}
+                onChange={(event) => updateCocktailField("guarnizione", event.target.value)}
+                style={inputStyle}
+              />
+              <button
+                type="button"
+                onClick={() => generaCampoAI("guarnizione")}
+                style={{
+                  marginTop: 8,
+                  padding: "6px 10px",
+                  borderRadius: 6,
+                  border: "none",
+                  background: "#2e7e79",
+                  color: "#fff",
+                  cursor: "pointer"
+                }}
+              >
+                ✨ AI
+              </button>
+            </div>
+
+            <div className="crea-generated-field" style={generatedFieldStyle}>
+              <label className="crea-label" style={labelStyle}>Intensita alcolica</label>
+              <select
+                value={cocktailForm.intensita_alcolica}
+                onChange={(event) => updateCocktailField("intensita_alcolica", event.target.value)}
+                style={selectStyle}
+              >
+                <option value="">Scegli</option>
+                <option value="Bassa">Bassa</option>
+                <option value="Media">Media</option>
+                <option value="Alta">Alta</option>
+                <option value="Molto alta">Molto alta</option>
+              </select>
+              <button
+                type="button"
+                onClick={() => generaCampoAI("intensita_alcolica")}
+                style={{
+                  marginTop: 8,
+                  padding: "6px 10px",
+                  borderRadius: 6,
+                  border: "none",
+                  background: "#2e7e79",
+                  color: "#fff",
+                  cursor: "pointer"
+                }}
+              >
+                ✨ AI
+              </button>
+            </div>
+
+            <div className="crea-generated-field" style={generatedFieldStyle}>
+              <label className="crea-label" style={labelStyle}>Profilo gustativo</label>
+              <select
+                value={cocktailForm.profilo_gustativo}
+                onChange={(event) => updateCocktailField("profilo_gustativo", event.target.value)}
+                style={selectStyle}
+              >
+                <option value="">Scegli</option>
+                <option value="Dolce">Dolce</option>
+                <option value="Secco">Secco</option>
+                <option value="Amaro">Amaro</option>
+                <option value="Agrodolce">Agrodolce</option>
+                <option value="Acido">Acido</option>
+                <option value="Fresco">Fresco</option>
+              </select>
+              <button
+                type="button"
+                onClick={() => generaCampoAI("profilo_gustativo")}
+                style={{
+                  marginTop: 8,
+                  padding: "6px 10px",
+                  borderRadius: 6,
+                  border: "none",
+                  background: "#2e7e79",
+                  color: "#fff",
+                  cursor: "pointer"
+                }}
+              >
+                ✨ AI
+              </button>
+            </div>
+
+            <div className="crea-generated-field" style={generatedFieldStyle}>
+              <label className="crea-label" style={labelStyle}>Famiglia aromatica</label>
+              <select
+                value={cocktailForm.famiglia_aromatica}
+                onChange={(event) => updateCocktailField("famiglia_aromatica", event.target.value)}
+                style={selectStyle}
+              >
+                <option value="">Scegli</option>
+                <option value="Agrumato">Agrumato</option>
+                <option value="Fruttato">Fruttato</option>
+                <option value="Speziato">Speziato</option>
+                <option value="Erbaceo">Erbaceo</option>
+                <option value="Floreale">Floreale</option>
+                <option value="Tostato">Tostato</option>
+                <option value="Piccante">Piccante</option>
+                <option value="Neutro">Neutro</option>
+              </select>
+              <button
+                type="button"
+                onClick={() => generaCampoAI("famiglia_aromatica")}
+                style={{
+                  marginTop: 8,
+                  padding: "6px 10px",
+                  borderRadius: 6,
+                  border: "none",
+                  background: "#2e7e79",
+                  color: "#fff",
+                  cursor: "pointer"
+                }}
+              >
+                ✨ AI
+              </button>
+            </div>
+
+            <div className="crea-generated-field" style={generatedFieldStyle}>
+              <label className="crea-label" style={labelStyle}>Base alcolica</label>
+              <select
+                value={cocktailForm.base_alcolica}
+                onChange={(event) => updateCocktailField("base_alcolica", event.target.value)}
+                style={selectStyle}
+              >
+                <option value="">Scegli</option>
+                <option value="Rum">Rum</option>
+                <option value="Gin">Gin</option>
+                <option value="Vodka">Vodka</option>
+                <option value="Whisky">Whisky</option>
+                <option value="Tequila">Tequila</option>
+                <option value="Mezcal">Mezcal</option>
+                <option value="Brandy">Brandy</option>
+                <option value="Cognac">Cognac</option>
+                <option value="Aperitivo bitter">Aperitivo bitter</option>
+                <option value="Bitter">Bitter</option>
+                <option value="Vermouth">Vermouth</option>
+                <option value="Vermouth rosso">Vermouth rosso</option>
+                <option value="Sherry">Sherry</option>
+                <option value="Liquore">Liquore</option>
+                <option value="Amaro">Amaro</option>
+                <option value="Spumante/Champagne">Spumante/Champagne</option>
+                <option value="Vino">Vino</option>
+                <option value="Birra">Birra</option>
+                <option value="Analcolico">Analcolico</option>
+                <option value="Mix">Mix</option>
+              </select>
+              <button
+                type="button"
+                onClick={() => generaCampoAI("base_alcolica")}
+                style={{
+                  marginTop: 8,
+                  padding: "6px 10px",
+                  borderRadius: 6,
+                  border: "none",
+                  background: "#2e7e79",
+                  color: "#fff",
+                  cursor: "pointer"
+                }}
+              >
+                ✨ AI
+              </button>
+            </div>
+
+            <div className="crea-generated-field" style={generatedFieldStyle}>
+              <label className="crea-label" style={labelStyle}>Genere</label>
+              <select
+                value={cocktailForm.Genere}
+                onChange={(event) => updateCocktailField("Genere", event.target.value)}
+                style={selectStyle}
+              >
+                <option value="">Scegli</option>
+                <option value="Sour">Sour</option>
+                <option value="Highball">Highball</option>
+                <option value="Stirred (mescolati)">Stirred (mescolati)</option>
+                <option value="Pestati">Pestati</option>
+                <option value="Frozen">Frozen</option>
+                <option value="Shakerato">Shakerato</option>
+                <option value="Agitato">Agitato</option>
+                <option value="Tiki">Tiki</option>
+                <option value="Build (Costruito in bicchiere)">Build (Costruito in bicchiere)</option>
+                <option value="A strati (Layered)">A strati (Layered)</option>
+              </select>
+              <button
+                type="button"
+                onClick={() => generaCampoAI("Genere")}
+                style={{
+                  marginTop: 8,
+                  padding: "6px 10px",
+                  borderRadius: 6,
+                  border: "none",
+                  background: "#2e7e79",
+                  color: "#fff",
+                  cursor: "pointer"
+                }}
+              >
+                ✨ AI
+              </button>
+            </div>
+          </div>
+        </div>
+
         <div className="crea-grid" style={gridStyle}>
           {preferenceFields.map((field) => (
             <div key={field.key} className="crea-field" style={fieldStyle}>
