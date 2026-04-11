@@ -344,6 +344,22 @@ export default function Home() {
             -webkit-box-orient: vertical;
             overflow: hidden;
           }
+
+          /* Solo Locali: box piu larghi su mobile, testo invariato */
+          .locali-section {
+            padding-left: 10px !important;
+            padding-right: 10px !important;
+          }
+          .locali-grid {
+            grid-template-columns: 1fr !important;
+            gap: 14px !important;
+          }
+          .locali-card {
+            width: 100% !important;
+            min-height: 220px !important;
+            aspect-ratio: 16 / 10 !important;
+            border-radius: 18px !important;
+          }
         }
 
         @media (max-width: 1024px) {
@@ -463,18 +479,18 @@ export default function Home() {
         </div>
       </div>
 
-      <section className="content-section content-section-first" style={{ padding: "40px 60px", maxWidth: 1400, margin: "68px auto 0" }}>
+      <section className="content-section content-section-first locali-section" style={{ padding: "40px 60px", maxWidth: 1400, margin: "68px auto 0" }}>
         <div className="section-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 28 }}>
           <div>
             <h2 className="section-title" style={{ fontSize: "clamp(24px, 4vw, 32px)", margin: 0 }}>Locali in evidenza</h2>
           </div>
           <Link className="section-link" to="/venues" style={{ color: "#f5a623", textDecoration: "none" }}>Vedi tutti</Link>
         </div>
-        <div className="section-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 20 }}>
+        <div className="section-grid locali-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 20 }}>
           {locali.map((l) => (
             <article
               key={l.id}
-              className="card-box"
+              className="card-box locali-card"
               style={{
                 position: "relative",
                 borderRadius: 12,
