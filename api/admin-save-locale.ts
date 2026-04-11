@@ -67,6 +67,11 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     return null;
   };
 
+  const isEmptyObject = (value: unknown) => {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return true;
+    return Object.keys(value as Record<string, unknown>).length === 0;
+  };
+
   const tableCandidates = ["Locali", "locali"];
   let lastError = "Could not save locale";
 
@@ -92,6 +97,10 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
         }
       } else if (mode === "update") {
         while (true) {
+          if (isEmptyObject(safeChanges)) {
+            return res.status(200).json({ ok: true, table: tableName, id, noop: true });
+          }
+
           const { data, error } = await supabaseAdmin.from(tableName).update(safeChanges).eq("id", id).select("id");
           if (!error && data && data.length > 0) {
             return res.status(200).json({ ok: true, table: tableName, id: data[0].id });
@@ -101,6 +110,17 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
           if (missingColumn && safeChanges && missingColumn in safeChanges) {
             delete (safeChanges as Record<string, any>)[missingColumn];
             continue;
+          }
+          if (!error) {
+            const { data: existingRow, error: existenceError } = await supabaseAdmin
+              .from(tableName)
+              .select("id")
+              .eq("id", id)
+              .maybeSingle();
+
+            if (!existenceError && existingRow?.id) {
+              return res.status(200).json({ ok: true, table: tableName, id: existingRow.id, noop: true });
+            }
           }
           if (!isMissingTableError(lastError)) {
             return res.status(500).json({ ok: false, message: lastError });

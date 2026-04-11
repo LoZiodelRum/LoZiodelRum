@@ -62,6 +62,11 @@ export async function handler(event) {
     return null;
   };
 
+  const isEmptyObject = (value) => {
+    if (!value || typeof value !== "object" || Array.isArray(value)) return true;
+    return Object.keys(value).length === 0;
+  };
+
   const tableCandidates = ["Locali", "locali"];
   let lastError = "Could not save locale";
 
@@ -87,6 +92,10 @@ export async function handler(event) {
         }
       } else if (mode === "update") {
         while (true) {
+          if (isEmptyObject(safeChanges)) {
+            return { statusCode: 200, body: JSON.stringify({ ok: true, table: tableName, id, noop: true }) };
+          }
+
           const { data, error } = await supabaseAdmin.from(tableName).update(safeChanges).eq("id", id).select("id");
           if (!error && data && data.length > 0) {
             return { statusCode: 200, body: JSON.stringify({ ok: true, table: tableName, id: data[0].id }) };
@@ -96,6 +105,17 @@ export async function handler(event) {
           if (missingColumn && safeChanges && Object.prototype.hasOwnProperty.call(safeChanges, missingColumn)) {
             delete safeChanges[missingColumn];
             continue;
+          }
+          if (!error) {
+            const { data: existingRow, error: existenceError } = await supabaseAdmin
+              .from(tableName)
+              .select("id")
+              .eq("id", id)
+              .maybeSingle();
+
+            if (!existenceError && existingRow?.id) {
+              return { statusCode: 200, body: JSON.stringify({ ok: true, table: tableName, id: existingRow.id, noop: true }) };
+            }
           }
           if (!isMissingTableError(lastError)) {
             return { statusCode: 500, body: JSON.stringify({ ok: false, message: lastError }) };
