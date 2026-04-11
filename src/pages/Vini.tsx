@@ -151,8 +151,8 @@ export default function Vini() {
 
     return {
       objectFit: "contain",
-      transform: "scale(0.78)",
-      transformOrigin: "center",
+      transform: "scale(1.12)",
+      transformOrigin: "center bottom",
       background: "#ffffff",
     };
   }
