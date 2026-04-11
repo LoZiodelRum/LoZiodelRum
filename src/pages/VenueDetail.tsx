@@ -357,7 +357,9 @@ export default function VenueDetail() {
           alt={locale.nome}
           onError={() => setImageLoadError(true)}
         />
+      </div>
 
+      <div className="content-wrapper venue-section venue-header-panel">
         <div className="venue-hero-info">
           <h1>{locale.nome}</h1>
 

@@ -556,10 +556,21 @@ button:active { transform: scale(0.98); }
   object-fit: cover;
 }
 .venue-hero-info {
-  position: absolute;
-  bottom: 16px;
-  left: 16px;
-  text-shadow: 0 2px 6px rgba(0,0,0,0.9);
+  position: static;
+  text-shadow: none;
+}
+
+.venue-header-panel {
+  margin-top: 0;
+}
+
+.venue-header-panel .venue-hero-info h1 {
+  margin: 0;
+  color: #fff;
+}
+
+.venue-header-panel .venue-hero-info p {
+  margin: 8px 0 0;
 }
 .venue-detail-page {
   width: 100%;
