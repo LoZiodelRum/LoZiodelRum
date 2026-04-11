@@ -169,8 +169,9 @@ export default function Vini() {
     if (item.placeholder) return undefined;
 
     return {
-      objectFit: "cover",
-      objectPosition: "center 58%",
+      objectFit: "contain",
+      objectPosition: "center bottom",
+      padding: "10px 8px 0",
       transform: "none",
       background: "#ffffff",
     };
@@ -284,6 +285,14 @@ export default function Vini() {
           overflow: hidden;
           text-overflow: ellipsis;
           word-break: break-word;
+        }
+
+        .vini-preview-page .drink-card-uniform img {
+          width: 100% !important;
+          height: calc(100% - 50px) !important;
+          object-fit: contain !important;
+          object-position: center bottom !important;
+          background: #fff !important;
         }
 
         @media (max-width: 768px) {
