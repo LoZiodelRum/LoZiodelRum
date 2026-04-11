@@ -41,6 +41,7 @@ export default function PannelloControllo() {
   const [uploadingDistillatoImage, setUploadingDistillatoImage] = useState(false);
   const [uploadingWineImage, setUploadingWineImage] = useState(false);
   const [imagePreviewError, setImagePreviewError] = useState(false);
+  const removedLocaliFields = new Set(["featured", "specialities", "overall_rating", "punti_di_forza", "aree_di_miglioramento", "categorie"]);
 
   useEffect(() => {
     if (!loading && isAdmin) {
@@ -135,6 +136,14 @@ export default function PannelloControllo() {
     if (selectedTable.toLowerCase() === "vini" && cleanData.name !== undefined) {
       cleanData.nome = cleanData.nome ?? cleanData.name;
       delete cleanData.name;
+    }
+
+    if (selectedTable === "Locali") {
+      removedLocaliFields.forEach((field) => {
+        if (field in cleanData) {
+          delete cleanData[field];
+        }
+      });
     }
 
     const changedData: any = {};
@@ -1186,7 +1195,7 @@ export default function PannelloControllo() {
   }
 
   function ensureLocaliEditorFields(item: any) {
-    return {
+    const normalized: any = {
       ...item,
       recensioni: item?.recensioni ?? "",
       qualita_drink: item?.qualita_drink ?? "",
@@ -1194,6 +1203,14 @@ export default function PannelloControllo() {
       atmosfera: item?.atmosfera ?? "",
       qualita_prezzo: item?.qualita_prezzo ?? "",
     };
+
+    removedLocaliFields.forEach((field) => {
+      if (field in normalized) {
+        delete normalized[field];
+      }
+    });
+
+    return normalized;
   }
 
   function openFirstEditor(table: string, data: any[]) {
@@ -1461,6 +1478,7 @@ export default function PannelloControllo() {
                 <div style={{ flex: 1, display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 15 }}>
                   {(selectedTable === "Locali" ? reorderLocaliKeys(Object.keys(selectedItem)) : Object.keys(selectedItem)).map(key => {
                     if (key === "id" || (selectedTable === "cocktail" && (key === "data_creazione" || key === "created_at" || key === "texture")) || key === "immagine") return null;
+                    if (selectedTable === "Locali" && removedLocaliFields.has(key)) return null;
                     return (
                       <React.Fragment key={key}>
                       <div style={fieldStyle}>
@@ -1665,6 +1683,7 @@ export default function PannelloControllo() {
               <div style={formGridStyle}>
                 {(selectedTable === "Locali" ? reorderLocaliKeys(Object.keys(selectedItem)) : Object.keys(selectedItem)).map(key => {
                   if (key === "id" || (selectedTable === "cocktail" && (key === "data_creazione" || key === "created_at" || key === "texture"))) return null;
+                  if (selectedTable === "Locali" && removedLocaliFields.has(key)) return null;
                   return (
                     <React.Fragment key={key}>
                     <div
@@ -2066,7 +2085,7 @@ const fieldStyle = {
 
 const labelStyle = {
   fontSize: "0.8rem",
-  color: "#94a3b8",
+  color: "#f5a623",
   marginBottom: 5
 };
 

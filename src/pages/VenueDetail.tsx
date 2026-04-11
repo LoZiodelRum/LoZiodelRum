@@ -20,8 +20,6 @@ type Locale = {
   image_url: string;
   video_url?: string;
   categoria?: string;
-  categorie: string;
-  specialities: string;
   orari: string;
   price_range: string;
   verificato?: boolean | string | number;
@@ -314,7 +312,7 @@ export default function VenueDetail() {
   const imageMain = normalizeImageUrl(locale.image_url) || normalizeImageUrl(locale.image) || firstMediaImage;
   const videoMain =
     locale.video_url || media.find((m) => m.tipo === "video")?.url_file || "";
-  const categoria = locale.categoria || locale.categorie || "Categoria non disponibile";
+  const categoria = locale.categoria || "Categoria non disponibile";
   const fullAddress = [locale.indirizzo, locale.citta, locale.provincia, locale.paese]
     .filter(Boolean)
     .join(", ");
@@ -529,43 +527,6 @@ export default function VenueDetail() {
             <textarea value={form.descrizione_completa || ""} onChange={(e) => setForm({ ...form, descrizione_completa: e.target.value })} placeholder="Descrizione completa" rows={6} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
 
             <h4 style={{ margin: "8px 0 4px", color: "#f97316" }}>Dati Tecnici</h4>
-
-            {/* Categorie — multi-select (salvato come JSON array) */}
-            <div>
-              <label style={{ color: "#94a3b8", fontSize: 12, display: "block", marginBottom: 4 }}>Categorie (tieni ⌘/Ctrl per selezionare più valori)</label>
-              <select
-                multiple
-                value={(() => { try { return JSON.parse(form.categorie || "[]"); } catch { return []; } })()}
-                onChange={(e) => {
-                  const selected = Array.from(e.target.selectedOptions).map((o) => o.value);
-                  setForm({ ...form, categorie: JSON.stringify(selected) });
-                }}
-                style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "8px 12px", width: "100%", minHeight: 90 }}
-              >
-                <option value="cocktail_bar">Cocktail Bar</option>
-                <option value="wine_bar">Wine Bar</option>
-                <option value="speakeasy">Speakeasy</option>
-                <option value="lounge">Lounge Bar</option>
-                <option value="rooftop">Rooftop Bar</option>
-                <option value="pub">Pub</option>
-                <option value="birreria">Birreria</option>
-                <option value="enoteca">Enoteca</option>
-                <option value="ristorante">Ristorante</option>
-              </select>
-            </div>
-
-            <label style={{ color: "#94a3b8", fontSize: 12, display: "block", marginBottom: 4 }}>Specialità</label>
-            <select value={form.specialities || ""} onChange={(e) => setForm({ ...form, specialities: e.target.value })} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }}>
-              <option value="">Seleziona</option>
-              <option value="Cocktail d'autore">Cocktail d'autore</option>
-              <option value="Rum selection">Rum selection</option>
-              <option value="Whisky selection">Whisky selection</option>
-              <option value="Vini naturali">Vini naturali</option>
-              <option value="Birre artigianali">Birre artigianali</option>
-              <option value="Champagne & Bollicine">Champagne & Bollicine</option>
-              <option value="Miscelazione classica">Miscelazione classica</option>
-              <option value="Cucina & Cocktail">Cucina & Cocktail</option>
-            </select>
 
             <label style={{ color: "#94a3b8", fontSize: 12, display: "block", marginBottom: 4 }}>Orari apertura</label>
             <textarea value={form.orari || ""} onChange={(e) => setForm({ ...form, orari: e.target.value })} placeholder="Orari apertura (es. Mar-Dom 20:00-03:00)" rows={2} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />

@@ -37,12 +37,6 @@ export default function VenueCard({ venue, index = 0, compact = false }: any) {
 
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
 
-          {venue.overall_rating && (
-            <div className="absolute top-3 right-3 bg-amber-500 px-2 py-1 rounded text-xs font-bold">
-              ⭐ {venue.overall_rating}
-            </div>
-          )}
-
           <div className="absolute bottom-0 p-3 text-white">
             <h3 className="text-sm font-bold">{venue.name}</h3>
             <p className="text-xs text-gray-300 flex items-center gap-1">
@@ -71,12 +65,6 @@ export default function VenueCard({ venue, index = 0, compact = false }: any) {
               className="w-full h-full object-cover group-hover:scale-110 transition"
             />
 
-            {venue.featured && (
-              <div className="absolute top-3 left-3 bg-amber-500 text-black px-2 py-1 text-xs rounded">
-                In evidenza
-              </div>
-            )}
-
             {venue.verified && (
               <div className="absolute top-3 right-3 text-green-400">
                 <BadgeCheck size={16} />
@@ -93,11 +81,6 @@ export default function VenueCard({ venue, index = 0, compact = false }: any) {
                 {venue.city}, {venue.country}
               </span>
 
-              {venue.overall_rating && (
-                <span className="text-amber-400 font-bold">
-                  ⭐ {venue.overall_rating}
-                </span>
-              )}
             </div>
 
             {/* CATEGORIES */}

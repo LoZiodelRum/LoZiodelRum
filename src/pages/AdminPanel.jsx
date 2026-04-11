@@ -228,8 +228,6 @@ function LocaleFullCard({ locale, refresh }) {
       <textarea name="descrizione_completa" value={edit.descrizione_completa || ""} onChange={change} placeholder="Descrizione completa" style={textarea} />
 
       <h3 style={{ marginTop: 16, marginBottom: 8, color: "#f97316" }}>Dati Tecnici</h3>
-      <input name="categorie" value={edit.categorie || ""} onChange={change} placeholder="Categorie (es. cocktail bar, speakeasy)" style={input} />
-      <input name="specialities" value={edit.specialities || ""} onChange={change} placeholder="Specialità" style={input} />
       <input name="qualita_drink" value={edit.qualita_drink || ""} onChange={change} placeholder="Qualità Drink (es. Eccellente)" style={input} />
       <input name="competenza_staff" value={edit.competenza_staff || ""} onChange={change} placeholder="Competenza Staff (es. Alta)" style={input} />
       <input name="atmosfera" value={edit.atmosfera || ""} onChange={change} placeholder="Atmosfera (es. Sofisticata)" style={input} />
