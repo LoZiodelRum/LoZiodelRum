@@ -370,6 +370,7 @@ export default function VenueDetail() {
             <span className="badge-category">{placeholder(locale.price_range, "fascia prezzo")}</span>
             {verified && <span className="badge-category gold-badge">Verificato</span>}
             {featured && <span className="badge-category gold-badge">In evidenza</span>}
+            <span className="badge-category">{placeholder(locale.orari, "orari")}</span>
           </div>
         </div>
       </div>
@@ -399,29 +400,6 @@ export default function VenueDetail() {
             </a>
           )}
           {!locale.telefono && !website && !locale.instagram && <p>Nessun contatto disponibile.</p>}
-        </div>
-      </div>
-
-      {/* DETTAGLI TECNICI */}
-      <div className="content-wrapper venue-section">
-        <h2 className="section-title">Dettagli tecnici</h2>
-        <div className="grid-wrapper" style={{ gap: 12, marginTop: 12 }}>
-          <div className="rating-box">
-            <p>Orari apertura</p>
-            <div className="rating-value">{placeholder(locale.orari, "orari")}</div>
-          </div>
-          <div className="rating-box">
-            <p>Stato Verifica</p>
-            <div className="rating-value">{verified ? "Verificato" : "Non verificato"}</div>
-          </div>
-          <div className="rating-box">
-            <p>Visibilita</p>
-            <div className="rating-value">{featured ? "In evidenza" : "Standard"}</div>
-          </div>
-          <div className="rating-box">
-            <p>Specialita</p>
-            <div className="rating-value">{placeholder(locale.specialities, "specialita")}</div>
-          </div>
         </div>
       </div>
 
