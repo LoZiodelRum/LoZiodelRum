@@ -942,6 +942,23 @@ export default function PannelloControllo() {
     return normalizedItem;
   }
 
+  function reorderLocaliKeys(keys: string[]) {
+    const targetOrder = ["competenza_staff", "atmosfera", "qualita_prezzo", "recensioni"];
+    const remaining = keys.filter((key) => !targetOrder.includes(key));
+    const orderedTargets = targetOrder.filter((key) => keys.includes(key));
+
+    const anchorIndex = remaining.indexOf("cover_image_position_y");
+    if (anchorIndex === -1) {
+      return [...remaining, ...orderedTargets];
+    }
+
+    return [
+      ...remaining.slice(0, anchorIndex + 1),
+      ...orderedTargets,
+      ...remaining.slice(anchorIndex + 1),
+    ];
+  }
+
   async function handleLocaleImageUpload(file: File) {
     if (!file) return;
     setUploadingLocaleImage(true);
@@ -1279,7 +1296,7 @@ export default function PannelloControllo() {
             {isImageSidebarTable ? (
               <div style={{ display: "flex", gap: 20, alignItems: "flex-start" }}>
                 <div style={{ flex: 1, display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 15 }}>
-                  {Object.keys(selectedItem).map(key => {
+                  {(selectedTable === "Locali" ? reorderLocaliKeys(Object.keys(selectedItem)) : Object.keys(selectedItem)).map(key => {
                     if (key === "id" || (selectedTable === "cocktail" && (key === "data_creazione" || key === "created_at" || key === "texture")) || key === "immagine") return null;
                     return (
                       <React.Fragment key={key}>
@@ -1483,7 +1500,7 @@ export default function PannelloControllo() {
               </div>
             ) : (
               <div style={formGridStyle}>
-                {Object.keys(selectedItem).map(key => {
+                {(selectedTable === "Locali" ? reorderLocaliKeys(Object.keys(selectedItem)) : Object.keys(selectedItem)).map(key => {
                   if (key === "id" || (selectedTable === "cocktail" && (key === "data_creazione" || key === "created_at" || key === "texture"))) return null;
                   return (
                     <React.Fragment key={key}>
