@@ -228,6 +228,16 @@ export default function Vini() {
         .vini-grid {
           grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
         }
+
+        .vini-preview-page .drink-card-uniform {
+          aspect-ratio: 1 / 1.22;
+        }
+
+        @media (max-width: 768px) {
+          .vini-preview-page .drink-card-uniform {
+            aspect-ratio: 1 / 1.28;
+          }
+        }
       `}</style>
       {renderSection("Rossi", rossi, "rossi")}
       {renderSection("Bianchi", bianchi, "bianchi")}
