@@ -1018,6 +1018,7 @@ export default function PannelloControllo() {
       "Vermouth rosso",
       "Sherry",
       "Liquore",
+      "Triple Sec/Cointreau",
       "Amaro",
       "Spumante/Champagne",
       "Vino",

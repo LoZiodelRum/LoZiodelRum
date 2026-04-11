@@ -192,6 +192,7 @@ export default function Crea() {
       "Vermouth rosso":              { modifier: "Bitter aromatico",         sour: "Succo di arancia",   sweet: "Sciroppo semplice" },
       "Sherry":                       { modifier: "Amaro gentile",            sour: "Succo di limone",    sweet: "Sciroppo di miele" },
       "Liquore":                      { modifier: "Crème de cacao white",     sour: "Succo di lime",      sweet: "Sciroppo alla vaniglia" },
+      "Triple Sec/Cointreau":         { modifier: "Tequila blanco",           sour: "Succo di lime",      sweet: "Sciroppo d'agave" },
       "Amaro":                        { modifier: "Vermouth dry",             sour: "Succo di limone",    sweet: "Sciroppo di canna" },
       "Spumante/Champagne":           { modifier: "Liqueur d'expedition",     sour: "Succo di limone",    sweet: "Sciroppo semplice" },
       "Vino":                         { modifier: "Liquore all'arancia",       sour: "Succo di limone",    sweet: "Miele chiaro" },
