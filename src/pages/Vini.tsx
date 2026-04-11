@@ -229,6 +229,10 @@ export default function Vini() {
           background: transparent;
         }
 
+        .vini-preview-page .drink-section-title {
+          color: #f5a623 !important;
+        }
+
         .vini-grid {
           grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
         }
