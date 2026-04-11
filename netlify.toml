@@ -6,11 +6,6 @@
   directory = "netlify/functions"
 
 [[redirects]]
-  from = "/api/ai-storia"
-  to = "/.netlify/functions/ai-storia"
-  status = 200
-
-[[redirects]]
   from = "/api/admin-update-article"
   to = "/.netlify/functions/admin-update-article"
   status = 200

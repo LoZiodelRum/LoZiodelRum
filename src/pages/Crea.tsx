@@ -361,36 +361,6 @@ export default function Crea() {
     alert(lastMessage);
   }
 
-  async function generaCampoAI(campo: string) {
-    try {
-      console.log("CLICK AI", campo);
-
-      const res = await fetch("http://localhost:3000/api/ai-storia", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json"
-        },
-        body: JSON.stringify({
-          name: cocktailForm.nome,
-          campo: campo
-        })
-      });
-
-      const data = await res.json();
-
-      console.log("RISPOSTA AI:", data);
-
-      setCocktailForm(prev => ({
-        ...prev,
-        [campo]: data.testo
-      }));
-
-    } catch (err) {
-      console.error("ERRORE AI:", err);
-      alert("Errore AI");
-    }
-  }
-
   function updateCocktailField(key: keyof typeof cocktailForm, value: string) {
     setCocktailForm((prev) => ({ ...prev, [key]: value }));
   }
@@ -427,21 +397,6 @@ export default function Crea() {
                 onChange={(event) => updateCocktailField("descrizione", event.target.value)}
                 style={textareaStyle}
               />
-              <button
-                type="button"
-                onClick={() => generaCampoAI("descrizione")}
-                style={{
-                  marginTop: 8,
-                  padding: "6px 10px",
-                  borderRadius: 6,
-                  border: "none",
-                  background: "#2e7e79",
-                  color: "#fff",
-                  cursor: "pointer"
-                }}
-              >
-                ✨ AI
-              </button>
             </div>
 
             <div className="crea-generated-field" style={generatedFieldStyle}>
@@ -451,21 +406,6 @@ export default function Crea() {
                 onChange={(event) => updateCocktailField("preparazione", event.target.value)}
                 style={textareaStyle}
               />
-              <button
-                type="button"
-                onClick={() => generaCampoAI("preparazione")}
-                style={{
-                  marginTop: 8,
-                  padding: "6px 10px",
-                  borderRadius: 6,
-                  border: "none",
-                  background: "#2e7e79",
-                  color: "#fff",
-                  cursor: "pointer"
-                }}
-              >
-                ✨ AI
-              </button>
             </div>
 
             <div className="crea-generated-field" style={generatedFieldStyle}>
@@ -475,21 +415,6 @@ export default function Crea() {
                 onChange={(event) => updateCocktailField("ingredienti", event.target.value)}
                 style={textareaStyle}
               />
-              <button
-                type="button"
-                onClick={() => generaCampoAI("ingredienti")}
-                style={{
-                  marginTop: 8,
-                  padding: "6px 10px",
-                  borderRadius: 6,
-                  border: "none",
-                  background: "#2e7e79",
-                  color: "#fff",
-                  cursor: "pointer"
-                }}
-              >
-                ✨ AI
-              </button>
             </div>
 
             <div className="crea-generated-field" style={generatedFieldStyle}>
@@ -499,21 +424,6 @@ export default function Crea() {
                 onChange={(event) => updateCocktailField("storia", event.target.value)}
                 style={textareaStyle}
               />
-              <button
-                type="button"
-                onClick={() => generaCampoAI("storia")}
-                style={{
-                  marginTop: 8,
-                  padding: "6px 10px",
-                  borderRadius: 6,
-                  border: "none",
-                  background: "#2e7e79",
-                  color: "#fff",
-                  cursor: "pointer"
-                }}
-              >
-                ✨ AI
-              </button>
             </div>
 
             <div className="crea-generated-field" style={generatedFieldStyle}>
@@ -523,21 +433,6 @@ export default function Crea() {
                 onChange={(event) => updateCocktailField("consigli", event.target.value)}
                 style={textareaStyle}
               />
-              <button
-                type="button"
-                onClick={() => generaCampoAI("consigli")}
-                style={{
-                  marginTop: 8,
-                  padding: "6px 10px",
-                  borderRadius: 6,
-                  border: "none",
-                  background: "#2e7e79",
-                  color: "#fff",
-                  cursor: "pointer"
-                }}
-              >
-                ✨ AI
-              </button>
             </div>
 
             <div className="crea-generated-field" style={generatedFieldStyle}>
@@ -547,21 +442,6 @@ export default function Crea() {
                 onChange={(event) => updateCocktailField("guarnizione", event.target.value)}
                 style={inputStyle}
               />
-              <button
-                type="button"
-                onClick={() => generaCampoAI("guarnizione")}
-                style={{
-                  marginTop: 8,
-                  padding: "6px 10px",
-                  borderRadius: 6,
-                  border: "none",
-                  background: "#2e7e79",
-                  color: "#fff",
-                  cursor: "pointer"
-                }}
-              >
-                ✨ AI
-              </button>
             </div>
 
             <div className="crea-generated-field" style={generatedFieldStyle}>
@@ -577,21 +457,6 @@ export default function Crea() {
                 <option value="Alta">Alta</option>
                 <option value="Molto alta">Molto alta</option>
               </select>
-              <button
-                type="button"
-                onClick={() => generaCampoAI("intensita_alcolica")}
-                style={{
-                  marginTop: 8,
-                  padding: "6px 10px",
-                  borderRadius: 6,
-                  border: "none",
-                  background: "#2e7e79",
-                  color: "#fff",
-                  cursor: "pointer"
-                }}
-              >
-                ✨ AI
-              </button>
             </div>
 
             <div className="crea-generated-field" style={generatedFieldStyle}>
@@ -609,21 +474,6 @@ export default function Crea() {
                 <option value="Acido">Acido</option>
                 <option value="Fresco">Fresco</option>
               </select>
-              <button
-                type="button"
-                onClick={() => generaCampoAI("profilo_gustativo")}
-                style={{
-                  marginTop: 8,
-                  padding: "6px 10px",
-                  borderRadius: 6,
-                  border: "none",
-                  background: "#2e7e79",
-                  color: "#fff",
-                  cursor: "pointer"
-                }}
-              >
-                ✨ AI
-              </button>
             </div>
 
             <div className="crea-generated-field" style={generatedFieldStyle}>
@@ -643,21 +493,6 @@ export default function Crea() {
                 <option value="Piccante">Piccante</option>
                 <option value="Neutro">Neutro</option>
               </select>
-              <button
-                type="button"
-                onClick={() => generaCampoAI("famiglia_aromatica")}
-                style={{
-                  marginTop: 8,
-                  padding: "6px 10px",
-                  borderRadius: 6,
-                  border: "none",
-                  background: "#2e7e79",
-                  color: "#fff",
-                  cursor: "pointer"
-                }}
-              >
-                ✨ AI
-              </button>
             </div>
 
             <div className="crea-generated-field" style={generatedFieldStyle}>
@@ -689,21 +524,6 @@ export default function Crea() {
                 <option value="Analcolico">Analcolico</option>
                 <option value="Mix">Mix</option>
               </select>
-              <button
-                type="button"
-                onClick={() => generaCampoAI("base_alcolica")}
-                style={{
-                  marginTop: 8,
-                  padding: "6px 10px",
-                  borderRadius: 6,
-                  border: "none",
-                  background: "#2e7e79",
-                  color: "#fff",
-                  cursor: "pointer"
-                }}
-              >
-                ✨ AI
-              </button>
             </div>
 
             <div className="crea-generated-field" style={generatedFieldStyle}>
@@ -725,21 +545,6 @@ export default function Crea() {
                 <option value="Build (Costruito in bicchiere)">Build (Costruito in bicchiere)</option>
                 <option value="A strati (Layered)">A strati (Layered)</option>
               </select>
-              <button
-                type="button"
-                onClick={() => generaCampoAI("Genere")}
-                style={{
-                  marginTop: 8,
-                  padding: "6px 10px",
-                  borderRadius: 6,
-                  border: "none",
-                  background: "#2e7e79",
-                  color: "#fff",
-                  cursor: "pointer"
-                }}
-              >
-                ✨ AI
-              </button>
             </div>
           </div>
         </div>

@@ -154,48 +154,7 @@ export default function DrinkDetail() {
     return obj.immagine || obj.immagine_url || obj.image || obj.img || null;
   }
 
-  async function generaCampoAI(campo: string) {
-    try {
-      console.log("CLICK AI", campo);
-
-      const res = await fetch("/api/ai-storia", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          name: form?.nome,
-          campo,
-        }),
-      });
-
-      const data = await res.json();
-
-      console.log("RISPOSTA AI:", data);
-
-      setForm((prev: any) => ({
-        ...prev,
-        [campo]: data.testo,
-      }));
-    } catch (err) {
-      console.error("ERRORE AI:", err);
-      alert("Errore AI");
-    }
-  }
-
-  function renderAiButton(campo: string) {
-    return (
-      <button
-        type="button"
-        onClick={() => void generaCampoAI(campo)}
-        style={aiButtonStyle}
-      >
-        ✨ AI
-      </button>
-    );
-  }
-
-  function input(name: string, label: string, type = "text", aiField?: string) {
+  function input(name: string, label: string, type = "text") {
     return (
       <div style={field}>
         <label>{label}</label>
@@ -205,12 +164,11 @@ export default function DrinkDetail() {
           onChange={(e) => setForm({ ...form, [name]: e.target.value })}
           style={inputStyle}
         />
-        {aiField ? renderAiButton(aiField) : null}
       </div>
     );
   }
 
-  function textarea(name: string, label: string, aiField?: string) {
+  function textarea(name: string, label: string) {
     return (
       <div style={field}>
         <label>{label}</label>
@@ -219,7 +177,6 @@ export default function DrinkDetail() {
           onChange={(e) => setForm({ ...form, [name]: e.target.value })}
           style={textareaStyle}
         />
-        {aiField ? renderAiButton(aiField) : null}
       </div>
     );
   }
@@ -257,24 +214,24 @@ export default function DrinkDetail() {
           </div>
 
           {input("nome", "Nome")}
-          {textarea("descrizione", "Descrizione", "descrizione")}
+          {textarea("descrizione", "Descrizione")}
 
           {form.type === "cocktail" && (
             <>
               {input("categoria", "Categoria")}
-              {textarea("preparazione", "Preparazione", "preparazione")}
-              {textarea("storia", "Storia", "storia")}
-              {textarea("consigli", "Consigli", "consigli")}
+              {textarea("preparazione", "Preparazione")}
+              {textarea("storia", "Storia")}
+              {textarea("consigli", "Consigli")}
               {input("bicchiere", "Bicchiere")}
-              {input("guarnizione", "Guarnizione", "text", "guarnizione")}
+              {input("guarnizione", "Guarnizione")}
               {input("gradazione_alcolica", "Gradazione", "number")}
-              {textarea("ingredienti", "Ingredienti (separati da ;)", "ingredienti")}
-              {input("base_alcolica", "Base alcolica", "text", "base_alcolica")}
-              {input("intensita_alcolica", "Intensita alcolica", "text", "intensita_alcolica")}
-              {input("profilo_gustativo", "Profilo gustativo", "text", "profilo_gustativo")}
-              {input("famiglia_aromatica", "Famiglia aromatica", "text", "famiglia_aromatica")}
+              {textarea("ingredienti", "Ingredienti (separati da ;)")}
+              {input("base_alcolica", "Base alcolica")}
+              {input("intensita_alcolica", "Intensita alcolica")}
+              {input("profilo_gustativo", "Profilo gustativo")}
+              {input("famiglia_aromatica", "Famiglia aromatica")}
               {input("profilo_aromatico", "Profilo aromatico")}
-              {input("Genere", "Genere", "text", "Genere")}
+              {input("Genere", "Genere")}
             </>
           )}
 
@@ -567,16 +524,6 @@ const textareaStyle = {
   padding: 10,
   border: "1px solid #ccc",
   borderRadius: 8,
-};
-
-const aiButtonStyle = {
-  marginTop: 8,
-  padding: "6px 10px",
-  borderRadius: 6,
-  border: "none",
-  background: "#2e7e79",
-  color: "#fff",
-  cursor: "pointer",
 };
 
 const buttons = {
