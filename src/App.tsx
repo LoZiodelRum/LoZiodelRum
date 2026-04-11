@@ -91,6 +91,7 @@ function AppContent() {
         <Route path="/drink" element={<PageShell><Drink /></PageShell>} />
         <Route path="/drinks" element={<PageShell><Drink /></PageShell>} />
         <Route path="/vini" element={<PageShell><Vini /></PageShell>} />
+        <Route path="/vini/categoria/:categoria" element={<PageShell><Vini /></PageShell>} />
         <Route path="/vini/:id" element={<PageShell><VinoDetail /></PageShell>} />
         <Route path="/drink/:id" element={<PageShell><DrinkDetail /></PageShell>} />
         <Route path="/categoria/:categoria" element={<PageShell><Category /></PageShell>} />

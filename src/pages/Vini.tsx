@@ -1,7 +1,7 @@
 import "../App.css";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 
 type VinoCard = {
   id: string;
@@ -84,6 +84,7 @@ export default function Vini() {
   const [vini, setVini] = useState<VinoCard[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const { categoria } = useParams();
 
   useEffect(() => {
     void load();
@@ -128,19 +129,33 @@ export default function Vini() {
     setLoading(false);
   }
 
-  const rossi = useMemo(() => vini.filter((vino) => vino.categoria.toLowerCase().includes("rosso")).slice(0, 6), [vini]);
-  const bianchi = useMemo(() => vini.filter((vino) => vino.categoria.toLowerCase().includes("bianco")).slice(0, 6), [vini]);
-  const rosati = useMemo(() => vini.filter((vino) => vino.categoria.toLowerCase().includes("rosat")).slice(0, 6), [vini]);
-  const bollicine = useMemo(() => vini.filter((vino) => vino.categoria.toLowerCase().includes("bollic")).slice(0, 6), [vini]);
-  const altri = useMemo(
+  const rossiAll = useMemo(() => vini.filter((vino) => vino.categoria.toLowerCase().includes("rosso")), [vini]);
+  const bianchiAll = useMemo(() => vini.filter((vino) => vino.categoria.toLowerCase().includes("bianco")), [vini]);
+  const rosatiAll = useMemo(() => vini.filter((vino) => vino.categoria.toLowerCase().includes("rosat")), [vini]);
+  const bollicineAll = useMemo(() => vini.filter((vino) => vino.categoria.toLowerCase().includes("bollic")), [vini]);
+  const altriAll = useMemo(
     () => vini.filter((vino) =>
       !vino.categoria.toLowerCase().includes("rosso") &&
       !vino.categoria.toLowerCase().includes("bianco") &&
       !vino.categoria.toLowerCase().includes("rosat") &&
       !vino.categoria.toLowerCase().includes("bollic")
-    ).slice(0, 6),
+    ),
     [vini]
   );
+
+  const rossi = useMemo(() => rossiAll.slice(0, 6), [rossiAll]);
+  const bianchi = useMemo(() => bianchiAll.slice(0, 6), [bianchiAll]);
+  const rosati = useMemo(() => rosatiAll.slice(0, 6), [rosatiAll]);
+  const bollicine = useMemo(() => bollicineAll.slice(0, 6), [bollicineAll]);
+  const altri = useMemo(() => altriAll.slice(0, 6), [altriAll]);
+
+  const categoryConfig: Record<string, { title: string; items: VinoCard[] }> = {
+    rossi: { title: "Rossi", items: rossiAll },
+    bianchi: { title: "Bianchi", items: bianchiAll },
+    rosati: { title: "Rosati", items: rosatiAll },
+    bollicine: { title: "Bollicine", items: bollicineAll },
+    "altri-vini": { title: "Altri vini", items: altriAll },
+  };
 
   if (loading) {
     return <div className="page fade-in">Caricamento...</div>;
@@ -161,27 +176,46 @@ export default function Vini() {
     };
   }
 
-  function renderSection(title: string, list: VinoCard[], tipo: string) {
+  function renderSection(title: string, list: VinoCard[], tipo: string, fillPlaceholders = true) {
     const cards = [...list];
-    while (cards.length < 6) {
-      cards.push({
-        id: `placeholder-${tipo}-${cards.length}`,
-        nome: "In arrivo",
-        immagine: null,
-        categoria: "",
-        alcol: "",
-        descrizione: "",
-        placeholder: true,
-      });
+    if (fillPlaceholders) {
+      while (cards.length < 6) {
+        cards.push({
+          id: `placeholder-${tipo}-${cards.length}`,
+          nome: "In arrivo",
+          immagine: null,
+          categoria: "",
+          alcol: "",
+          descrizione: "",
+          placeholder: true,
+        });
+      }
     }
+
+    const isCategoryPage = Boolean(categoria);
+
+    if (!cards.length && isCategoryPage) {
+      return (
+        <section className="drink-section-white" id={tipo}>
+          <div className="drink-section-header">
+            <h2 className="drink-section-title">{title}</h2>
+          </div>
+          <p style={{ color: "#cbd5e1", marginTop: 8 }}>Nessun vino disponibile in questa categoria.</p>
+        </section>
+      );
+    }
+
+    if (!cards.length) return null;
 
     return (
       <section className="drink-section-white" id={tipo}>
         <div className="drink-section-header">
           <h2 className="drink-section-title">{title}</h2>
-          <button className="btn-primary btn-small" onClick={() => navigate(`/vini#${tipo}`)}>
-            Vedi tutti
-          </button>
+          {!isCategoryPage && (
+            <button className="btn-primary btn-small" onClick={() => navigate(`/vini/categoria/${tipo}`)}>
+              Vedi tutti
+            </button>
+          )}
         </div>
 
         <div className="drink-grid-uniform vini-grid">
@@ -262,11 +296,17 @@ export default function Vini() {
           }
         }
       `}</style>
-      {renderSection("Rossi", rossi, "rossi")}
-      {renderSection("Bianchi", bianchi, "bianchi")}
-      {renderSection("Rosati", rosati, "rosati")}
-      {renderSection("Bollicine", bollicine, "bollicine")}
-      {renderSection("Altri vini", altri, "altri-vini")}
+      {categoria && categoryConfig[categoria]
+        ? renderSection(categoryConfig[categoria].title, categoryConfig[categoria].items, categoria, false)
+        : (
+          <>
+            {renderSection("Rossi", rossi, "rossi")}
+            {renderSection("Bianchi", bianchi, "bianchi")}
+            {renderSection("Rosati", rosati, "rosati")}
+            {renderSection("Bollicine", bollicine, "bollicine")}
+            {renderSection("Altri vini", altri, "altri-vini")}
+          </>
+        )}
     </div>
   );
 }
