@@ -113,6 +113,8 @@ export default function PannelloControllo() {
       data: { session },
     } = await supabase.auth.getSession();
 
+    const isNetlifyHost = typeof window !== "undefined" && window.location.hostname.includes("netlify");
+
     const { id, ...dataToUpdate } = selectedItem;
 
     const normalizeValue = (value: any) => {
@@ -266,10 +268,9 @@ export default function PannelloControllo() {
         if (!adminPassword) {
           error = { message: "Password admin non disponibile. Esci e rientra come admin." };
         } else {
-          const endpoints = [
-            "/api/admin-save-locale",
-            "/.netlify/functions/admin-save-locale",
-          ];
+          const endpoints = isNetlifyHost
+            ? ["/.netlify/functions/admin-save-locale", "/api/admin-save-locale"]
+            : ["/api/admin-save-locale", "/.netlify/functions/admin-save-locale"];
 
           let lastMessage = "Creazione locale fallita lato server.";
 
@@ -295,6 +296,9 @@ export default function PannelloControllo() {
               }
 
               lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
+              if (response.status !== 404 && response.status !== 405) {
+                break;
+              }
             } catch (e: any) {
               lastMessage = e?.message || `Errore di rete su ${endpoint}`;
             }
@@ -491,10 +495,9 @@ export default function PannelloControllo() {
         if (!adminPassword) {
           error = { message: "Password admin non disponibile. Esci e rientra come admin." };
         } else {
-          const endpoints = [
-            "/api/admin-save-locale",
-            "/.netlify/functions/admin-save-locale",
-          ];
+          const endpoints = isNetlifyHost
+            ? ["/.netlify/functions/admin-save-locale", "/api/admin-save-locale"]
+            : ["/api/admin-save-locale", "/.netlify/functions/admin-save-locale"];
 
           let lastMessage = "Salvataggio locale fallito lato server.";
 
@@ -520,6 +523,9 @@ export default function PannelloControllo() {
               }
 
               lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
+              if (response.status !== 404 && response.status !== 405) {
+                break;
+              }
             } catch (e: any) {
               lastMessage = e?.message || `Errore di rete su ${endpoint}`;
             }
@@ -850,10 +856,10 @@ export default function PannelloControllo() {
         return;
       }
 
-      const endpoints = [
-        "/api/admin-save-locale",
-        "/.netlify/functions/admin-save-locale",
-      ];
+      const isNetlifyHost = typeof window !== "undefined" && window.location.hostname.includes("netlify");
+      const endpoints = isNetlifyHost
+        ? ["/.netlify/functions/admin-save-locale", "/api/admin-save-locale"]
+        : ["/api/admin-save-locale", "/.netlify/functions/admin-save-locale"];
 
       let lastMessage = "Eliminazione locale fallita lato server.";
 
@@ -878,6 +884,9 @@ export default function PannelloControllo() {
           }
 
           lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
+          if (response.status !== 404 && response.status !== 405) {
+            break;
+          }
         } catch (e: any) {
           lastMessage = e?.message || `Errore di rete su ${endpoint}`;
         }
