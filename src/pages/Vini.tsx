@@ -83,6 +83,7 @@ const mockVini = [
 export default function Vini() {
   const [vini, setVini] = useState<VinoCard[]>([]);
   const [loading, setLoading] = useState(true);
+  const [imageRatios, setImageRatios] = useState<Record<string, number>>({});
   const navigate = useNavigate();
   const { categoria } = useParams();
 
@@ -165,14 +166,31 @@ export default function Vini() {
     return (name || "").replace(/\s+/g, " ").trim();
   }
 
+  function handlePreviewImageLoad(id: string, event: React.SyntheticEvent<HTMLImageElement>) {
+    const img = event.currentTarget;
+    if (!img.naturalWidth || !img.naturalHeight) return;
+    const ratio = img.naturalWidth / img.naturalHeight;
+    setImageRatios((prev) => (prev[id] === ratio ? prev : { ...prev, [id]: ratio }));
+  }
+
+  function getBottleScale(item: VinoCard) {
+    const ratio = imageRatios[item.id] ?? 1;
+
+    if (ratio >= 1.45) return 2.05;
+    if (ratio >= 1.2) return 1.75;
+    if (ratio >= 1.0) return 1.45;
+    if (ratio >= 0.8) return 1.18;
+    return 1.03;
+  }
+
   function getPreviewImageStyle(item: VinoCard): React.CSSProperties | undefined {
     if (item.placeholder) return undefined;
 
     return {
       objectFit: "contain",
       objectPosition: "center bottom",
-      padding: "10px 8px 0",
-      transform: "none",
+      transform: `scale(${getBottleScale(item)})`,
+      transformOrigin: "center bottom",
       background: "#ffffff",
     };
   }
@@ -238,7 +256,12 @@ export default function Vini() {
               style={item.placeholder ? { opacity: 0.65, cursor: "default" } : undefined}
             >
               {item.immagine ? (
-                <img src={item.immagine} alt={item.nome} style={getPreviewImageStyle(item)} />
+                <img
+                  src={item.immagine}
+                  alt={item.nome}
+                  style={getPreviewImageStyle(item)}
+                  onLoad={(event) => handlePreviewImageLoad(item.id, event)}
+                />
               ) : (
                 <div className="no-img-placeholder">NO IMG</div>
               )}
