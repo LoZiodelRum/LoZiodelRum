@@ -169,9 +169,9 @@ export default function Vini() {
     if (item.placeholder) return undefined;
 
     return {
-      objectFit: "contain",
-      transform: "scale(1.12)",
-      transformOrigin: "center bottom",
+      objectFit: "cover",
+      objectPosition: "center 58%",
+      transform: "none",
       background: "#ffffff",
     };
   }
