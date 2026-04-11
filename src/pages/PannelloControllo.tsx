@@ -1055,6 +1055,7 @@ export default function PannelloControllo() {
   };
 
   const localiSelectOptions: Record<string, string[]> = {
+    qualita_drink: ["Scarso", "Mediocre", "Sufficiente", "Buono", "Ottimo", "Eccellente"],
     competenza_staff: ["Scarso", "Mediocre", "Sufficiente", "Buono", "Ottimo", "Eccellente"],
     atmosfera: ["Scarso", "Mediocre", "Sufficiente", "Buono", "Ottimo", "Eccellente"],
     qualita_prezzo: ["Scarso", "Mediocre", "Sufficiente", "Buono", "Ottimo", "Eccellente"],
@@ -1062,6 +1063,7 @@ export default function PannelloControllo() {
 
   const fieldLabelMap: Record<string, string> = {
     name: "nome",
+    qualita_drink: "qualita drink",
     competenza_staff: "competenza staff",
     atmosfera: "atmosfera",
     qualita_prezzo: "qualita/prezzo",
@@ -1102,7 +1104,7 @@ export default function PannelloControllo() {
   }
 
   function reorderLocaliKeys(keys: string[]) {
-    const targetOrder = ["competenza_staff", "atmosfera", "qualita_prezzo", "recensioni"];
+    const targetOrder = ["competenza_staff", "atmosfera", "qualita_prezzo", "qualita_drink", "recensioni"];
     const remaining = keys.filter((key) => !targetOrder.includes(key));
     const orderedTargets = targetOrder.filter((key) => keys.includes(key));
 
@@ -1187,6 +1189,7 @@ export default function PannelloControllo() {
     return {
       ...item,
       recensioni: item?.recensioni ?? "",
+      qualita_drink: item?.qualita_drink ?? "",
       competenza_staff: item?.competenza_staff ?? "",
       atmosfera: item?.atmosfera ?? "",
       qualita_prezzo: item?.qualita_prezzo ?? "",
@@ -1230,6 +1233,7 @@ export default function PannelloControllo() {
 
     if (table === "Locali") {
       draft.recensioni = draft.recensioni || "";
+      draft.qualita_drink = draft.qualita_drink || "";
       draft.competenza_staff = draft.competenza_staff || "";
       draft.atmosfera = draft.atmosfera || "";
       draft.qualita_prezzo = draft.qualita_prezzo || "";
