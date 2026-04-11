@@ -998,6 +998,26 @@ export default function PannelloControllo() {
     setUploadingWineImage(false);
   }
 
+  const cocktailAiFields = new Set(["descrizione", "preparazione", "ingredienti", "storia", "consigli", "guarnizione", "intensita_alcolica", "profilo_gustativo", "famiglia_aromatica", "base_alcolica", "Genere"]);
+
+  async function generaCampoAI(campo: string) {
+    try {
+      console.log("CLICK AI", campo);
+      const res = await fetch("/api/ai-storia", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: selectedItem?.nome, campo }),
+      });
+      const responseData = await res.json();
+      console.log("RISPOSTA AI:", responseData);
+      setSelectedItem((prev: any) => ({ ...prev, [campo]: responseData.testo }));
+      setSaveStatus(null);
+    } catch (err) {
+      console.error("ERRORE AI:", err);
+      alert("Errore AI");
+    }
+  }
+
   function openFirstEditor(table: string, data: any[]) {
     if (!Array.isArray(data) || data.length === 0) return;
 
@@ -1367,6 +1387,9 @@ export default function PannelloControllo() {
                         ) : (
                           <input value={selectedItem[key] ?? ""} onChange={(e) => { setSelectedItem((prev: any) => ({ ...prev, [key]: e.target.value })); setSaveStatus(null); }} style={inputStyle} />
                         )}
+                        {selectedTable === "cocktail" && cocktailAiFields.has(key) && (
+                          <button type="button" onClick={() => void generaCampoAI(key)} style={{ marginTop: 8, padding: "6px 10px", borderRadius: 6, border: "none", background: "#2e7e79", color: "#fff", cursor: "pointer" }}>✨ AI</button>
+                        )}
                       </div>
                       </React.Fragment>
                     );
@@ -1671,6 +1694,9 @@ export default function PannelloControllo() {
                         }}
                         style={inputStyle}
                       />
+                    )}
+                    {selectedTable === "cocktail" && cocktailAiFields.has(key) && (
+                      <button type="button" onClick={() => void generaCampoAI(key)} style={{ marginTop: 8, padding: "6px 10px", borderRadius: 6, border: "none", background: "#2e7e79", color: "#fff", cursor: "pointer" }}>✨ AI</button>
                     )}
                   </div>
 
