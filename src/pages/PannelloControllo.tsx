@@ -895,8 +895,17 @@ export default function PannelloControllo() {
     ],
   };
 
+  const localiSelectOptions: Record<string, string[]> = {
+    competenza_staff: ["1", "2", "3", "4", "5"],
+    atmosfera: ["1", "2", "3", "4", "5"],
+    qualita_prezzo: ["1", "2", "3", "4", "5"],
+  };
+
   const fieldLabelMap: Record<string, string> = {
     name: "nome",
+    competenza_staff: "competenza staff",
+    atmosfera: "atmosfera",
+    qualita_prezzo: "qualita/prezzo",
   };
 
   function normalizeCocktailMultiValue(key: string, rawValue: unknown): string {
@@ -1267,6 +1276,24 @@ export default function PannelloControllo() {
                         <label style={labelStyle}>{fieldLabelMap[key] ?? key}</label>
                         {booleanFields.has(key) ? (
                           <select value={String(toBoolean(selectedItem[key]))} onChange={(e) => { const value = e.target.value === "true"; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} style={selectStyle}><option value="true">true</option><option value="false">false</option></select>
+                        ) : selectedTable === "Locali" && localiSelectOptions[key] ? (
+                          <select
+                            value={selectedItem[key] ?? ""}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              setSelectedItem((prev: any) => ({
+                                ...prev,
+                                [key]: value,
+                              }));
+                              setSaveStatus(null);
+                            }}
+                            style={selectStyle}
+                          >
+                            <option value="">Scegli</option>
+                            {localiSelectOptions[key].map((option) => (
+                              <option key={option} value={option}>{option}</option>
+                            ))}
+                          </select>
                         ) : isWineTable && aisSelectOptions[key] ? (
                           key === "descrizione_olfattiva" ? (
                             <details style={{ position: "relative" }}>
@@ -1472,6 +1499,24 @@ export default function PannelloControllo() {
                       >
                         <option value="true">true</option>
                         <option value="false">false</option>
+                      </select>
+                    ) : selectedTable === "Locali" && localiSelectOptions[key] ? (
+                      <select
+                        value={selectedItem[key] ?? ""}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          setSelectedItem((prev: any) => ({
+                            ...prev,
+                            [key]: value,
+                          }));
+                          setSaveStatus(null);
+                        }}
+                        style={selectStyle}
+                      >
+                        <option value="">Scegli</option>
+                        {localiSelectOptions[key].map((option) => (
+                          <option key={option} value={option}>{option}</option>
+                        ))}
                       </select>
                     ) : selectedTable === "vini" && aisSelectOptions[key] ? (
                       key === "descrizione_olfattiva" ? (
