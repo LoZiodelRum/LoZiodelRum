@@ -159,6 +159,7 @@ export default function PannelloControllo() {
     const isWineTable = selectedTable.toLowerCase() === "vini";
     const isCocktailTable = selectedTable.toLowerCase() === "cocktail";
     const isDistillatiTable = selectedTable.toLowerCase() === "distillati";
+    const isLocaliTable = selectedTable === "Locali";
 
     if (isCreating) {
       if (selectedTable.toLowerCase() === "vini") {
@@ -229,6 +230,48 @@ export default function PannelloControllo() {
           ];
 
           let lastMessage = "Creazione distillato fallita lato server.";
+
+          for (const endpoint of endpoints) {
+            try {
+              const response = await fetch(endpoint, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "x-admin-password": adminPassword,
+                },
+                body: JSON.stringify({
+                  mode: "create",
+                  id: null,
+                  changes: cleanData,
+                }),
+              });
+
+              const payload = await response.json().catch(() => ({}));
+              if (response.ok && payload?.ok) {
+                lastMessage = "";
+                break;
+              }
+
+              lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
+            } catch (e: any) {
+              lastMessage = e?.message || `Errore di rete su ${endpoint}`;
+            }
+          }
+
+          if (lastMessage) {
+            error = { message: lastMessage };
+          }
+        }
+      } else if (isLocaliTable) {
+        if (!adminPassword) {
+          error = { message: "Password admin non disponibile. Esci e rientra come admin." };
+        } else {
+          const endpoints = [
+            "/api/admin-save-locale",
+            "/.netlify/functions/admin-save-locale",
+          ];
+
+          let lastMessage = "Creazione locale fallita lato server.";
 
           for (const endpoint of endpoints) {
             try {
@@ -444,6 +487,48 @@ export default function PannelloControllo() {
             error = { message: lastMessage };
           }
         }
+      } else if (isLocaliTable) {
+        if (!adminPassword) {
+          error = { message: "Password admin non disponibile. Esci e rientra come admin." };
+        } else {
+          const endpoints = [
+            "/api/admin-save-locale",
+            "/.netlify/functions/admin-save-locale",
+          ];
+
+          let lastMessage = "Salvataggio locale fallito lato server.";
+
+          for (const endpoint of endpoints) {
+            try {
+              const response = await fetch(endpoint, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "x-admin-password": adminPassword,
+                },
+                body: JSON.stringify({
+                  mode: "update",
+                  id: hasValidId ? id : null,
+                  changes: changedData,
+                }),
+              });
+
+              const payload = await response.json().catch(() => ({}));
+              if (response.ok && payload?.ok) {
+                lastMessage = "";
+                break;
+              }
+
+              lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
+            } catch (e: any) {
+              lastMessage = e?.message || `Errore di rete su ${endpoint}`;
+            }
+          }
+
+          if (lastMessage) {
+            error = { message: lastMessage };
+          }
+        }
       } else {
         if (!session) {
           setSaveStatus("error");
@@ -538,6 +623,7 @@ export default function PannelloControllo() {
     const isWineTable = selectedTable.toLowerCase() === "vini";
     const isCocktailTable = selectedTable.toLowerCase() === "cocktail";
     const isDistillatiTable = selectedTable.toLowerCase() === "distillati";
+    const isLocaliTable = selectedTable === "Locali";
 
     if (isCocktailTable) {
       if (!hasValidId) {
@@ -706,6 +792,70 @@ export default function PannelloControllo() {
       ];
 
       let lastMessage = "Eliminazione distillato fallita lato server.";
+
+      for (const endpoint of endpoints) {
+        try {
+          const response = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-admin-password": adminPassword,
+            },
+            body: JSON.stringify({
+              mode: "delete",
+              id: selectedItem.id,
+            }),
+          });
+
+          const payload = await response.json().catch(() => ({}));
+          if (response.ok && payload?.ok) {
+            lastMessage = "";
+            break;
+          }
+
+          lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
+        } catch (e: any) {
+          lastMessage = e?.message || `Errore di rete su ${endpoint}`;
+        }
+      }
+
+      if (lastMessage) {
+        setSaveStatus("error");
+        alert(lastMessage);
+        return;
+      }
+
+      setSaveStatus("ok");
+
+      setTimeout(() => {
+        setSaveStatus(null);
+      }, 2000);
+
+      setSelectedItem(null);
+      setSelectedOriginalItem(null);
+      await loadData();
+      return;
+    }
+
+    if (isLocaliTable) {
+      if (!hasValidId) {
+        setSaveStatus("error");
+        alert("Impossibile eliminare locale: id record mancante.");
+        return;
+      }
+
+      if (!adminPassword) {
+        setSaveStatus("error");
+        alert("Password admin non disponibile. Esci e rientra come admin.");
+        return;
+      }
+
+      const endpoints = [
+        "/api/admin-save-locale",
+        "/.netlify/functions/admin-save-locale",
+      ];
+
+      let lastMessage = "Eliminazione locale fallita lato server.";
 
       for (const endpoint of endpoints) {
         try {
