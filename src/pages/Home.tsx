@@ -324,9 +324,12 @@ export default function Home() {
             align-items: center !important;
             gap: 8px !important;
           }
-          .content-section { padding: clamp(12px, 3.6vw, 18px) !important; }
+          .content-section {
+            padding: 12px 6px !important;
+            max-width: 100% !important;
+          }
           .content-section-first { padding-top: 104px !important; margin-top: 76px !important; }
-          .section-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; gap: clamp(10px, 3vw, 14px) !important; }
+          .section-grid { grid-template-columns: 1fr !important; gap: 12px !important; }
           .card-box { height: auto !important; aspect-ratio: 1 / 1 !important; border-radius: 18px !important; }
           .section-header { margin-bottom: 16px !important; }
           .section-title { font-size: clamp(16px, 4.5vw, 20px) !important; line-height: 1.08 !important; }
@@ -370,7 +373,7 @@ export default function Home() {
         }
 
         @media (min-width: 390px) and (max-width: 430px) {
-          .content-section { padding: 14px 16px !important; }
+          .content-section { padding: 12px 8px !important; }
           .section-grid { gap: 12px !important; }
           .section-title { font-size: 18px !important; }
           .card-box { border-radius: 16px !important; }
@@ -385,7 +388,7 @@ export default function Home() {
         @media (max-width: 380px) {
           .hero-mobile-title { font-size: 32px !important; }
           .hero-mobile-btn { font-size: 0.65rem !important; padding: 7px 14px !important; }
-          .content-section { padding: 12px !important; }
+          .content-section { padding: 10px 6px !important; }
           .section-grid { gap: 10px !important; }
           .card-box { border-radius: 14px !important; }
           .card-title { font-size: 11px !important; }
