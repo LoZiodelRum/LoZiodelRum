@@ -146,6 +146,10 @@ export default function Vini() {
     return <div className="page fade-in">Caricamento...</div>;
   }
 
+  function normalizeWineName(name: string) {
+    return (name || "").replace(/\s+/g, " ").trim();
+  }
+
   function getPreviewImageStyle(item: VinoCard): React.CSSProperties | undefined {
     if (item.placeholder) return undefined;
 
@@ -204,7 +208,7 @@ export default function Vini() {
                 <div className="no-img-placeholder">NO IMG</div>
               )}
               <div className="drink-card-caption">
-                <h3>{item.nome}</h3>
+                <h3>{normalizeWineName(item.nome)}</h3>
               </div>
             </article>
           ))}
@@ -230,12 +234,27 @@ export default function Vini() {
         }
 
         .vini-preview-page .drink-card-uniform {
-          aspect-ratio: 1 / 1.22;
+          aspect-ratio: 1 / 1.26;
+        }
+
+        .vini-preview-page .drink-card-caption h3 {
+          font-size: 15px;
+          line-height: 1.15;
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          word-break: break-word;
         }
 
         @media (max-width: 768px) {
           .vini-preview-page .drink-card-uniform {
-            aspect-ratio: 1 / 1.28;
+            aspect-ratio: 1 / 1.32;
+          }
+
+          .vini-preview-page .drink-card-caption h3 {
+            font-size: 13px;
           }
         }
       `}</style>
