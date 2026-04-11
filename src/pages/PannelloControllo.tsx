@@ -896,9 +896,9 @@ export default function PannelloControllo() {
   };
 
   const localiSelectOptions: Record<string, string[]> = {
-    competenza_staff: ["1", "2", "3", "4", "5"],
-    atmosfera: ["1", "2", "3", "4", "5"],
-    qualita_prezzo: ["1", "2", "3", "4", "5"],
+    competenza_staff: ["Scarso", "Mediocre", "Sufficiente", "Buono", "Ottimo", "Eccellente"],
+    atmosfera: ["Scarso", "Mediocre", "Sufficiente", "Buono", "Ottimo", "Eccellente"],
+    qualita_prezzo: ["Scarso", "Mediocre", "Sufficiente", "Buono", "Ottimo", "Eccellente"],
   };
 
   const fieldLabelMap: Record<string, string> = {
