@@ -1007,17 +1007,25 @@ export default function PannelloControllo() {
     setUploadingWineImage(false);
   }
 
+  function ensureLocaliEditorFields(item: any) {
+    return {
+      ...item,
+      recensioni: item?.recensioni ?? "",
+      competenza_staff: item?.competenza_staff ?? "",
+      atmosfera: item?.atmosfera ?? "",
+      qualita_prezzo: item?.qualita_prezzo ?? "",
+    };
+  }
+
   function openFirstEditor(table: string, data: any[]) {
     if (!Array.isArray(data) || data.length === 0) return;
 
     const firstItem = table === "cocktail" ? normalizeCocktailItemValues(data[0]) : { ...data[0] };
-    if (table === "Locali" && firstItem.recensioni === undefined) {
-      firstItem.recensioni = "";
-    }
+    const normalizedFirstItem = table === "Locali" ? ensureLocaliEditorFields(firstItem) : firstItem;
 
     setSelectedTable(table);
-    setSelectedItem(firstItem);
-    setSelectedOriginalItem(firstItem);
+    setSelectedItem(normalizedFirstItem);
+    setSelectedOriginalItem(normalizedFirstItem);
     setSaveStatus(null);
     setIsCreating(false);
     setCreateRoleHint(null);
@@ -1046,6 +1054,9 @@ export default function PannelloControllo() {
 
     if (table === "Locali") {
       draft.recensioni = draft.recensioni || "";
+      draft.competenza_staff = draft.competenza_staff || "";
+      draft.atmosfera = draft.atmosfera || "";
+      draft.qualita_prezzo = draft.qualita_prezzo || "";
     }
 
     if (table === "profili") {
@@ -1124,7 +1135,7 @@ export default function PannelloControllo() {
             const value = e.target.value;
             const item = data.find(d => String(d.id) === value);
             if (table === "Locali" && item) {
-              const normalizedItem = { ...item, recensioni: item.recensioni ?? "" };
+              const normalizedItem = ensureLocaliEditorFields(item);
               setSelectedItem(normalizedItem);
               setSelectedOriginalItem(normalizedItem);
             } else if (table === "cocktail" && item) {
