@@ -517,6 +517,7 @@ export default function Crea() {
                 <option value="Vermouth rosso">Vermouth rosso</option>
                 <option value="Sherry">Sherry</option>
                 <option value="Liquore">Liquore</option>
+                <option value="Triple Sec/Cointreau">Triple Sec/Cointreau</option>
                 <option value="Amaro">Amaro</option>
                 <option value="Spumante/Champagne">Spumante/Champagne</option>
                 <option value="Vino">Vino</option>
@@ -702,7 +703,7 @@ const preferenceFields: Array<{
   label: string;
   options: string[];
 }> = [
-  { key: "base_alcolica", label: "Base alcolica", options: ["Rum", "Gin", "Vodka", "Whisky", "Tequila", "Mezcal", "Brandy", "Cognac", "Aperitivo bitter", "Bitter", "Vermouth", "Vermouth rosso", "Sherry", "Liquore", "Amaro", "Spumante/Champagne", "Vino", "Birra", "Analcolico", "Mix"] },
+  { key: "base_alcolica", label: "Base alcolica", options: ["Rum", "Gin", "Vodka", "Whisky", "Tequila", "Mezcal", "Brandy", "Cognac", "Aperitivo bitter", "Bitter", "Vermouth", "Vermouth rosso", "Sherry", "Liquore", "Triple Sec/Cointreau", "Amaro", "Spumante/Champagne", "Vino", "Birra", "Analcolico", "Mix"] },
   { key: "intensita_alcolica", label: "Intensita alcolica", options: ["Bassa", "Media", "Alta", "Molto alta"] },
   { key: "profilo_gustativo", label: "Profilo gustativo", options: ["Dolce", "Secco", "Amaro", "Agrodolce", "Acido", "Fresco"] },
   { key: "famiglia_aromatica", label: "Famiglia aromatica", options: ["Agrumato", "Fruttato", "Speziato", "Erbaceo", "Floreale", "Tostato", "Piccante", "Neutro"] },
