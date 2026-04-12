@@ -304,10 +304,10 @@ export default function Home() {
       <style>{`
         .home-review-box {
           background: #f2f3f2;
-          border-radius: 16px;
-          padding: 16px 20px;
+          border-radius: 8px;
+          padding: 8px 10px;
           color: #163f28;
-          max-width: 1140px;
+          max-width: 570px;
           margin: 0 auto;
         }
 
@@ -315,25 +315,25 @@ export default function Home() {
           display: flex;
           align-items: center;
           justify-content: space-between;
-          gap: 16px;
-          margin-bottom: 6px;
+          gap: 8px;
+          margin-bottom: 3px;
         }
 
         .home-review-title {
           margin: 0;
           color: #163f28;
-          font-size: clamp(16px, 2.1vw, 24px);
+          font-size: clamp(10px, 1.1vw, 14px);
         }
 
         .home-review-write-btn {
-          border: 2px solid #184d2f;
+          border: 1px solid #184d2f;
           background: #0b5f2e;
           color: #fff;
           border-radius: 999px;
-          font-size: 18px;
+          font-size: 10px;
           font-weight: 700;
           cursor: pointer;
-          padding: 9px 18px;
+          padding: 5px 9px;
           transition: filter 0.2s ease;
         }
 
@@ -342,63 +342,63 @@ export default function Home() {
         }
 
         .home-review-links {
-          margin-bottom: 16px;
+          margin-bottom: 8px;
         }
 
         .home-review-link {
           color: #163f28;
           font-weight: 600;
           text-decoration: underline;
-          font-size: clamp(13px, 1.4vw, 16px);
+          font-size: clamp(9px, 0.9vw, 12px);
         }
 
         .home-review-content {
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 20px;
+          gap: 10px;
           align-items: start;
         }
 
         .home-review-left {
           display: grid;
           grid-template-columns: auto 1fr;
-          gap: 16px;
+          gap: 8px;
           align-items: start;
         }
 
         .home-review-score {
           text-align: center;
-          min-width: 96px;
+          min-width: 48px;
         }
 
         .home-review-score-value {
           margin: 0;
           color: #0f5130;
-          font-size: clamp(40px, 4.2vw, 56px);
+          font-size: clamp(20px, 2.1vw, 28px);
           line-height: 1;
           font-weight: 700;
         }
 
         .home-review-score-label {
-          margin: 6px 0 0;
+          margin: 3px 0 0;
           color: #184d2f;
-          font-size: clamp(14px, 1.5vw, 20px);
+          font-size: clamp(9px, 0.85vw, 12px);
           font-weight: 700;
         }
 
         .home-review-dots {
-          margin-top: 10px;
+          margin-top: 5px;
           display: flex;
           justify-content: center;
           align-items: center;
-          gap: 5px;
+          gap: 3px;
           color: #184d2f;
-          font-size: clamp(13px, 1.4vw, 18px);
+          font-size: clamp(8px, 0.8vw, 10px);
         }
 
         .home-review-dot {
-          width: 12px;
-          height: 12px;
+          width: 6px;
+          height: 6px;
           border-radius: 999px;
           background: #138a3b;
           display: inline-block;
@@ -411,26 +411,26 @@ export default function Home() {
 
         .home-review-distribution {
           display: grid;
-          gap: 8px;
-          margin-top: 4px;
+          gap: 4px;
+          margin-top: 2px;
         }
 
         .home-review-dist-row {
           display: grid;
-          grid-template-columns: 108px 1fr 28px;
-          gap: 8px;
+          grid-template-columns: 54px 1fr 16px;
+          gap: 4px;
           align-items: center;
         }
 
         .home-review-dist-label,
         .home-review-dist-count {
-          font-size: clamp(13px, 1.3vw, 18px);
+          font-size: clamp(8px, 0.8vw, 10px);
           color: #184d2f;
         }
 
         .home-review-track {
           width: 100%;
-          height: 10px;
+          height: 6px;
           border-radius: 999px;
           background: #d9ddd9;
           overflow: hidden;
@@ -444,36 +444,36 @@ export default function Home() {
 
         .home-review-right {
           border-left: 1px solid #d7dbd7;
-          padding-left: 18px;
+          padding-left: 9px;
           display: grid;
           grid-template-columns: 1fr 1fr;
-          gap: 16px 16px;
+          gap: 8px 8px;
         }
 
         .home-review-metric-label {
-          margin: 0 0 6px;
+          margin: 0 0 3px;
           color: #184d2f;
-          font-size: clamp(14px, 1.45vw, 20px);
+          font-size: clamp(8px, 0.8vw, 10px);
           font-weight: 700;
         }
 
         .home-review-metric-row {
           display: grid;
           grid-template-columns: 1fr auto;
-          gap: 8px;
+          gap: 4px;
           align-items: center;
         }
 
         .home-review-metric-score {
           color: #184d2f;
-          font-size: clamp(13px, 1.3vw, 18px);
+          font-size: clamp(8px, 0.8vw, 10px);
           font-weight: 600;
         }
 
         @media (max-width: 768px) {
           .home-review-box {
-            border-radius: 18px;
-            padding: 20px 16px;
+            border-radius: 10px;
+            padding: 10px 8px;
           }
 
           .home-review-top {
@@ -483,18 +483,18 @@ export default function Home() {
 
           .home-review-write-btn {
             width: 100%;
-            font-size: 17px;
-            padding: 10px 16px;
+            font-size: 11px;
+            padding: 6px 8px;
           }
 
           .home-review-content {
             grid-template-columns: 1fr;
-            gap: 22px;
+            gap: 11px;
           }
 
           .home-review-left {
             grid-template-columns: 1fr;
-            gap: 16px;
+            gap: 8px;
           }
 
           .home-review-score {
@@ -503,11 +503,11 @@ export default function Home() {
           }
 
           .home-review-score-value {
-            font-size: 48px;
+            font-size: 24px;
           }
 
           .home-review-score-label {
-            font-size: 22px;
+            font-size: 11px;
           }
 
           .home-review-dots {
@@ -515,28 +515,28 @@ export default function Home() {
           }
 
           .home-review-dist-row {
-            grid-template-columns: 108px 1fr 28px;
-            gap: 8px;
+            grid-template-columns: 54px 1fr 16px;
+            gap: 4px;
           }
 
           .home-review-dist-label,
           .home-review-dist-count,
           .home-review-metric-score,
           .home-review-metric-label {
-            font-size: 15px;
+            font-size: 10px;
           }
 
           .home-review-track {
-            height: 12px;
+            height: 7px;
           }
 
           .home-review-right {
             border-left: none;
             border-top: 1px solid #d7dbd7;
             padding-left: 0;
-            padding-top: 18px;
+            padding-top: 9px;
             grid-template-columns: 1fr;
-            gap: 16px;
+            gap: 8px;
           }
 
           .hero-section {
