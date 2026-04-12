@@ -549,9 +549,25 @@ export default function Home() {
             border-left: none;
             border-top: 1px solid #d7dbd7;
             padding-left: 0;
-            padding-top: 9px;
+            padding-top: 7px;
             grid-template-columns: 1fr;
-            gap: 8px;
+            gap: 5px;
+          }
+
+          .home-review-right > div {
+            display: grid;
+            grid-template-columns: 56px 1fr auto;
+            align-items: center;
+            gap: 4px;
+          }
+
+          .home-review-metric-label {
+            margin: 0;
+            white-space: nowrap;
+          }
+
+          .home-review-metric-row {
+            display: contents;
           }
 
           .hero-section {
