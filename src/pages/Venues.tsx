@@ -37,19 +37,43 @@ export default function Venues() {
   }
 
   return (
-    <div className="page fade-in" style={{ maxWidth: 1280 }}>
+    <div className="page fade-in venues-page" style={{ maxWidth: 1400 }}>
+      <style>{`
+        .venues-grid {
+          display: grid;
+          gap: 16px;
+          grid-template-columns: repeat(3, minmax(0, 1fr));
+        }
+
+        .venue-card {
+          min-height: 220px;
+        }
+
+        @media (max-width: 1023px) {
+          .venues-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+          }
+        }
+
+        @media (max-width: 768px) {
+          .venues-page {
+            padding-left: 8px !important;
+            padding-right: 8px !important;
+          }
+
+          .venues-grid {
+            grid-template-columns: 1fr;
+            gap: 12px;
+          }
+        }
+      `}</style>
+
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
         <h1 style={{ margin: 0, color: "#f5a623" }}>Tutti i locali</h1>
         <p style={{ margin: 0, color: "#94a3b8", fontSize: 14 }}>{venues.length} risultati</p>
       </div>
 
-      <div
-        style={{
-          display: "grid",
-          gap: 16,
-          gridTemplateColumns: "repeat(auto-fill, minmax(240px, 1fr))",
-        }}
-      >
+      <div className="venues-grid">
         {venues.map((venue) => {
           const image = venue.image_url || venue.image || "https://via.placeholder.com/900x600?text=Locale";
           const subtitle = [venue.citta, venue.indirizzo].filter(Boolean).join(" - ");
@@ -58,11 +82,11 @@ export default function Venues() {
             <Link
               key={venue.id}
               to={`/venue/${venue.id}`}
+              className="venue-card"
               style={{
                 position: "relative",
                 overflow: "hidden",
                 borderRadius: 12,
-                minHeight: 220,
                 color: "#fff",
                 textDecoration: "none",
                 display: "flex",
