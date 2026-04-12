@@ -538,9 +538,6 @@ export default function Home() {
         <p style={{ fontSize: "clamp(14px, 2vw, 18px)", color: "#aaa", maxWidth: 600, margin: "0 auto 32px", lineHeight: 1.6 }}>
           Condividi le tue esperienze, scopri nuovi locali e contribuisci alla cultura del bere consapevole.
         </p>
-        <button onClick={() => navigate("/crea")} style={{ background: "#f5a623", color: "#0b0b0b", border: "none", padding: "14px 32px", borderRadius: 8, fontWeight: "bold", cursor: "pointer", fontSize: 16 }}>
-          Inizia a recensire
-        </button>
       </section>
 
       <div style={{ height: 60 }} />
