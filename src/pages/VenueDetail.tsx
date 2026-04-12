@@ -1118,8 +1118,7 @@ export default function VenueDetail() {
                 style={{ marginTop: 2, cursor: "pointer" }}
               />
               <span style={{ fontSize: 12, color: "#666" }}>
-                Dichiaro che questa recensione è frutto della mia esperienza, che rappresenta la mia opinione autentica di questo ristorante, che non ho relazioni personali o aziendali con tale struttura e che non mi sono stati offerti incentivi o pagamenti da tale azienda per scriverla. Accetto la politica di tolleranza zero attuata da Tripadvisor per le recensioni false.{" "}
-                <span style={{ textDecoration: "underline", fontWeight: 600 }}>Scopri di più sulle conseguenze delle recensioni fraudolente.</span>
+                Dichiaro che questa recensione è frutto della mia esperienza, che rappresenta la mia opinione autentica di questo ristorante, che non ho relazioni personali o aziendali con tale struttura e che non mi sono stati offerti incentivi o pagamenti da tale azienda per scriverla.
               </span>
             </label>
 
