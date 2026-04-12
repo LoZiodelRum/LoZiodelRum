@@ -377,6 +377,102 @@ export default function VenueDetail() {
 
   return (
     <div className="fade-in venue-detail-page" style={{ color: "white" }}>
+      <style>{`
+        .venue-review-box {
+          background: #f2f3f2;
+          border-radius: 16px;
+          padding: 18px 20px;
+          color: #184d2f;
+          width: 100%;
+          box-sizing: border-box;
+        }
+
+        .venue-review-box * {
+          color: #184d2f;
+        }
+
+        .venue-review-head {
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          gap: 12px;
+          flex-wrap: wrap;
+        }
+
+        .venue-review-write {
+          text-decoration: none;
+          border: 1px solid #184d2f;
+          background: #0b5f2e;
+          color: #fff !important;
+          border-radius: 999px;
+          padding: 8px 14px;
+          font-weight: 700;
+          font-size: 14px;
+        }
+
+        .venue-review-score-row {
+          display: flex;
+          align-items: baseline;
+          gap: 10px;
+          margin-bottom: 8px;
+        }
+
+        .venue-review-score-row p {
+          margin: 0;
+        }
+
+        .venue-review-rows,
+        .venue-review-metric-rows {
+          display: grid;
+          gap: 6px;
+        }
+
+        .venue-review-row {
+          display: grid;
+          grid-template-columns: 104px minmax(0, 1fr) 28px;
+          gap: 8px;
+          align-items: center;
+        }
+
+        .venue-review-label {
+          font-size: 12px;
+          font-weight: 700;
+          white-space: nowrap;
+        }
+
+        .venue-review-track {
+          width: 100%;
+          height: 8px;
+          background: #d9ddd9;
+          border-radius: 999px;
+          overflow: hidden;
+        }
+
+        .venue-review-fill {
+          height: 100%;
+          background: #138a3b;
+          border-radius: 999px;
+        }
+
+        .venue-review-count {
+          font-size: 12px;
+          font-weight: 700;
+          text-align: right;
+        }
+
+        .venue-review-divider {
+          border-top: 1px solid #d7dbd7;
+          margin-top: 8px;
+          padding-top: 8px;
+        }
+
+        @media (min-width: 1024px) {
+          .venue-review-box {
+            width: 50%;
+            margin: 0 auto;
+          }
+        }
+      `}</style>
 
       {isAdmin && (
         <button
@@ -523,69 +619,52 @@ export default function VenueDetail() {
 
       {/* RECENSIONI BOX IN FONDO */}
       <div className="content-wrapper venue-section" style={{ marginBottom: 60 }}>
-        <div
-          style={{
-            background: "#f2f3f2",
-            borderRadius: 16,
-            padding: "18px 20px",
-            color: "#184d2f",
-          }}
-        >
-          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
-            <h2 style={{ margin: 0, color: "#184d2f", fontSize: "clamp(18px, 3.2vw, 28px)" }}>Recensioni</h2>
+        <div className="venue-review-box">
+          <div className="venue-review-head">
+            <h2 style={{ margin: 0, fontSize: "clamp(18px, 3.2vw, 28px)", fontWeight: 800 }}>Recensioni</h2>
             <Link
               to="/community"
-              style={{
-                textDecoration: "none",
-                border: "1px solid #184d2f",
-                background: "#0b5f2e",
-                color: "#fff",
-                borderRadius: 999,
-                padding: "8px 14px",
-                fontWeight: 700,
-                fontSize: 14,
-              }}
+              className="venue-review-write"
             >
               Scrivi una recensione
             </Link>
           </div>
 
           <div style={{ marginTop: 8, marginBottom: 12 }}>
-            <Link to="/community" style={{ color: "#184d2f", fontWeight: 700, textDecoration: "underline", fontSize: 14 }}>
+            <Link to="/community" style={{ fontWeight: 700, textDecoration: "underline", fontSize: 14 }}>
               Tutte le recensioni ({recensioni.length})
             </Link>
           </div>
 
-          <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 10 }}>
-            <div style={{ display: "grid", gridTemplateColumns: "88px 1fr", gap: 12, alignItems: "start" }}>
-              <div>
-                <p style={{ margin: 0, fontSize: 32, fontWeight: 800, lineHeight: 1 }}>{reviewAverage.toFixed(1).replace(".", ",")}</p>
-                <p style={{ margin: "4px 0 0", fontSize: 14, fontWeight: 700 }}>{reviewLabel}</p>
-              </div>
-              <div style={{ display: "grid", gap: 6 }}>
-                {reviewDistribution.map((row) => {
-                  const width = maxDistributionCount > 0 ? (row.count / maxDistributionCount) * 100 : 0;
-                  return (
-                    <div key={row.label} style={{ display: "grid", gridTemplateColumns: "86px minmax(0,1fr) 24px", gap: 6, alignItems: "center" }}>
-                      <span style={{ fontSize: 11, fontWeight: 700, whiteSpace: "nowrap" }}>{row.label}</span>
-                      <div style={{ width: "100%", height: 7, background: "#d9ddd9", borderRadius: 999, overflow: "hidden" }}>
-                        <div style={{ width: `${width}%`, height: "100%", background: "#138a3b", borderRadius: 999 }} />
-                      </div>
-                      <span style={{ fontSize: 11, fontWeight: 700 }}>{row.count}</span>
-                    </div>
-                  );
-                })}
-              </div>
+          <div>
+            <div className="venue-review-score-row">
+              <p style={{ fontSize: 32, fontWeight: 800, lineHeight: 1 }}>{reviewAverage.toFixed(1).replace(".", ",")}</p>
+              <p style={{ fontSize: 14, fontWeight: 700 }}>{reviewLabel}</p>
             </div>
 
-            <div style={{ borderTop: "1px solid #d7dbd7", paddingTop: 8, display: "grid", gap: 5 }}>
-              {reviewMetrics.map((metric) => (
-                <div key={metric.label} style={{ display: "grid", gridTemplateColumns: "86px minmax(0,1fr) 24px", gap: 6, alignItems: "center" }}>
-                  <span style={{ fontSize: 11, fontWeight: 700, whiteSpace: "nowrap" }}>{metric.label}</span>
-                  <div style={{ width: "100%", height: 7, background: "#d9ddd9", borderRadius: 999, overflow: "hidden" }}>
-                    <div style={{ width: `${(metric.value / 5) * 100}%`, height: "100%", background: "#138a3b", borderRadius: 999 }} />
+            <div className="venue-review-rows">
+              {reviewDistribution.map((row) => {
+                const width = maxDistributionCount > 0 ? (row.count / maxDistributionCount) * 100 : 0;
+                return (
+                  <div key={row.label} className="venue-review-row">
+                    <span className="venue-review-label">{row.label}</span>
+                    <div className="venue-review-track">
+                      <div className="venue-review-fill" style={{ width: `${width}%` }} />
+                    </div>
+                    <span className="venue-review-count">{row.count}</span>
                   </div>
-                  <span style={{ fontSize: 11, fontWeight: 700 }}>{metric.value.toFixed(1).replace(".", ",")}</span>
+                );
+              })}
+            </div>
+
+            <div className="venue-review-divider venue-review-metric-rows">
+              {reviewMetrics.map((metric) => (
+                <div key={metric.label} className="venue-review-row">
+                  <span className="venue-review-label">{metric.label}</span>
+                  <div className="venue-review-track">
+                    <div className="venue-review-fill" style={{ width: `${(metric.value / 5) * 100}%` }} />
+                  </div>
+                  <span className="venue-review-count">{metric.value.toFixed(1).replace(".", ",")}</span>
                 </div>
               ))}
             </div>
