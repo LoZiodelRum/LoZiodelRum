@@ -37,6 +37,7 @@ type Recensione = {
   locale_id: string;
   commento: string;
   created_at: string;
+  autore?: string | null;
 };
 
 type Media = {
@@ -60,6 +61,12 @@ export default function VenueDetail() {
 
   const [recensioni, setRecensioni] = useState<Recensione[]>([]);
   const [media, setMedia] = useState<Media[]>([]);
+  const [editingReviewId, setEditingReviewId] = useState<string | null>(null);
+  const [reviewDrafts, setReviewDrafts] = useState<Record<string, { commento: string; autore: string }>>({});
+  const [savingReviewId, setSavingReviewId] = useState<string | null>(null);
+  const [deletingReviewId, setDeletingReviewId] = useState<string | null>(null);
+  const [newReview, setNewReview] = useState({ commento: "", autore: "" });
+  const [creatingReview, setCreatingReview] = useState(false);
 
   useEffect(() => {
     fetchLocale();
@@ -101,6 +108,101 @@ export default function VenueDetail() {
       .order("created_at", { ascending: false });
 
     if (data) setRecensioni(data);
+  }
+
+  function startReviewEdit(review: Recensione) {
+    setEditingReviewId(review.id);
+    setReviewDrafts((prev) => ({
+      ...prev,
+      [review.id]: {
+        commento: review.commento || "",
+        autore: review.autore || "",
+      },
+    }));
+  }
+
+  function cancelReviewEdit() {
+    setEditingReviewId(null);
+  }
+
+  async function saveReview(reviewId: string) {
+    const draft = reviewDrafts[reviewId];
+    if (!draft) return;
+
+    setSavingReviewId(reviewId);
+
+    const { error } = await supabase
+      .from("Recensioni")
+      .update({
+        commento: draft.commento.trim(),
+        autore: draft.autore.trim() || null,
+      })
+      .eq("id", reviewId);
+
+    setSavingReviewId(null);
+
+    if (error) {
+      alert(error.message || "Errore salvataggio recensione");
+      return;
+    }
+
+    setEditingReviewId(null);
+    await fetchRecensioni();
+  }
+
+  async function deleteReview(reviewId: string) {
+    const ok = confirm("Eliminare recensione?");
+    if (!ok) return;
+
+    setDeletingReviewId(reviewId);
+
+    const { error } = await supabase
+      .from("Recensioni")
+      .delete()
+      .eq("id", reviewId);
+
+    setDeletingReviewId(null);
+
+    if (error) {
+      alert(error.message || "Errore eliminazione recensione");
+      return;
+    }
+
+    if (editingReviewId === reviewId) {
+      setEditingReviewId(null);
+    }
+
+    await fetchRecensioni();
+  }
+
+  async function createReview() {
+    if (!id) return;
+    if (!newReview.commento.trim()) {
+      alert("Inserisci il testo della recensione");
+      return;
+    }
+
+    setCreatingReview(true);
+
+    const { error } = await supabase
+      .from("Recensioni")
+      .insert([
+        {
+          locale_id: id,
+          commento: newReview.commento.trim(),
+          autore: newReview.autore.trim() || null,
+        },
+      ]);
+
+    setCreatingReview(false);
+
+    if (error) {
+      alert(error.message || "Errore creazione recensione");
+      return;
+    }
+
+    setNewReview({ commento: "", autore: "" });
+    await fetchRecensioni();
   }
 
   async function fetchMedia() {
@@ -447,13 +549,95 @@ export default function VenueDetail() {
 
         {recensioni.map((rec) => (
           <div key={rec.id} className="review-card">
-            <p>{rec.commento}</p>
-            <p className="review-date">
-              {new Date(rec.created_at).toLocaleDateString()}
-            </p>
+            {isAdmin && editingReviewId === rec.id ? (
+              <div style={{ display: "grid", gap: 10 }}>
+                <label style={editorLabelStyle}>Autore</label>
+                <input
+                  value={reviewDrafts[rec.id]?.autore || ""}
+                  onChange={(e) => setReviewDrafts((prev) => ({
+                    ...prev,
+                    [rec.id]: {
+                      commento: prev[rec.id]?.commento || rec.commento || "",
+                      autore: e.target.value,
+                    },
+                  }))}
+                  style={editorFieldStyle}
+                  placeholder="Autore"
+                />
+                <label style={editorLabelStyle}>Recensione</label>
+                <textarea
+                  value={reviewDrafts[rec.id]?.commento || ""}
+                  onChange={(e) => setReviewDrafts((prev) => ({
+                    ...prev,
+                    [rec.id]: {
+                      commento: e.target.value,
+                      autore: prev[rec.id]?.autore || rec.autore || "",
+                    },
+                  }))}
+                  rows={4}
+                  style={editorFieldStyle}
+                  placeholder="Testo recensione"
+                />
+                <div style={{ display: "flex", gap: 8, flexWrap: "wrap" }}>
+                  <button className="btn-primary" type="button" onClick={() => saveReview(rec.id)} disabled={savingReviewId === rec.id}>
+                    {savingReviewId === rec.id ? "Salvataggio..." : "Salva recensione"}
+                  </button>
+                  <button className="btn-primary" type="button" onClick={cancelReviewEdit} style={{ background: "#334155", color: "#fff" }}>
+                    Annulla
+                  </button>
+                  <button className="btn-primary" type="button" onClick={() => deleteReview(rec.id)} disabled={deletingReviewId === rec.id} style={{ background: "#b91c1c", color: "#fff" }}>
+                    {deletingReviewId === rec.id ? "Eliminazione..." : "Elimina"}
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <>
+                <p>{rec.commento}</p>
+                <p className="review-date">
+                  {new Date(rec.created_at).toLocaleDateString()}
+                  {rec.autore ? ` - ${rec.autore}` : ""}
+                </p>
+                {isAdmin && (
+                  <div style={{ display: "flex", gap: 8, marginTop: 10, flexWrap: "wrap" }}>
+                    <button className="btn-primary" type="button" onClick={() => startReviewEdit(rec)}>
+                      Modifica recensione
+                    </button>
+                    <button className="btn-primary" type="button" onClick={() => deleteReview(rec.id)} disabled={deletingReviewId === rec.id} style={{ background: "#b91c1c", color: "#fff" }}>
+                      {deletingReviewId === rec.id ? "Eliminazione..." : "Elimina"}
+                    </button>
+                  </div>
+                )}
+              </>
+            )}
           </div>
         ))}
         {!recensioni.length && <p>Nessuna recensione disponibile.</p>}
+
+        {isAdmin && (
+          <div className="review-card" style={{ display: "grid", gap: 10, marginTop: 14 }}>
+            <h3 style={{ margin: 0, color: "#f5a623" }}>Nuova recensione</h3>
+            <label style={editorLabelStyle}>Autore</label>
+            <input
+              value={newReview.autore}
+              onChange={(e) => setNewReview((prev) => ({ ...prev, autore: e.target.value }))}
+              style={editorFieldStyle}
+              placeholder="Autore"
+            />
+            <label style={editorLabelStyle}>Recensione</label>
+            <textarea
+              value={newReview.commento}
+              onChange={(e) => setNewReview((prev) => ({ ...prev, commento: e.target.value }))}
+              rows={4}
+              style={editorFieldStyle}
+              placeholder="Scrivi una recensione"
+            />
+            <div>
+              <button className="btn-primary" type="button" onClick={createReview} disabled={creatingReview}>
+                {creatingReview ? "Creazione..." : "Aggiungi recensione"}
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* MEDIA */}
