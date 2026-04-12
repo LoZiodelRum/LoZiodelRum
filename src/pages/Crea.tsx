@@ -73,6 +73,13 @@ export default function Crea() {
     setLoading(false);
   }
 
+  function openExistingCocktail(cocktail: SuggestedCocktail) {
+    if (cocktail.source !== "database") return;
+    const cocktailId = cocktail.originalRecord?.id;
+    if (!cocktailId) return;
+    navigate(`/drink/${cocktailId}`);
+  }
+
   function buildDatabasePreferenceComparison(filters: any, cocktail: any) {
     const schema = [
       { label: "Base", filter: filters.p_base, db: cocktail?.base_alcolica },
@@ -376,7 +383,15 @@ export default function Crea() {
 
       <div className="crea-results" style={resultsStyle}>
         {suggestions.map((cocktail) => (
-          <article key={cocktail.name} className="crea-card" style={cardStyle}>
+          <article
+            key={cocktail.name}
+            className="crea-card"
+            style={{
+              ...cardStyle,
+              cursor: cocktail.source === "database" ? "pointer" : cardStyle.cursor,
+            }}
+            onClick={() => openExistingCocktail(cocktail)}
+          >
             <div className="crea-card-header" style={cardHeaderStyle}>
               <div>
                 <p className="crea-source" style={sourceTagStyle}>{cocktail.source === "database" ? "GIÀ ESISTENTE" : "GENERATO"}</p>
