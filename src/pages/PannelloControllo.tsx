@@ -966,7 +966,7 @@ export default function PannelloControllo() {
   };
 
   const aisSelectOptions: Record<string, string[]> = {
-    limpidezza: ["Limpido", "Cristallino", "Velato"],
+    limpidezza: ["Velato", "Abbastanza limpido", "Limpido", "Cristallino", "Brillante"],
     colore: [
       "Giallo verdolino",
       "Giallo paglierino",
