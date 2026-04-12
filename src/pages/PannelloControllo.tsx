@@ -985,7 +985,7 @@ export default function PannelloControllo() {
     intensita_olfattiva: ["Carente", "Poco intenso", "Abbastanza intenso", "Intenso", "Molto intenso"],
     complessita: ["Carente", "Poco complesso", "Abbastanza complesso", "Complesso", "Ampio"],
     qualita_olfattiva: ["Comune", "Poco fine", "Abbastanza fine", "Fine", "Eccellente"],
-    descrizione_olfattiva: ["Fruttato", "Floreale", "Speziato", "Erbaceo", "Minerale", "Tostato"],
+    descrizione_olfattiva: ["Fruttato", "Floreale", "Speziato", "Erbaceo", "Minerale", "Tostato", "Etereo", "Franco"],
     zuccheri: ["Secco", "Abboccato", "Amabile", "Dolce"],
     alcoli: ["Leggero", "Poco alcolico", "Abbastanza alcolico", "Caldo", "Alcolico"],
     polialcoli: ["Spigoloso", "Poco morbido", "Abbastanza morbido", "Morbido", "Pastoso"],
