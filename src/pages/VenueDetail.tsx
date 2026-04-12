@@ -352,20 +352,24 @@ export default function VenueDetail() {
       return;
     }
 
+    // Calcola media delle valutazioni dettagliate
+    const avgDetailed = reviewForm.servizio && reviewForm.qualitaDrink && reviewForm.qualitaPrezzo && reviewForm.atmosfera
+      ? (reviewForm.servizio + reviewForm.qualitaDrink + reviewForm.qualitaPrezzo + reviewForm.atmosfera) / 4
+      : reviewForm.ratingGenerale;
+
     const { error } = await supabase.from("Recensioni").insert({
       locale_id: id,
       commento: reviewForm.comment,
       rating_generale: reviewForm.ratingGenerale,
-      servizio: reviewForm.servizio,
-      qualita_drink: reviewForm.qualitaDrink,
-      qualita_prezzo: reviewForm.qualitaPrezzo,
-      atmosfera: reviewForm.atmosfera,
-      tags: reviewForm.tags,
+      overall_rating: reviewForm.ratingGenerale,
+      rating: avgDetailed,
+      tags: reviewForm.tags.length > 0 ? reviewForm.tags.join(",") : null,
       autore: user?.email || user?.id || "admin",
       created_at: new Date().toISOString(),
     });
 
     if (error) {
+      console.error("Errore salvataggio:", error);
       alert(`Errore salvataggio: ${error.message}`);
       return;
     }
