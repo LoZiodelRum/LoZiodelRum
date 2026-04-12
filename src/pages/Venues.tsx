@@ -47,6 +47,8 @@ export default function Venues() {
 
         .venue-card {
           min-height: 220px;
+          border: 1px solid rgba(245, 166, 35, 0.28);
+          box-shadow: inset 0 0 0 1px rgba(148, 163, 184, 0.08);
         }
 
         @media (max-width: 1023px) {
@@ -57,13 +59,17 @@ export default function Venues() {
 
         @media (max-width: 768px) {
           .venues-page {
-            padding-left: 8px !important;
-            padding-right: 8px !important;
+            padding-left: 4px !important;
+            padding-right: 4px !important;
           }
 
           .venues-grid {
             grid-template-columns: 1fr;
             gap: 12px;
+          }
+
+          .venue-card {
+            width: 100%;
           }
         }
       `}</style>
@@ -91,7 +97,6 @@ export default function Venues() {
                 textDecoration: "none",
                 display: "flex",
                 alignItems: "flex-end",
-                border: "1px solid rgba(148,163,184,0.22)",
               }}
             >
               <img
