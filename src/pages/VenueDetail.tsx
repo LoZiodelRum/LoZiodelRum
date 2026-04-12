@@ -545,8 +545,6 @@ export default function VenueDetail() {
             <input value={form.tiktok || ""} onChange={(e) => setForm({ ...form, tiktok: e.target.value })} placeholder="TikTok" style={editorFieldStyle} />
             <label style={editorLabelStyle}>Instagram</label>
             <input value={form.instagram || ""} onChange={(e) => setForm({ ...form, instagram: e.target.value })} placeholder="Instagram" style={editorFieldStyle} />
-            <label style={editorLabelStyle}>Recensioni</label>
-            <textarea value={form.recensioni || ""} onChange={(e) => setForm({ ...form, recensioni: e.target.value })} placeholder="Recensioni" rows={2} style={editorFieldStyle} />
             <label style={editorLabelStyle}>Descrizione breve</label>
             <textarea value={form.descrizione || ""} onChange={(e) => setForm({ ...form, descrizione: e.target.value })} placeholder="Descrizione breve" rows={3} style={editorFieldStyle} />
             <label style={editorLabelStyle}>Descrizione completa</label>
