@@ -40,6 +40,12 @@ type Recensione = {
   autore?: string | null;
   rating?: number | null;
   overall_rating?: number | null;
+  rating_generale?: number | null;
+  servizio?: number | null;
+  qualita_drink?: number | null;
+  qualita_prezzo?: number | null;
+  atmosfera?: number | null;
+  tags?: string[] | null;
 };
 
 type Media = {
@@ -68,15 +74,14 @@ export default function VenueDetail() {
 
   const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
   const [reviewForm, setReviewForm] = useState({
-    overallRating: 0,
+    ratingGenerale: 0,
     comment: "",
-    title: "",
-    serviceRating: 0,
-    foodRating: 0,
-    qualityPriceRating: 0,
-    atmosphereRating: 0,
+    servizio: 0,
+    qualitaDrink: 0,
+    qualitaPrezzo: 0,
+    atmosfera: 0,
+    tags: [] as string[],
     agreeToTerms: false,
-    photoUrl: "",
   });
   const [reviewUploading, setReviewUploading] = useState(false);
 
@@ -328,13 +333,6 @@ export default function VenueDetail() {
       .from("drink-images")
       .getPublicUrl(fileName);
 
-    const url = data.publicUrl;
-
-    setReviewForm({
-      ...reviewForm,
-      photoUrl: url,
-    });
-
     setReviewUploading(false);
   }
 
@@ -349,29 +347,20 @@ export default function VenueDetail() {
       return;
     }
 
-    if (reviewForm.overallRating === 0) {
+    if (reviewForm.ratingGenerale === 0) {
       alert("Seleziona una valutazione generale");
       return;
     }
 
-    const overallScore = (
-      reviewForm.serviceRating +
-      reviewForm.foodRating +
-      reviewForm.qualityPriceRating +
-      reviewForm.atmosphereRating
-    ) / 4 || reviewForm.overallRating;
-
     const { error } = await supabase.from("Recensioni").insert({
       locale_id: id,
       commento: reviewForm.comment,
-      titolo: reviewForm.title,
-      overall_rating: reviewForm.overallRating,
-      rating: overallScore,
-      photo_url: reviewForm.photoUrl,
-      servizio: reviewForm.serviceRating,
-      cibo: reviewForm.foodRating,
-      qualita_prezzo: reviewForm.qualityPriceRating,
-      atmosfera: reviewForm.atmosphereRating,
+      rating_generale: reviewForm.ratingGenerale,
+      servizio: reviewForm.servizio,
+      qualita_drink: reviewForm.qualitaDrink,
+      qualita_prezzo: reviewForm.qualitaPrezzo,
+      atmosfera: reviewForm.atmosfera,
+      tags: reviewForm.tags,
       autore: user.email || user.id,
       created_at: new Date().toISOString(),
     });
@@ -384,15 +373,14 @@ export default function VenueDetail() {
     alert("Recensione pubblicata! ✅");
     setIsReviewModalOpen(false);
     setReviewForm({
-      overallRating: 0,
+      ratingGenerale: 0,
       comment: "",
-      title: "",
-      serviceRating: 0,
-      foodRating: 0,
-      qualityPriceRating: 0,
-      atmosphereRating: 0,
+      servizio: 0,
+      qualitaDrink: 0,
+      qualitaPrezzo: 0,
+      atmosfera: 0,
+      tags: [],
       agreeToTerms: false,
-      photoUrl: "",
     });
 
     // Refresh reviews
@@ -442,20 +430,47 @@ export default function VenueDetail() {
     return Math.max(0, Math.min(5, parsed));
   };
 
+  // Calcola rating generale da rating_generale o da media delle 4 categorie
   const ratedReviews = recensioni
-    .map((rec) => parseScore(rec.rating ?? rec.overall_rating))
+    .map((rec) => {
+      const general = parseScore(rec.rating_generale ?? rec.overall_rating ?? rec.rating);
+      if (general > 0) return general;
+      const avg = (parseScore(rec.servizio) + parseScore(rec.qualita_drink) + parseScore(rec.qualita_prezzo) + parseScore(rec.atmosfera)) / 4;
+      return avg > 0 ? avg : 0;
+    })
     .filter((score) => score > 0);
 
   const reviewAverage = ratedReviews.length
     ? ratedReviews.reduce((acc, score) => acc + score, 0) / ratedReviews.length
     : 0;
 
+  // Calcola medie per categoria
+  const avgServizio = recensioni.length
+    ? recensioni.map((r) => parseScore(r.servizio)).filter(s => s > 0).reduce((a, b) => a + b, 0) / 
+      recensioni.filter(r => parseScore(r.servizio) > 0).length || 0
+    : 0;
+
+  const avgQualitaDrink = recensioni.length
+    ? recensioni.map((r) => parseScore(r.qualita_drink)).filter(s => s > 0).reduce((a, b) => a + b, 0) / 
+      recensioni.filter(r => parseScore(r.qualita_drink) > 0).length || 0
+    : 0;
+
+  const avgQualitaPrezzo = recensioni.length
+    ? recensioni.map((r) => parseScore(r.qualita_prezzo)).filter(s => s > 0).reduce((a, b) => a + b, 0) / 
+      recensioni.filter(r => parseScore(r.qualita_prezzo) > 0).length || 0
+    : 0;
+
+  const avgAtmosfera = recensioni.length
+    ? recensioni.map((r) => parseScore(r.atmosfera)).filter(s => s > 0).reduce((a, b) => a + b, 0) / 
+      recensioni.filter(r => parseScore(r.atmosfera) > 0).length || 0
+    : 0;
+
   const reviewDistribution = [
-    { label: "Eccellente", stars: 5, count: 0 },
-    { label: "Buono", stars: 4, count: 0 },
-    { label: "Nella media", stars: 3, count: 0 },
-    { label: "Scarso", stars: 2, count: 0 },
-    { label: "Terribile", stars: 1, count: 0 },
+    { label: "Eccellente", stars: 5, count: 0, color: "#16a34a" },
+    { label: "Buono", stars: 4, count: 0, color: "#22c55e" },
+    { label: "Nella media", stars: 3, count: 0, color: "#eab308" },
+    { label: "Scarso", stars: 2, count: 0, color: "#f97316" },
+    { label: "Terribile", stars: 1, count: 0, color: "#ef4444" },
   ];
 
   ratedReviews.forEach((score) => {
@@ -738,52 +753,118 @@ export default function VenueDetail() {
             <h2 style={{ margin: 0, fontSize: "clamp(18px, 3.2vw, 28px)", fontWeight: 800 }}>Recensioni</h2>
             <button
               onClick={() => setIsReviewModalOpen(true)}
-              className="venue-review-write"
-              style={{ border: "1px solid #0b6b3a", background: "#e8f4ec", color: "#0b6b3a", borderRadius: "999px", padding: "8px 14px", fontWeight: 700, fontSize: 14, cursor: "pointer" }}
+              style={{
+                border: "2px solid #0b6b3a",
+                background: "transparent",
+                color: "#0b6b3a",
+                borderRadius: "8px",
+                padding: "8px 16px",
+                fontWeight: 700,
+                fontSize: 14,
+                cursor: "pointer",
+                transition: "all 0.3s ease",
+              }}
+              onMouseEnter={(e) => {
+                (e.target as HTMLButtonElement).style.background = "#e8f4ec";
+              }}
+              onMouseLeave={(e) => {
+                (e.target as HTMLButtonElement).style.background = "transparent";
+              }}
             >
-              Scrivi una recensione
+              Racconta la tua esperienza
             </button>
           </div>
 
-          <div style={{ marginTop: 8, marginBottom: 12 }}>
-            <Link to="/community" className="venue-review-all-link" style={{ fontWeight: 700, textDecoration: "underline", fontSize: 14 }}>
-              Tutte le recensioni ({recensioni.length})
-            </Link>
-          </div>
-
-          <div>
-            <div className="venue-review-score-row">
-              <p style={{ fontSize: 32, fontWeight: 800, lineHeight: 1 }}>{reviewAverage.toFixed(1).replace(".", ",")}</p>
-              <p style={{ fontSize: 14, fontWeight: 700 }}>{reviewLabel}</p>
+          {/* VOTO CENTRALE */}
+          {reviewAverage > 0 ? (
+            <div style={{ textAlign: "center", marginTop: 20, marginBottom: 20 }}>
+              <div style={{ fontSize: "48px", fontWeight: 800, color: "#0b6b3a", lineHeight: 1 }}>
+                {reviewAverage.toFixed(1).replace(".", ",")}
+              </div>
+              <div style={{ fontSize: 18, fontWeight: 700, color: "#0b6b3a", marginTop: 4 }}>
+                {reviewLabel}
+              </div>
+              <div style={{ fontSize: 12, color: "#666", marginTop: 6 }}>
+                Basato su {recensioni.length} {recensioni.length === 1 ? "recensione" : "recensioni"}
+              </div>
             </div>
+          ) : (
+            <div style={{ textAlign: "center", marginTop: 20, marginBottom: 20, fontSize: 14, color: "#999" }}>
+              Nessuna recensione ancora
+            </div>
+          )}
 
-            <div className="venue-review-rows">
-              {reviewDistribution.map((row) => {
-                const width = maxDistributionCount > 0 ? (row.count / maxDistributionCount) * 100 : 0;
-                return (
-                  <div key={row.label} className="venue-review-row">
-                    <span className="venue-review-label">{row.label}</span>
-                    <div className="venue-review-track">
-                      <div className="venue-review-fill" style={{ width: `${width}%` }} />
+          {/* BARRE DISTRIBUZIONE */}
+          {reviewAverage > 0 && (
+            <div style={{ marginBottom: 20 }}>
+              <h3 style={{ fontSize: 14, fontWeight: 700, color: "#0b6b3a", marginBottom: 12 }}>Distribuzione voti</h3>
+              <div style={{ display: "grid", gap: 8 }}>
+                {reviewDistribution.map((row) => {
+                  const width = maxDistributionCount > 0 ? (row.count / maxDistributionCount) * 100 : 0;
+                  return (
+                    <div key={row.label} style={{ display: "grid", gridTemplateColumns: "80px 1fr 40px", gap: 8, alignItems: "center" }}>
+                      <span style={{ fontSize: 12, fontWeight: 600, color: "#0b6b3a" }}>{row.label}</span>
+                      <div style={{
+                        width: "100%",
+                        height: 8,
+                        background: "#e0e0e0",
+                        borderRadius: "999px",
+                        overflow: "hidden",
+                      }}>
+                        <div style={{
+                          width: `${width}%`,
+                          height: "100%",
+                          background: row.color,
+                          borderRadius: "999px",
+                          transition: "width 0.3s ease",
+                        }} />
+                      </div>
+                      <span style={{ fontSize: 12, fontWeight: 700, color: "#0b6b3a", textAlign: "right" }}>{row.count}</span>
                     </div>
-                    <span className="venue-review-count">{row.count}</span>
-                  </div>
-                );
-              })}
+                  );
+                })}
+              </div>
             </div>
+          )}
 
-            <div className="venue-review-divider venue-review-metric-rows">
-              {reviewMetrics.map((metric) => (
-                <div key={metric.label} className="venue-review-row">
-                  <span className="venue-review-label">{metric.label}</span>
-                  <div className="venue-review-track">
-                    <div className="venue-review-fill" style={{ width: `${(metric.value / 5) * 100}%` }} />
+          {/* VALUTAZIONI DETTAGLIATE */}
+          {reviewAverage > 0 && (
+            <div>
+              <h3 style={{ fontSize: 14, fontWeight: 700, color: "#0b6b3a", marginBottom: 12 }}>Valutazioni dettagliate</h3>
+              <div style={{ display: "grid", gap: 12 }}>
+                {[
+                  { label: "Servizio", icon: "👤", value: avgServizio },
+                  { label: "Qualità drink", icon: "🍸", value: avgQualitaDrink },
+                  { label: "Qualità/prezzo", icon: "💰", value: avgQualitaPrezzo },
+                  { label: "Atmosfera", icon: "✨", value: avgAtmosfera },
+                ].map((metric) => (
+                  <div key={metric.label} style={{ display: "grid", gridTemplateColumns: "80px 1fr 50px", gap: 8, alignItems: "center" }}>
+                    <span style={{ fontSize: 13, fontWeight: 600, color: "#0b6b3a" }}>
+                      {metric.icon} {metric.label}
+                    </span>
+                    <div style={{
+                      width: "100%",
+                      height: 6,
+                      background: "#e0e0e0",
+                      borderRadius: "999px",
+                      overflow: "hidden",
+                    }}>
+                      <div style={{
+                        width: `${(metric.value / 5) * 100}%`,
+                        height: "100%",
+                        background: "#0b6b3a",
+                        borderRadius: "999px",
+                        transition: "width 0.3s ease",
+                      }} />
+                    </div>
+                    <span style={{ fontSize: 12, fontWeight: 700, color: "#0b6b3a", textAlign: "right" }}>
+                      {metric.value.toFixed(1).replace(".", ",")}
+                    </span>
                   </div>
-                  <span className="venue-review-count">{metric.value.toFixed(1).replace(".", ",")}</span>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
-          </div>
+          )}
         </div>
       </div>
 
@@ -932,7 +1013,7 @@ export default function VenueDetail() {
           style={{
             position: "fixed",
             inset: 0,
-            background: "rgba(2,6,23,0.75)",
+            background: "rgba(0,0,0,0.8)",
             zIndex: 1200,
             display: "flex",
             alignItems: "center",
@@ -946,167 +1027,163 @@ export default function VenueDetail() {
             style={{
               width: "min(700px, 96vw)",
               background: "#fff",
-              borderRadius: 12,
-              padding: 24,
+              borderRadius: 16,
+              padding: 28,
               display: "grid",
-              gap: 20,
+              gap: 24,
               maxHeight: "90vh",
               overflow: "auto",
             }}
             onClick={(e) => e.stopPropagation()}
           >
             {/* TITLE */}
-            <h2 style={{ margin: 0, fontSize: 24, fontWeight: 800, color: "#000" }}>Scrivi una recensione</h2>
+            <h2 style={{ margin: 0, fontSize: 24, fontWeight: 800, color: "#111827" }}>Racconta la tua esperienza</h2>
 
-            {/* OVERALL RATING - STARS */}
+            {/* VOTO GENERALE - 5 STARS */}
             <div>
-              <label style={{ display: "block", fontSize: 16, fontWeight: 700, color: "#000", marginBottom: 8 }}>
-                Come valuteresti la tua esperienza?
+              <label style={{ display: "block", fontSize: 15, fontWeight: 700, color: "#111827", marginBottom: 12 }}>
+                Come valuti complessivamente?
               </label>
-              <div style={{ display: "flex", gap: 8 }}>
-                {[1, 2, 3, 4, 5].map((star) => (
+              <div style={{ display: "flex", gap: 12, alignItems: "center" }}>
+                <div style={{ display: "flex", gap: 6 }}>
+                  {[1, 2, 3, 4, 5].map((star) => (
+                    <button
+                      key={star}
+                      onClick={() => setReviewForm({ ...reviewForm, ratingGenerale: star })}
+                      style={{
+                        width: 44,
+                        height: 44,
+                        borderRadius: "50%",
+                        border: "2px solid #0b6b3a",
+                        background: reviewForm.ratingGenerale >= star ? "#0b6b3a" : "#fff",
+                        cursor: "pointer",
+                        fontSize: 20,
+                        transition: "all 0.2s ease",
+                        transform: reviewForm.ratingGenerale >= star ? "scale(1.1)" : "scale(1)",
+                      }}
+                      onMouseEnter={(e) => {
+                        (e.target as HTMLButtonElement).style.transform = "scale(1.15)";
+                      }}
+                      onMouseLeave={(e) => {
+                        (e.target as HTMLButtonElement).style.transform = reviewForm.ratingGenerale >= star ? "scale(1.1)" : "scale(1)";
+                      }}
+                    >
+                      ★
+                    </button>
+                  ))}
+                </div>
+                {reviewForm.ratingGenerale > 0 && (
+                  <span style={{ fontSize: 14, fontWeight: 700, color: "#0b6b3a" }}>{reviewForm.ratingGenerale}.0</span>
+                )}
+              </div>
+            </div>
+
+            {/* VALUTAZIONI DETTAGLIATE CON SLIDERS */}
+            <div>
+              <label style={{ display: "block", fontSize: 15, fontWeight: 700, color: "#111827", marginBottom: 16 }}>
+                Valutazioni dettagliate
+              </label>
+              <div style={{ display: "grid", gap: 16 }}>
+                {[
+                  { key: "servizio", label: "👤 Servizio", icon: "👤" },
+                  { key: "qualitaDrink", label: "🍸 Qualità drink", icon: "🍸" },
+                  { key: "qualitaPrezzo", label: "💰 Qualità/prezzo", icon: "💰" },
+                  { key: "atmosfera", label: "✨ Atmosfera", icon: "✨" },
+                ].map(({ key, label }) => (
+                  <div key={key}>
+                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
+                      <span style={{ fontSize: 13, fontWeight: 600, color: "#111827" }}>{label}</span>
+                      <span style={{ fontSize: 13, fontWeight: 700, color: "#0b6b3a" }}>
+                        {(reviewForm as any)[key] || "—"}
+                      </span>
+                    </div>
+                    <input
+                      type="range"
+                      min="0"
+                      max="5"
+                      step="1"
+                      value={(reviewForm as any)[key] || 0}
+                      onChange={(e) => setReviewForm({
+                        ...reviewForm,
+                        [key]: parseInt(e.target.value),
+                      })}
+                      style={{
+                        width: "100%",
+                        height: 6,
+                        borderRadius: "999px",
+                        background: `linear-gradient(to right, #0b6b3a 0%, #0b6b3a ${((reviewForm as any)[key] || 0) * 20}%, #e0e0e0 ${((reviewForm as any)[key] || 0) * 20}%, #e0e0e0 100%)`,
+                        border: "none",
+                        cursor: "pointer",
+                        appearance: "none",
+                        WebkitAppearance: "none",
+                      } as React.CSSProperties}
+                    />
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* TAG RAPIDI */}
+            <div>
+              <label style={{ display: "block", fontSize: 15, fontWeight: 700, color: "#111827", marginBottom: 12 }}>
+                Aggiungi tag (seleziona più elementi)
+              </label>
+              <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fit, minmax(130px, 1fr))", gap: 8 }}>
+                {[
+                  { id: "cocktail", label: "🍸 Ottimi cocktail" },
+                  { id: "music", label: "🎧 Bella musica" },
+                  { id: "expensive", label: "💸 Prezzi alti" },
+                  { id: "basic", label: "🧊 Drink basic" },
+                  { id: "top", label: "🔥 Esperienza top" },
+                  { id: "average", label: "😐 Nella media" },
+                ].map((tag) => (
                   <button
-                    key={star}
-                    onClick={() => setReviewForm({ ...reviewForm, overallRating: star })}
+                    key={tag.id}
+                    onClick={() => {
+                      const newTags = reviewForm.tags.includes(tag.id)
+                        ? reviewForm.tags.filter(t => t !== tag.id)
+                        : [...reviewForm.tags, tag.id];
+                      setReviewForm({ ...reviewForm, tags: newTags });
+                    }}
                     style={{
-                      width: 40,
-                      height: 40,
-                      borderRadius: "50%",
+                      padding: "8px 12px",
+                      borderRadius: 8,
                       border: "2px solid #0b6b3a",
-                      background: reviewForm.overallRating >= star ? "#0b6b3a" : "#fff",
+                      background: reviewForm.tags.includes(tag.id) ? "#0b6b3a" : "#fff",
+                      color: reviewForm.tags.includes(tag.id) ? "#fff" : "#0b6b3a",
+                      fontWeight: 600,
+                      fontSize: 13,
                       cursor: "pointer",
-                      fontSize: 20,
+                      transition: "all 0.2s ease",
                     }}
                   >
-                    ○
+                    {tag.label}
                   </button>
                 ))}
               </div>
             </div>
 
-            {/* REVIEW TEXT */}
+            {/* COMMENTO */}
             <div>
-              <label style={{ display: "block", fontSize: 14, fontWeight: 700, color: "#000", marginBottom: 8 }}>
-                Scrivi una recensione
+              <label style={{ display: "block", fontSize: 15, fontWeight: 700, color: "#111827", marginBottom: 8 }}>
+                Il tuo commento
               </label>
               <textarea
                 value={reviewForm.comment}
                 onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })}
-                placeholder="Condividi la tua esperienza..."
+                placeholder="Racconta cosa hai bevuto, l'atmosfera e cosa ti è piaciuto..."
                 style={{
                   width: "100%",
-                  minHeight: 120,
+                  minHeight: 100,
                   padding: 12,
                   borderRadius: 8,
-                  border: "1px solid #ccc",
+                  border: "1px solid #e0e0e0",
                   fontSize: 14,
                   fontFamily: "inherit",
                   boxSizing: "border-box",
+                  resize: "vertical",
                 }}
               />
-              <p style={{ margin: "4px 0 0", fontSize: 12, color: "#999" }}>0/300 caratteri max</p>
-            </div>
-
-            {/* REVIEW TITLE */}
-            <div>
-              <label style={{ display: "block", fontSize: 14, fontWeight: 700, color: "#000", marginBottom: 8 }}>
-                Dai un titolo alla tua recensione
-              </label>
-              <input
-                type="text"
-                value={reviewForm.title}
-                onChange={(e) => setReviewForm({ ...reviewForm, title: e.target.value })}
-                placeholder="Doccia un'idea della tua esperienza"
-                style={{
-                  width: "100%",
-                  padding: 12,
-                  borderRadius: 8,
-                  border: "1px solid #ccc",
-                  fontSize: 14,
-                  boxSizing: "border-box",
-                }}
-              />
-            </div>
-
-            {/* PHOTO UPLOAD */}
-            <div>
-              <label style={{ display: "block", fontSize: 14, fontWeight: 700, color: "#000", marginBottom: 8 }}>
-                Aggiungi delle foto
-              </label>
-              <p style={{ margin: "0 0 12px", fontSize: 12, color: "#666" }}>Facoltativo</p>
-              <div style={{
-                border: "2px dashed #ccc",
-                borderRadius: 8,
-                padding: 20,
-                textAlign: "center",
-                cursor: "pointer",
-                background: reviewForm.photoUrl ? "#f0f8f0" : "#fafafa",
-              }}>
-                {reviewUploading ? (
-                  <p style={{ margin: 0, color: "#0b6b3a", fontWeight: 700 }}>Upload in corso...</p>
-                ) : reviewForm.photoUrl ? (
-                  <>
-                    <img src={reviewForm.photoUrl} alt="Preview" style={{ maxWidth: "100%", maxHeight: 120, borderRadius: 6, marginBottom: 8 }} />
-                    <p style={{ margin: 0, fontSize: 12, color: "#0b6b3a" }}>Foto caricata ✓</p>
-                  </>
-                ) : (
-                  <>
-                    <p style={{ margin: "0 0 8px", fontSize: 18 }}>📸</p>
-                    <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: "#000" }}>Fai clic per aggiungere foto</p>
-                    <p style={{ margin: "4px 0 0", fontSize: 12, color: "#666" }}>oppure trascina</p>
-                  </>
-                )}
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={(e) => e.target.files?.[0] && handleReviewPhotoUpload(e.target.files[0])}
-                  style={{ display: "none", cursor: "pointer" }}
-                  id="review-photo-input"
-                />
-              </div>
-              <label htmlFor="review-photo-input" style={{ display: "block", marginTop: 8, cursor: "pointer" }}>
-                <span style={{ fontSize: 12, color: "#0b6b3a", textDecoration: "underline" }}>Seleziona file</span>
-              </label>
-            </div>
-
-            {/* INDIVIDUAL RATINGS */}
-            <div>
-              <label style={{ display: "block", fontSize: 16, fontWeight: 700, color: "#000", marginBottom: 16 }}>
-                Come li valuteresti?
-              </label>
-              <div style={{ display: "grid", gap: 16 }}>
-                {[
-                  { key: "serviceRating", label: "Servizio" },
-                  { key: "foodRating", label: "Cibo" },
-                  { key: "qualityPriceRating", label: "Qualità/prezzo" },
-                  { key: "atmosphereRating", label: "Atmosfera" },
-                ].map(({ key, label }) => (
-                  <div key={key}>
-                    <p style={{ margin: "0 0 8px", fontSize: 14, fontWeight: 600, color: "#000" }}>{label}</p>
-                    <div style={{ display: "flex", gap: 6 }}>
-                      {[1, 2, 3, 4, 5].map((star) => (
-                        <button
-                          key={star}
-                          onClick={() => setReviewForm({ ...reviewForm, [key]: star })}
-                          style={{
-                            width: 32,
-                            height: 32,
-                            borderRadius: "50%",
-                            border: "2px solid #0b6b3a",
-                            background: (reviewForm as any)[key] >= star ? "#0b6b3a" : "#fff",
-                            cursor: "pointer",
-                            fontSize: 16,
-                            color: (reviewForm as any)[key] >= star ? "#fff" : "#0b6b3a",
-                            fontWeight: 700,
-                          }}
-                        >
-                          ○
-                        </button>
-                      ))}
-                    </div>
-                  </div>
-                ))}
-              </div>
             </div>
 
             {/* TERMS CHECKBOX */}
@@ -1115,44 +1192,61 @@ export default function VenueDetail() {
                 type="checkbox"
                 checked={reviewForm.agreeToTerms}
                 onChange={(e) => setReviewForm({ ...reviewForm, agreeToTerms: e.target.checked })}
-                style={{ marginTop: 2, cursor: "pointer" }}
+                style={{ marginTop: 4, cursor: "pointer", width: 18, height: 18 }}
               />
-              <span style={{ fontSize: 12, color: "#666" }}>
+              <span style={{ fontSize: 12, color: "#666", lineHeight: 1.4 }}>
                 Dichiaro che questa recensione è frutto della mia esperienza, che rappresenta la mia opinione autentica di questo ristorante, che non ho relazioni personali o aziendali con tale struttura e che non mi sono stati offerti incentivi o pagamenti da tale azienda per scriverla.
               </span>
             </label>
 
             {/* ACTION BUTTONS */}
-            <div style={{ display: "flex", gap: 10 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 10 }}>
               <button
                 onClick={handleReviewSubmit}
-                disabled={!reviewForm.agreeToTerms || reviewForm.overallRating === 0}
+                disabled={!reviewForm.agreeToTerms || reviewForm.ratingGenerale === 0}
                 style={{
-                  flex: 1,
-                  background: reviewForm.agreeToTerms && reviewForm.overallRating > 0 ? "#0b6b3a" : "#ccc",
+                  background: reviewForm.agreeToTerms && reviewForm.ratingGenerale > 0 ? "#0b6b3a" : "#ccc",
                   color: "#fff",
                   border: "none",
                   borderRadius: 8,
                   padding: 14,
                   fontWeight: 700,
-                  fontSize: 16,
-                  cursor: reviewForm.agreeToTerms && reviewForm.overallRating > 0 ? "pointer" : "not-allowed",
+                  fontSize: 15,
+                  cursor: reviewForm.agreeToTerms && reviewForm.ratingGenerale > 0 ? "pointer" : "not-allowed",
+                  transition: "all 0.3s ease",
+                  boxShadow: reviewForm.agreeToTerms && reviewForm.ratingGenerale > 0 ? "0 4px 12px rgba(11, 107, 58, 0.3)" : "none",
+                }}
+                onMouseEnter={(e) => {
+                  if (reviewForm.agreeToTerms && reviewForm.ratingGenerale > 0) {
+                    (e.target as HTMLButtonElement).style.boxShadow = "0 6px 16px rgba(11, 107, 58, 0.5)";
+                  }
+                }}
+                onMouseLeave={(e) => {
+                  if (reviewForm.agreeToTerms && reviewForm.ratingGenerale > 0) {
+                    (e.target as HTMLButtonElement).style.boxShadow = "0 4px 12px rgba(11, 107, 58, 0.3)";
+                  }
                 }}
               >
-                Continua
+                Pubblica recensione
               </button>
               <button
                 onClick={() => setIsReviewModalOpen(false)}
                 style={{
-                  flex: 1,
                   background: "#f0f0f0",
-                  color: "#000",
+                  color: "#111827",
                   border: "none",
                   borderRadius: 8,
                   padding: 14,
-                  fontWeight: 700,
-                  fontSize: 16,
+                  fontWeight: 600,
+                  fontSize: 15,
                   cursor: "pointer",
+                  transition: "all 0.2s ease",
+                }}
+                onMouseEnter={(e) => {
+                  (e.target as HTMLButtonElement).style.background = "#e0e0e0";
+                }}
+                onMouseLeave={(e) => {
+                  (e.target as HTMLButtonElement).style.background = "#f0f0f0";
                 }}
               >
                 Annulla
