@@ -40,7 +40,7 @@ const initialVino = {
 };
 
 const selectOptions = {
-  limpidezza: ["Limpido", "Cristallino", "Velato"],
+  limpidezza: ["Velato", "Abbastanza limpido", "Limpido", "Cristallino", "Brillante"],
   colore: [
     "Giallo verdolino",
     "Giallo paglierino",
@@ -60,7 +60,7 @@ const selectOptions = {
   intensita_olfattiva: ["Carenze", "Poco intenso", "Abbastanza intenso", "Intenso", "Molto intenso"],
   complessita: ["Carenze", "Poco complesso", "Abbastanza complesso", "Complesso", "Ampio"],
   qualita_olfattiva: ["Comune", "Poco fine", "Abbastanza fine", "Fine", "Eccellente"],
-  descrizione_olfattiva: ["Fruttato", "Floreale", "Speziato", "Erbaceo", "Minerale", "Tostato"],
+  descrizione_olfattiva: ["Fruttato", "Floreale", "Speziato", "Erbaceo", "Minerale", "Tostato", "Etereo", "Franco"],
   zuccheri: ["Secco", "Abboccato", "Amabile", "Dolce"],
   alcoli: ["Leggero", "Poco alcolico", "Abbastanza alcolico", "Caldo"],
   polialcoli: ["Poco morbido", "Abbastanza morbido", "Morbido", "Pastoso"],
