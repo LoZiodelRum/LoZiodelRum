@@ -18,6 +18,7 @@ import Category from "./pages/Category";
 import Magazine from "./pages/Magazine";
 import ArticleDetail from "./pages/ArticleDetail";
 import MapPage from "./pages/MapPage";
+import Venues from "./pages/Venues";
 import PannelloControllo from "./pages/PannelloControllo";
 import Recensione from "./pages/Recensione";
 import RecensioneDetail from "./pages/RecensioneDetail";
@@ -117,7 +118,7 @@ function AppContent() {
 
         {/* 🔥 MAPPA PUBBLICA */}
         <Route path="/mappa" element={<MapPage />} />
-        <Route path="/venues" element={<MapPage />} />
+        <Route path="/venues" element={<PageShell><Venues /></PageShell>} />
 
         {/* PUBBLICHE */}
         <Route
