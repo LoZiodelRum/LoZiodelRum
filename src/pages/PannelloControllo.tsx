@@ -1071,8 +1071,35 @@ export default function PannelloControllo() {
     qualita_prezzo: ["Scarso", "Mediocre", "Sufficiente", "Buono", "Ottimo", "Eccellente"],
   };
 
+  const localiEditorKeys = [
+    "nome",
+    "indirizzo",
+    "citta",
+    "provincia",
+    "paese",
+    "categoria",
+    "orari",
+    "price_range",
+    "telefono",
+    "sito",
+    "instagram",
+    "image_url",
+    "video_url",
+    "descrizione",
+    "descrizione_completa",
+    "qualita_drink",
+    "competenza_staff",
+    "atmosfera",
+    "qualita_prezzo",
+    "verificato",
+    "in_evidenza",
+  ];
+
   const fieldLabelMap: Record<string, string> = {
     name: "nome",
+    image_url: "immagine",
+    video_url: "video",
+    price_range: "fascia prezzo",
     qualita_drink: "qualita drink",
     competenza_staff: "competenza staff",
     atmosfera: "atmosfera",
@@ -1113,21 +1140,8 @@ export default function PannelloControllo() {
     return normalizedItem;
   }
 
-  function reorderLocaliKeys(keys: string[]) {
-    const targetOrder = ["competenza_staff", "atmosfera", "qualita_prezzo", "qualita_drink", "recensioni"];
-    const remaining = keys.filter((key) => !targetOrder.includes(key));
-    const orderedTargets = targetOrder.filter((key) => keys.includes(key));
-
-    const anchorIndex = remaining.indexOf("cover_image_position_y");
-    if (anchorIndex === -1) {
-      return [...remaining, ...orderedTargets];
-    }
-
-    return [
-      ...remaining.slice(0, anchorIndex + 1),
-      ...orderedTargets,
-      ...remaining.slice(anchorIndex + 1),
-    ];
+  function getLocaliEditorKeys(item: any) {
+    return localiEditorKeys.filter((key) => key in (item || {}));
   }
 
   async function handleLocaleImageUpload(file: File) {
@@ -1198,11 +1212,28 @@ export default function PannelloControllo() {
   function ensureLocaliEditorFields(item: any) {
     const normalized: any = {
       ...item,
-      recensioni: item?.recensioni ?? "",
+      nome: item?.nome ?? "",
+      indirizzo: item?.indirizzo ?? "",
+      citta: item?.citta ?? "",
+      provincia: item?.provincia ?? "",
+      paese: item?.paese ?? "",
+      categoria: item?.categoria ?? "",
+      orari: item?.orari ?? "",
+      price_range: item?.price_range ?? "",
+      telefono: item?.telefono ?? "",
+      sito: item?.sito ?? "",
+      instagram: item?.instagram ?? "",
+      image_url: item?.image_url ?? item?.image ?? "",
+      image: item?.image ?? item?.image_url ?? "",
+      video_url: item?.video_url ?? "",
+      descrizione: item?.descrizione ?? "",
+      descrizione_completa: item?.descrizione_completa ?? "",
       qualita_drink: item?.qualita_drink ?? "",
       competenza_staff: item?.competenza_staff ?? "",
       atmosfera: item?.atmosfera ?? "",
       qualita_prezzo: item?.qualita_prezzo ?? "",
+      verificato: item?.verificato ?? false,
+      in_evidenza: item?.in_evidenza ?? false,
     };
 
     removedLocaliFields.forEach((field) => {
@@ -1250,11 +1281,44 @@ export default function PannelloControllo() {
     }
 
     if (table === "Locali") {
-      draft.recensioni = draft.recensioni || "";
-      draft.qualita_drink = draft.qualita_drink || "";
-      draft.competenza_staff = draft.competenza_staff || "";
-      draft.atmosfera = draft.atmosfera || "";
-      draft.qualita_prezzo = draft.qualita_prezzo || "";
+      const localiTemplate: Record<string, any> = {
+        nome: "",
+        indirizzo: "",
+        citta: "",
+        provincia: "",
+        paese: "",
+        categoria: "",
+        orari: "",
+        price_range: "",
+        telefono: "",
+        sito: "",
+        instagram: "",
+        image_url: "",
+        image: "",
+        video_url: "",
+        descrizione: "",
+        descrizione_completa: "",
+        qualita_drink: "",
+        competenza_staff: "",
+        atmosfera: "",
+        qualita_prezzo: "",
+        verificato: false,
+        in_evidenza: false,
+      };
+
+      Object.keys(localiTemplate).forEach((k) => {
+        draft[k] = draft[k] ?? localiTemplate[k];
+      });
+
+      Object.keys(draft).forEach((k) => {
+        if (k !== "id" && !localiEditorKeys.includes(k) && k !== "image") {
+          delete draft[k];
+        }
+      });
+
+      if (!draft.image && draft.image_url) {
+        draft.image = draft.image_url;
+      }
     }
 
     if (table === "profili") {
@@ -1477,7 +1541,7 @@ export default function PannelloControllo() {
             {isImageSidebarTable ? (
               <div style={{ display: "flex", gap: 20, alignItems: "flex-start" }}>
                 <div style={{ flex: 1, display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 15 }}>
-                  {(selectedTable === "Locali" ? reorderLocaliKeys(Object.keys(selectedItem)) : Object.keys(selectedItem)).map(key => {
+                  {(selectedTable === "Locali" ? getLocaliEditorKeys(selectedItem) : Object.keys(selectedItem)).map(key => {
                     if (key === "id" || (selectedTable === "cocktail" && (key === "data_creazione" || key === "created_at" || key === "texture")) || key === "immagine") return null;
                     if (selectedTable === "Locali" && removedLocaliFields.has(key)) return null;
                     return (
@@ -1682,7 +1746,7 @@ export default function PannelloControllo() {
               </div>
             ) : (
               <div style={formGridStyle}>
-                {(selectedTable === "Locali" ? reorderLocaliKeys(Object.keys(selectedItem)) : Object.keys(selectedItem)).map(key => {
+                {(selectedTable === "Locali" ? getLocaliEditorKeys(selectedItem) : Object.keys(selectedItem)).map(key => {
                   if (key === "id" || (selectedTable === "cocktail" && (key === "data_creazione" || key === "created_at" || key === "texture"))) return null;
                   if (selectedTable === "Locali" && removedLocaliFields.has(key)) return null;
                   return (
