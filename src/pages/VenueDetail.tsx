@@ -14,6 +14,7 @@ type Locale = {
   telefono: string;
   sito: string;
   instagram: string;
+  tiktok?: string;
   descrizione: string;
   descrizione_completa: string;
   image: string;
@@ -397,7 +398,17 @@ export default function VenueDetail() {
               IG Instagram
             </a>
           )}
-          {!locale.telefono && !website && !locale.instagram && <p>Nessun contatto disponibile.</p>}
+          {locale.tiktok && (
+            <a
+              className="contact-chip"
+              href={locale.tiktok.startsWith("http") ? locale.tiktok : `https://www.tiktok.com/@${locale.tiktok.replace(/^@/, "")}`}
+              target="_blank"
+              rel="noreferrer"
+            >
+              TikTok
+            </a>
+          )}
+          {!locale.telefono && !website && !locale.instagram && !locale.tiktok && <p>Nessun contatto disponibile.</p>}
         </div>
       </div>
 
@@ -522,6 +533,8 @@ export default function VenueDetail() {
             <input value={form.citta || ""} onChange={(e) => setForm({ ...form, citta: e.target.value })} placeholder="Citta" style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
             <input value={form.telefono || ""} onChange={(e) => setForm({ ...form, telefono: e.target.value })} placeholder="Telefono" style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
             <input value={form.sito || ""} onChange={(e) => setForm({ ...form, sito: e.target.value })} placeholder="Sito" style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
+            <input value={form.tiktok || ""} onChange={(e) => setForm({ ...form, tiktok: e.target.value })} placeholder="TikTok" style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
+            <input value={form.instagram || ""} onChange={(e) => setForm({ ...form, instagram: e.target.value })} placeholder="Instagram" style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
             <textarea value={form.recensioni || ""} onChange={(e) => setForm({ ...form, recensioni: e.target.value })} placeholder="Recensioni" rows={2} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
             <textarea value={form.descrizione || ""} onChange={(e) => setForm({ ...form, descrizione: e.target.value })} placeholder="Descrizione breve" rows={3} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
             <textarea value={form.descrizione_completa || ""} onChange={(e) => setForm({ ...form, descrizione_completa: e.target.value })} placeholder="Descrizione completa" rows={6} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
