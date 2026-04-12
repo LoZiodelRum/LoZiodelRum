@@ -58,71 +58,16 @@ export default function Crea() {
     setLoading(true);
     setError(null);
 
-    const filters = {
-      p_base: preferences.base_alcolica || null,
-      p_profilo: preferences.profilo_gustativo || null,
-      p_intensita: preferences.intensita_alcolica || null,
-      p_famiglia: preferences.famiglia_aromatica || null,
-      p_metodo: preferences.Genere || null,
-      p_texture: preferences.texture || null,
-    };
+    const result = await getCocktailSuggestions(preferences);
 
-    const { data, error } = await supabase.rpc("match_cocktails", filters);
-
-    if (error) {
+    if (result.error) {
       setSuggestions([]);
-      setError(error.message);
+      setError(result.error);
       setLoading(false);
       return;
     }
 
-    const names = (data || [])
-      .map((item: any) => String(item?.nome || "").trim())
-      .filter((name: string) => name.length > 0);
-
-    let detailsByName: Record<string, any> = {};
-
-    if (names.length > 0) {
-      const { data: detailRows } = await supabase
-        .from("cocktail")
-        .select("nome, base_alcolica, profilo_gustativo, intensita_alcolica, famiglia_aromatica, Genere, texture")
-        .in("nome", names);
-
-      detailsByName = (detailRows || []).reduce((acc: Record<string, any>, row: any) => {
-        const key = String(row?.nome || "").trim();
-        if (key) acc[key] = row;
-        return acc;
-      }, {});
-    }
-
-    const databaseCocktails = (data || []).map((c: any) => {
-      const detail = detailsByName[String(c?.nome || "").trim()] || null;
-      const comparison = buildDatabasePreferenceComparison(filters, detail);
-
-      return {
-        name: c.nome,
-        source: "database" as const,
-        matchScore: c.score,
-        base_spirit: detail?.base_alcolica || filters.p_base || "Mix",
-        technique: "Da definire",
-        glass: "Da definire",
-        ingredients: [],
-        doses: [],
-        garnish: "",
-        description: comparison.description,
-        tasting_notes: comparison.tastingNotes,
-        balance_explanation: comparison.balance,
-        originalRecord: detail,
-      };
-    });
-
-    const generated = generateSignatureCocktails(filters);
-
-    setSuggestions([
-      ...generated,
-      ...databaseCocktails
-    ]);
-
+    setSuggestions(result.cocktails);
     setLoading(false);
   }
 
