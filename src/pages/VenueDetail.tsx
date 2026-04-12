@@ -1,6 +1,6 @@
 import "../App.css";
 import { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import { useUser } from "../context/UserContext"; // ✅ AGGIUNTO
 
@@ -38,6 +38,8 @@ type Recensione = {
   commento: string;
   created_at: string;
   autore?: string | null;
+  rating?: number | null;
+  overall_rating?: number | null;
 };
 
 type Media = {
@@ -325,6 +327,54 @@ export default function VenueDetail() {
   const editorFieldStyle = { borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" };
   const sectionTitleStyle = { color: "#f5a623" };
 
+  const parseScore = (value: unknown) => {
+    const parsed = Number(value);
+    if (!Number.isFinite(parsed)) return 0;
+    return Math.max(0, Math.min(5, parsed));
+  };
+
+  const ratedReviews = recensioni
+    .map((rec) => parseScore(rec.rating ?? rec.overall_rating))
+    .filter((score) => score > 0);
+
+  const reviewAverage = ratedReviews.length
+    ? ratedReviews.reduce((acc, score) => acc + score, 0) / ratedReviews.length
+    : 0;
+
+  const reviewDistribution = [
+    { label: "Eccellente", stars: 5, count: 0 },
+    { label: "Buono", stars: 4, count: 0 },
+    { label: "Nella media", stars: 3, count: 0 },
+    { label: "Scarso", stars: 2, count: 0 },
+    { label: "Terribile", stars: 1, count: 0 },
+  ];
+
+  ratedReviews.forEach((score) => {
+    const rounded = Math.max(1, Math.min(5, Math.round(score)));
+    const bucket = reviewDistribution.find((entry) => entry.stars === rounded);
+    if (bucket) bucket.count += 1;
+  });
+
+  const maxDistributionCount = reviewDistribution.reduce((acc, row) => Math.max(acc, row.count), 0);
+
+  const reviewLabel =
+    reviewAverage >= 4.5
+      ? "Eccellente"
+      : reviewAverage >= 3.8
+        ? "Buono"
+        : reviewAverage >= 3
+          ? "Nella media"
+          : reviewAverage >= 2
+            ? "Scarso"
+            : "Terribile";
+
+  const reviewMetrics = [
+    { label: "Servizio", value: parseScore(locale.competenza_staff) || reviewAverage },
+    { label: "Cibo", value: parseScore(locale.qualita_drink) || reviewAverage },
+    { label: "Qualita/prezzo", value: parseScore(locale.qualita_prezzo) || reviewAverage },
+    { label: "Atmosfera", value: parseScore(locale.atmosfera) || reviewAverage },
+  ];
+
   return (
     <div className="fade-in venue-detail-page" style={{ color: "white" }}>
 
@@ -442,24 +492,8 @@ export default function VenueDetail() {
         </p>
       </div>
 
-      {/* RECENSIONI */}
-      <div className="content-wrapper venue-section">
-        <h2 className="section-title" style={sectionTitleStyle}>Recensioni</h2>
-
-        {recensioni.map((rec) => (
-          <div key={rec.id} className="review-card">
-            <p>{rec.commento}</p>
-            <p className="review-date">
-              {new Date(rec.created_at).toLocaleDateString()}
-              {rec.autore ? ` - ${rec.autore}` : ""}
-            </p>
-          </div>
-        ))}
-        {!recensioni.length && <p>Nessuna recensione disponibile.</p>}
-      </div>
-
       {/* MEDIA */}
-      <div className="content-wrapper venue-section" style={{ marginBottom: 60 }}>
+      <div className="content-wrapper venue-section">
         <h2 className="section-title" style={sectionTitleStyle}>Foto e Video</h2>
 
         {videoMain && (
@@ -484,6 +518,78 @@ export default function VenueDetail() {
 
             return null;
           })}
+        </div>
+      </div>
+
+      {/* RECENSIONI BOX IN FONDO */}
+      <div className="content-wrapper venue-section" style={{ marginBottom: 60 }}>
+        <div
+          style={{
+            background: "#f2f3f2",
+            borderRadius: 16,
+            padding: "18px 20px",
+            color: "#184d2f",
+          }}
+        >
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", gap: 12, flexWrap: "wrap" }}>
+            <h2 style={{ margin: 0, color: "#184d2f", fontSize: "clamp(18px, 3.2vw, 28px)" }}>Recensioni</h2>
+            <Link
+              to="/community"
+              style={{
+                textDecoration: "none",
+                border: "1px solid #184d2f",
+                background: "#0b5f2e",
+                color: "#fff",
+                borderRadius: 999,
+                padding: "8px 14px",
+                fontWeight: 700,
+                fontSize: 14,
+              }}
+            >
+              Scrivi una recensione
+            </Link>
+          </div>
+
+          <div style={{ marginTop: 8, marginBottom: 12 }}>
+            <Link to="/community" style={{ color: "#184d2f", fontWeight: 700, textDecoration: "underline", fontSize: 14 }}>
+              Tutte le recensioni ({recensioni.length})
+            </Link>
+          </div>
+
+          <div style={{ display: "grid", gridTemplateColumns: "1fr", gap: 10 }}>
+            <div style={{ display: "grid", gridTemplateColumns: "88px 1fr", gap: 12, alignItems: "start" }}>
+              <div>
+                <p style={{ margin: 0, fontSize: 32, fontWeight: 800, lineHeight: 1 }}>{reviewAverage.toFixed(1).replace(".", ",")}</p>
+                <p style={{ margin: "4px 0 0", fontSize: 14, fontWeight: 700 }}>{reviewLabel}</p>
+              </div>
+              <div style={{ display: "grid", gap: 6 }}>
+                {reviewDistribution.map((row) => {
+                  const width = maxDistributionCount > 0 ? (row.count / maxDistributionCount) * 100 : 0;
+                  return (
+                    <div key={row.label} style={{ display: "grid", gridTemplateColumns: "86px minmax(0,1fr) 24px", gap: 6, alignItems: "center" }}>
+                      <span style={{ fontSize: 11, fontWeight: 700, whiteSpace: "nowrap" }}>{row.label}</span>
+                      <div style={{ width: "100%", height: 7, background: "#d9ddd9", borderRadius: 999, overflow: "hidden" }}>
+                        <div style={{ width: `${width}%`, height: "100%", background: "#138a3b", borderRadius: 999 }} />
+                      </div>
+                      <span style={{ fontSize: 11, fontWeight: 700 }}>{row.count}</span>
+                    </div>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div style={{ borderTop: "1px solid #d7dbd7", paddingTop: 8, display: "grid", gap: 5 }}>
+              {reviewMetrics.map((metric) => (
+                <div key={metric.label} style={{ display: "grid", gridTemplateColumns: "86px minmax(0,1fr) 24px", gap: 6, alignItems: "center" }}>
+                  <span style={{ fontSize: 11, fontWeight: 700, whiteSpace: "nowrap" }}>{metric.label}</span>
+                  <div style={{ width: "100%", height: 7, background: "#d9ddd9", borderRadius: 999, overflow: "hidden" }}>
+                    <div style={{ width: `${(metric.value / 5) * 100}%`, height: "100%", background: "#138a3b", borderRadius: 999 }} />
+                  </div>
+                  <span style={{ fontSize: 11, fontWeight: 700 }}>{metric.value.toFixed(1).replace(".", ",")}</span>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
 
