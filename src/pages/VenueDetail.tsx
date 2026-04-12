@@ -320,6 +320,8 @@ export default function VenueDetail() {
   const verified = toBool(locale.verificato);
   const featured = toBool(locale.in_evidenza);
   const website = locale.sito?.startsWith("http") ? locale.sito : locale.sito ? `https://${locale.sito}` : "";
+  const editorLabelStyle = { color: "#f5a623", fontSize: 12, display: "block", marginBottom: 4 };
+  const editorFieldStyle = { borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" };
 
   return (
     <div className="fade-in venue-detail-page" style={{ color: "white" }}>
@@ -520,32 +522,42 @@ export default function VenueDetail() {
             />
             {uploading && <p style={{ margin: 0 }}>Upload immagine in corso...</p>}
 
-            <label style={{ color: "#94a3b8", fontSize: 12, display: "block", marginBottom: 4 }}>URL immagine anteprima</label>
+            <label style={editorLabelStyle}>URL immagine anteprima</label>
             <input
               value={form.image_url || form.image || ""}
               onChange={(e) => setForm({ ...form, image_url: e.target.value, image: e.target.value })}
               placeholder="https://..."
-              style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }}
+              style={editorFieldStyle}
             />
 
-            <input value={form.nome || ""} onChange={(e) => setForm({ ...form, nome: e.target.value })} placeholder="Nome" style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
-            <input value={form.indirizzo || ""} onChange={(e) => setForm({ ...form, indirizzo: e.target.value })} placeholder="Indirizzo" style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
-            <input value={form.citta || ""} onChange={(e) => setForm({ ...form, citta: e.target.value })} placeholder="Citta" style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
-            <input value={form.telefono || ""} onChange={(e) => setForm({ ...form, telefono: e.target.value })} placeholder="Telefono" style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
-            <input value={form.sito || ""} onChange={(e) => setForm({ ...form, sito: e.target.value })} placeholder="Sito" style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
-            <input value={form.tiktok || ""} onChange={(e) => setForm({ ...form, tiktok: e.target.value })} placeholder="TikTok" style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
-            <input value={form.instagram || ""} onChange={(e) => setForm({ ...form, instagram: e.target.value })} placeholder="Instagram" style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
-            <textarea value={form.recensioni || ""} onChange={(e) => setForm({ ...form, recensioni: e.target.value })} placeholder="Recensioni" rows={2} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
-            <textarea value={form.descrizione || ""} onChange={(e) => setForm({ ...form, descrizione: e.target.value })} placeholder="Descrizione breve" rows={3} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
-            <textarea value={form.descrizione_completa || ""} onChange={(e) => setForm({ ...form, descrizione_completa: e.target.value })} placeholder="Descrizione completa" rows={6} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
+            <label style={editorLabelStyle}>Nome</label>
+            <input value={form.nome || ""} onChange={(e) => setForm({ ...form, nome: e.target.value })} placeholder="Nome" style={editorFieldStyle} />
+            <label style={editorLabelStyle}>Indirizzo</label>
+            <input value={form.indirizzo || ""} onChange={(e) => setForm({ ...form, indirizzo: e.target.value })} placeholder="Indirizzo" style={editorFieldStyle} />
+            <label style={editorLabelStyle}>Citta</label>
+            <input value={form.citta || ""} onChange={(e) => setForm({ ...form, citta: e.target.value })} placeholder="Citta" style={editorFieldStyle} />
+            <label style={editorLabelStyle}>Telefono</label>
+            <input value={form.telefono || ""} onChange={(e) => setForm({ ...form, telefono: e.target.value })} placeholder="Telefono" style={editorFieldStyle} />
+            <label style={editorLabelStyle}>Sito</label>
+            <input value={form.sito || ""} onChange={(e) => setForm({ ...form, sito: e.target.value })} placeholder="Sito" style={editorFieldStyle} />
+            <label style={editorLabelStyle}>TikTok</label>
+            <input value={form.tiktok || ""} onChange={(e) => setForm({ ...form, tiktok: e.target.value })} placeholder="TikTok" style={editorFieldStyle} />
+            <label style={editorLabelStyle}>Instagram</label>
+            <input value={form.instagram || ""} onChange={(e) => setForm({ ...form, instagram: e.target.value })} placeholder="Instagram" style={editorFieldStyle} />
+            <label style={editorLabelStyle}>Recensioni</label>
+            <textarea value={form.recensioni || ""} onChange={(e) => setForm({ ...form, recensioni: e.target.value })} placeholder="Recensioni" rows={2} style={editorFieldStyle} />
+            <label style={editorLabelStyle}>Descrizione breve</label>
+            <textarea value={form.descrizione || ""} onChange={(e) => setForm({ ...form, descrizione: e.target.value })} placeholder="Descrizione breve" rows={3} style={editorFieldStyle} />
+            <label style={editorLabelStyle}>Descrizione completa</label>
+            <textarea value={form.descrizione_completa || ""} onChange={(e) => setForm({ ...form, descrizione_completa: e.target.value })} placeholder="Descrizione completa" rows={6} style={editorFieldStyle} />
 
             <h4 style={{ margin: "8px 0 4px", color: "#f97316" }}>Dati Tecnici</h4>
 
-            <label style={{ color: "#94a3b8", fontSize: 12, display: "block", marginBottom: 4 }}>Orari apertura</label>
-            <textarea value={form.orari || ""} onChange={(e) => setForm({ ...form, orari: e.target.value })} placeholder="Orari apertura (es. Mar-Dom 20:00-03:00)" rows={2} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }} />
+            <label style={editorLabelStyle}>Orari apertura</label>
+            <textarea value={form.orari || ""} onChange={(e) => setForm({ ...form, orari: e.target.value })} placeholder="Orari apertura (es. Mar-Dom 20:00-03:00)" rows={2} style={editorFieldStyle} />
 
-            <label style={{ color: "#94a3b8", fontSize: 12, display: "block", marginBottom: 4 }}>Fascia prezzo</label>
-            <select value={form.price_range || ""} onChange={(e) => setForm({ ...form, price_range: e.target.value })} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }}>
+            <label style={editorLabelStyle}>Fascia prezzo</label>
+            <select value={form.price_range || ""} onChange={(e) => setForm({ ...form, price_range: e.target.value })} style={editorFieldStyle}>
               <option value="">Seleziona</option>
               <option value="€">€ — Molto economico</option>
               <option value="€€">€€ — Economico</option>
@@ -554,8 +566,8 @@ export default function VenueDetail() {
               <option value="€€€€€">€€€€€ — Molto alto</option>
             </select>
 
-            <label style={{ color: "#94a3b8", fontSize: 12, display: "block", marginBottom: 4 }}>Qualità Drink</label>
-            <select value={form.qualita_drink || ""} onChange={(e) => setForm({ ...form, qualita_drink: e.target.value })} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }}>
+            <label style={editorLabelStyle}>Qualità Drink</label>
+            <select value={form.qualita_drink || ""} onChange={(e) => setForm({ ...form, qualita_drink: e.target.value })} style={editorFieldStyle}>
               <option value="">Seleziona</option>
               <option value="1">Scarsa</option>
               <option value="2">Discreta</option>
@@ -564,8 +576,8 @@ export default function VenueDetail() {
               <option value="5">Eccellente</option>
             </select>
 
-            <label style={{ color: "#94a3b8", fontSize: 12, display: "block", marginBottom: 4 }}>Competenza Staff</label>
-            <select value={form.competenza_staff || ""} onChange={(e) => setForm({ ...form, competenza_staff: e.target.value })} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }}>
+            <label style={editorLabelStyle}>Competenza Staff</label>
+            <select value={form.competenza_staff || ""} onChange={(e) => setForm({ ...form, competenza_staff: e.target.value })} style={editorFieldStyle}>
               <option value="">Seleziona</option>
               <option value="1">Scarsa</option>
               <option value="2">Discreta</option>
@@ -574,8 +586,8 @@ export default function VenueDetail() {
               <option value="5">Eccellente</option>
             </select>
 
-            <label style={{ color: "#94a3b8", fontSize: 12, display: "block", marginBottom: 4 }}>Atmosfera</label>
-            <select value={form.atmosfera || ""} onChange={(e) => setForm({ ...form, atmosfera: e.target.value })} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }}>
+            <label style={editorLabelStyle}>Atmosfera</label>
+            <select value={form.atmosfera || ""} onChange={(e) => setForm({ ...form, atmosfera: e.target.value })} style={editorFieldStyle}>
               <option value="">Seleziona</option>
               <option value="1">Scarsa</option>
               <option value="2">Discreta</option>
@@ -584,8 +596,8 @@ export default function VenueDetail() {
               <option value="5">Eccellente</option>
             </select>
 
-            <label style={{ color: "#94a3b8", fontSize: 12, display: "block", marginBottom: 4 }}>Qualità/Prezzo</label>
-            <select value={form.qualita_prezzo || ""} onChange={(e) => setForm({ ...form, qualita_prezzo: e.target.value })} style={{ borderRadius: 8, border: "1px solid #334155", background: "#020617", color: "#e2e8f0", padding: "10px 12px" }}>
+            <label style={editorLabelStyle}>Qualità/Prezzo</label>
+            <select value={form.qualita_prezzo || ""} onChange={(e) => setForm({ ...form, qualita_prezzo: e.target.value })} style={editorFieldStyle}>
               <option value="">Seleziona</option>
               <option value="1">Scarso</option>
               <option value="2">Discreto</option>
