@@ -352,40 +352,38 @@ export default function VenueDetail() {
       return;
     }
 
-    // Calcola media delle valutazioni dettagliate
-    const avgDetailed = reviewForm.servizio && reviewForm.qualitaDrink && reviewForm.qualitaPrezzo && reviewForm.atmosfera
-      ? (reviewForm.servizio + reviewForm.qualitaDrink + reviewForm.qualitaPrezzo + reviewForm.atmosfera) / 4
-      : reviewForm.ratingGenerale;
+    try {
+      const { error } = await supabase.from("Recensioni").insert({
+        locale_id: id,
+        commento: reviewForm.comment,
+        overall_rating: reviewForm.ratingGenerale,
+      });
 
-    const { error } = await supabase.from("Recensioni").insert({
-      locale_id: id,
-      commento: reviewForm.comment,
-      overall_rating: reviewForm.ratingGenerale,
-      rating: avgDetailed,
-      created_at: new Date().toISOString(),
-    });
+      if (error) {
+        console.error("Errore Supabase:", error);
+        alert(`Errore salvataggio: ${error.message}`);
+        return;
+      }
 
-    if (error) {
-      console.error("Errore salvataggio:", error);
-      alert(`Errore salvataggio: ${error.message}`);
-      return;
+      alert("Recensione pubblicata! ✅");
+      setIsReviewModalOpen(false);
+      setReviewForm({
+        ratingGenerale: 0,
+        comment: "",
+        servizio: 0,
+        qualitaDrink: 0,
+        qualitaPrezzo: 0,
+        atmosfera: 0,
+        tags: [],
+        agreeToTerms: false,
+      });
+
+      // Refresh reviews
+      await fetchRecensioni();
+    } catch (err) {
+      console.error("Errore non previsto:", err);
+      alert("Errore imprevisto. Controlla la console.");
     }
-
-    alert("Recensione pubblicata! ✅");
-    setIsReviewModalOpen(false);
-    setReviewForm({
-      ratingGenerale: 0,
-      comment: "",
-      servizio: 0,
-      qualitaDrink: 0,
-      qualitaPrezzo: 0,
-      atmosfera: 0,
-      tags: [],
-      agreeToTerms: false,
-    });
-
-    // Refresh reviews
-    fetchRecensioni();
   }
 
   if (!locale) return <div className="page fade-in">Caricamento...</div>;
