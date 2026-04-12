@@ -1,5 +1,5 @@
 import "../App.css";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, MapPin } from "lucide-react";
 import { supabase } from "../lib/supabaseClient";
@@ -248,6 +248,49 @@ export default function Home() {
     setRecensioni(mapped);
   }
 
+  const reviewStats = useMemo(() => {
+    const total = recensioni.length;
+    const sum = recensioni.reduce((acc, item) => acc + (Number.isFinite(item.rating) ? item.rating : 0), 0);
+    const average = total ? sum / total : 0;
+    const normalizedAverage = Math.max(0, Math.min(5, average));
+
+    const distribution = [
+      { label: "Eccellente", stars: 5, count: 0 },
+      { label: "Buono", stars: 4, count: 0 },
+      { label: "Nella media", stars: 3, count: 0 },
+      { label: "Scarso", stars: 2, count: 0 },
+      { label: "Terribile", stars: 1, count: 0 },
+    ];
+
+    recensioni.forEach((item) => {
+      const value = Number.isFinite(item.rating) ? item.rating : 0;
+      const rounded = Math.min(5, Math.max(1, Math.round(value)));
+      const bucket = distribution.find((entry) => entry.stars === rounded);
+      if (bucket) bucket.count += 1;
+    });
+
+    const maxCount = distribution.reduce((acc, item) => Math.max(acc, item.count), 0);
+
+    const ratingLabel =
+      normalizedAverage >= 4.5
+        ? "Eccellente"
+        : normalizedAverage >= 3.8
+          ? "Buono"
+          : normalizedAverage >= 3
+            ? "Nella media"
+            : normalizedAverage >= 2
+              ? "Scarso"
+              : "Terribile";
+
+    return {
+      total,
+      average: normalizedAverage,
+      ratingLabel,
+      distribution,
+      maxCount,
+    };
+  }, [recensioni]);
+
   return (
     <div
       style={{
@@ -259,7 +302,241 @@ export default function Home() {
       }}
     >
       <style>{`
+        .home-review-box {
+          background: #f2f3f2;
+          border-radius: 24px;
+          padding: 30px 34px;
+          color: #163f28;
+        }
+
+        .home-review-top {
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          gap: 16px;
+          margin-bottom: 10px;
+        }
+
+        .home-review-title {
+          margin: 0;
+          color: #163f28;
+          font-size: clamp(24px, 3.6vw, 36px);
+        }
+
+        .home-review-write-btn {
+          border: 2px solid #184d2f;
+          background: #0b5f2e;
+          color: #fff;
+          border-radius: 999px;
+          font-size: 28px;
+          font-weight: 700;
+          cursor: pointer;
+          padding: 12px 24px;
+          transition: filter 0.2s ease;
+        }
+
+        .home-review-write-btn:hover {
+          filter: brightness(1.05);
+        }
+
+        .home-review-links {
+          margin-bottom: 28px;
+        }
+
+        .home-review-link {
+          color: #163f28;
+          font-weight: 600;
+          text-decoration: underline;
+          font-size: clamp(16px, 2vw, 20px);
+        }
+
+        .home-review-content {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 32px;
+          align-items: start;
+        }
+
+        .home-review-left {
+          display: grid;
+          grid-template-columns: auto 1fr;
+          gap: 28px;
+          align-items: start;
+        }
+
+        .home-review-score {
+          text-align: center;
+          min-width: 120px;
+        }
+
+        .home-review-score-value {
+          margin: 0;
+          color: #0f5130;
+          font-size: clamp(54px, 6.6vw, 82px);
+          line-height: 1;
+          font-weight: 700;
+        }
+
+        .home-review-score-label {
+          margin: 6px 0 0;
+          color: #184d2f;
+          font-size: clamp(20px, 2.3vw, 30px);
+          font-weight: 700;
+        }
+
+        .home-review-dots {
+          margin-top: 16px;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          gap: 7px;
+          color: #184d2f;
+          font-size: clamp(18px, 2vw, 30px);
+        }
+
+        .home-review-dot {
+          width: 18px;
+          height: 18px;
+          border-radius: 999px;
+          background: #138a3b;
+          display: inline-block;
+        }
+
+        .home-review-total {
+          opacity: 0.85;
+          font-weight: 500;
+        }
+
+        .home-review-distribution {
+          display: grid;
+          gap: 10px;
+          margin-top: 8px;
+        }
+
+        .home-review-dist-row {
+          display: grid;
+          grid-template-columns: 150px 1fr 34px;
+          gap: 12px;
+          align-items: center;
+        }
+
+        .home-review-dist-label,
+        .home-review-dist-count {
+          font-size: clamp(17px, 2vw, 27px);
+          color: #184d2f;
+        }
+
+        .home-review-track {
+          width: 100%;
+          height: 16px;
+          border-radius: 999px;
+          background: #d9ddd9;
+          overflow: hidden;
+        }
+
+        .home-review-fill {
+          height: 100%;
+          border-radius: 999px;
+          background: #138a3b;
+        }
+
+        .home-review-right {
+          border-left: 1px solid #d7dbd7;
+          padding-left: 26px;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 28px 24px;
+        }
+
+        .home-review-metric-label {
+          margin: 0 0 8px;
+          color: #184d2f;
+          font-size: clamp(19px, 2.1vw, 28px);
+          font-weight: 700;
+        }
+
+        .home-review-metric-row {
+          display: grid;
+          grid-template-columns: 1fr auto;
+          gap: 10px;
+          align-items: center;
+        }
+
+        .home-review-metric-score {
+          color: #184d2f;
+          font-size: clamp(18px, 2vw, 27px);
+          font-weight: 600;
+        }
+
         @media (max-width: 768px) {
+          .home-review-box {
+            border-radius: 18px;
+            padding: 20px 16px;
+          }
+
+          .home-review-top {
+            flex-direction: column;
+            align-items: flex-start;
+          }
+
+          .home-review-write-btn {
+            width: 100%;
+            font-size: 17px;
+            padding: 10px 16px;
+          }
+
+          .home-review-content {
+            grid-template-columns: 1fr;
+            gap: 22px;
+          }
+
+          .home-review-left {
+            grid-template-columns: 1fr;
+            gap: 16px;
+          }
+
+          .home-review-score {
+            text-align: left;
+            min-width: 0;
+          }
+
+          .home-review-score-value {
+            font-size: 48px;
+          }
+
+          .home-review-score-label {
+            font-size: 22px;
+          }
+
+          .home-review-dots {
+            justify-content: flex-start;
+          }
+
+          .home-review-dist-row {
+            grid-template-columns: 108px 1fr 28px;
+            gap: 8px;
+          }
+
+          .home-review-dist-label,
+          .home-review-dist-count,
+          .home-review-metric-score,
+          .home-review-metric-label {
+            font-size: 15px;
+          }
+
+          .home-review-track {
+            height: 12px;
+          }
+
+          .home-review-right {
+            border-left: none;
+            border-top: 1px solid #d7dbd7;
+            padding-left: 0;
+            padding-top: 18px;
+            grid-template-columns: 1fr;
+            gap: 16px;
+          }
+
           .hero-section {
             display: flex !important;
             min-height: 84vh !important;
@@ -621,44 +898,65 @@ export default function Home() {
       </section>
 
       <section className="content-section" style={{ padding: "40px 60px", maxWidth: 1400, margin: "0 auto" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 28 }}>
-          <h2 className="section-title" style={{ fontSize: "clamp(24px, 4vw, 32px)", margin: 0 }}>Ultime Recensioni</h2>
-        </div>
-        <div className="section-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 20 }}>
-          {recensioni.map((r) => (
-            <Link
-              key={r.id}
-              to={`/recensione/${r.id}`}
-              className="card-box"
-              style={{
-                position: "relative",
-                borderRadius: 12,
-                overflow: "hidden",
-                height: 220,
-                display: "flex",
-                alignItems: "flex-end",
-                color: "#fff",
-                textDecoration: "none",
-                cursor: "pointer",
-              }}
-            >
-              <img src={r.immagine ?? "https://via.placeholder.com/400x300"} alt={r.locale_nome ?? "Locale"} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }} />
-              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.8), transparent)", zIndex: 1 }} />
-              <div className="card-rating" style={{ position: "absolute", top: 12, right: 12, background: "#f5a623", color: "#0b0b0b", padding: "6px 12px", borderRadius: 8, fontWeight: "bold", fontSize: 14, zIndex: 3 }}>
-                {`★ ${r.rating.toFixed(1)}`}
+        <div className="home-review-box">
+          <div className="home-review-top">
+            <h2 className="home-review-title">Recensioni</h2>
+            <button className="home-review-write-btn" onClick={() => navigate("/community")}>Scrivi una recensione</button>
+          </div>
+
+          <div className="home-review-links">
+            <Link className="home-review-link" to="/community">Tutte le recensioni ({reviewStats.total})</Link>
+          </div>
+
+          <div className="home-review-content">
+            <div className="home-review-left">
+              <div className="home-review-score">
+                <p className="home-review-score-value">{reviewStats.average.toFixed(1).replace(".", ",")}</p>
+                <p className="home-review-score-label">{reviewStats.ratingLabel}</p>
+                <div className="home-review-dots" aria-label={`Valutazione media ${reviewStats.average.toFixed(1)} su 5`}>
+                  {Array.from({ length: 5 }).map((_, index) => (
+                    <span key={index} className="home-review-dot" style={{ opacity: index < Math.round(reviewStats.average) ? 1 : 0.28 }} />
+                  ))}
+                  <span className="home-review-total">({reviewStats.total})</span>
+                </div>
               </div>
-              <div className="card-content" style={{ position: "relative", zIndex: 2, padding: 16, width: "100%" }}>
-                <h3 className="card-title" style={{ margin: "0 0 4px 0", fontSize: 16 }}>{r.locale_nome ?? "Locale"}</h3>
-                <p className="card-subtitle" style={{ margin: 0, fontSize: 13, opacity: 0.9 }}>{`Lo Zio del Rum - ${r.autore}`}</p>
+
+              <div className="home-review-distribution">
+                {reviewStats.distribution.map((row) => {
+                  const ratio = reviewStats.maxCount > 0 ? (row.count / reviewStats.maxCount) * 100 : 0;
+                  return (
+                    <div key={row.label} className="home-review-dist-row">
+                      <span className="home-review-dist-label">{row.label}</span>
+                      <div className="home-review-track">
+                        <div className="home-review-fill" style={{ width: `${ratio}%` }} />
+                      </div>
+                      <span className="home-review-dist-count">{row.count}</span>
+                    </div>
+                  );
+                })}
               </div>
-            </Link>
-          ))}
+            </div>
+
+            <div className="home-review-right">
+              {[
+                { label: "Servizio", value: reviewStats.average },
+                { label: "Cibo", value: reviewStats.average },
+                { label: "Qualita/prezzo", value: reviewStats.average },
+                { label: "Atmosfera", value: reviewStats.average },
+              ].map((metric) => (
+                <div key={metric.label}>
+                  <p className="home-review-metric-label">{metric.label}</p>
+                  <div className="home-review-metric-row">
+                    <div className="home-review-track">
+                      <div className="home-review-fill" style={{ width: `${(Math.max(0, Math.min(5, metric.value)) / 5) * 100}%` }} />
+                    </div>
+                    <span className="home-review-metric-score">{metric.value.toFixed(1).replace(".", ",")}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
         </div>
-        {recensioni.length === 0 && (
-          <p style={{ marginTop: 14, color: "#a3a3a3" }}>
-            Nessuna recensione disponibile al momento.
-          </p>
-        )}
       </section>
 
       <section className="content-section community-section" style={{ padding: "40px 60px", maxWidth: 1400, margin: "0 auto", textAlign: "center" }}>
