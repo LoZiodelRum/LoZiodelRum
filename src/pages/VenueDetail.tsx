@@ -511,8 +511,8 @@ export default function VenueDetail() {
       <style>{`
         .venue-review-box {
           background: #f2f3f2;
-          border-radius: 16px;
-          padding: 12px 16px;
+          border-radius: 14px;
+          padding: 10px 14px;
           color: #184d2f;
           width: 100%;
           box-sizing: border-box;
@@ -526,80 +526,64 @@ export default function VenueDetail() {
           display: flex;
           justify-content: space-between;
           align-items: center;
-          gap: 12px;
-          flex-wrap: wrap;
-        }
-
-        .venue-review-write {
-          text-decoration: none;
-          border: 1px solid #0b6b3a;
-          background: #e8f4ec;
-          color: #0b6b3a !important;
-          border-radius: 999px;
-          padding: 8px 14px;
-          font-weight: 700;
-          font-size: 14px;
-        }
-
-        .venue-review-all-link,
-        .venue-review-all-link:visited {
-          color: #0b6b3a !important;
-        }
-
-        .venue-review-score-row {
-          display: flex;
-          align-items: baseline;
-          gap: 10px;
-          margin-bottom: 8px;
-        }
-
-        .venue-review-score-row p {
-          margin: 0;
-        }
-
-        .venue-review-rows,
-        .venue-review-metric-rows {
-          display: grid;
-          gap: 6px;
-        }
-
-        .venue-review-row {
-          display: grid;
-          grid-template-columns: 104px minmax(0, 1fr) 28px;
           gap: 8px;
+          flex-wrap: nowrap;
+        }
+
+        .rvb-section-title {
+          font-size: 11px;
+          font-weight: 700;
+          color: #0b6b3a;
+          margin: 0 0 4px;
+          text-transform: uppercase;
+          letter-spacing: 0.04em;
+        }
+
+        .rvb-row {
+          display: grid;
+          grid-template-columns: 88px 1fr 30px;
+          gap: 6px;
           align-items: center;
         }
 
-        .venue-review-label {
-          font-size: 12px;
-          font-weight: 700;
+        .rvb-label {
+          font-size: 11px;
+          font-weight: 600;
           white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
         }
 
-        .venue-review-track {
+        .rvb-track {
           width: 100%;
-          height: 8px;
-          background: #d9ddd9;
+          height: 6px;
+          background: #dde8dd;
           border-radius: 999px;
           overflow: hidden;
         }
 
-        .venue-review-fill {
+        .rvb-fill {
           height: 100%;
-          background: #138a3b;
           border-radius: 999px;
+          transition: width 0.3s ease;
         }
 
-        .venue-review-count {
-          font-size: 12px;
+        .rvb-val {
+          font-size: 11px;
           font-weight: 700;
           text-align: right;
+          white-space: nowrap;
         }
 
-        .venue-review-divider {
-          border-top: 1px solid #d7dbd7;
-          margin-top: 8px;
-          padding-top: 8px;
+        .rvb-divider {
+          border-top: 1px solid #d0d8d0;
+          margin: 6px 0;
+        }
+
+        @media (max-width: 400px) {
+          .rvb-row {
+            grid-template-columns: 76px 1fr 26px;
+          }
         }
 
         @media (min-width: 1024px) {
@@ -784,49 +768,37 @@ export default function VenueDetail() {
 
           {/* VOTO CENTRALE */}
           {reviewAverage > 0 ? (
-            <div style={{ textAlign: "center", marginTop: 10, marginBottom: 10 }}>
-              <div style={{ fontSize: "36px", fontWeight: 800, color: "#0b6b3a", lineHeight: 1 }}>
+            <div style={{ textAlign: "center", margin: "8px 0" }}>
+              <div style={{ fontSize: "30px", fontWeight: 800, color: "#0b6b3a", lineHeight: 1 }}>
                 {reviewAverage.toFixed(1).replace(".", ",")}
               </div>
-              <div style={{ fontSize: 18, fontWeight: 700, color: "#0b6b3a", marginTop: 4 }}>
+              <div style={{ fontSize: 14, fontWeight: 700, color: "#0b6b3a", marginTop: 2 }}>
                 {reviewLabel}
               </div>
-              <div style={{ fontSize: 12, color: "#666", marginTop: 6 }}>
+              <div style={{ fontSize: 11, color: "#666", marginTop: 2 }}>
                 Basato su {recensioni.length} {recensioni.length === 1 ? "recensione" : "recensioni"}
               </div>
             </div>
           ) : (
-            <div style={{ textAlign: "center", marginTop: 10, marginBottom: 10, fontSize: 14, color: "#999" }}>
+            <div style={{ textAlign: "center", margin: "8px 0", fontSize: 13, color: "#999" }}>
               Nessuna recensione ancora
             </div>
           )}
 
           {/* BARRE DISTRIBUZIONE */}
           {reviewAverage > 0 && (
-            <div style={{ marginBottom: 10 }}>
-              <h3 style={{ fontSize: 13, fontWeight: 700, color: "#0b6b3a", marginBottom: 6 }}>Distribuzione voti</h3>
-              <div style={{ display: "grid", gap: 5 }}>
+            <div>
+              <p className="rvb-section-title">Distribuzione voti</p>
+              <div style={{ display: "grid", gap: 4 }}>
                 {reviewDistribution.map((row) => {
                   const width = maxDistributionCount > 0 ? (row.count / maxDistributionCount) * 100 : 0;
                   return (
-                    <div key={row.label} style={{ display: "grid", gridTemplateColumns: "80px 1fr 40px", gap: 8, alignItems: "center" }}>
-                      <span style={{ fontSize: 12, fontWeight: 600, color: "#0b6b3a" }}>{row.label}</span>
-                      <div style={{
-                        width: "100%",
-                        height: 8,
-                        background: "#e0e0e0",
-                        borderRadius: "999px",
-                        overflow: "hidden",
-                      }}>
-                        <div style={{
-                          width: `${width}%`,
-                          height: "100%",
-                          background: row.color,
-                          borderRadius: "999px",
-                          transition: "width 0.3s ease",
-                        }} />
+                    <div key={row.label} className="rvb-row">
+                      <span className="rvb-label">{row.label}</span>
+                      <div className="rvb-track">
+                        <div className="rvb-fill" style={{ width: `${width}%`, background: row.color }} />
                       </div>
-                      <span style={{ fontSize: 12, fontWeight: 700, color: "#0b6b3a", textAlign: "right" }}>{row.count}</span>
+                      <span className="rvb-val">{row.count}</span>
                     </div>
                   );
                 })}
@@ -837,35 +809,22 @@ export default function VenueDetail() {
           {/* VALUTAZIONI DETTAGLIATE */}
           {reviewAverage > 0 && (
             <div>
-              <h3 style={{ fontSize: 13, fontWeight: 700, color: "#0b6b3a", marginBottom: 6 }}>Valutazioni dettagliate</h3>
-              <div style={{ display: "grid", gap: 7 }}>
+              <div className="rvb-divider" />
+              <p className="rvb-section-title">Valutazioni dettagliate</p>
+              <div style={{ display: "grid", gap: 4 }}>
                 {[
-                  { label: "Servizio", icon: "👤", value: avgServizio },
-                  { label: "Qualità drink", icon: "🍸", value: avgQualitaDrink },
-                  { label: "Qualità/prezzo", icon: "💰", value: avgQualitaPrezzo },
-                  { label: "Atmosfera", icon: "✨", value: avgAtmosfera },
+                  { label: "👤 Servizio", value: avgServizio },
+                  { label: "🍸 Qualità drink", value: avgQualitaDrink },
+                  { label: "💰 Qual./prezzo", value: avgQualitaPrezzo },
+                  { label: "✨ Atmosfera", value: avgAtmosfera },
                 ].map((metric) => (
-                  <div key={metric.label} style={{ display: "grid", gridTemplateColumns: "80px 1fr 50px", gap: 8, alignItems: "center" }}>
-                    <span style={{ fontSize: 13, fontWeight: 600, color: "#0b6b3a" }}>
-                      {metric.icon} {metric.label}
-                    </span>
-                    <div style={{
-                      width: "100%",
-                      height: 6,
-                      background: "#e0e0e0",
-                      borderRadius: "999px",
-                      overflow: "hidden",
-                    }}>
-                      <div style={{
-                        width: `${(metric.value / 5) * 100}%`,
-                        height: "100%",
-                        background: "#0b6b3a",
-                        borderRadius: "999px",
-                        transition: "width 0.3s ease",
-                      }} />
+                  <div key={metric.label} className="rvb-row">
+                    <span className="rvb-label">{metric.label}</span>
+                    <div className="rvb-track">
+                      <div className="rvb-fill" style={{ width: `${(metric.value / 5) * 100}%`, background: "#0b6b3a" }} />
                     </div>
-                    <span style={{ fontSize: 12, fontWeight: 700, color: "#0b6b3a", textAlign: "right" }}>
-                      {metric.value.toFixed(1).replace(".", ",")}
+                    <span className="rvb-val">
+                      {metric.value > 0 ? metric.value.toFixed(1).replace(".", ",") : "—"}
                     </span>
                   </div>
                 ))}
