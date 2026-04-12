@@ -360,11 +360,8 @@ export default function VenueDetail() {
     const { error } = await supabase.from("Recensioni").insert({
       locale_id: id,
       commento: reviewForm.comment,
-      rating_generale: reviewForm.ratingGenerale,
       overall_rating: reviewForm.ratingGenerale,
       rating: avgDetailed,
-      tags: reviewForm.tags.length > 0 ? reviewForm.tags.join(",") : null,
-      autore: user?.email || user?.id || "admin",
       created_at: new Date().toISOString(),
     });
 
