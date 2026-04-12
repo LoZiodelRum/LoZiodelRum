@@ -474,8 +474,8 @@ export default function Home() {
           .home-review-box {
             border-radius: 10px;
             padding: 10px 8px;
-            margin-left: 8px;
-            margin-right: 8px;
+            margin-left: 16px;
+            margin-right: 16px;
           }
 
           .home-review-title {
