@@ -414,14 +414,6 @@ export default function VenueDetail() {
         </div>
       </div>
 
-      {/* DESCRIZIONE */}
-      <div className="content-wrapper venue-section">
-        <h2 className="section-title">Descrizione</h2>
-        <p className="venue-description">
-          {locale.descrizione_completa || locale.descrizione || "Descrizione non disponibile"}
-        </p>
-      </div>
-
       {/* VALUTAZIONI */}
       <div className="content-wrapper venue-section">
         <h2 className="section-title">Valutazioni</h2>
@@ -438,6 +430,14 @@ export default function VenueDetail() {
           </div>
         ))}
         </div>
+      </div>
+
+      {/* DESCRIZIONE */}
+      <div className="content-wrapper venue-section">
+        <h2 className="section-title">Descrizione</h2>
+        <p className="venue-description">
+          {locale.descrizione_completa || locale.descrizione || "Descrizione non disponibile"}
+        </p>
       </div>
 
       {/* RECENSIONI */}
