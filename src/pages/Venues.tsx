@@ -48,7 +48,6 @@ export default function Venues() {
         .venue-card {
           min-height: 220px;
           border: 1.5px solid rgba(255, 255, 255, 0.6);
-          box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.12);
         }
 
         @media (max-width: 1023px) {
@@ -116,7 +115,7 @@ export default function Venues() {
                 style={{
                   position: "absolute",
                   inset: 0,
-                  background: "linear-gradient(to top, rgba(2,6,23,0.9), rgba(2,6,23,0.3))",
+                  background: "linear-gradient(to top, rgba(2,6,23,0.45), rgba(2,6,23,0.02))",
                 }}
               />
               <div style={{ position: "relative", zIndex: 1, padding: 14, width: "100%" }}>
