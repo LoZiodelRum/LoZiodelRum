@@ -556,9 +556,9 @@ export default function Home() {
 
           .home-review-right > div {
             display: grid;
-            grid-template-columns: 78px 1fr auto;
+            grid-template-columns: 86px minmax(0, 1fr) 24px;
             align-items: center;
-            gap: 4px;
+            gap: 6px;
           }
 
           .home-review-metric-label {
@@ -571,8 +571,8 @@ export default function Home() {
           }
 
           .home-review-metric-row .home-review-track {
-            width: 92%;
-            justify-self: start;
+            width: 100%;
+            justify-self: stretch;
           }
 
           .hero-section {
