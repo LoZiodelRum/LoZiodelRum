@@ -53,6 +53,7 @@ const selectOptions = {
     "Rosso rubino",
     "Rosso granato",
     "Rosso aranciato",
+    "Brillante",
   ],
   consistenza: ["Fluido", "Poco consistente", "Consistente", "Viscoso"],
   effervescenza: ["Assente", "Fine", "Abbastanza fine", "Persistente"],
