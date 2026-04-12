@@ -529,8 +529,12 @@ export default function Home() {
           }
 
           .home-review-dist-row {
-            grid-template-columns: 54px 1fr 16px;
-            gap: 4px;
+            grid-template-columns: 86px minmax(0, 1fr) 24px;
+            gap: 6px;
+          }
+
+          .home-review-dist-label {
+            white-space: nowrap;
           }
 
           .home-review-dist-label,
