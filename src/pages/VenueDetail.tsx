@@ -360,6 +360,11 @@ export default function VenueDetail() {
         voto: reviewForm.ratingGenerale,
         author_name: user?.email || user?.id || "admin",
         status: "pending",
+        servizio: reviewForm.servizio || null,
+        qualita_drink: reviewForm.qualitaDrink || null,
+        qualita_prezzo: reviewForm.qualitaPrezzo || null,
+        atmosfera: reviewForm.atmosfera || null,
+        tags: reviewForm.tags.length > 0 ? reviewForm.tags.join(",") : null,
       });
 
       if (error) {
