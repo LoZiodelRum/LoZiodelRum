@@ -474,6 +474,18 @@ export default function Home() {
           .home-review-box {
             border-radius: 10px;
             padding: 10px 8px;
+            margin-left: 8px;
+            margin-right: 8px;
+          }
+
+          .home-review-title {
+            font-size: 13px;
+            font-weight: 800;
+          }
+
+          .home-review-link {
+            font-size: 11px;
+            font-weight: 700;
           }
 
           .home-review-top {
@@ -483,7 +495,8 @@ export default function Home() {
 
           .home-review-write-btn {
             width: 100%;
-            font-size: 11px;
+            font-size: 12px;
+            font-weight: 800;
             padding: 6px 8px;
           }
 
@@ -503,11 +516,12 @@ export default function Home() {
           }
 
           .home-review-score-value {
-            font-size: 24px;
+            font-size: 27px;
           }
 
           .home-review-score-label {
-            font-size: 11px;
+            font-size: 13px;
+            font-weight: 800;
           }
 
           .home-review-dots {
@@ -523,7 +537,8 @@ export default function Home() {
           .home-review-dist-count,
           .home-review-metric-score,
           .home-review-metric-label {
-            font-size: 10px;
+            font-size: 11px;
+            font-weight: 700;
           }
 
           .home-review-track {
