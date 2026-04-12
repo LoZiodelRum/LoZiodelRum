@@ -312,19 +312,21 @@ export default function Vini() {
 
         .vini-preview-page .drink-card-uniform img {
           width: 100% !important;
-          height: calc(100% - 50px) !important;
+          height: calc(100% - 40px) !important;
           object-fit: contain !important;
           object-position: center bottom !important;
           background: #fff !important;
         }
 
         @media (max-width: 768px) {
-          .vini-preview-page .drink-card-uniform {
-            aspect-ratio: 1 / 1.32;
+          .vini-preview-page .drink-card-caption {
+            min-height: 34px !important;
+            height: 34px !important;
+            padding: 0 8px !important;
           }
 
-          .vini-preview-page .drink-card-caption h3 {
-            font-size: 13px;
+          .vini-preview-page .drink-card-uniform img {
+            height: calc(100% - 34px) !important;
           }
         }
       `}</style>
