@@ -580,6 +580,21 @@ export default function VenueDetail() {
           margin: 6px 0;
         }
 
+        .rvb-score-meta {
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+
+        @media (max-width: 768px) {
+          .rvb-score-meta {
+            flex-direction: row;
+            gap: 6px;
+            justify-content: center;
+            align-items: baseline;
+          }
+        }
+
         @media (max-width: 400px) {
           .rvb-row {
             grid-template-columns: 76px 1fr 26px;
@@ -772,11 +787,13 @@ export default function VenueDetail() {
               <div style={{ fontSize: "30px", fontWeight: 800, color: "#0b6b3a", lineHeight: 1 }}>
                 {reviewAverage.toFixed(1).replace(".", ",")}
               </div>
-              <div style={{ fontSize: 14, fontWeight: 700, color: "#0b6b3a", marginTop: 2 }}>
-                {reviewLabel}
-              </div>
-              <div style={{ fontSize: 11, color: "#666", marginTop: 2 }}>
-                Basato su {recensioni.length} {recensioni.length === 1 ? "recensione" : "recensioni"}
+              <div className="rvb-score-meta">
+                <div style={{ fontSize: 14, fontWeight: 700, color: "#0b6b3a" }}>
+                  {reviewLabel}
+                </div>
+                <div style={{ fontSize: 11, color: "#666" }}>
+                  Basato su {recensioni.length} {recensioni.length === 1 ? "recensione" : "recensioni"}
+                </div>
               </div>
             </div>
           ) : (
