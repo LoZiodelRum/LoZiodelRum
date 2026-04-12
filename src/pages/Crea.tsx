@@ -67,7 +67,9 @@ export default function Crea() {
       return;
     }
 
-    setSuggestions(result.cocktails);
+    const generated = result.cocktails.filter((c) => c.source === "generated");
+    const database = result.cocktails.filter((c) => c.source === "database").slice(0, 3);
+    setSuggestions([...generated, ...database]);
     setLoading(false);
   }
 
@@ -377,7 +379,7 @@ export default function Crea() {
           <article key={cocktail.name} className="crea-card" style={cardStyle}>
             <div className="crea-card-header" style={cardHeaderStyle}>
               <div>
-                <p className="crea-source" style={sourceTagStyle}>{cocktail.source === "database" ? "DAL DATABASE" : "GENERATO"}</p>
+                <p className="crea-source" style={sourceTagStyle}>{cocktail.source === "database" ? "GIÀ ESISTENTE" : "GENERATO"}</p>
                 <h2 className="crea-card-title" style={cardTitleStyle}>{cocktail.name}</h2>
                 <p className="crea-meta" style={metaStyle}>
                   Base: {cocktail.base_spirit} · Tecnica: {cocktail.technique} · Bicchiere: {cocktail.glass}
@@ -393,7 +395,7 @@ export default function Crea() {
                   {cocktail.ingredients.map((ingredient, index) => (
                     <li key={`${cocktail.name}-${ingredient}-${index}`} className="crea-list-item" style={listItemStyle}>
                       <span>{ingredient}</span>
-                      <strong>{cocktail.doses[index] || "q.b."}</strong>
+                      <strong>{cocktail.doses[index] ?? ""}</strong>
                     </li>
                   ))}
                 </ul>
@@ -418,7 +420,7 @@ export default function Crea() {
 
             {cocktail.source === "generated" && (
               <section className="crea-fallback" style={fallbackStyle}>
-                <p className="crea-fallback-text" style={fallbackTextStyle}>Questo cocktail non e ancora nel catalogo</p>
+                <p className="crea-fallback-text" style={fallbackTextStyle}>Questo cocktail non è ancora nel catalogo</p>
                 <button className="btn-primary" type="button" onClick={() => toggleGeneratedForm(cocktail.name)}>
                   CREA NUOVO COCKTAIL
                 </button>
