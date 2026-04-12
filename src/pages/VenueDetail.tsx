@@ -55,7 +55,7 @@ const REVIEWS_RESET_AT = "2026-04-12T00:00:00.000Z";
 
 export default function VenueDetail() {
   const { id } = useParams();
-  const { isAdmin } = useUser();
+  const { isAdmin, user } = useUser();
 
   const [locale, setLocale] = useState<Locale | null>(null);
   const [form, setForm] = useState<any>(null);
@@ -65,6 +65,20 @@ export default function VenueDetail() {
 
   const [recensioni, setRecensioni] = useState<Recensione[]>([]);
   const [media, setMedia] = useState<Media[]>([]);
+
+  const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
+  const [reviewForm, setReviewForm] = useState({
+    overallRating: 0,
+    comment: "",
+    title: "",
+    serviceRating: 0,
+    foodRating: 0,
+    qualityPriceRating: 0,
+    atmosphereRating: 0,
+    agreeToTerms: false,
+    photoUrl: "",
+  });
+  const [reviewUploading, setReviewUploading] = useState(false);
 
   useEffect(() => {
     fetchLocale();
@@ -291,6 +305,98 @@ export default function VenueDetail() {
     });
 
     setUploading(false);
+  }
+
+  async function handleReviewPhotoUpload(file: File) {
+    if (!file) return;
+
+    setReviewUploading(true);
+
+    const fileName = `review-${Date.now()}-${file.name}`;
+
+    const { error } = await supabase.storage
+      .from("drink-images")
+      .upload(fileName, file);
+
+    if (error) {
+      alert("Errore upload foto");
+      setReviewUploading(false);
+      return;
+    }
+
+    const { data } = supabase.storage
+      .from("drink-images")
+      .getPublicUrl(fileName);
+
+    const url = data.publicUrl;
+
+    setReviewForm({
+      ...reviewForm,
+      photoUrl: url,
+    });
+
+    setReviewUploading(false);
+  }
+
+  async function handleReviewSubmit() {
+    if (!user) {
+      alert("Devi essere loggato per scrivere una recensione");
+      return;
+    }
+
+    if (!reviewForm.agreeToTerms) {
+      alert("Devi accettare i termini");
+      return;
+    }
+
+    if (reviewForm.overallRating === 0) {
+      alert("Seleziona una valutazione generale");
+      return;
+    }
+
+    const overallScore = (
+      reviewForm.serviceRating +
+      reviewForm.foodRating +
+      reviewForm.qualityPriceRating +
+      reviewForm.atmosphereRating
+    ) / 4 || reviewForm.overallRating;
+
+    const { error } = await supabase.from("Recensioni").insert({
+      locale_id: id,
+      commento: reviewForm.comment,
+      titolo: reviewForm.title,
+      overall_rating: reviewForm.overallRating,
+      rating: overallScore,
+      photo_url: reviewForm.photoUrl,
+      servizio: reviewForm.serviceRating,
+      cibo: reviewForm.foodRating,
+      qualita_prezzo: reviewForm.qualityPriceRating,
+      atmosfera: reviewForm.atmosphereRating,
+      autore: user.email || user.id,
+      created_at: new Date().toISOString(),
+    });
+
+    if (error) {
+      alert(`Errore salvataggio: ${error.message}`);
+      return;
+    }
+
+    alert("Recensione pubblicata! ✅");
+    setIsReviewModalOpen(false);
+    setReviewForm({
+      overallRating: 0,
+      comment: "",
+      title: "",
+      serviceRating: 0,
+      foodRating: 0,
+      qualityPriceRating: 0,
+      atmosphereRating: 0,
+      agreeToTerms: false,
+      photoUrl: "",
+    });
+
+    // Refresh reviews
+    fetchRecensioni();
   }
 
   if (!locale) return <div className="page fade-in">Caricamento...</div>;
@@ -630,12 +736,13 @@ export default function VenueDetail() {
         <div className="venue-review-box">
           <div className="venue-review-head">
             <h2 style={{ margin: 0, fontSize: "clamp(18px, 3.2vw, 28px)", fontWeight: 800 }}>Recensioni</h2>
-            <Link
-              to="/community"
+            <button
+              onClick={() => setIsReviewModalOpen(true)}
               className="venue-review-write"
+              style={{ border: "1px solid #0b6b3a", background: "#e8f4ec", color: "#0b6b3a", borderRadius: "999px", padding: "8px 14px", fontWeight: 700, fontSize: 14, cursor: "pointer" }}
             >
               Scrivi una recensione
-            </Link>
+            </button>
           </div>
 
           <div style={{ marginTop: 8, marginBottom: 12 }}>
@@ -819,6 +926,242 @@ export default function VenueDetail() {
         </div>
       )}
 
+      {/* REVIEW MODAL */}
+      {isReviewModalOpen && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(2,6,23,0.75)",
+            zIndex: 1200,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            padding: 20,
+            overflowY: "auto",
+          }}
+          onClick={() => setIsReviewModalOpen(false)}
+        >
+          <div
+            style={{
+              width: "min(700px, 96vw)",
+              background: "#fff",
+              borderRadius: 12,
+              padding: 24,
+              display: "grid",
+              gap: 20,
+              maxHeight: "90vh",
+              overflow: "auto",
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* TITLE */}
+            <h2 style={{ margin: 0, fontSize: 24, fontWeight: 800, color: "#000" }}>Scrivi una recensione</h2>
+
+            {/* OVERALL RATING - STARS */}
+            <div>
+              <label style={{ display: "block", fontSize: 16, fontWeight: 700, color: "#000", marginBottom: 8 }}>
+                Come valuteresti la tua esperienza?
+              </label>
+              <div style={{ display: "flex", gap: 8 }}>
+                {[1, 2, 3, 4, 5].map((star) => (
+                  <button
+                    key={star}
+                    onClick={() => setReviewForm({ ...reviewForm, overallRating: star })}
+                    style={{
+                      width: 40,
+                      height: 40,
+                      borderRadius: "50%",
+                      border: "2px solid #0b6b3a",
+                      background: reviewForm.overallRating >= star ? "#0b6b3a" : "#fff",
+                      cursor: "pointer",
+                      fontSize: 20,
+                    }}
+                  >
+                    ○
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* REVIEW TEXT */}
+            <div>
+              <label style={{ display: "block", fontSize: 14, fontWeight: 700, color: "#000", marginBottom: 8 }}>
+                Scrivi una recensione
+              </label>
+              <textarea
+                value={reviewForm.comment}
+                onChange={(e) => setReviewForm({ ...reviewForm, comment: e.target.value })}
+                placeholder="Condividi la tua esperienza..."
+                style={{
+                  width: "100%",
+                  minHeight: 120,
+                  padding: 12,
+                  borderRadius: 8,
+                  border: "1px solid #ccc",
+                  fontSize: 14,
+                  fontFamily: "inherit",
+                  boxSizing: "border-box",
+                }}
+              />
+              <p style={{ margin: "4px 0 0", fontSize: 12, color: "#999" }}>0/300 caratteri max</p>
+            </div>
+
+            {/* REVIEW TITLE */}
+            <div>
+              <label style={{ display: "block", fontSize: 14, fontWeight: 700, color: "#000", marginBottom: 8 }}>
+                Dai un titolo alla tua recensione
+              </label>
+              <input
+                type="text"
+                value={reviewForm.title}
+                onChange={(e) => setReviewForm({ ...reviewForm, title: e.target.value })}
+                placeholder="Doccia un'idea della tua esperienza"
+                style={{
+                  width: "100%",
+                  padding: 12,
+                  borderRadius: 8,
+                  border: "1px solid #ccc",
+                  fontSize: 14,
+                  boxSizing: "border-box",
+                }}
+              />
+            </div>
+
+            {/* PHOTO UPLOAD */}
+            <div>
+              <label style={{ display: "block", fontSize: 14, fontWeight: 700, color: "#000", marginBottom: 8 }}>
+                Aggiungi delle foto
+              </label>
+              <p style={{ margin: "0 0 12px", fontSize: 12, color: "#666" }}>Facoltativo</p>
+              <div style={{
+                border: "2px dashed #ccc",
+                borderRadius: 8,
+                padding: 20,
+                textAlign: "center",
+                cursor: "pointer",
+                background: reviewForm.photoUrl ? "#f0f8f0" : "#fafafa",
+              }}>
+                {reviewUploading ? (
+                  <p style={{ margin: 0, color: "#0b6b3a", fontWeight: 700 }}>Upload in corso...</p>
+                ) : reviewForm.photoUrl ? (
+                  <>
+                    <img src={reviewForm.photoUrl} alt="Preview" style={{ maxWidth: "100%", maxHeight: 120, borderRadius: 6, marginBottom: 8 }} />
+                    <p style={{ margin: 0, fontSize: 12, color: "#0b6b3a" }}>Foto caricata ✓</p>
+                  </>
+                ) : (
+                  <>
+                    <p style={{ margin: "0 0 8px", fontSize: 18 }}>📸</p>
+                    <p style={{ margin: 0, fontSize: 14, fontWeight: 600, color: "#000" }}>Fai clic per aggiungere foto</p>
+                    <p style={{ margin: "4px 0 0", fontSize: 12, color: "#666" }}>oppure trascina</p>
+                  </>
+                )}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => e.target.files?.[0] && handleReviewPhotoUpload(e.target.files[0])}
+                  style={{ display: "none", cursor: "pointer" }}
+                  id="review-photo-input"
+                />
+              </div>
+              <label htmlFor="review-photo-input" style={{ display: "block", marginTop: 8, cursor: "pointer" }}>
+                <span style={{ fontSize: 12, color: "#0b6b3a", textDecoration: "underline" }}>Seleziona file</span>
+              </label>
+            </div>
+
+            {/* INDIVIDUAL RATINGS */}
+            <div>
+              <label style={{ display: "block", fontSize: 16, fontWeight: 700, color: "#000", marginBottom: 16 }}>
+                Come li valuteresti?
+              </label>
+              <div style={{ display: "grid", gap: 16 }}>
+                {[
+                  { key: "serviceRating", label: "Servizio" },
+                  { key: "foodRating", label: "Cibo" },
+                  { key: "qualityPriceRating", label: "Qualità/prezzo" },
+                  { key: "atmosphereRating", label: "Atmosfera" },
+                ].map(({ key, label }) => (
+                  <div key={key}>
+                    <p style={{ margin: "0 0 8px", fontSize: 14, fontWeight: 600, color: "#000" }}>{label}</p>
+                    <div style={{ display: "flex", gap: 6 }}>
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <button
+                          key={star}
+                          onClick={() => setReviewForm({ ...reviewForm, [key]: star })}
+                          style={{
+                            width: 32,
+                            height: 32,
+                            borderRadius: "50%",
+                            border: "2px solid #0b6b3a",
+                            background: (reviewForm as any)[key] >= star ? "#0b6b3a" : "#fff",
+                            cursor: "pointer",
+                            fontSize: 16,
+                            color: (reviewForm as any)[key] >= star ? "#fff" : "#0b6b3a",
+                            fontWeight: 700,
+                          }}
+                        >
+                          ○
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+
+            {/* TERMS CHECKBOX */}
+            <label style={{ display: "flex", alignItems: "flex-start", gap: 8, cursor: "pointer" }}>
+              <input
+                type="checkbox"
+                checked={reviewForm.agreeToTerms}
+                onChange={(e) => setReviewForm({ ...reviewForm, agreeToTerms: e.target.checked })}
+                style={{ marginTop: 2, cursor: "pointer" }}
+              />
+              <span style={{ fontSize: 12, color: "#666" }}>
+                Dichiaro che questa recensione è frutto della mia esperienza, che rappresenta la mia opinione autentica di questo ristorante, che non ho relazioni personali o aziendali con tale struttura e che non mi sono stati offerti incentivi o pagamenti da tale azienda per scriverla. Accetto la politica di tolleranza zero attuata da Tripadvisor per le recensioni false.{" "}
+                <span style={{ textDecoration: "underline", fontWeight: 600 }}>Scopri di più sulle conseguenze delle recensioni fraudolente.</span>
+              </span>
+            </label>
+
+            {/* ACTION BUTTONS */}
+            <div style={{ display: "flex", gap: 10 }}>
+              <button
+                onClick={handleReviewSubmit}
+                disabled={!reviewForm.agreeToTerms || reviewForm.overallRating === 0}
+                style={{
+                  flex: 1,
+                  background: reviewForm.agreeToTerms && reviewForm.overallRating > 0 ? "#0b6b3a" : "#ccc",
+                  color: "#fff",
+                  border: "none",
+                  borderRadius: 8,
+                  padding: 14,
+                  fontWeight: 700,
+                  fontSize: 16,
+                  cursor: reviewForm.agreeToTerms && reviewForm.overallRating > 0 ? "pointer" : "not-allowed",
+                }}
+              >
+                Continua
+              </button>
+              <button
+                onClick={() => setIsReviewModalOpen(false)}
+                style={{
+                  flex: 1,
+                  background: "#f0f0f0",
+                  color: "#000",
+                  border: "none",
+                  borderRadius: 8,
+                  padding: 14,
+                  fontWeight: 700,
+                  fontSize: 16,
+                  cursor: "pointer",
+                }}
+              >
+                Annulla
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
