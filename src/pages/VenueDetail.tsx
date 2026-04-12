@@ -337,7 +337,7 @@ export default function VenueDetail() {
   }
 
   async function handleReviewSubmit() {
-    if (!user) {
+    if (!user && !isAdmin) {
       alert("Devi essere loggato per scrivere una recensione");
       return;
     }
@@ -361,7 +361,7 @@ export default function VenueDetail() {
       qualita_prezzo: reviewForm.qualitaPrezzo,
       atmosfera: reviewForm.atmosfera,
       tags: reviewForm.tags,
-      autore: user.email || user.id,
+      autore: user?.email || user?.id || "admin",
       created_at: new Date().toISOString(),
     });
 
