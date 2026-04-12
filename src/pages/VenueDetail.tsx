@@ -512,7 +512,7 @@ export default function VenueDetail() {
         .venue-review-box {
           background: #f2f3f2;
           border-radius: 16px;
-          padding: 18px 20px;
+          padding: 12px 16px;
           color: #184d2f;
           width: 100%;
           box-sizing: border-box;
@@ -784,8 +784,8 @@ export default function VenueDetail() {
 
           {/* VOTO CENTRALE */}
           {reviewAverage > 0 ? (
-            <div style={{ textAlign: "center", marginTop: 20, marginBottom: 20 }}>
-              <div style={{ fontSize: "48px", fontWeight: 800, color: "#0b6b3a", lineHeight: 1 }}>
+            <div style={{ textAlign: "center", marginTop: 10, marginBottom: 10 }}>
+              <div style={{ fontSize: "36px", fontWeight: 800, color: "#0b6b3a", lineHeight: 1 }}>
                 {reviewAverage.toFixed(1).replace(".", ",")}
               </div>
               <div style={{ fontSize: 18, fontWeight: 700, color: "#0b6b3a", marginTop: 4 }}>
@@ -796,16 +796,16 @@ export default function VenueDetail() {
               </div>
             </div>
           ) : (
-            <div style={{ textAlign: "center", marginTop: 20, marginBottom: 20, fontSize: 14, color: "#999" }}>
+            <div style={{ textAlign: "center", marginTop: 10, marginBottom: 10, fontSize: 14, color: "#999" }}>
               Nessuna recensione ancora
             </div>
           )}
 
           {/* BARRE DISTRIBUZIONE */}
           {reviewAverage > 0 && (
-            <div style={{ marginBottom: 20 }}>
-              <h3 style={{ fontSize: 14, fontWeight: 700, color: "#0b6b3a", marginBottom: 12 }}>Distribuzione voti</h3>
-              <div style={{ display: "grid", gap: 8 }}>
+            <div style={{ marginBottom: 10 }}>
+              <h3 style={{ fontSize: 13, fontWeight: 700, color: "#0b6b3a", marginBottom: 6 }}>Distribuzione voti</h3>
+              <div style={{ display: "grid", gap: 5 }}>
                 {reviewDistribution.map((row) => {
                   const width = maxDistributionCount > 0 ? (row.count / maxDistributionCount) * 100 : 0;
                   return (
@@ -837,8 +837,8 @@ export default function VenueDetail() {
           {/* VALUTAZIONI DETTAGLIATE */}
           {reviewAverage > 0 && (
             <div>
-              <h3 style={{ fontSize: 14, fontWeight: 700, color: "#0b6b3a", marginBottom: 12 }}>Valutazioni dettagliate</h3>
-              <div style={{ display: "grid", gap: 12 }}>
+              <h3 style={{ fontSize: 13, fontWeight: 700, color: "#0b6b3a", marginBottom: 6 }}>Valutazioni dettagliate</h3>
+              <div style={{ display: "grid", gap: 7 }}>
                 {[
                   { label: "Servizio", icon: "👤", value: avgServizio },
                   { label: "Qualità drink", icon: "🍸", value: avgQualitaDrink },
