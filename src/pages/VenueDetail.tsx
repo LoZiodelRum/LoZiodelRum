@@ -35,17 +35,18 @@ type Locale = {
 type Recensione = {
   id: string;
   locale_id: string;
-  commento: string;
+  commento?: string | null;
+  testo?: string | null;
   created_at: string;
-  autore?: string | null;
-  rating?: number | null;
-  overall_rating?: number | null;
-  rating_generale?: number | null;
+  author_name?: string | null;
+  utente_id?: string | null;
+  voto?: number | null;
+  status?: string | null;
   servizio?: number | null;
   qualita_drink?: number | null;
   qualita_prezzo?: number | null;
   atmosfera?: number | null;
-  tags?: string[] | null;
+  tags?: string | null;
 };
 
 type Media = {
@@ -356,7 +357,14 @@ export default function VenueDetail() {
       const { error } = await supabase.from("Recensioni").insert({
         locale_id: id,
         commento: reviewForm.comment,
-        overall_rating: reviewForm.ratingGenerale,
+        voto: reviewForm.ratingGenerale,
+        author_name: user?.email || user?.id || "admin",
+        status: "pending",
+        servizio: reviewForm.servizio || null,
+        qualita_drink: reviewForm.qualitaDrink || null,
+        qualita_prezzo: reviewForm.qualitaPrezzo || null,
+        atmosfera: reviewForm.atmosfera || null,
+        tags: reviewForm.tags.length > 0 ? reviewForm.tags.join(",") : null,
       });
 
       if (error) {
@@ -429,13 +437,13 @@ export default function VenueDetail() {
     return Math.max(0, Math.min(5, parsed));
   };
 
-  // Calcola rating generale da rating_generale o da media delle 4 categorie
+  // Calcola rating generale da voto o da media delle 4 categorie
   const ratedReviews = recensioni
     .map((rec) => {
-      const general = parseScore(rec.rating_generale ?? rec.overall_rating ?? rec.rating);
+      const general = parseScore(rec.voto);
       if (general > 0) return general;
-      const avg = (parseScore(rec.servizio) + parseScore(rec.qualita_drink) + parseScore(rec.qualita_prezzo) + parseScore(rec.atmosfera)) / 4;
-      return avg > 0 ? avg : 0;
+      const cats = [rec.servizio, rec.qualita_drink, rec.qualita_prezzo, rec.atmosfera].map(parseScore).filter(s => s > 0);
+      return cats.length > 0 ? cats.reduce((a, b) => a + b, 0) / cats.length : 0;
     })
     .filter((score) => score > 0);
 
