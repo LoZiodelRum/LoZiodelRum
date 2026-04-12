@@ -51,6 +51,8 @@ type Media = {
   approvato: boolean;
 };
 
+const REVIEWS_RESET_AT = "2026-04-12T00:00:00.000Z";
+
 export default function VenueDetail() {
   const { id } = useParams();
   const { isAdmin } = useUser();
@@ -101,6 +103,7 @@ export default function VenueDetail() {
       .from("Recensioni")
       .select("*")
       .eq("locale_id", id)
+      .gte("created_at", REVIEWS_RESET_AT)
       .order("created_at", { ascending: false });
 
     if (data) setRecensioni(data);
@@ -369,10 +372,10 @@ export default function VenueDetail() {
             : "Terribile";
 
   const reviewMetrics = [
-    { label: "Servizio", value: parseScore(locale.competenza_staff) || reviewAverage },
-    { label: "Cibo", value: parseScore(locale.qualita_drink) || reviewAverage },
-    { label: "Qualita/prezzo", value: parseScore(locale.qualita_prezzo) || reviewAverage },
-    { label: "Atmosfera", value: parseScore(locale.atmosfera) || reviewAverage },
+    { label: "Servizio", value: reviewAverage },
+    { label: "Cibo", value: reviewAverage },
+    { label: "Qualita/prezzo", value: reviewAverage },
+    { label: "Atmosfera", value: reviewAverage },
   ];
 
   return (
