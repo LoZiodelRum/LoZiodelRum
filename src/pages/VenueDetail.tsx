@@ -388,7 +388,7 @@ export default function VenueDetail() {
         }
 
         .venue-review-box * {
-          color: #184d2f;
+          color: #0b6b3a !important;
         }
 
         .venue-review-head {
@@ -401,13 +401,18 @@ export default function VenueDetail() {
 
         .venue-review-write {
           text-decoration: none;
-          border: 1px solid #184d2f;
-          background: #0b5f2e;
-          color: #fff !important;
+          border: 1px solid #0b6b3a;
+          background: #e8f4ec;
+          color: #0b6b3a !important;
           border-radius: 999px;
           padding: 8px 14px;
           font-weight: 700;
           font-size: 14px;
+        }
+
+        .venue-review-all-link,
+        .venue-review-all-link:visited {
+          color: #0b6b3a !important;
         }
 
         .venue-review-score-row {
@@ -631,7 +636,7 @@ export default function VenueDetail() {
           </div>
 
           <div style={{ marginTop: 8, marginBottom: 12 }}>
-            <Link to="/community" style={{ fontWeight: 700, textDecoration: "underline", fontSize: 14 }}>
+            <Link to="/community" className="venue-review-all-link" style={{ fontWeight: 700, textDecoration: "underline", fontSize: 14 }}>
               Tutte le recensioni ({recensioni.length})
             </Link>
           </div>
