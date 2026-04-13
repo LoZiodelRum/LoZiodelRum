@@ -1038,6 +1038,7 @@ export default function PannelloControllo() {
       "Amaro",
       "Agrodolce",
       "Acido",
+      "Aspro",
       "Fresco",
     ],
     famiglia_aromatica: [
