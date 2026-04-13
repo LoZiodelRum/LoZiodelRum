@@ -441,12 +441,12 @@ export default function Crea() {
                 <div style={fallbackTopRowStyle}>
                   <div className="crea-generated-field" style={{ ...generatedFieldStyle, width: "min(44%, 420px)", minWidth: 280 }}>
                     <input
-                      value={customGeneratedNames[cocktail.name] ?? cocktail.name}
+                      value={customGeneratedNames[cocktail.name] ?? ""}
                       onChange={(event) => {
                         const value = event.target.value;
                         setCustomGeneratedNames((prev) => ({ ...prev, [cocktail.name]: value }));
                       }}
-                      placeholder="Inserisci nome cocktail"
+                      placeholder="inserisci nome cocktail"
                       style={inputStyle}
                     />
                   </div>
@@ -460,11 +460,12 @@ export default function Crea() {
                     <div className="crea-generated-field" style={generatedFieldStyle}>
                       <label className="crea-label" style={labelStyle}>Nome</label>
                       <input
-                        value={customGeneratedNames[cocktail.name] ?? cocktail.name}
+                        value={customGeneratedNames[cocktail.name] ?? ""}
                         onChange={(event) => {
                           const value = event.target.value;
                           setCustomGeneratedNames((prev) => ({ ...prev, [cocktail.name]: value }));
                         }}
+                        placeholder="inserisci nome cocktail"
                         style={inputStyle}
                       />
                     </div>
