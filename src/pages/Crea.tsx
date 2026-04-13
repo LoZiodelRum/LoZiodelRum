@@ -870,7 +870,9 @@ const generatedDateFieldStyle: React.CSSProperties = {
 
 const generatedImageFieldStyle: React.CSSProperties = {
   ...generatedFieldStyle,
-  gridColumn: "span 4",
+  gridColumn: "span 3",
+  alignSelf: "start",
+  maxWidth: 320,
 };
 
 const generatedSaveWrapStyle: React.CSSProperties = {
@@ -884,20 +886,21 @@ const uploadImageButtonStyle: React.CSSProperties = {
   display: "inline-flex",
   alignItems: "center",
   justifyContent: "center",
-  minHeight: 44,
-  padding: "10px 14px",
+  minHeight: 40,
+  padding: "8px 12px",
   borderRadius: 10,
   border: "1px solid #334155",
   background: "#111827",
   color: "#f8fafc",
   fontWeight: 700,
   cursor: "pointer",
+  width: "100%",
 };
 
 const uploadedImagePreviewStyle: React.CSSProperties = {
   marginTop: 8,
   width: "100%",
-  maxWidth: 240,
+  maxWidth: 180,
   aspectRatio: "1 / 1",
   objectFit: "cover",
   borderRadius: 10,
