@@ -439,7 +439,7 @@ export default function Crea() {
               <section className="crea-fallback" style={fallbackStyle}>
                 <p className="crea-fallback-text" style={fallbackTextStyle}>Scegli il nome per questo Cocktail</p>
                 <div style={fallbackTopRowStyle}>
-                  <div className="crea-generated-field" style={{ ...generatedFieldStyle, flex: "1 1 360px", maxWidth: "none" }}>
+                  <div className="crea-generated-field" style={{ ...generatedFieldStyle, width: "min(44%, 420px)", minWidth: 280 }}>
                     <input
                       value={customGeneratedNames[cocktail.name] ?? cocktail.name}
                       onChange={(event) => {
@@ -737,6 +737,7 @@ const fallbackTopRowStyle: React.CSSProperties = {
   display: "flex",
   gap: 12,
   alignItems: "center",
+  justifyContent: "flex-start",
   flexWrap: "wrap",
 };
 
