@@ -877,9 +877,10 @@ const generatedImageFieldStyle: React.CSSProperties = {
 
 const generatedSaveWrapStyle: React.CSSProperties = {
   ...generatedFieldStyle,
-  gridColumn: "1 / -1",
+  gridColumn: "span 3",
   display: "flex",
-  justifyContent: "center",
+  justifyContent: "flex-start",
+  alignSelf: "end",
 };
 
 const uploadImageButtonStyle: React.CSSProperties = {
