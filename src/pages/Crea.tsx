@@ -877,9 +877,9 @@ const generatedImageFieldStyle: React.CSSProperties = {
 
 const generatedSaveWrapStyle: React.CSSProperties = {
   ...generatedFieldStyle,
-  gridColumn: "span 3",
+  gridColumn: "9 / 13",
   display: "flex",
-  justifyContent: "flex-start",
+  justifyContent: "flex-end",
   alignSelf: "end",
 };
 
