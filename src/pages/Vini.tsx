@@ -296,7 +296,7 @@ export default function Vini() {
         }
 
         .vini-preview-page .drink-card-uniform {
-          aspect-ratio: 1 / 1.26;
+          aspect-ratio: 1 / 1.32;
         }
 
         .vini-preview-page .drink-card-caption h3 {
