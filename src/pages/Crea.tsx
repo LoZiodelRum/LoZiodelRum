@@ -666,8 +666,10 @@ const inputStyle: React.CSSProperties = {
 
 const compactInputStyle: React.CSSProperties = {
   ...inputStyle,
-  minHeight: 44,
-  padding: "8px 14px",
+  height: 56,
+  minHeight: 56,
+  padding: "6px 14px",
+  boxSizing: "border-box",
 };
 
 const textareaStyle: React.CSSProperties = {
@@ -830,6 +832,7 @@ const generatedFormStyle: React.CSSProperties = {
   display: "grid",
   gridTemplateColumns: "repeat(12, minmax(0, 1fr))",
   gap: 12,
+  alignItems: "start",
   marginTop: 14,
   padding: 12,
   borderRadius: 14,
@@ -845,6 +848,7 @@ const generatedFieldStyle: React.CSSProperties = {
 const generatedNameFieldStyle: React.CSSProperties = {
   ...generatedFieldStyle,
   gridColumn: "span 3",
+  alignSelf: "start",
 };
 
 const generatedIngredientsFieldStyle: React.CSSProperties = {
@@ -855,11 +859,13 @@ const generatedIngredientsFieldStyle: React.CSSProperties = {
 const generatedAuthorFieldStyle: React.CSSProperties = {
   ...generatedFieldStyle,
   gridColumn: "span 2",
+  alignSelf: "start",
 };
 
 const generatedDateFieldStyle: React.CSSProperties = {
   ...generatedFieldStyle,
   gridColumn: "span 2",
+  alignSelf: "start",
 };
 
 const generatedImageFieldStyle: React.CSSProperties = {
