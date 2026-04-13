@@ -33,6 +33,7 @@ export default function Crea() {
   const [openGeneratedForms, setOpenGeneratedForms] = useState<Record<string, boolean>>({});
   const [savingNames, setSavingNames] = useState<Record<string, boolean>>({});
   const [savedNames, setSavedNames] = useState<Record<string, boolean>>({});
+  const [customGeneratedNames, setCustomGeneratedNames] = useState<Record<string, string>>({});
 
   function updatePreference(key: keyof CocktailPreferences, value: string) {
     setPreferences((prev) => ({ ...prev, [key]: value }));
@@ -240,13 +241,19 @@ export default function Crea() {
     setOpenGeneratedForms((prev) => ({ ...prev, [name]: !prev[name] }));
   }
 
+  function getGeneratedCocktailName(suggestedCocktail: SuggestedCocktail) {
+    const rawValue = customGeneratedNames[suggestedCocktail.name];
+    const trimmed = String(rawValue || "").trim();
+    return trimmed || suggestedCocktail.name;
+  }
+
   async function saveGeneratedCocktail(suggestedCocktail: SuggestedCocktail) {
     setSavingNames((prev) => ({ ...prev, [suggestedCocktail.name]: true }));
 
     const nowIso = new Date().toISOString();
     const generatedPreparation = `${suggestedCocktail.technique}. ${suggestedCocktail.doses.map((dose, index) => `${dose} ${suggestedCocktail.ingredients[index] || ""}`.trim()).join(", ")}`;
 
-    const finalName = cocktailForm.nome.trim() || suggestedCocktail.name;
+    const finalName = getGeneratedCocktailName(suggestedCocktail);
     const finalIngredients = cocktailForm.ingredienti.trim() || suggestedCocktail.ingredients.join("; ");
     const finalDescription = cocktailForm.descrizione.trim() || suggestedCocktail.description;
     const finalPreparation = cocktailForm.preparazione.trim() || generatedPreparation;
@@ -283,27 +290,22 @@ export default function Crea() {
     ];
 
     const attempts: Array<{ table: string; payloads: Record<string, any>[] }> = [
-      { table: "cocktail", payloads: italianPayloads },
+      { table: "cocktail_utenti", payloads: italianPayloads },
     ];
 
     let lastMessage = "Impossibile salvare il cocktail generato.";
 
     for (const attempt of attempts) {
       for (const payload of attempt.payloads) {
-        const { data: insertedRows, error: insertError } = await supabase
+        const { error: insertError } = await supabase
           .from(attempt.table)
           .insert([payload])
           .select("id");
 
         if (!insertError) {
-          const insertedId = Array.isArray(insertedRows) && insertedRows[0]?.id ? String(insertedRows[0].id) : null;
           setSavedNames((prev) => ({ ...prev, [suggestedCocktail.name]: true }));
           setSavingNames((prev) => ({ ...prev, [suggestedCocktail.name]: false }));
-          alert("Cocktail salvato nel catalogo ✅");
-
-          if (insertedId && attempt.table === "cocktail") {
-            navigate(`/drink/${insertedId}`);
-          }
+          alert("Cocktail salvato in cocktail_utenti ✅");
 
           return;
         }
@@ -435,7 +437,18 @@ export default function Crea() {
 
             {cocktail.source === "generated" && (
               <section className="crea-fallback" style={fallbackStyle}>
-                <p className="crea-fallback-text" style={fallbackTextStyle}>Questo cocktail non è ancora nel catalogo</p>
+                <p className="crea-fallback-text" style={fallbackTextStyle}>Scegli il nome per questo Cocktail</p>
+                <div className="crea-generated-field" style={{ ...generatedFieldStyle, marginTop: 10, maxWidth: 420 }}>
+                  <input
+                    value={customGeneratedNames[cocktail.name] ?? cocktail.name}
+                    onChange={(event) => {
+                      const value = event.target.value;
+                      setCustomGeneratedNames((prev) => ({ ...prev, [cocktail.name]: value }));
+                    }}
+                    placeholder="Inserisci nome cocktail"
+                    style={inputStyle}
+                  />
+                </div>
                 <button className="btn-primary" type="button" onClick={() => toggleGeneratedForm(cocktail.name)}>
                   CREA NUOVO COCKTAIL
                 </button>
@@ -444,7 +457,14 @@ export default function Crea() {
                   <div className="crea-generated-form" style={generatedFormStyle}>
                     <div className="crea-generated-field" style={generatedFieldStyle}>
                       <label className="crea-label" style={labelStyle}>Nome</label>
-                      <input value={cocktail.name} readOnly style={inputStyle} />
+                      <input
+                        value={customGeneratedNames[cocktail.name] ?? cocktail.name}
+                        onChange={(event) => {
+                          const value = event.target.value;
+                          setCustomGeneratedNames((prev) => ({ ...prev, [cocktail.name]: value }));
+                        }}
+                        style={inputStyle}
+                      />
                     </div>
                     <div className="crea-generated-field" style={generatedFieldStyle}>
                       <label className="crea-label" style={labelStyle}>Ingredienti</label>
@@ -473,7 +493,7 @@ export default function Crea() {
                           ? "Cocktail salvato"
                           : savingNames[cocktail.name]
                             ? "Salvataggio..."
-                            : "Salva nel catalogo"}
+                            : "Salva in cocktail_utenti"}
                       </button>
                     </div>
                   </div>
