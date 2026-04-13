@@ -250,11 +250,15 @@ export default function Crea() {
   }
 
   function getIngredientsWithDoses(suggestedCocktail: SuggestedCocktail) {
-    return suggestedCocktail.ingredients
-      .map((ingredient, index) => {
-        const dose = suggestedCocktail.doses[index] || "";
-        return `${ingredient} - ${dose}`.trim();
-      })
+    const rows = suggestedCocktail.ingredients.map((ingredient, index) => ({
+      ingredient: String(ingredient || "").trim(),
+      dose: String(suggestedCocktail.doses[index] || "").trim(),
+    }));
+
+    const maxIngredientLength = rows.reduce((max, row) => Math.max(max, row.ingredient.length), 0);
+
+    return rows
+      .map((row) => `${row.ingredient.padEnd(maxIngredientLength, " ")}  |  ${row.dose}`)
       .join("\n");
   }
 
@@ -505,7 +509,7 @@ export default function Crea() {
 
                 {openGeneratedForms[cocktail.name] && (
                   <div className="crea-generated-form" style={generatedFormStyle}>
-                    <div className="crea-generated-field" style={generatedFieldStyle}>
+                    <div className="crea-generated-field" style={generatedNameFieldStyle}>
                       <label className="crea-label" style={labelStyle}>Nome</label>
                       <input
                         value={customGeneratedNames[cocktail.name] ?? ""}
@@ -517,23 +521,24 @@ export default function Crea() {
                         style={inputStyle}
                       />
                     </div>
-                    <div className="crea-generated-field" style={generatedFieldStyle}>
+                    <div className="crea-generated-field" style={generatedIngredientsFieldStyle}>
                       <label className="crea-label" style={labelStyle}>Ingredienti (con dosi)</label>
                       <textarea
                         value={getIngredientsWithDoses(cocktail)}
                         readOnly
-                        style={{ ...textareaStyle, minHeight: 140, whiteSpace: "pre-wrap", fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace" }}
+                        wrap="off"
+                        style={{ ...textareaStyle, minHeight: 160, whiteSpace: "pre", overflowX: "auto", fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace" }}
                       />
                     </div>
-                    <div className="crea-generated-field" style={generatedFieldStyle}>
+                    <div className="crea-generated-field" style={generatedAuthorFieldStyle}>
                       <label className="crea-label" style={labelStyle}>Creato da</label>
                       <input value={createdBy} readOnly style={inputStyle} />
                     </div>
-                    <div className="crea-generated-field" style={generatedFieldStyle}>
+                    <div className="crea-generated-field" style={generatedDateFieldStyle}>
                       <label className="crea-label" style={labelStyle}>Data</label>
                       <input value={createdDate} readOnly style={inputStyle} />
                     </div>
-                    <div className="crea-generated-field" style={generatedFieldStyle}>
+                    <div className="crea-generated-field" style={generatedImageFieldStyle}>
                       <label className="crea-label" style={labelStyle}>Immagine cocktail</label>
                       <label style={{ ...uploadImageButtonStyle, opacity: uploadingImageNames[cocktail.name] ? 0.7 : 1 }}>
                         {uploadingImageNames[cocktail.name] ? "Caricamento..." : "Carica da fotocamera o file"}
@@ -558,7 +563,7 @@ export default function Crea() {
                         />
                       )}
                     </div>
-                    <div style={{ ...generatedFieldStyle, gridColumn: "1 / -1" }}>
+                    <div style={generatedSaveWrapStyle}>
                       <button
                         className="btn-primary"
                         type="button"
@@ -817,14 +822,50 @@ const fallbackTopRowStyle: React.CSSProperties = {
 
 const generatedFormStyle: React.CSSProperties = {
   display: "grid",
-  gridTemplateColumns: "repeat(auto-fit, minmax(220px, 1fr))",
+  gridTemplateColumns: "repeat(12, minmax(0, 1fr))",
   gap: 12,
   marginTop: 14,
+  padding: 12,
+  borderRadius: 14,
+  background: "rgba(15, 23, 42, 0.45)",
+  border: "1px solid rgba(51, 65, 85, 0.9)",
 };
 
 const generatedFieldStyle: React.CSSProperties = {
   display: "grid",
   gap: 6,
+};
+
+const generatedNameFieldStyle: React.CSSProperties = {
+  ...generatedFieldStyle,
+  gridColumn: "span 3",
+};
+
+const generatedIngredientsFieldStyle: React.CSSProperties = {
+  ...generatedFieldStyle,
+  gridColumn: "span 5",
+};
+
+const generatedAuthorFieldStyle: React.CSSProperties = {
+  ...generatedFieldStyle,
+  gridColumn: "span 2",
+};
+
+const generatedDateFieldStyle: React.CSSProperties = {
+  ...generatedFieldStyle,
+  gridColumn: "span 2",
+};
+
+const generatedImageFieldStyle: React.CSSProperties = {
+  ...generatedFieldStyle,
+  gridColumn: "span 4",
+};
+
+const generatedSaveWrapStyle: React.CSSProperties = {
+  ...generatedFieldStyle,
+  gridColumn: "1 / -1",
+  display: "flex",
+  justifyContent: "center",
 };
 
 const uploadImageButtonStyle: React.CSSProperties = {
