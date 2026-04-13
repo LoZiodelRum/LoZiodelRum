@@ -34,6 +34,8 @@ export default function Crea() {
   const [savingNames, setSavingNames] = useState<Record<string, boolean>>({});
   const [savedNames, setSavedNames] = useState<Record<string, boolean>>({});
   const [customGeneratedNames, setCustomGeneratedNames] = useState<Record<string, string>>({});
+  const [generatedImageUrls, setGeneratedImageUrls] = useState<Record<string, string>>({});
+  const [uploadingImageNames, setUploadingImageNames] = useState<Record<string, boolean>>({});
 
   function updatePreference(key: keyof CocktailPreferences, value: string) {
     setPreferences((prev) => ({ ...prev, [key]: value }));
@@ -247,6 +249,42 @@ export default function Crea() {
     return trimmed;
   }
 
+  function getIngredientsWithDoses(suggestedCocktail: SuggestedCocktail) {
+    return suggestedCocktail.ingredients
+      .map((ingredient, index) => {
+        const dose = suggestedCocktail.doses[index] || "";
+        return `${ingredient} - ${dose}`.trim();
+      })
+      .join("\n");
+  }
+
+  async function handleGeneratedImageUpload(suggestedCocktail: SuggestedCocktail, file: File) {
+    if (!file) return;
+
+    setUploadingImageNames((prev) => ({ ...prev, [suggestedCocktail.name]: true }));
+
+    const ext = file.name.includes(".") ? file.name.split(".").pop() : "jpg";
+    const safeName = suggestedCocktail.name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+    const fileName = `generated/${Date.now()}-${safeName || "cocktail"}.${ext || "jpg"}`;
+
+    const { error } = await supabase.storage
+      .from("drink-images")
+      .upload(fileName, file, { upsert: true, contentType: file.type || "image/jpeg" });
+
+    if (error) {
+      alert("Errore upload immagine: " + error.message);
+      setUploadingImageNames((prev) => ({ ...prev, [suggestedCocktail.name]: false }));
+      return;
+    }
+
+    const { data } = supabase.storage
+      .from("drink-images")
+      .getPublicUrl(fileName);
+
+    setGeneratedImageUrls((prev) => ({ ...prev, [suggestedCocktail.name]: data.publicUrl }));
+    setUploadingImageNames((prev) => ({ ...prev, [suggestedCocktail.name]: false }));
+  }
+
   async function saveGeneratedCocktail(suggestedCocktail: SuggestedCocktail) {
     setSavingNames((prev) => ({ ...prev, [suggestedCocktail.name]: true }));
 
@@ -259,10 +297,11 @@ export default function Crea() {
       alert("Inserisci il nome cocktail prima di salvare.");
       return;
     }
-    const finalIngredients = cocktailForm.ingredienti.trim() || suggestedCocktail.ingredients.join("; ");
+    const finalIngredients = cocktailForm.ingredienti.trim() || getIngredientsWithDoses(suggestedCocktail);
     const finalDescription = cocktailForm.descrizione.trim() || suggestedCocktail.description;
     const finalPreparation = cocktailForm.preparazione.trim() || generatedPreparation;
     const finalGarnish = cocktailForm.guarnizione.trim() || suggestedCocktail.garnish;
+    const finalImageUrl = generatedImageUrls[suggestedCocktail.name] || null;
 
     const italianPayloads = [
       {
@@ -281,6 +320,10 @@ export default function Crea() {
         famiglia_aromatica: serializePreferenceValue(cocktailForm.famiglia_aromatica || preferences.famiglia_aromatica),
         Genere: cocktailForm.Genere || preferences.Genere || null,
         texture: preferences.texture || null,
+        immagine: finalImageUrl,
+        image_url: finalImageUrl,
+        image: finalImageUrl,
+        img: finalImageUrl,
         created_at: nowIso,
       },
       {
@@ -475,12 +518,12 @@ export default function Crea() {
                       />
                     </div>
                     <div className="crea-generated-field" style={generatedFieldStyle}>
-                      <label className="crea-label" style={labelStyle}>Ingredienti</label>
-                      <textarea value={cocktail.ingredients.join(", ")} readOnly style={textareaStyle} />
-                    </div>
-                    <div className="crea-generated-field" style={generatedFieldStyle}>
-                      <label className="crea-label" style={labelStyle}>Dosi</label>
-                      <textarea value={cocktail.doses.join(", ")} readOnly style={textareaStyle} />
+                      <label className="crea-label" style={labelStyle}>Ingredienti (con dosi)</label>
+                      <textarea
+                        value={getIngredientsWithDoses(cocktail)}
+                        readOnly
+                        style={{ ...textareaStyle, minHeight: 140, whiteSpace: "pre-wrap", fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace" }}
+                      />
                     </div>
                     <div className="crea-generated-field" style={generatedFieldStyle}>
                       <label className="crea-label" style={labelStyle}>Creato da</label>
@@ -489,6 +532,31 @@ export default function Crea() {
                     <div className="crea-generated-field" style={generatedFieldStyle}>
                       <label className="crea-label" style={labelStyle}>Data</label>
                       <input value={createdDate} readOnly style={inputStyle} />
+                    </div>
+                    <div className="crea-generated-field" style={generatedFieldStyle}>
+                      <label className="crea-label" style={labelStyle}>Immagine cocktail</label>
+                      <label style={{ ...uploadImageButtonStyle, opacity: uploadingImageNames[cocktail.name] ? 0.7 : 1 }}>
+                        {uploadingImageNames[cocktail.name] ? "Caricamento..." : "Carica da fotocamera o file"}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          capture="environment"
+                          style={{ display: "none" }}
+                          disabled={Boolean(uploadingImageNames[cocktail.name])}
+                          onChange={(event) => {
+                            const file = event.target.files?.[0];
+                            if (file) void handleGeneratedImageUpload(cocktail, file);
+                            event.currentTarget.value = "";
+                          }}
+                        />
+                      </label>
+                      {generatedImageUrls[cocktail.name] && (
+                        <img
+                          src={generatedImageUrls[cocktail.name]}
+                          alt={`Anteprima ${cocktail.name}`}
+                          style={uploadedImagePreviewStyle}
+                        />
+                      )}
                     </div>
                     <div style={{ ...generatedFieldStyle, gridColumn: "1 / -1" }}>
                       <button
@@ -757,6 +825,30 @@ const generatedFormStyle: React.CSSProperties = {
 const generatedFieldStyle: React.CSSProperties = {
   display: "grid",
   gap: 6,
+};
+
+const uploadImageButtonStyle: React.CSSProperties = {
+  display: "inline-flex",
+  alignItems: "center",
+  justifyContent: "center",
+  minHeight: 44,
+  padding: "10px 14px",
+  borderRadius: 10,
+  border: "1px solid #334155",
+  background: "#111827",
+  color: "#f8fafc",
+  fontWeight: 700,
+  cursor: "pointer",
+};
+
+const uploadedImagePreviewStyle: React.CSSProperties = {
+  marginTop: 8,
+  width: "100%",
+  maxWidth: 240,
+  aspectRatio: "1 / 1",
+  objectFit: "cover",
+  borderRadius: 10,
+  border: "1px solid #334155",
 };
 
 const emptyStateStyle: React.CSSProperties = {
