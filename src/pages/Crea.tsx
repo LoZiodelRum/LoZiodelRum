@@ -438,20 +438,22 @@ export default function Crea() {
             {cocktail.source === "generated" && (
               <section className="crea-fallback" style={fallbackStyle}>
                 <p className="crea-fallback-text" style={fallbackTextStyle}>Scegli il nome per questo Cocktail</p>
-                <div className="crea-generated-field" style={{ ...generatedFieldStyle, marginTop: 10, maxWidth: 420 }}>
-                  <input
-                    value={customGeneratedNames[cocktail.name] ?? cocktail.name}
-                    onChange={(event) => {
-                      const value = event.target.value;
-                      setCustomGeneratedNames((prev) => ({ ...prev, [cocktail.name]: value }));
-                    }}
-                    placeholder="Inserisci nome cocktail"
-                    style={inputStyle}
-                  />
+                <div style={fallbackTopRowStyle}>
+                  <div className="crea-generated-field" style={{ ...generatedFieldStyle, flex: "1 1 360px", maxWidth: "none" }}>
+                    <input
+                      value={customGeneratedNames[cocktail.name] ?? cocktail.name}
+                      onChange={(event) => {
+                        const value = event.target.value;
+                        setCustomGeneratedNames((prev) => ({ ...prev, [cocktail.name]: value }));
+                      }}
+                      placeholder="Inserisci nome cocktail"
+                      style={inputStyle}
+                    />
+                  </div>
+                  <button className="btn-primary" type="button" onClick={() => toggleGeneratedForm(cocktail.name)}>
+                    CREA NUOVO COCKTAIL
+                  </button>
                 </div>
-                <button className="btn-primary" type="button" onClick={() => toggleGeneratedForm(cocktail.name)}>
-                  CREA NUOVO COCKTAIL
-                </button>
 
                 {openGeneratedForms[cocktail.name] && (
                   <div className="crea-generated-form" style={generatedFormStyle}>
@@ -729,6 +731,13 @@ const fallbackStyle: React.CSSProperties = {
 const fallbackTextStyle: React.CSSProperties = {
   margin: "0 0 10px",
   color: "#fde68a",
+};
+
+const fallbackTopRowStyle: React.CSSProperties = {
+  display: "flex",
+  gap: 12,
+  alignItems: "center",
+  flexWrap: "wrap",
 };
 
 const generatedFormStyle: React.CSSProperties = {
