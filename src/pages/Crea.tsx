@@ -244,7 +244,7 @@ export default function Crea() {
   function getGeneratedCocktailName(suggestedCocktail: SuggestedCocktail) {
     const rawValue = customGeneratedNames[suggestedCocktail.name];
     const trimmed = String(rawValue || "").trim();
-    return trimmed || suggestedCocktail.name;
+    return trimmed;
   }
 
   async function saveGeneratedCocktail(suggestedCocktail: SuggestedCocktail) {
@@ -254,6 +254,11 @@ export default function Crea() {
     const generatedPreparation = `${suggestedCocktail.technique}. ${suggestedCocktail.doses.map((dose, index) => `${dose} ${suggestedCocktail.ingredients[index] || ""}`.trim()).join(", ")}`;
 
     const finalName = getGeneratedCocktailName(suggestedCocktail);
+    if (!finalName) {
+      setSavingNames((prev) => ({ ...prev, [suggestedCocktail.name]: false }));
+      alert("Inserisci il nome cocktail prima di salvare.");
+      return;
+    }
     const finalIngredients = cocktailForm.ingredienti.trim() || suggestedCocktail.ingredients.join("; ");
     const finalDescription = cocktailForm.descrizione.trim() || suggestedCocktail.description;
     const finalPreparation = cocktailForm.preparazione.trim() || generatedPreparation;
