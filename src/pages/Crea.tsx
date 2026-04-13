@@ -937,7 +937,7 @@ const mobileGeneratedFormStyle = `
 
     .generated-ingredients-field textarea {
       minHeight: 140px !important;
-      fontSize: 13px !important;
+      fontSize: 12px !important;
       line-height: 1.5 !important;
     }
 
