@@ -920,10 +920,10 @@ const emptyStateStyle: React.CSSProperties = {
 const mobileGeneratedFormStyle = `
   @media (max-width: 768px) {
     .crea-generated-form {
-      display: grid !important;
-      gridTemplateColumns: 1fr !important;
-      gap: 12px !important;
-      padding: 12px !important;
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 14px !important;
+      padding: 16px !important;
     }
 
     .generated-name-field,
@@ -932,21 +932,25 @@ const mobileGeneratedFormStyle = `
     .generated-date-field,
     .generated-image-field,
     .generated-save-wrap {
-      gridColumn: 1 !important;
       width: 100% !important;
     }
 
     .generated-ingredients-field textarea {
-      minHeight: 120px !important;
+      minHeight: 140px !important;
       fontSize: 13px !important;
+      line-height: 1.5 !important;
     }
 
     .generated-save-wrap {
+      display: flex !important;
       justify-content: center !important;
+      margin-top: 8px !important;
     }
 
-    .btn-primary {
+    .generated-save-wrap button {
       width: 100% !important;
+      padding: 12px 20px !important;
+      font-size: 16px !important;
     }
   }
 `;
