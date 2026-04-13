@@ -509,7 +509,8 @@ export default function Crea() {
 
                 {openGeneratedForms[cocktail.name] && (
                   <div className="crea-generated-form" style={generatedFormStyle}>
-                    <div className="crea-generated-field" style={generatedNameFieldStyle}>
+                    <style>{mobileGeneratedFormStyle}</style>
+                    <div className="crea-generated-field generated-name-field" style={generatedNameFieldStyle}>
                       <label className="crea-label" style={labelStyle}>Nome</label>
                       <input
                         value={customGeneratedNames[cocktail.name] ?? ""}
@@ -521,7 +522,7 @@ export default function Crea() {
                         style={compactInputStyle}
                       />
                     </div>
-                    <div className="crea-generated-field" style={generatedIngredientsFieldStyle}>
+                    <div className="crea-generated-field generated-ingredients-field" style={generatedIngredientsFieldStyle}>
                       <label className="crea-label" style={labelStyle}>Ingredienti (con dosi)</label>
                       <textarea
                         value={getIngredientsWithDoses(cocktail)}
@@ -530,15 +531,15 @@ export default function Crea() {
                         style={{ ...textareaStyle, minHeight: 160, whiteSpace: "pre", overflowX: "auto", fontFamily: "ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace" }}
                       />
                     </div>
-                    <div className="crea-generated-field" style={generatedAuthorFieldStyle}>
+                    <div className="crea-generated-field generated-author-field" style={generatedAuthorFieldStyle}>
                       <label className="crea-label" style={labelStyle}>Creato da</label>
                       <input value={createdBy} readOnly style={compactInputStyle} />
                     </div>
-                    <div className="crea-generated-field" style={generatedDateFieldStyle}>
+                    <div className="crea-generated-field generated-date-field" style={generatedDateFieldStyle}>
                       <label className="crea-label" style={labelStyle}>Data</label>
                       <input value={createdDate} readOnly style={compactInputStyle} />
                     </div>
-                    <div className="crea-generated-field" style={generatedImageFieldStyle}>
+                    <div className="crea-generated-field generated-image-field" style={generatedImageFieldStyle}>
                       <label className="crea-label" style={labelStyle}>Immagine cocktail</label>
                       <label style={{ ...uploadImageButtonStyle, opacity: uploadingImageNames[cocktail.name] ? 0.7 : 1 }}>
                         {uploadingImageNames[cocktail.name] ? "Caricamento..." : "Carica da fotocamera o file"}
@@ -563,7 +564,7 @@ export default function Crea() {
                         />
                       )}
                     </div>
-                    <div style={generatedSaveWrapStyle}>
+                    <div style={generatedSaveWrapStyle} className="generated-save-wrap">
                       <button
                         className="btn-primary"
                         type="button"
@@ -915,3 +916,37 @@ const emptyStateStyle: React.CSSProperties = {
   textAlign: "center",
   color: "#94a3b8",
 };
+
+const mobileGeneratedFormStyle = `
+  @media (max-width: 768px) {
+    .crea-generated-form {
+      display: grid !important;
+      gridTemplateColumns: 1fr !important;
+      gap: 12px !important;
+      padding: 12px !important;
+    }
+
+    .generated-name-field,
+    .generated-ingredients-field,
+    .generated-author-field,
+    .generated-date-field,
+    .generated-image-field,
+    .generated-save-wrap {
+      gridColumn: 1 !important;
+      width: 100% !important;
+    }
+
+    .generated-ingredients-field textarea {
+      minHeight: 120px !important;
+      fontSize: 13px !important;
+    }
+
+    .generated-save-wrap {
+      justify-content: center !important;
+    }
+
+    .btn-primary {
+      width: 100% !important;
+    }
+  }
+`;
