@@ -296,7 +296,7 @@ export default function Vini() {
         }
 
         .vini-preview-page .drink-card-uniform {
-          aspect-ratio: 1 / 1.36;
+          aspect-ratio: 1 / 1.46 !important;
         }
 
         .vini-preview-page .drink-card-caption h3 {
@@ -319,6 +319,10 @@ export default function Vini() {
         }
 
         @media (max-width: 768px) {
+          .vini-preview-page .drink-card-uniform {
+            aspect-ratio: 1 / 1.52 !important;
+          }
+
           .vini-preview-page .drink-card-caption {
             min-height: 34px !important;
             height: 34px !important;
