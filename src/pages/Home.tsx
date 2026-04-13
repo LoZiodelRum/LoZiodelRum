@@ -427,7 +427,18 @@ export default function Home() {
                 display: "flex",
                 alignItems: "flex-end",
                 color: "#fff",
+                cursor: "pointer",
+                transition: "transform 0.3s ease, filter 0.3s ease",
               }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "scale(1.02)";
+                e.currentTarget.style.filter = "brightness(1.1)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "scale(1)";
+                e.currentTarget.style.filter = "brightness(1)";
+              }}
+              onClick={() => navigate(`/venue/${l.id}`)}
             >
               {editingLocaleId === l.id && localeDraft ? (
                 <>
@@ -474,11 +485,6 @@ export default function Home() {
                 </>
               ) : (
                 <>
-                  <Link
-                    to={`/venue/${l.id}`}
-                    style={{ position: "absolute", inset: 0, zIndex: 1 }}
-                    aria-label={`Apri scheda ${l.nome}`}
-                  />
                   <img src={l.image_url ?? "https://via.placeholder.com/400x300"} alt={l.nome} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }} />
                   <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.8), transparent)", zIndex: 2 }} />
                   {isAdmin && (
