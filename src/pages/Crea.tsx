@@ -518,7 +518,7 @@ export default function Crea() {
                           setCustomGeneratedNames((prev) => ({ ...prev, [cocktail.name]: value }));
                         }}
                         placeholder="inserisci nome cocktail"
-                        style={inputStyle}
+                        style={compactInputStyle}
                       />
                     </div>
                     <div className="crea-generated-field" style={generatedIngredientsFieldStyle}>
@@ -532,11 +532,11 @@ export default function Crea() {
                     </div>
                     <div className="crea-generated-field" style={generatedAuthorFieldStyle}>
                       <label className="crea-label" style={labelStyle}>Creato da</label>
-                      <input value={createdBy} readOnly style={inputStyle} />
+                      <input value={createdBy} readOnly style={compactInputStyle} />
                     </div>
                     <div className="crea-generated-field" style={generatedDateFieldStyle}>
                       <label className="crea-label" style={labelStyle}>Data</label>
-                      <input value={createdDate} readOnly style={inputStyle} />
+                      <input value={createdDate} readOnly style={compactInputStyle} />
                     </div>
                     <div className="crea-generated-field" style={generatedImageFieldStyle}>
                       <label className="crea-label" style={labelStyle}>Immagine cocktail</label>
@@ -662,6 +662,12 @@ const inputStyle: React.CSSProperties = {
   color: "#f8fafc",
   borderRadius: 12,
   padding: "12px 14px",
+};
+
+const compactInputStyle: React.CSSProperties = {
+  ...inputStyle,
+  minHeight: 44,
+  padding: "8px 14px",
 };
 
 const textareaStyle: React.CSSProperties = {
