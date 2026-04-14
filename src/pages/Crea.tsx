@@ -129,7 +129,7 @@ export default function Crea() {
 
   function generateSignatureCocktails(filters: any): SuggestedCocktail[] {
     const base = filters.p_base || "Mix";
-    const famiglia = filters.p_famiglia || "Neutro";
+    const famiglia = filters.p_famiglia || "Agrumato";
     const profilo = filters.p_profilo || "equilibrato";
     const intensita = filters.p_intensita || "Media";
     const metodo = filters.p_metodo || "Sour";
@@ -160,28 +160,28 @@ export default function Crea() {
     };
 
     const familyMap: Record<string, string> = {
-      "Agrumato":  "Cordial al bergamotto",
-      "Fruttato":  "Purea di frutto della passione",
-      "Speziato":  "Tintura di pepe lungo",
-      "Erbaceo":   "Infusione di timo fresco",
-      "Floreale":  "Acqua di fiori d'arancio",
-      "Tostato":   "Cold brew concentrate",
-      "Neutro":    "Bitter aromatico",
+      "Agrumato": "Cordial al bergamotto",
+      "Speziato": "Tintura di pepe lungo",
+      "Erbaceo": "Infusione di timo fresco",
+      "Floreale": "Acqua di fiori d'arancio",
+      "Balsamico": "Tintura balsamica al pino",
+      "Tostato/Affumicato": "Cold brew affumicato",
+      "Fruttato": "Purea di frutto della passione",
     };
 
     const garnishMap: Record<string, string> = {
       "Agrumato": "Twist di limone",
-      "Fruttato": "Fetta di frutto della passione",
       "Speziato": "Pepe di Sichuan macinato al momento",
-      "Erbaceo":  "Rametto di timo fresco",
+      "Erbaceo": "Rametto di timo fresco",
       "Floreale": "Fiore edule",
-      "Tostato":  "Cacao amaro grattugiato",
-      "Neutro":   "Scorza d'arancia",
+      "Balsamico": "Ago di rosmarino",
+      "Tostato/Affumicato": "Cacao amaro grattugiato",
+      "Fruttato": "Fetta di frutto della passione",
     };
 
     const sp = spiritMap[base] || spiritMap["Mix"];
-    const familyIng = familyMap[famiglia] || "Bitter aromatico";
-    const garnish1 = garnishMap[famiglia] || "Scorza d'arancia";
+    const familyIng = familyMap[famiglia] || "Cordial al bergamotto";
+    const garnish1 = garnishMap[famiglia] || "Twist di limone";
 
     const technique1 = intensita === "Molto alta" || metodo === "Stirred (mescolati)"
       ? "Stir & strain"
@@ -203,8 +203,8 @@ export default function Crea() {
       metodo === "Highball" ? "Collins" : "Calice da vino";
     const ingExtra2 = isSoftTexture ? "Albume d'uovo" :
       texture === "Frizzante" ? "Soda seltz" : "Olio di oliva extra vergine infuso";
-    const garnish2 = famiglia === "Tostato" ? "Cacao amaro e scorza d'arancia" :
-      famiglia === "Erbaceo" ? "Rosmarino bruciato" : "Fiocco di sale marino";
+    const garnish2 = famiglia === "Tostato/Affumicato" ? "Cacao amaro e scorza d'arancia" :
+      famiglia === "Erbaceo" || famiglia === "Balsamico" ? "Rosmarino bruciato" : "Fiocco di sale marino";
 
     const sig1: SuggestedCocktail = {
       name: "Zio Signature 1",
@@ -599,7 +599,7 @@ const preferenceFields: Array<{
   { key: "base_alcolica", label: "Base alcolica", options: ["Rum", "Gin", "Vodka", "Whisky", "Tequila", "Mezcal", "Brandy", "Cognac", "Aperitivo bitter", "Bitter", "Vermouth", "Vermouth rosso", "Sherry", "Liquore", "Triple Sec/Cointreau", "Amaro", "Spumante/Champagne", "Vino", "Birra", "Analcolico", "Mix"] },
   { key: "intensita_alcolica", label: "Intensita alcolica", options: ["Bassa", "Media", "Alta", "Molto alta"] },
   { key: "profilo_gustativo", label: "Profilo gustativo", options: ["Dolce (Sweet)", "Acido/Aspro (Sour)", "Amaro/Amaricante (Bitter)", "Secco/Spiritoso (Dry/Spirit)", "Fruttato/Tropicale", "Umami"] },
-  { key: "famiglia_aromatica", label: "Famiglia aromatica", options: ["Agrumato", "Fruttato", "Speziato", "Erbaceo", "Floreale", "Tostato", "Piccante", "Neutro"] },
+  { key: "famiglia_aromatica", label: "Famiglia aromatica", options: ["Agrumato", "Speziato", "Erbaceo", "Floreale", "Balsamico", "Tostato/Affumicato", "Fruttato"] },
   { key: "Genere", label: "Genere", options: ["Sour", "Highball", "Stirred (mescolati)", "Pestati", "Frozen", "Shakerato", "Agitato", "Tiki", "Build (Costruito in bicchiere)", "A strati (Layered)"] },
 ];
 
