@@ -2114,7 +2114,9 @@ export default function PannelloControllo() {
 const layoutStyle: React.CSSProperties = { 
   display: "flex", 
   flexWrap: "wrap", // Permette alla sidebar di andare sopra il contenuto su mobile
+  alignItems: "flex-start",
   minHeight: "100vh", 
+  paddingBottom: 100,
   background: "#020617", 
   color: "white" 
 };
@@ -2132,7 +2134,7 @@ const sidebarStyle: React.CSSProperties = {
 const contentStyle: React.CSSProperties = { 
   flex: 1, 
   minWidth: 0,
-  padding: "20px" 
+  padding: "20px 20px 140px",
 };
 
 const kpiGridStyle: React.CSSProperties = { 
@@ -2162,8 +2164,10 @@ const kpiLabelStyle: React.CSSProperties = {
 const cardStyle: React.CSSProperties = {
   background: "#0f172a",
   padding: 20,
+  paddingBottom: 36,
   borderRadius: 16,
   marginTop: 20,
+  marginBottom: 80,
   border: "1px solid #1e293b"
 };
 
