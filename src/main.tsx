@@ -4,6 +4,20 @@ import App from "./App";
 import { UserProvider } from "./context/UserContext";
 import "./index.css";
 
+const APP_VERSION = "2026-04-14-15";
+
+try {
+  const previousVersion = window.localStorage.getItem("app-version");
+  if (previousVersion !== APP_VERSION) {
+    window.localStorage.setItem("app-version", APP_VERSION);
+    if (previousVersion) {
+      window.location.reload();
+    }
+  }
+} catch {
+  // ignore storage access issues
+}
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
     <UserProvider>
