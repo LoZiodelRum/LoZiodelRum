@@ -71,7 +71,7 @@ const autoBaseRules: Array<{
 }> = [
   { keys: ["Genere", "famiglia_aromatica"], values: ["Frozen", "Fruttato"], suggestions: ["Rum"] },
   { keys: ["intensita_alcolica", "profilo_gustativo"], values: ["Molto alta", "Secco"], suggestions: ["Whisky"] },
-  { keys: ["Genere", "profilo_gustativo"], values: ["Highball", "Fresco"], suggestions: ["Gin"] },
+  { keys: ["Genere", "profilo_gustativo"], values: ["Highball", "Acido"], suggestions: ["Gin"] },
   { keys: ["Genere", "profilo_gustativo"], values: ["Stirred (mescolati)", "Dolce"], suggestions: ["Brandy"] },
   { keys: ["intensita_alcolica", "texture"], values: ["Bassa", "Leggero"], suggestions: ["Analcolico"] },
 ];
@@ -232,7 +232,7 @@ export function determineBaseSpirit(preferences: CocktailPreferences): string {
       const tokens = getPreferenceTokens(preferences[key]);
       return rule.values.some((value) => {
         const normalizedValue = normalizeText(value);
-        return tokens.some((token) => token === normalizedValue);
+        return tokens.some((token) => token.includes(normalizedValue) || normalizedValue.includes(token));
       });
     });
     if (matched) {
@@ -241,8 +241,9 @@ export function determineBaseSpirit(preferences: CocktailPreferences): string {
   }
 
   const gusto = getPreferenceTokens(preferences.profilo_gustativo);
-  if (gusto.some((value) => value.includes("amaro") || value.includes("secco"))) return "Whisky";
-  if (gusto.some((value) => value.includes("dolce") || value.includes("agrodolce"))) return "Rum";
+  if (gusto.some((value) => value.includes("amaro") || value.includes("amaricante") || value.includes("secco") || value.includes("spirit") || value.includes("umami"))) return "Whisky";
+  if (gusto.some((value) => value.includes("dolce") || value.includes("agrodolce") || value.includes("fruttato") || value.includes("tropicale"))) return "Rum";
+  if (gusto.some((value) => value.includes("acido") || value.includes("aspro") || value.includes("sour"))) return "Gin";
   return "Gin";
 }
 
@@ -379,10 +380,10 @@ function buildGeneratedRecipe(baseSpirit: string, preferences: CocktailPreferenc
   const intensita = getPreferenceTokens(preferences.intensita_alcolica);
   const gusto = getPreferenceTokens(preferences.profilo_gustativo);
   const isStrong = intensita.some((value) => value.includes("alta"));
-  const isSweet = gusto.some((value) => value.includes("dolce") || value.includes("agrodolce"));
-  const isBitter = gusto.some((value) => value.includes("amaro") || value.includes("secco"));
+  const isSweet = gusto.some((value) => value.includes("dolce") || value.includes("agrodolce") || value.includes("fruttato") || value.includes("tropicale"));
+  const isBitter = gusto.some((value) => value.includes("amaro") || value.includes("amaricante") || value.includes("secco") || value.includes("spirit") || value.includes("umami"));
   const normalizedStyle = normalizeText(preferences.Genere);
-  const isSparkling = normalizedStyle.includes("highball") || gusto.some((value) => value.includes("fresco") || value.includes("acido"));
+  const isSparkling = normalizedStyle.includes("highball") || gusto.some((value) => value.includes("fresco") || value.includes("acido") || value.includes("aspro") || value.includes("sour"));
   const isSourStyle = normalizedStyle.includes("sour");
 
   const baseMl = isStrong ? 55 : 45 + variant * 5;
