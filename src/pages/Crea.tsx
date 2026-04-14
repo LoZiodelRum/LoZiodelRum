@@ -378,7 +378,7 @@ export default function Crea() {
   const createdDate = new Date().toLocaleDateString("it-IT");
 
   return (
-    <div className="page fade-in crea-page" style={{ maxWidth: 1180 }} data-page-version="crea-configurator-v2">
+    <div className="page fade-in crea-page" style={{ maxWidth: 1180 }} data-page-version="crea-configurator-v3">
       <div className="crea-header" style={{ marginBottom: 20 }}>
         <div>
           <h1 className="crea-title" style={titleStyle}>Crea</h1>
@@ -389,7 +389,7 @@ export default function Crea() {
       <div className="crea-panel" style={panelStyle}>
         <div className="crea-grid" style={gridStyle}>
           {preferenceFields.map((field) => (
-            <div key={field.key} className="crea-field" style={fieldStyle}>
+            <div key={`${field.key}-${field.options.join("|")}`} className="crea-field" style={fieldStyle}>
               <label className="crea-label" style={labelStyle}>{field.label}</label>
               <select
                 value={typeof preferences[field.key] === "string" ? preferences[field.key] as string : ""}
