@@ -1033,23 +1033,20 @@ export default function PannelloControllo() {
       "Molto alta",
     ],
     profilo_gustativo: [
-      "Dolce (Sweet)",
-      "Acido/Aspro (Sour)",
-      "Amaro/Amaricante (Bitter)",
-      "Secco/Spiritoso (Dry/Spirit)",
-      "Fruttato/Tropicale",
+      "Dolce",
+      "Acido",
+      "Amaro",
+      "Secco",
+      "Fruttato",
       "Umami",
     ],
     famiglia_aromatica: [
+      "Tostato",
       "Agrumato",
       "Fruttato",
       "Speziato",
       "Erbaceo",
       "Floreale",
-      "Balsamico",
-      "Tostato",
-      "Affumicato",
-      "Tostato/Affumicato",
     ],
     Genere: [
       "Sour",
@@ -1069,12 +1066,28 @@ export default function PannelloControllo() {
     intensita_alcolica: {
       "bassa (session drink)": "Bassa",
     },
+    profilo_gustativo: {
+      "dolce (sweet)": "Dolce",
+      "acido/aspro (sour)": "Acido",
+      "amaro/amaricante (bitter)": "Amaro",
+      "secco/spiritoso (dry/spirit)": "Secco",
+      "fruttato/tropicale": "Fruttato",
+      dolce: "Dolce",
+      acido: "Acido",
+      amaro: "Amaro",
+      secco: "Secco",
+      fruttato: "Fruttato",
+      umami: "Umami",
+    },
     famiglia_aromatica: {
       tostato: "Tostato",
-      affumicato: "Affumicato",
-      "tostato affumicato": "Tostato/Affumicato",
-      "tostato/affumicato": "Tostato/Affumicato",
-      "affumicato/tostato": "Tostato/Affumicato",
+      affumicato: "Tostato",
+      "tostato affumicato": "Tostato",
+      "tostato/affumicato": "Tostato",
+      "affumicato/tostato": "Tostato",
+      balsamico: "Erbaceo",
+      piccante: "Speziato",
+      neutro: "",
     },
   };
 
@@ -1130,16 +1143,13 @@ export default function PannelloControllo() {
 
   function getCocktailOptionsForKey(key: string, rawValue: unknown): string[] {
     const baseOptions = cocktailMultiSelectOptions[key] || [];
-    const datasetOptions = cocktail
-      .flatMap((item) => String(item?.[key] ?? "").split(","))
-      .map((value) => mapCocktailOptionValue(key, value))
-      .filter(Boolean);
     const dynamicOptions = String(rawValue ?? "")
       .split(",")
       .map((value) => mapCocktailOptionValue(key, value))
-      .filter(Boolean);
+      .filter(Boolean)
+      .filter((value) => baseOptions.includes(value));
 
-    return Array.from(new Set([...baseOptions, ...datasetOptions, ...dynamicOptions]));
+    return Array.from(new Set([...baseOptions, ...dynamicOptions]));
   }
 
   function normalizeCocktailMultiValue(key: string, rawValue: unknown): string {
