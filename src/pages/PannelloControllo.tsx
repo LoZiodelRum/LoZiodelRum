@@ -1047,6 +1047,7 @@ export default function PannelloControllo() {
       "Speziato",
       "Erbaceo",
       "Floreale",
+      "Balsamico",
     ],
     Genere: [
       "Sour",
@@ -1091,7 +1092,7 @@ export default function PannelloControllo() {
       "tostato affumicato": "Tostato",
       "tostato/affumicato": "Tostato",
       "affumicato/tostato": "Tostato",
-      balsamico: "Erbaceo",
+      balsamico: "Balsamico",
       piccante: "Speziato",
       neutro: "",
     },

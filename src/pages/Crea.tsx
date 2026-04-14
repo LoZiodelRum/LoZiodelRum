@@ -612,7 +612,7 @@ const preferenceFields: Array<{
   { key: "base_alcolica", label: "Base alcolica", options: ["Rum", "Gin", "Vodka", "Whisky", "Tequila", "Mezcal", "Brandy", "Cognac", "Aperitivo bitter", "Bitter", "Vermouth", "Vermouth rosso", "Sherry", "Liquore", "Triple Sec/Cointreau", "Amaro", "Spumante/Champagne", "Vino", "Birra", "Analcolico", "Mix"] },
   { key: "intensita_alcolica", label: "Intensita alcolica", options: ["Bassa", "Media", "Alta", "Molto alta"] },
   { key: "profilo_gustativo", label: "Profilo gustativo", options: tasteProfileOptions },
-  { key: "famiglia_aromatica", label: "Famiglia aromatica", options: ["Tostato", "Agrumato", "Fruttato", "Speziato", "Erbaceo", "Floreale"] },
+  { key: "famiglia_aromatica", label: "Famiglia aromatica", options: ["Tostato", "Agrumato", "Fruttato", "Speziato", "Erbaceo", "Floreale", "Balsamico"] },
   { key: "Genere", label: "Genere", options: ["Sour", "Highball", "Stirred (mescolati)", "Pestati", "Frozen", "Shakerato", "Agitato", "Tiki", "Build (Costruito in bicchiere)", "A strati (Layered)"] },
 ];
 
