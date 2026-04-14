@@ -8,6 +8,7 @@ import {
   type CocktailPreferences,
   type SuggestedCocktail,
 } from "../lib/cocktailConfigurator";
+import { AROMATIC_FAMILY_OPTIONS, TASTE_PROFILE_OPTIONS } from "../lib/cocktailOptionSets";
 
 export default function Crea() {
   const { user } = useUser();
@@ -595,15 +596,6 @@ export default function Crea() {
   );
 }
 
-const tasteProfileOptions = [
-  "Dolce (Sweet):",
-  "Acido/Aspro (Sour):",
-  "Amaro/Amaricante (Bitter):",
-  "Secco/Spiritoso (Dry/Spirit):",
-  "Fruttato/Tropicale:",
-  "Umami:",
-];
-
 const preferenceFields: Array<{
   key: keyof CocktailPreferences;
   label: string;
@@ -611,8 +603,8 @@ const preferenceFields: Array<{
 }> = [
   { key: "base_alcolica", label: "Base alcolica", options: ["Rum", "Gin", "Vodka", "Whisky", "Tequila", "Mezcal", "Brandy", "Cognac", "Aperitivo bitter", "Bitter", "Vermouth", "Vermouth rosso", "Sherry", "Liquore", "Triple Sec/Cointreau", "Amaro", "Spumante/Champagne", "Vino", "Birra", "Analcolico", "Mix"] },
   { key: "intensita_alcolica", label: "Intensita alcolica", options: ["Bassa", "Media", "Alta", "Molto alta"] },
-  { key: "profilo_gustativo", label: "Profilo gustativo", options: tasteProfileOptions },
-  { key: "famiglia_aromatica", label: "Famiglia aromatica", options: ["Agrumato", "Speziato", "Erbaceo", "Floreale", "Balsamico", "Tostato/Affumicato", "Fruttato"] },
+  { key: "profilo_gustativo", label: "Profilo gustativo", options: [...TASTE_PROFILE_OPTIONS] },
+  { key: "famiglia_aromatica", label: "Famiglia aromatica", options: [...AROMATIC_FAMILY_OPTIONS] },
   { key: "Genere", label: "Genere", options: ["Sour", "Highball", "Stirred (mescolati)", "Pestati", "Frozen", "Shakerato", "Agitato", "Tiki", "Build (Costruito in bicchiere)", "A strati (Layered)"] },
 ];
 

@@ -2,6 +2,7 @@ import "../App.css";
 import React, { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useUser } from "../context/UserContext";
+import { AROMATIC_FAMILY_OPTIONS, TASTE_PROFILE_OPTIONS } from "../lib/cocktailOptionSets";
 
 const PREVIEW_BOX_SIZE = 280;
 
@@ -1032,23 +1033,8 @@ export default function PannelloControllo() {
       "Alta",
       "Molto alta",
     ],
-    profilo_gustativo: [
-      "Dolce (Sweet):",
-      "Acido/Aspro (Sour):",
-      "Amaro/Amaricante (Bitter):",
-      "Secco/Spiritoso (Dry/Spirit):",
-      "Fruttato/Tropicale:",
-      "Umami:",
-    ],
-    famiglia_aromatica: [
-      "Agrumato",
-      "Speziato",
-      "Erbaceo",
-      "Floreale",
-      "Balsamico",
-      "Tostato/Affumicato",
-      "Fruttato",
-    ],
+    profilo_gustativo: [...TASTE_PROFILE_OPTIONS],
+    famiglia_aromatica: [...AROMATIC_FAMILY_OPTIONS],
     Genere: [
       "Sour",
       "Highball",
