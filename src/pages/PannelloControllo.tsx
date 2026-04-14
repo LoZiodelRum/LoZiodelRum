@@ -1046,9 +1046,10 @@ export default function PannelloControllo() {
       "Speziato",
       "Erbaceo",
       "Floreale",
+      "Balsamico",
       "Tostato",
-      "Piccante",
-      "Neutro",
+      "Affumicato",
+      "Tostato/Affumicato",
     ],
     Genere: [
       "Sour",
@@ -1062,6 +1063,19 @@ export default function PannelloControllo() {
       "Build (Costruito in bicchiere)",
       "A strati (Layered)",
     ],
+  };
+
+  const cocktailValueAliases: Record<string, Record<string, string>> = {
+    intensita_alcolica: {
+      "bassa (session drink)": "Bassa",
+    },
+    famiglia_aromatica: {
+      tostato: "Tostato",
+      affumicato: "Affumicato",
+      "tostato affumicato": "Tostato/Affumicato",
+      "tostato/affumicato": "Tostato/Affumicato",
+      "affumicato/tostato": "Tostato/Affumicato",
+    },
   };
 
   const localiSelectOptions: Record<string, string[]> = {
@@ -1106,23 +1120,39 @@ export default function PannelloControllo() {
     qualita_prezzo: "qualita/prezzo",
   };
 
+  function mapCocktailOptionValue(key: string, rawValue: unknown): string {
+    const cleaned = String(rawValue ?? "").trim();
+    if (!cleaned) return "";
+
+    const aliasMap = cocktailValueAliases[key] || {};
+    return aliasMap[cleaned.toLowerCase()] || cleaned;
+  }
+
+  function getCocktailOptionsForKey(key: string, rawValue: unknown): string[] {
+    const baseOptions = cocktailMultiSelectOptions[key] || [];
+    const datasetOptions = cocktail
+      .flatMap((item) => String(item?.[key] ?? "").split(","))
+      .map((value) => mapCocktailOptionValue(key, value))
+      .filter(Boolean);
+    const dynamicOptions = String(rawValue ?? "")
+      .split(",")
+      .map((value) => mapCocktailOptionValue(key, value))
+      .filter(Boolean);
+
+    return Array.from(new Set([...baseOptions, ...datasetOptions, ...dynamicOptions]));
+  }
+
   function normalizeCocktailMultiValue(key: string, rawValue: unknown): string {
-    const options = cocktailMultiSelectOptions[key];
-    if (!options) return String(rawValue ?? "");
+    const options = getCocktailOptionsForKey(key, rawValue);
+    if (!options.length) return String(rawValue ?? "");
 
     const normalizedOptions = new Map(options.map((option) => [option.toLowerCase(), option]));
 
     const cleaned = String(rawValue ?? "")
       .split(",")
-      .map((value) => value.trim())
+      .map((value) => mapCocktailOptionValue(key, value))
       .filter(Boolean)
-      .map((value) => {
-        const lower = value.toLowerCase();
-        if (key === "intensita_alcolica" && lower === "bassa (session drink)") {
-          return "Bassa";
-        }
-        return normalizedOptions.get(lower) || "";
-      })
+      .map((value) => normalizedOptions.get(value.toLowerCase()) || value)
       .filter(Boolean);
 
     return Array.from(new Set(cleaned)).join(",");
@@ -1664,7 +1694,7 @@ export default function PannelloControllo() {
                             </select>
                           )
                         ) : selectedTable === "cocktail" && cocktailMultiSelectOptions[key] ? (
-                          <details style={{ position: "relative" }}><summary style={{ ...selectStyle, cursor: "pointer", listStyle: "none", display: "flex", alignItems: "center", justifyContent: "space-between" }}>{(() => { const selectedValues = typeof selectedItem[key] === "string" ? selectedItem[key].split(",").map((v: string) => v.trim()).filter(Boolean) : []; return selectedValues.length ? selectedValues.join(", ") : "Scegli"; })()}<span style={{ marginLeft: 8 }}>▾</span></summary><div style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, width: "100%", zIndex: 20, border: "1px solid #334155", borderRadius: 8, background: "#020617", padding: 8, maxHeight: 220, overflowY: "auto" }}>{cocktailMultiSelectOptions[key].map((option) => { const selectedValues = typeof selectedItem[key] === "string" ? selectedItem[key].split(",").map((v: string) => v.trim()).filter(Boolean) : []; const isChecked = selectedValues.includes(option); return (<label key={option} style={{ display: "grid", gridTemplateColumns: "1fr 24px", alignItems: "center", padding: "6px 4px", columnGap: 8, cursor: "pointer" }}><span>{option}</span><input type="checkbox" style={{ margin: 0, width: 18, height: 18, justifySelf: "center" }} checked={isChecked} onChange={(e) => { const updated = e.target.checked ? [...selectedValues, option] : selectedValues.filter((value) => value !== option); setSelectedItem((prev: any) => ({ ...prev, [key]: updated.join(",") })); setSaveStatus(null); }} /></label>); })}</div></details>
+                          <details style={{ position: "relative" }}><summary style={{ ...selectStyle, cursor: "pointer", listStyle: "none", display: "flex", alignItems: "center", justifyContent: "space-between" }}>{(() => { const selectedValues = typeof selectedItem[key] === "string" ? selectedItem[key].split(",").map((v: string) => v.trim()).filter(Boolean) : []; return selectedValues.length ? selectedValues.join(", ") : "Scegli"; })()}<span style={{ marginLeft: 8 }}>▾</span></summary><div style={{ position: "absolute", top: "calc(100% + 6px)", left: 0, width: "100%", zIndex: 20, border: "1px solid #334155", borderRadius: 8, background: "#020617", padding: 8, maxHeight: 220, overflowY: "auto" }}>{getCocktailOptionsForKey(key, selectedItem?.[key]).map((option) => { const selectedValues = typeof selectedItem[key] === "string" ? selectedItem[key].split(",").map((v: string) => v.trim()).filter(Boolean) : []; const isChecked = selectedValues.includes(option); return (<label key={option} style={{ display: "grid", gridTemplateColumns: "1fr 24px", alignItems: "center", padding: "6px 4px", columnGap: 8, cursor: "pointer" }}><span>{option}</span><input type="checkbox" style={{ margin: 0, width: 18, height: 18, justifySelf: "center" }} checked={isChecked} onChange={(e) => { const updated = e.target.checked ? [...selectedValues, option] : selectedValues.filter((value) => value !== option); setSelectedItem((prev: any) => ({ ...prev, [key]: updated.join(",") })); setSaveStatus(null); }} /></label>); })}</div></details>
                         ) : (
                           <input value={selectedItem[key] ?? ""} onChange={(e) => { setSelectedItem((prev: any) => ({ ...prev, [key]: e.target.value })); setSaveStatus(null); }} style={inputStyle} />
                         )}
@@ -1924,7 +1954,7 @@ export default function PannelloControllo() {
                             overflowY: "auto",
                           }}
                         >
-                          {cocktailMultiSelectOptions[key].map((option) => {
+                          {getCocktailOptionsForKey(key, selectedItem?.[key]).map((option) => {
                             const selectedValues = typeof selectedItem[key] === "string"
                               ? selectedItem[key].split(",").map((v: string) => v.trim()).filter(Boolean)
                               : [];

@@ -161,22 +161,26 @@ export default function Crea() {
 
     const familyMap: Record<string, string> = {
       "Agrumato": "Cordial al bergamotto",
+      "Fruttato": "Purea di frutto della passione",
       "Speziato": "Tintura di pepe lungo",
       "Erbaceo": "Infusione di timo fresco",
       "Floreale": "Acqua di fiori d'arancio",
       "Balsamico": "Tintura balsamica al pino",
+      "Tostato": "Cold brew al cacao",
+      "Affumicato": "Cold brew affumicato",
       "Tostato/Affumicato": "Cold brew affumicato",
-      "Fruttato": "Purea di frutto della passione",
     };
 
     const garnishMap: Record<string, string> = {
       "Agrumato": "Twist di limone",
+      "Fruttato": "Fetta di frutto della passione",
       "Speziato": "Pepe di Sichuan macinato al momento",
       "Erbaceo": "Rametto di timo fresco",
       "Floreale": "Fiore edule",
       "Balsamico": "Ago di rosmarino",
+      "Tostato": "Cacao amaro grattugiato",
+      "Affumicato": "Scorza d'arancia flambata",
       "Tostato/Affumicato": "Cacao amaro grattugiato",
-      "Fruttato": "Fetta di frutto della passione",
     };
 
     const sp = spiritMap[base] || spiritMap["Mix"];
@@ -203,7 +207,7 @@ export default function Crea() {
       metodo === "Highball" ? "Collins" : "Calice da vino";
     const ingExtra2 = isSoftTexture ? "Albume d'uovo" :
       texture === "Frizzante" ? "Soda seltz" : "Olio di oliva extra vergine infuso";
-    const garnish2 = famiglia === "Tostato/Affumicato" ? "Cacao amaro e scorza d'arancia" :
+    const garnish2 = ["Tostato", "Affumicato", "Tostato/Affumicato"].includes(famiglia) ? "Cacao amaro e scorza d'arancia" :
       famiglia === "Erbaceo" || famiglia === "Balsamico" ? "Rosmarino bruciato" : "Fiocco di sale marino";
 
     const sig1: SuggestedCocktail = {
@@ -599,7 +603,7 @@ const preferenceFields: Array<{
   { key: "base_alcolica", label: "Base alcolica", options: ["Rum", "Gin", "Vodka", "Whisky", "Tequila", "Mezcal", "Brandy", "Cognac", "Aperitivo bitter", "Bitter", "Vermouth", "Vermouth rosso", "Sherry", "Liquore", "Triple Sec/Cointreau", "Amaro", "Spumante/Champagne", "Vino", "Birra", "Analcolico", "Mix"] },
   { key: "intensita_alcolica", label: "Intensita alcolica", options: ["Bassa", "Media", "Alta", "Molto alta"] },
   { key: "profilo_gustativo", label: "Profilo gustativo", options: ["Dolce (Sweet)", "Acido/Aspro (Sour)", "Amaro/Amaricante (Bitter)", "Secco/Spiritoso (Dry/Spirit)", "Fruttato/Tropicale", "Umami"] },
-  { key: "famiglia_aromatica", label: "Famiglia aromatica", options: ["Agrumato", "Speziato", "Erbaceo", "Floreale", "Balsamico", "Tostato/Affumicato", "Fruttato"] },
+  { key: "famiglia_aromatica", label: "Famiglia aromatica", options: ["Agrumato", "Fruttato", "Speziato", "Erbaceo", "Floreale", "Balsamico", "Tostato", "Affumicato", "Tostato/Affumicato"] },
   { key: "Genere", label: "Genere", options: ["Sour", "Highball", "Stirred (mescolati)", "Pestati", "Frozen", "Shakerato", "Agitato", "Tiki", "Build (Costruito in bicchiere)", "A strati (Layered)"] },
 ];
 
