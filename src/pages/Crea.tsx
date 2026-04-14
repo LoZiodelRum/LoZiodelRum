@@ -382,7 +382,7 @@ export default function Crea() {
   const createdDate = new Date().toLocaleDateString("it-IT");
 
   return (
-    <div className="page fade-in crea-page" style={{ maxWidth: 1180 }} data-page-version="crea-configurator-v3">
+    <div className="page fade-in crea-page" style={{ maxWidth: 1180 }} data-page-version="crea-configurator-v4">
       <div className="crea-header" style={{ marginBottom: 20 }}>
         <div>
           <h1 className="crea-title" style={titleStyle}>Crea</h1>
@@ -595,6 +595,15 @@ export default function Crea() {
   );
 }
 
+const tasteProfileOptions = [
+  "Dolce (Sweet):",
+  "Acido/Aspro (Sour):",
+  "Amaro/Amaricante (Bitter):",
+  "Secco/Spiritoso (Dry/Spirit):",
+  "Fruttato/Tropicale:",
+  "Umami:",
+];
+
 const preferenceFields: Array<{
   key: keyof CocktailPreferences;
   label: string;
@@ -602,7 +611,7 @@ const preferenceFields: Array<{
 }> = [
   { key: "base_alcolica", label: "Base alcolica", options: ["Rum", "Gin", "Vodka", "Whisky", "Tequila", "Mezcal", "Brandy", "Cognac", "Aperitivo bitter", "Bitter", "Vermouth", "Vermouth rosso", "Sherry", "Liquore", "Triple Sec/Cointreau", "Amaro", "Spumante/Champagne", "Vino", "Birra", "Analcolico", "Mix"] },
   { key: "intensita_alcolica", label: "Intensita alcolica", options: ["Bassa", "Media", "Alta", "Molto alta"] },
-  { key: "profilo_gustativo", label: "Profilo gustativo", options: ["Dolce (Sweet):", "Acido/Aspro (Sour):", "Amaro/Amaricante (Bitter):", "Secco/Spiritoso (Dry/Spirit):", "Fruttato/Tropicale:", "Umami:"] },
+  { key: "profilo_gustativo", label: "Profilo gustativo", options: tasteProfileOptions },
   { key: "famiglia_aromatica", label: "Famiglia aromatica", options: ["Tostato", "Agrumato", "Fruttato", "Speziato", "Erbaceo", "Floreale"] },
   { key: "Genere", label: "Genere", options: ["Sour", "Highball", "Stirred (mescolati)", "Pestati", "Frozen", "Shakerato", "Agitato", "Tiki", "Build (Costruito in bicchiere)", "A strati (Layered)"] },
 ];
