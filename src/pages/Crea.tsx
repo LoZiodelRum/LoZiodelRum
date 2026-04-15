@@ -221,9 +221,9 @@ export default function Crea() {
       ingredients: [base, sp.sour, sp.sweet, familyIng],
       doses: ["50ml", "25ml", "15ml", "5ml"],
       garnish: garnish1,
-      description: `Signature classica costruita su ${base} come asse portante. La componente acida di ${sp.sour} bilancia la dolcezza di ${sp.sweet}, mentre ${familyIng} aggiunge complessità aromatica ${famiglia.toLowerCase()}. Profilo ${profilo.toLowerCase()}, intensità ${intensita.toLowerCase()}, texture ${texture.toLowerCase()}.`,
+      description: `${base} resta protagonista e disegna un profilo sensoriale ${profilo.toLowerCase()} con ingresso nitido, sviluppo centrale ordinato e finale progressivo. ${familyIng} firma il carattere ${famiglia.toLowerCase()} senza appesantire il sorso, mentre la texture ${texture.toLowerCase()} mantiene la bevuta precisa e leggibile anche in servizio continuo.`,
       tasting_notes: [profilo, famiglia, `${intensita} intensity`],
-      balance_explanation: `Struttura sour: ${base} / ${sp.sour} / ${sp.sweet} in rapporto 2:1:0.6. ${familyIng} opera da accent modifier senza coprire la base.`,
+      balance_explanation: `Bilanciamento tecnico su 50 ml ${base}, 25 ml ${sp.sour}, 15 ml ${sp.sweet} e 5 ml ${familyIng}. Rapporto operativo 10:5:3:1 con quota alcolica dominante e chiusura controllata: acido in spinta iniziale, dolce a rifinitura, aromatico in coda per definizione.`,
     };
 
     const sig2: SuggestedCocktail = {
@@ -236,9 +236,9 @@ export default function Crea() {
       ingredients: [base, sp.modifier, familyIng, ingExtra2],
       doses: ["45ml", "20ml", "10ml", "5ml"],
       garnish: garnish2,
-      description: `Reinterpretazione moderna con ${base} in chiave ${metodo === "Stirred (mescolati)" ? "spirit-forward" : "texturale"}. ${sp.modifier} apporta complessità e lunghezza palatale. ${familyIng} definisce il carattere aromatico ${famiglia.toLowerCase()}. La tecnica ${technique2.toLowerCase()} lavora la texture verso un risultato ${texture.toLowerCase()}.`,
+      description: `Lettura contemporanea costruita per evidenziare struttura e contrasto: ${base} guida il primo impatto, ${sp.modifier} amplia il centro bocca e ${familyIng} orienta il profilo olfattivo ${famiglia.toLowerCase()}. La tecnica ${technique2.toLowerCase()} enfatizza una tessitura ${texture.toLowerCase()} e una persistenza più lunga, con identità moderna ma pulita.`,
       tasting_notes: [sp.modifier.split(" ")[0], famiglia, `${texture} finish`],
-      balance_explanation: `Architettura spirit-forward: la dolcezza di ${sp.modifier} contrasta con la complessità aromatica di ${familyIng}. Finish ${texture.toLowerCase()} persistente.`,
+      balance_explanation: `Assetto quantitativo su 45 ml ${base}, 20 ml ${sp.modifier}, 10 ml ${familyIng} e 5 ml ${ingExtra2}. Schema 9:4:2:1: volume pieno sulla base, modulatore in supporto, chiave aromatica in precisione e chiusura tecnica affidata all'ultimo elemento.`,
     };
 
     return [sig1, sig2];
