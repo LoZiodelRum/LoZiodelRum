@@ -601,7 +601,7 @@ export default function Home() {
           </p>
           <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
             <button
-              onClick={() => navigate("/registrazione")}
+              onClick={() => navigate("/registrati")}
               style={{
                 background: "#f5a623",
                 color: "#0b0b0b",
@@ -622,31 +622,7 @@ export default function Home() {
                 e.currentTarget.style.transform = "translateY(0)";
               }}
             >
-              Registrati come Utente
-            </button>
-            <button
-              onClick={() => navigate("/registrati")}
-              style={{
-                background: "transparent",
-                color: "#f5a623",
-                border: "2px solid #f5a623",
-                padding: "12px 32px",
-                borderRadius: 8,
-                fontWeight: "bold",
-                fontSize: "clamp(13px, 1.5vw, 16px)",
-                cursor: "pointer",
-                transition: "all 0.3s ease",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "rgba(245,166,35,0.1)";
-                e.currentTarget.style.transform = "translateY(-2px)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "transparent";
-                e.currentTarget.style.transform = "translateY(0)";
-              }}
-            >
-              Diventa Professionista
+              Registrati
             </button>
           </div>
         </div>
