@@ -995,9 +995,10 @@ const mobileCreaLayoutStyle = `
       align-items: center !important;
       gap: 12px !important;
       margin-top: 14px !important;
-      width: calc(100% - 2px) !important;
+      width: calc(100% - 6px) !important;
       margin-left: auto !important;
       margin-right: auto !important;
+      box-sizing: border-box !important;
     }
 
     .crea-card {
@@ -1005,8 +1006,8 @@ const mobileCreaLayoutStyle = `
       border-radius: 16px !important;
       border: 1px solid rgba(51, 65, 85, 0.85) !important;
       background: linear-gradient(155deg, rgba(15, 23, 42, 0.98), rgba(10, 16, 30, 0.98)) !important;
-      width: min(680px, calc(100vw - 4px)) !important;
-      max-width: none !important;
+      width: 100% !important;
+      max-width: 100% !important;
       margin: 0 auto !important;
       box-sizing: border-box !important;
     }
