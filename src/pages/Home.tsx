@@ -20,7 +20,7 @@ type Articolo = {
   immagine: string | null;
 };
 
-const HOME_HERO_VIDEO_VERSION = "2026-04-15-02";
+const HOME_HERO_VIDEO_VERSION = "2026-04-15-03";
 
 export default function Home() {
   const { isAdmin } = useUser();
