@@ -384,6 +384,7 @@ export default function Crea() {
 
   return (
     <div className="page fade-in crea-page" style={{ maxWidth: 1180 }} data-page-version="crea-configurator-v4">
+      <style>{mobileCreaLayoutStyle}</style>
       <div className="crea-header" style={{ marginBottom: 20 }}>
         <div>
           <h1 className="crea-title" style={titleStyle}>Crea</h1>
@@ -921,6 +922,139 @@ const emptyStateStyle: React.CSSProperties = {
   textAlign: "center",
   color: "#94a3b8",
 };
+
+const mobileCreaLayoutStyle = `
+  @media (max-width: 768px) {
+    .crea-page {
+      padding: 12px 8px 22px !important;
+      max-width: 100% !important;
+    }
+
+    .crea-header {
+      margin-bottom: 14px !important;
+    }
+
+    .crea-title {
+      font-size: 34px !important;
+      line-height: 1.05 !important;
+      margin-bottom: 2px !important;
+      letter-spacing: 0.01em !important;
+    }
+
+    .crea-panel {
+      padding: 14px !important;
+      border-radius: 18px !important;
+      border: 1px solid rgba(148, 163, 184, 0.45) !important;
+      background: linear-gradient(160deg, rgba(15, 23, 42, 0.96), rgba(2, 6, 23, 0.96)) !important;
+      box-shadow: 0 14px 34px rgba(2, 6, 23, 0.45) !important;
+    }
+
+    .crea-grid {
+      grid-template-columns: 1fr !important;
+      gap: 10px !important;
+    }
+
+    .crea-label {
+      font-size: 12px !important;
+      letter-spacing: 0.02em !important;
+      color: #cbd5e1 !important;
+    }
+
+    .crea-select {
+      height: 46px !important;
+      border-radius: 11px !important;
+      border: 1px solid rgba(71, 85, 105, 0.9) !important;
+      background: rgba(2, 6, 23, 0.92) !important;
+      font-size: 14px !important;
+      padding: 10px 12px !important;
+    }
+
+    .crea-actions {
+      margin-top: 12px !important;
+      gap: 8px !important;
+      display: grid !important;
+      grid-template-columns: 1fr 1fr !important;
+    }
+
+    .crea-actions .btn-primary {
+      width: 100% !important;
+      justify-content: center !important;
+      min-height: 42px !important;
+      border-radius: 10px !important;
+      font-size: 14px !important;
+      padding: 10px 12px !important;
+    }
+
+    .crea-results {
+      gap: 12px !important;
+      margin-top: 14px !important;
+    }
+
+    .crea-card {
+      padding: 12px !important;
+      border-radius: 16px !important;
+      border: 1px solid rgba(51, 65, 85, 0.85) !important;
+      background: linear-gradient(155deg, rgba(15, 23, 42, 0.98), rgba(10, 16, 30, 0.98)) !important;
+    }
+
+    .crea-card-title {
+      font-size: clamp(1.55rem, 6vw, 2rem) !important;
+      line-height: 1.06 !important;
+      margin-bottom: 8px !important;
+      max-width: 100% !important;
+      word-break: break-word !important;
+      overflow-wrap: anywhere !important;
+    }
+
+    .crea-meta {
+      font-size: 15px !important;
+      line-height: 1.35 !important;
+      color: #94a3b8 !important;
+    }
+
+    .crea-score {
+      margin-left: 0 !important;
+      font-size: 13px !important;
+      padding: 7px 11px !important;
+    }
+
+    .crea-recipe-grid {
+      grid-template-columns: 1fr !important;
+      gap: 10px !important;
+      margin-top: 12px !important;
+    }
+
+    .crea-recipe-block {
+      border-radius: 14px !important;
+      padding: 12px !important;
+      border: 1px solid rgba(51, 65, 85, 0.65) !important;
+      background: rgba(15, 23, 42, 0.72) !important;
+    }
+
+    .crea-section-title {
+      font-size: 16px !important;
+      margin-bottom: 8px !important;
+    }
+
+    .crea-body {
+      font-size: 15px !important;
+      line-height: 1.45 !important;
+      margin-bottom: 8px !important;
+    }
+
+    .crea-note-chip {
+      font-size: 12px !important;
+      padding: 5px 9px !important;
+      border-radius: 999px !important;
+    }
+
+    .crea-fallback {
+      margin-top: 12px !important;
+      padding: 12px !important;
+      border-radius: 14px !important;
+    }
+  }
+`;
 
 const mobileGeneratedFormStyle = `
   @media (max-width: 768px) {
