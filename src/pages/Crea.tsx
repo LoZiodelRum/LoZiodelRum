@@ -949,7 +949,8 @@ const mobileCreaLayoutStyle = `
       box-shadow: 0 14px 34px rgba(2, 6, 23, 0.45) !important;
       max-width: 420px !important;
       margin-right: auto !important;
-      margin-left: -8px !important;
+      margin-left: -14px !important;
+      width: calc(100% + 14px) !important;
     }
 
     .crea-grid {
