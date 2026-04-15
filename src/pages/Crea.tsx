@@ -947,10 +947,9 @@ const mobileCreaLayoutStyle = `
       border: 1px solid rgba(148, 163, 184, 0.45) !important;
       background: linear-gradient(160deg, rgba(15, 23, 42, 0.96), rgba(2, 6, 23, 0.96)) !important;
       box-shadow: 0 14px 34px rgba(2, 6, 23, 0.45) !important;
-      max-width: 420px !important;
-      margin-right: auto !important;
-      margin-left: -14px !important;
-      width: calc(100% + 14px) !important;
+      max-width: none !important;
+      position: relative !important;
+      left: -14px !important;
     }
 
     .crea-grid {
