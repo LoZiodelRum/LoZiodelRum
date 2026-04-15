@@ -4,7 +4,7 @@ import App from "./App";
 import { UserProvider } from "./context/UserContext";
 import "./index.css";
 
-const APP_VERSION = "2026-04-15-05";
+const APP_VERSION = "2026-04-15-06";
 
 try {
   const previousVersion = window.localStorage.getItem("app-version");
