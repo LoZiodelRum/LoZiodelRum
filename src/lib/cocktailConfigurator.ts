@@ -317,7 +317,13 @@ export function filterCocktails(catalog: CatalogCocktail[], preferences: Cocktai
       technique: cocktail.technique || defaultTechnique(preferences),
       glass: cocktail.glass || defaultGlass(preferences, base),
       garnish: cocktail.garnish || defaultGarnish(base),
-      description: cocktail.description || buildDescription(cocktail.name, cocktail.base_alcolica || base, preferences),
+      description: cocktail.description || buildDescription(
+        cocktail.name,
+        cocktail.base_alcolica || base,
+        preferences,
+        0,
+        cocktail.technique || defaultTechnique(preferences)
+      ),
       tasting_notes: cocktail.tasting_notes?.length ? cocktail.tasting_notes : buildTastingNotes(cocktail.base_alcolica || base, preferences),
       balance_explanation: explainBalance(cocktail.base_alcolica || base, preferences),
       source: "database" as const,
@@ -437,12 +443,22 @@ function buildGeneratedName(baseSpirit: string, preferences: CocktailPreferences
   return `${first} ${baseSpirit.charAt(0).toUpperCase() + baseSpirit.slice(1)} ${suffix}`;
 }
 
-function buildDescription(name: string, baseSpirit: string, preferences: CocktailPreferences) {
+function buildDescription(
+  name: string,
+  baseSpirit: string,
+  preferences: CocktailPreferences,
+  variant = 0,
+  technique = "stir"
+) {
   const notes = buildTastingNotes(baseSpirit, preferences).slice(0, 3).join(", ");
   const when = defaultMoment(preferences);
   const taste = getPreferenceTokens(preferences.profilo_gustativo)[0] || "equilibrato";
   const texture = normalizeText(preferences.texture) || "setoso";
-  return `Profilo sensoriale: identita ${taste.toLowerCase()}, lettura aromatica su ${notes.toLowerCase()}, tessitura ${texture.toLowerCase()}. Espressione orientata alla bevibilita e alla definizione olfattiva, con progressione gustativa lineare. Contesto ideale: ${when}.`;
+  if (variant === 0) {
+    return `Profilo Signature: identita ${taste.toLowerCase()} con attacco diretto, centro bocca compatto e finale netto. Lettura aromatica su ${notes.toLowerCase()} e tessitura ${texture.toLowerCase()}, pensata per un servizio preciso e riconoscibile. Contesto ideale: ${when}.`;
+  }
+
+  return `Profilo Reserve: sviluppo piu stratificato, ingresso progressivo e chiusura lunga. La tecnica ${technique.toLowerCase()} spinge una percezione piu ampia di ${notes.toLowerCase()}, mantenendo una linea ${taste.toLowerCase()} e una trama ${texture.toLowerCase()} di taglio contemporaneo.`;
 }
 
 function buildTastingNotes(baseSpirit: string, preferences: CocktailPreferences) {
@@ -492,15 +508,25 @@ function explainBalance(baseSpirit: string, preferences: CocktailPreferences, do
   const sweetMl = parseMl(doses[2]) ?? 14;
   const modifierMl = parseMl(doses[3]) ?? 10;
   const totalCore = Math.max(baseMl + acidMl + sweetMl + modifierMl, 1);
-  const spiritShare = Math.round((baseMl / totalCore) * 100);
+  const spiritShare = baseMl / totalCore;
   const sourSweetDelta = Math.abs(acidMl - sweetMl);
   const acidSweetComment = sourSweetDelta <= 2
     ? "acido/dolce in asse"
     : acidMl > sweetMl
       ? "asse sbilanciato verso freschezza"
       : "asse sbilanciato verso morbidezza";
+  const structureComment = spiritShare >= 0.58
+    ? "struttura tesa e spirit-forward"
+    : spiritShare >= 0.5
+      ? "struttura centrata e lineare"
+      : "struttura morbida e più distesa";
+  const closureComment = modifierMl >= 12
+    ? "chiusura ampia e avvolgente"
+    : modifierMl >= 8
+      ? "chiusura composta e pulita"
+      : "chiusura secca e rapida";
 
-  return `Scheda bilanciamento: base ${baseMl} ml | acido ${acidMl} ml | dolce ${sweetMl} ml | modulatore ${modifierMl} ml. Quota base ${spiritShare}% del core liquido; stile ${style}; verifica acido-dolce: ${acidSweetComment}.`;
+  return `Giudizio bilanciamento: ${structureComment}; ${acidSweetComment}; ${closureComment}. Il drink mantiene un assetto ${style} con buona leggibilità aromatica e progressione gustativa coerente.`;
 }
 
 export function generateCocktail(preferences: CocktailPreferences, variant = 0): SuggestedCocktail {
@@ -516,7 +542,7 @@ export function generateCocktail(preferences: CocktailPreferences, variant = 0):
     technique: recipe.technique,
     glass: recipe.glass,
     garnish: recipe.garnish,
-    description: buildDescription(name, baseSpirit, preferences),
+    description: buildDescription(name, baseSpirit, preferences, variant, recipe.technique),
     tasting_notes: buildTastingNotes(baseSpirit, preferences),
     balance_explanation: explainBalance(baseSpirit, preferences, recipe.doses),
     source: "generated",
