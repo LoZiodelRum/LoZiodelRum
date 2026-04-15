@@ -107,8 +107,8 @@ export default function RegistrazioneProprietario() {
   }
 
   return (
-    <div className="page fade-in">
-      <form onSubmit={handleRegister} style={{ width: "min(100%, 760px)", margin: "0 auto", padding: "clamp(16px, 3vw, 40px)", background: "#111", borderRadius: 20, color: "#fff" }}>
+    <div className="page fade-in registration-form-page">
+      <form className="registration-form-shell" onSubmit={handleRegister} style={{ width: "min(100%, 760px)", margin: "0 auto", padding: "clamp(16px, 3vw, 40px)", background: "#111", borderRadius: 20, color: "#fff" }}>
         <h1 style={title}>Registrazione Proprietario</h1>
 
         <Section title="Dati anagrafici">
@@ -187,7 +187,7 @@ export default function RegistrazioneProprietario() {
 
 function Section({ title, children }: any) {
   return (
-    <div style={{ marginBottom: 30 }}>
+    <div className="registration-form-section" style={{ marginBottom: 30 }}>
       <h3 style={{ marginBottom: 10 }}>{title}</h3>
       {children}
     </div>
