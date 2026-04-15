@@ -184,7 +184,7 @@ export default function Home() {
             margin-left: 0 !important;
             margin-right: 0 !important;
             padding-top: 0 !important;
-            padding-bottom: 36px !important;
+            padding-bottom: 56px !important;
             align-items: flex-end !important;
           }
           .hero-mobile-content {
@@ -341,7 +341,7 @@ export default function Home() {
           .hero-section {
             align-items: flex-end !important;
             justify-content: center !important;
-            padding: 0 28px 56px !important;
+            padding: 0 28px 88px !important;
           }
           .hero-mobile-content {
             width: min(100%, 1180px) !important;
@@ -368,7 +368,7 @@ export default function Home() {
           marginLeft: 0,
           marginRight: 0,
           paddingTop: 0,
-          paddingBottom: "clamp(36px, 7vh, 72px)",
+          paddingBottom: "clamp(56px, 9vh, 104px)",
           borderRadius: 0,
         }}
       >
