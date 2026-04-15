@@ -161,6 +161,8 @@ export default function Home() {
     setArticoli(data ?? []);
   }
 
+  const heroVideoSrc = "/home-hero.mp4";
+
   return (
     <div
       style={{
@@ -175,15 +177,20 @@ export default function Home() {
         @media (max-width: 768px) {
           .hero-section {
             display: flex !important;
-            min-height: 84vh !important;
+            min-height: 100svh !important;
             width: 100% !important;
             margin-left: 0 !important;
             margin-right: 0 !important;
             padding-top: 0 !important;
-            padding-bottom: 88px !important;
-            align-items: flex-start !important;
+            padding-bottom: 36px !important;
+            align-items: flex-end !important;
           }
-          .hero-mobile-content { margin-top: 34px !important; padding-bottom: 10px !important; }
+          .hero-mobile-content {
+            margin-top: 0 !important;
+            padding: 0 16px 12px !important;
+            width: 100% !important;
+            max-width: none !important;
+          }
           .hero-mobile-badge {
             display: inline-flex !important;
             align-items: center !important;
@@ -219,8 +226,8 @@ export default function Home() {
             display: flex !important;
             flex-direction: column !important;
             gap: 12px !important;
-            margin-top: 34px !important;
-            margin-bottom: 88px !important;
+            margin-top: 24px !important;
+            margin-bottom: 0 !important;
           }
           .hero-mobile-buttons {
             flex-direction: column !important;
@@ -329,6 +336,19 @@ export default function Home() {
           .content-section-first { margin-top: 68px !important; }
           .section-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 20px !important; }
           .card-box { height: 220px !important; aspect-ratio: auto !important; }
+          .hero-section {
+            align-items: flex-end !important;
+            justify-content: center !important;
+            padding: 0 28px 56px !important;
+          }
+          .hero-mobile-content {
+            width: min(100%, 1180px) !important;
+            max-width: 1180px !important;
+            padding: 0 24px !important;
+          }
+          .hero-mobile-buttons {
+            margin-top: 24px !important;
+          }
         }
       `}</style>
 
@@ -338,21 +358,38 @@ export default function Home() {
           height: "100vh",
           width: "100%",
           display: "flex",
-          alignItems: "center",
+          alignItems: "flex-end",
           justifyContent: "center",
           textAlign: "center",
-          backgroundImage: "url('https://images.unsplash.com/photo-1470337458703-46ad1756a187?w=1920')",
-          backgroundSize: "cover",
-          backgroundPosition: "center",
           position: "relative",
+          overflow: "hidden",
           marginLeft: 0,
           marginRight: 0,
           paddingTop: 0,
+          paddingBottom: "clamp(36px, 7vh, 72px)",
           borderRadius: 0,
         }}
       >
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(0,0,0,0.5), rgba(0,0,0,0.9))" }} />
-        <div className="hero-mobile-content" style={{ position: "relative", zIndex: 2, maxWidth: "90%", padding: "0 20px" }}>
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            zIndex: 0,
+          }}
+        >
+          <source src={heroVideoSrc} type="video/mp4" />
+        </video>
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(0,0,0,0.22), rgba(0,0,0,0.38) 45%, rgba(0,0,0,0.86) 100%)", zIndex: 1 }} />
+        <div className="hero-mobile-content" style={{ position: "relative", zIndex: 2, width: "100%", maxWidth: 1180, padding: "0 20px 6px" }}>
           <p className="hero-mobile-badge" style={{ display: "none" }}>La community del bere consapevole</p>
           <h1 className="hero-mobile-title" style={{ fontSize: "clamp(28px, 7vw, 48px)", marginBottom: 20, fontWeight: 800, lineHeight: 1.2, display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
             <span className="hero-mobile-title-line" style={{ color: "#ffffff" }}>Scopri i migliori</span>
@@ -544,6 +581,74 @@ export default function Home() {
         <p style={{ fontSize: "clamp(14px, 2vw, 18px)", color: "#aaa", maxWidth: 600, margin: "0 auto 32px", lineHeight: 1.6 }}>
           Condividi le tue esperienze, scopri nuovi locali e contribuisci alla cultura del bere consapevole.
         </p>
+      </section>
+
+      <section style={{ padding: "60px 60px", maxWidth: 1400, margin: "0 auto" }}>
+        <div style={{
+          background: "linear-gradient(135deg, rgba(245,166,35,0.12), rgba(245,166,35,0.06))",
+          border: "2px solid rgba(245,166,35,0.3)",
+          borderRadius: 16,
+          padding: "48px 40px",
+          textAlign: "center",
+          backdropFilter: "blur(10px)",
+        }}>
+          <h3 style={{ fontSize: "clamp(20px, 3.5vw, 28px)", fontWeight: 800, marginBottom: 12, color: "#ffffff" }}>
+            Inizia ora
+          </h3>
+          <p style={{ fontSize: "clamp(13px, 1.8vw, 16px)", color: "#aaa", maxWidth: 500, margin: "0 auto 32px", lineHeight: 1.6 }}>
+            Registrati per scoprire tutti i vantaggi della community e condividere le tue recensioni.
+          </p>
+          <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
+            <button
+              onClick={() => navigate("/registrazione")}
+              style={{
+                background: "#f5a623",
+                color: "#0b0b0b",
+                border: "none",
+                padding: "12px 32px",
+                borderRadius: 8,
+                fontWeight: "bold",
+                fontSize: "clamp(13px, 1.5vw, 16px)",
+                cursor: "pointer",
+                transition: "all 0.3s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "#e59400";
+                e.currentTarget.style.transform = "translateY(-2px)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "#f5a623";
+                e.currentTarget.style.transform = "translateY(0)";
+              }}
+            >
+              Registrati come Utente
+            </button>
+            <button
+              onClick={() => navigate("/registrati")}
+              style={{
+                background: "transparent",
+                color: "#f5a623",
+                border: "2px solid #f5a623",
+                padding: "12px 32px",
+                borderRadius: 8,
+                fontWeight: "bold",
+                fontSize: "clamp(13px, 1.5vw, 16px)",
+                cursor: "pointer",
+                transition: "all 0.3s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "rgba(245,166,35,0.1)";
+                e.currentTarget.style.transform = "translateY(-2px)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "transparent";
+                e.currentTarget.style.transform = "translateY(0)";
+              }}
+            >
+              Diventa Professionista
+            </button>
+          </div>
+        </div>
       </section>
 
       <div style={{ height: 60 }} />
