@@ -986,12 +986,12 @@ const mobileCreaLayoutStyle = `
     }
 
     .crea-results {
+      display: flex !important;
+      flex-direction: column !important;
+      align-items: center !important;
       gap: 12px !important;
       margin-top: 14px !important;
-      justify-items: center !important;
-      max-width: 600px !important;
-      margin-left: auto !important;
-      margin-right: auto !important;
+      width: 100% !important;
     }
 
     .crea-card {
