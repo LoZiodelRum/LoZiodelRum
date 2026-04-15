@@ -440,7 +440,9 @@ function buildGeneratedName(baseSpirit: string, preferences: CocktailPreferences
 function buildDescription(name: string, baseSpirit: string, preferences: CocktailPreferences) {
   const notes = buildTastingNotes(baseSpirit, preferences).slice(0, 3).join(", ");
   const when = defaultMoment(preferences);
-  return `${name} e un cocktail costruito su ${baseSpirit}, con un profilo ${getPreferenceTokens(preferences.profilo_gustativo)[0] || "equilibrato"} e una lettura aromatica di ${notes}. Funziona bene ${when}, con una progressione gustativa pulita e professionale.`;
+  const taste = getPreferenceTokens(preferences.profilo_gustativo)[0] || "equilibrato";
+  const texture = normalizeText(preferences.texture) || "setoso";
+  return `${name} lavora su una lettura sensoriale centrata su ${taste.toLowerCase()}: apertura netta, centro bocca ordinato e chiusura persistente. La trama ${texture.toLowerCase()} accompagna note di ${notes.toLowerCase()} e rende il drink riconoscibile senza risultare pesante. In servizio trova la sua forma migliore ${when}.`;
 }
 
 function buildTastingNotes(baseSpirit: string, preferences: CocktailPreferences) {
@@ -475,10 +477,30 @@ function defaultMoment(preferences: CocktailPreferences) {
   return "in servizio serale, sia come signature sia come twist contemporaneo";
 }
 
-function explainBalance(baseSpirit: string, preferences: CocktailPreferences) {
-  const taste = getPreferenceTokens(preferences.profilo_gustativo)[0] || "equilibrato";
+function parseMl(value?: string): number | null {
+  if (!value) return null;
+  const match = value.match(/(\d+(?:[.,]\d+)?)/);
+  if (!match) return null;
+  const parsed = Number(match[1].replace(",", "."));
+  return Number.isFinite(parsed) ? parsed : null;
+}
+
+function explainBalance(baseSpirit: string, preferences: CocktailPreferences, doses: string[] = []) {
   const style = normalizeText(preferences.Genere) || "contemporaneo";
-  return `Bilanciamento costruito con base alcolica tra 45 e 55 ml, parte acida intorno ai 15-20 ml e supporto dolce tra 12 e 18 ml. Il risultato mantiene una bevuta ${style} e un profilo ${taste}, senza perdere bevibilita e definizione aromatica.`;
+  const baseMl = parseMl(doses[0]) ?? 50;
+  const acidMl = parseMl(doses[1]) ?? 18;
+  const sweetMl = parseMl(doses[2]) ?? 14;
+  const modifierMl = parseMl(doses[3]) ?? 10;
+  const totalCore = Math.max(baseMl + acidMl + sweetMl + modifierMl, 1);
+  const spiritShare = Math.round((baseMl / totalCore) * 100);
+  const sourSweetDelta = Math.abs(acidMl - sweetMl);
+  const acidSweetComment = sourSweetDelta <= 2
+    ? "acido e dolce sono quasi speculari"
+    : acidMl > sweetMl
+      ? "la spinta acida resta dominante"
+      : "la componente dolce arrotonda il finale";
+
+  return `Bilanciamento tecnico impostato su ${baseMl} ml di base, ${acidMl} ml di quota acida, ${sweetMl} ml di sostegno dolce e ${modifierMl} ml di modulatore. La struttura mette la base alcolica al ${spiritShare}% del nucleo liquido e definisce un assetto ${style}; ${acidSweetComment}.`;
 }
 
 export function generateCocktail(preferences: CocktailPreferences, variant = 0): SuggestedCocktail {
@@ -496,7 +518,7 @@ export function generateCocktail(preferences: CocktailPreferences, variant = 0):
     garnish: recipe.garnish,
     description: buildDescription(name, baseSpirit, preferences),
     tasting_notes: buildTastingNotes(baseSpirit, preferences),
-    balance_explanation: explainBalance(baseSpirit, preferences),
+    balance_explanation: explainBalance(baseSpirit, preferences, recipe.doses),
     source: "generated",
     matchScore: 0,
   };
