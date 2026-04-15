@@ -1005,9 +1005,9 @@ const mobileCreaLayoutStyle = `
       border-radius: 16px !important;
       border: 1px solid rgba(51, 65, 85, 0.85) !important;
       background: linear-gradient(155deg, rgba(15, 23, 42, 0.98), rgba(10, 16, 30, 0.98)) !important;
-      width: 100% !important;
+      width: min(680px, calc(100vw - 4px)) !important;
       max-width: none !important;
-      margin: 0 !important;
+      margin: 0 auto !important;
       box-sizing: border-box !important;
     }
 
