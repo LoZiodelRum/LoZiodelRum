@@ -214,7 +214,7 @@ export default function RegistrazioneBartender() {
               checked={termini}
               onChange={(e: any) => setTermini(e.target.checked)}
             />
-            <span>Accettazione termini e condizioni</span>
+            <span className="registration-consent-text">Accetto termini e condizioni</span>
           </CheckboxRow>
 
           <CheckboxRow>
@@ -223,7 +223,7 @@ export default function RegistrazioneBartender() {
               checked={privacy}
               onChange={(e: any) => setPrivacy(e.target.checked)}
             />
-            <span>Privacy policy</span>
+            <span className="registration-consent-text">Accetto privacy policy</span>
           </CheckboxRow>
 
           <CheckboxRow>
@@ -232,7 +232,7 @@ export default function RegistrazioneBartender() {
               checked={maggiorenne}
               onChange={(e: any) => setMaggiorenne(e.target.checked)}
             />
-            <span>Dichiarazione di essere maggiorenne</span>
+            <span className="registration-consent-text">Dichiaro di essere maggiorenne</span>
           </CheckboxRow>
         </Section>
 
@@ -260,7 +260,7 @@ function Textarea(props: any) {
 }
 
 function CheckboxRow({ children }: any) {
-  return <label style={checkboxRow}>{children}</label>;
+  return <label className="registration-consent-row" style={checkboxRow}>{children}</label>;
 }
 
 const container = {

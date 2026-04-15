@@ -159,20 +159,20 @@ export default function RegistrazioneProprietario() {
 
         {/* CONSENSI MIGLIORATI */}
         <Section title="Consensi">
-          <div style={{ display: "flex", flexDirection: "column", gap: 16 }}>
-            <label style={consenso}>
+          <div className="registration-consent-list" style={{ display: "flex", flexDirection: "column", gap: 16 }}>
+            <label className="registration-consent-row" style={consenso}>
               <input type="checkbox" onChange={(e: any) => setTermini(e.target.checked)} />
-              Accetto termini e condizioni
+              <span className="registration-consent-text">Accetto termini e condizioni</span>
             </label>
 
-            <label style={consenso}>
+            <label className="registration-consent-row" style={consenso}>
               <input type="checkbox" onChange={(e: any) => setPrivacy(e.target.checked)} />
-              Accetto privacy policy
+              <span className="registration-consent-text">Accetto privacy policy</span>
             </label>
 
-            <label style={consenso}>
+            <label className="registration-consent-row" style={consenso}>
               <input type="checkbox" onChange={(e: any) => setMaggiorenne(e.target.checked)} />
-              Dichiaro di essere maggiorenne
+              <span className="registration-consent-text">Dichiaro di essere maggiorenne</span>
             </label>
           </div>
         </Section>
