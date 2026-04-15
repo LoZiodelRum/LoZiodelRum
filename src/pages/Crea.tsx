@@ -392,7 +392,13 @@ export default function Crea() {
         </div>
       </div>
 
-      <div className="crea-panel" style={panelStyle}>
+      <div className="crea-panel" style={{
+        ...panelStyle,
+        ...(typeof window !== 'undefined' && window.innerWidth <= 768 ? { 
+          marginLeft: '-14px',
+          width: 'calc(100% + 14px)',
+        } : {})
+      }}>
         <div className="crea-grid" style={gridStyle}>
           {preferenceFields.map((field) => (
             <div key={`${field.key}-${field.options.join("|")}`} className="crea-field" style={fieldStyle}>
