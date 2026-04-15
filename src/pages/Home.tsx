@@ -20,6 +20,8 @@ type Articolo = {
   immagine: string | null;
 };
 
+const HOME_HERO_VIDEO_VERSION = "2026-04-15-02";
+
 export default function Home() {
   const { isAdmin } = useUser();
   const [locali, setLocali] = useState<Locale[]>([]);
@@ -161,7 +163,7 @@ export default function Home() {
     setArticoli(data ?? []);
   }
 
-  const heroVideoSrc = "/home-hero.mp4";
+  const heroVideoSrc = `/home-hero.mp4?v=${HOME_HERO_VIDEO_VERSION}`;
 
   return (
     <div

@@ -4,14 +4,16 @@ import App from "./App";
 import { UserProvider } from "./context/UserContext";
 import "./index.css";
 
-const APP_VERSION = "2026-04-15-01";
+const APP_VERSION = "2026-04-15-02";
 
 try {
   const previousVersion = window.localStorage.getItem("app-version");
   if (previousVersion !== APP_VERSION) {
     window.localStorage.setItem("app-version", APP_VERSION);
     if (previousVersion) {
-      window.location.reload();
+      const url = new URL(window.location.href);
+      url.searchParams.set("v", APP_VERSION);
+      window.location.replace(url.toString());
     }
   }
 } catch {
