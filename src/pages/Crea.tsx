@@ -995,7 +995,7 @@ const mobileCreaLayoutStyle = `
       align-items: center !important;
       gap: 12px !important;
       margin-top: 14px !important;
-      width: calc(100% - 6px) !important;
+      width: calc(100% - 3px) !important;
       margin-left: auto !important;
       margin-right: auto !important;
       box-sizing: border-box !important;
