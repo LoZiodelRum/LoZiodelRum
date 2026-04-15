@@ -990,9 +990,8 @@ const mobileCreaLayoutStyle = `
       margin-top: 14px !important;
       justify-items: center !important;
       max-width: 600px !important;
-      margin-left: -14px !important;
+      margin-left: auto !important;
       margin-right: auto !important;
-      width: calc(100% + 14px) !important;
     }
 
     .crea-card {
