@@ -400,49 +400,48 @@ export default function Home() {
           <p className="hero-mobile-subtitle" style={{ opacity: 0.85, marginBottom: 30, fontSize: "clamp(14px, 2.5vw, 18px)" }}>
             Recensioni autentiche, esperienze uniche, cultura del bere. Trova cocktail bar, rum bar e locali d'eccellenza nella tua citta.
           </p>
-          <div className="hero-mobile-buttons" style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap" }}>
-            <button
-              className="hero-mobile-btn"
-              onClick={() => navigate("/venues")}
-              style={{
-                background: "#f5a623",
-                color: "#0b0b0b",
-                border: "none",
-                padding: "14px 32px",
-                borderRadius: 8,
-                fontWeight: "bold",
-                cursor: "pointer",
-                fontSize: 16,
-                display: "flex",
-                alignItems: "center",
-                gap: 12,
-              }}
-            >
-              <ArrowRight size={20} strokeWidth={2.5} />
-              Esplora Locali
-            </button>
-            <button
-              className="hero-mobile-btn"
-              onClick={() => navigate("/mappa")}
-              style={{
-                background: "#f5a623",
-                color: "#0b0b0b",
-                border: "none",
-                padding: "14px 32px",
-                borderRadius: 8,
-                fontWeight: "bold",
-                cursor: "pointer",
-                fontSize: 16,
-                display: "flex",
-                alignItems: "center",
-                gap: 10,
-              }}
-            >
-              <MapPin size={20} strokeWidth={2.5} />
-              Vedi Mappa
-            </button>
-          </div>
         </div>
+      </div>
+
+      <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap", padding: "32px 20px 0" }}>
+        <button
+          onClick={() => navigate("/venues")}
+          style={{
+            background: "#f5a623",
+            color: "#0b0b0b",
+            border: "none",
+            padding: "14px 32px",
+            borderRadius: 8,
+            fontWeight: "bold",
+            cursor: "pointer",
+            fontSize: 16,
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+          }}
+        >
+          <ArrowRight size={20} strokeWidth={2.5} />
+          Esplora Locali
+        </button>
+        <button
+          onClick={() => navigate("/mappa")}
+          style={{
+            background: "#f5a623",
+            color: "#0b0b0b",
+            border: "none",
+            padding: "14px 32px",
+            borderRadius: 8,
+            fontWeight: "bold",
+            cursor: "pointer",
+            fontSize: 16,
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+          }}
+        >
+          <MapPin size={20} strokeWidth={2.5} />
+          Vedi Mappa
+        </button>
       </div>
 
       <section className="content-section content-section-first locali-section" style={{ padding: "40px 60px", maxWidth: 1400, margin: "68px auto 0" }}>
