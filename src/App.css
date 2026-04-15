@@ -721,6 +721,19 @@ button:active { transform: scale(0.98); }
 }
 .form-card h2 { margin-bottom: 6px; }
 
+@media (max-width: 768px) {
+  .registration-choice-card {
+    width: calc(100vw - 24px);
+    max-width: none;
+    padding: 24px 14px;
+  }
+
+  .registration-choice-button {
+    width: 100%;
+    min-height: 54px;
+  }
+}
+
 /* Badge categoria */
 .badge-category {
   display: inline-block;
