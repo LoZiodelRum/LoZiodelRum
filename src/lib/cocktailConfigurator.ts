@@ -442,7 +442,7 @@ function buildDescription(name: string, baseSpirit: string, preferences: Cocktai
   const when = defaultMoment(preferences);
   const taste = getPreferenceTokens(preferences.profilo_gustativo)[0] || "equilibrato";
   const texture = normalizeText(preferences.texture) || "setoso";
-  return `${name} lavora su una lettura sensoriale centrata su ${taste.toLowerCase()}: apertura netta, centro bocca ordinato e chiusura persistente. La trama ${texture.toLowerCase()} accompagna note di ${notes.toLowerCase()} e rende il drink riconoscibile senza risultare pesante. In servizio trova la sua forma migliore ${when}.`;
+  return `Profilo sensoriale: identita ${taste.toLowerCase()}, lettura aromatica su ${notes.toLowerCase()}, tessitura ${texture.toLowerCase()}. Espressione orientata alla bevibilita e alla definizione olfattiva, con progressione gustativa lineare. Contesto ideale: ${when}.`;
 }
 
 function buildTastingNotes(baseSpirit: string, preferences: CocktailPreferences) {
@@ -495,12 +495,12 @@ function explainBalance(baseSpirit: string, preferences: CocktailPreferences, do
   const spiritShare = Math.round((baseMl / totalCore) * 100);
   const sourSweetDelta = Math.abs(acidMl - sweetMl);
   const acidSweetComment = sourSweetDelta <= 2
-    ? "acido e dolce sono quasi speculari"
+    ? "acido/dolce in asse"
     : acidMl > sweetMl
-      ? "la spinta acida resta dominante"
-      : "la componente dolce arrotonda il finale";
+      ? "asse sbilanciato verso freschezza"
+      : "asse sbilanciato verso morbidezza";
 
-  return `Bilanciamento tecnico impostato su ${baseMl} ml di base, ${acidMl} ml di quota acida, ${sweetMl} ml di sostegno dolce e ${modifierMl} ml di modulatore. La struttura mette la base alcolica al ${spiritShare}% del nucleo liquido e definisce un assetto ${style}; ${acidSweetComment}.`;
+  return `Scheda bilanciamento: base ${baseMl} ml | acido ${acidMl} ml | dolce ${sweetMl} ml | modulatore ${modifierMl} ml. Quota base ${spiritShare}% del core liquido; stile ${style}; verifica acido-dolce: ${acidSweetComment}.`;
 }
 
 export function generateCocktail(preferences: CocktailPreferences, variant = 0): SuggestedCocktail {
