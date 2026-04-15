@@ -999,8 +999,11 @@ const mobileCreaLayoutStyle = `
       border-radius: 16px !important;
       border: 1px solid rgba(51, 65, 85, 0.85) !important;
       background: linear-gradient(155deg, rgba(15, 23, 42, 0.98), rgba(10, 16, 30, 0.98)) !important;
+      width: calc(100% - 16px) !important;
       max-width: 580px !important;
-      margin: 0 auto !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+      box-sizing: border-box !important;
     }
 
     .crea-card-title {
