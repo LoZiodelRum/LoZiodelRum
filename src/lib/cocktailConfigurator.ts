@@ -454,10 +454,15 @@ function buildDescription(
   const when = defaultMoment(preferences);
   const taste = getPreferenceTokens(preferences.profilo_gustativo)[0] || "equilibrato";
   const texture = normalizeText(preferences.texture) || "setoso";
+  
+  console.log("[buildDescription] variant:", variant, "typeof:", typeof variant, "name:", name);
+  
   if (variant === 0) {
+    console.log("  -> Returning SIGNATURE");
     return `Profilo Signature: identita ${taste.toLowerCase()} con attacco diretto, centro bocca compatto e finale netto. Lettura aromatica su ${notes.toLowerCase()} e tessitura ${texture.toLowerCase()}, pensata per un servizio preciso e riconoscibile. Contesto ideale: ${when}.`;
   }
-
+  
+  console.log("  -> Returning RESERVE");
   return `Profilo Reserve: sviluppo piu stratificato, ingresso progressivo e chiusura lunga. La tecnica ${technique.toLowerCase()} spinge una percezione piu ampia di ${notes.toLowerCase()}, mantenendo una linea ${taste.toLowerCase()} e una trama ${texture.toLowerCase()} di taglio contemporaneo.`;
 }
 
@@ -526,6 +531,8 @@ function explainBalance(baseSpirit: string, preferences: CocktailPreferences, do
       ? "chiusura composta e pulita"
       : "chiusura secca e rapida";
 
+  console.log("[explainBalance] doses:", doses, "baseMl:", baseMl, "acidMl:", acidMl, "sweetMl:", sweetMl, "modifierMl:", modifierMl);
+
   return `Giudizio bilanciamento: ${structureComment}; ${acidSweetComment}; ${closureComment}. Il drink mantiene un assetto ${style} con buona leggibilità aromatica e progressione gustativa coerente.`;
 }
 
@@ -533,6 +540,13 @@ export function generateCocktail(preferences: CocktailPreferences, variant = 0):
   const baseSpirit = determineBaseSpirit(preferences);
   const recipe = buildGeneratedRecipe(baseSpirit, preferences, variant);
   const name = buildGeneratedName(baseSpirit, preferences, variant);
+
+  const description = buildDescription(name, baseSpirit, preferences, variant, recipe.technique);
+  const balance = explainBalance(baseSpirit, preferences, recipe.doses);
+  
+  console.log("[generateCocktail] variant:", variant, "name:", name);
+  console.log("  description:", description.substring(0, 80) + "...");
+  console.log("  balance:", balance.substring(0, 80) + "...");
 
   return {
     name,
@@ -542,9 +556,9 @@ export function generateCocktail(preferences: CocktailPreferences, variant = 0):
     technique: recipe.technique,
     glass: recipe.glass,
     garnish: recipe.garnish,
-    description: buildDescription(name, baseSpirit, preferences, variant, recipe.technique),
+    description,
     tasting_notes: buildTastingNotes(baseSpirit, preferences),
-    balance_explanation: explainBalance(baseSpirit, preferences, recipe.doses),
+    balance_explanation: balance,
     source: "generated",
     matchScore: 0,
   };
