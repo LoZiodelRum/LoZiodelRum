@@ -403,7 +403,7 @@ export default function Home() {
         </div>
       </div>
 
-      <div style={{ display: "flex", gap: 12, justifyContent: "center", flexWrap: "wrap", padding: "32px 20px 0" }}>
+      <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap", padding: "32px 20px 0" }}>
         <button
           onClick={() => navigate("/venues")}
           style={{
