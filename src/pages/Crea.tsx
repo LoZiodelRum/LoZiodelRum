@@ -392,13 +392,7 @@ export default function Crea() {
         </div>
       </div>
 
-      <div className="crea-panel" style={{
-        ...panelStyle,
-        ...(typeof window !== 'undefined' && window.innerWidth <= 768 ? { 
-          marginLeft: '-14px',
-          width: 'calc(100% + 14px)',
-        } : {})
-      }}>
+      <div className="crea-panel" style={panelStyle}>
         <div className="crea-grid" style={gridStyle}>
           {preferenceFields.map((field) => (
             <div key={`${field.key}-${field.options.join("|")}`} className="crea-field" style={fieldStyle}>
@@ -953,8 +947,6 @@ const mobileCreaLayoutStyle = `
       border: 1px solid rgba(148, 163, 184, 0.45) !important;
       background: linear-gradient(160deg, rgba(15, 23, 42, 0.96), rgba(2, 6, 23, 0.96)) !important;
       box-shadow: 0 14px 34px rgba(2, 6, 23, 0.45) !important;
-      transform: translateX(-14px) !important;
-      width: calc(100% + 14px) !important;
     }
 
     .crea-grid {
@@ -998,8 +990,9 @@ const mobileCreaLayoutStyle = `
       margin-top: 14px !important;
       justify-items: center !important;
       max-width: 600px !important;
-      margin-left: auto !important;
+      margin-left: -14px !important;
       margin-right: auto !important;
+      width: calc(100% + 14px) !important;
     }
 
     .crea-card {
