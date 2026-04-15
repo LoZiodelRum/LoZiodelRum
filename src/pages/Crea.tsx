@@ -947,6 +947,10 @@ const mobileCreaLayoutStyle = `
       border: 1px solid rgba(148, 163, 184, 0.45) !important;
       background: linear-gradient(160deg, rgba(15, 23, 42, 0.96), rgba(2, 6, 23, 0.96)) !important;
       box-shadow: 0 14px 34px rgba(2, 6, 23, 0.45) !important;
+      width: calc(100% - 8px) !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+      box-sizing: border-box !important;
     }
 
     .crea-grid {
@@ -991,7 +995,9 @@ const mobileCreaLayoutStyle = `
       align-items: center !important;
       gap: 12px !important;
       margin-top: 14px !important;
-      width: 100% !important;
+      width: calc(100% - 8px) !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
     }
 
     .crea-card {
@@ -999,10 +1005,9 @@ const mobileCreaLayoutStyle = `
       border-radius: 16px !important;
       border: 1px solid rgba(51, 65, 85, 0.85) !important;
       background: linear-gradient(155deg, rgba(15, 23, 42, 0.98), rgba(10, 16, 30, 0.98)) !important;
-      width: calc(100% - 8px) !important;
-      max-width: 620px !important;
-      margin-left: auto !important;
-      margin-right: auto !important;
+      width: 100% !important;
+      max-width: none !important;
+      margin: 0 !important;
       box-sizing: border-box !important;
     }
 
