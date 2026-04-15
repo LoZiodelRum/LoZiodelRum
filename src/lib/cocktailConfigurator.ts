@@ -448,22 +448,22 @@ function buildDescription(
   baseSpirit: string,
   preferences: CocktailPreferences,
   variant = 0,
-  technique = "stir"
+  technique = "stir",
+  ingredients: string[] = []
 ) {
   const notes = buildTastingNotes(baseSpirit, preferences).slice(0, 3).join(", ");
   const when = defaultMoment(preferences);
   const taste = getPreferenceTokens(preferences.profilo_gustativo)[0] || "equilibrato";
   const texture = normalizeText(preferences.texture) || "setoso";
   
-  console.log("[buildDescription] variant:", variant, "typeof:", typeof variant, "name:", name);
+  // Built ingredients list if provided
+  const ingredientList = ingredients.length > 0 ? `(${ingredients.slice(0, 3).join(", ")})` : "";
   
   if (variant === 0) {
-    console.log("  -> Returning SIGNATURE");
-    return `Profilo Signature: identita ${taste.toLowerCase()} con attacco diretto, centro bocca compatto e finale netto. Lettura aromatica su ${notes.toLowerCase()} e tessitura ${texture.toLowerCase()}, pensata per un servizio preciso e riconoscibile. Contesto ideale: ${when}.`;
+    return `PROFILO GUSTATIVO - Signature: Identita ${taste.toLowerCase()} con attacco diretto, centro bocca compatto e finale netto ${ingredientList}. Lettura aromatica su ${notes.toLowerCase()} e tessitura ${texture.toLowerCase()}, pensata per un servizio preciso e riconoscibile. Contesto ideale: ${when}.`;
   }
-  
-  console.log("  -> Returning RESERVE");
-  return `Profilo Reserve: sviluppo piu stratificato, ingresso progressivo e chiusura lunga. La tecnica ${technique.toLowerCase()} spinge una percezione piu ampia di ${notes.toLowerCase()}, mantenendo una linea ${taste.toLowerCase()} e una trama ${texture.toLowerCase()} di taglio contemporaneo.`;
+
+  return `PROFILO GUSTATIVO - Reserve: Sviluppo piu stratificato, ingresso progressivo e chiusura lunga ${ingredientList}. La tecnica ${technique.toLowerCase()} spinge una percezione piu ampia di ${notes.toLowerCase()}, mantenendo una linea ${taste.toLowerCase()} e una trama ${texture.toLowerCase()} di taglio contemporaneo.`;
 }
 
 function buildTastingNotes(baseSpirit: string, preferences: CocktailPreferences) {
@@ -531,9 +531,10 @@ function explainBalance(baseSpirit: string, preferences: CocktailPreferences, do
       ? "chiusura composta e pulita"
       : "chiusura secca e rapida";
 
-  console.log("[explainBalance] doses:", doses, "baseMl:", baseMl, "acidMl:", acidMl, "sweetMl:", sweetMl, "modifierMl:", modifierMl);
+  const basePercentage = Math.round((baseMl / totalCore) * 100);
+  const doseInfo = `${baseMl}ml base (${basePercentage}%), ${acidMl}ml acido, ${sweetMl}ml dolce, ${modifierMl}ml aromatico`;
 
-  return `Giudizio bilanciamento: ${structureComment}; ${acidSweetComment}; ${closureComment}. Il drink mantiene un assetto ${style} con buona leggibilità aromatica e progressione gustativa coerente.`;
+  return `ANALISI BILANCIAMENTO - Dosi: ${doseInfo}. Valutazione: ${structureComment}; ${acidSweetComment}; ${closureComment}. Il drink mantiene un assetto ${style} con progressione gustativa coerente e finale definito.`;
 }
 
 export function generateCocktail(preferences: CocktailPreferences, variant = 0): SuggestedCocktail {
@@ -541,12 +542,8 @@ export function generateCocktail(preferences: CocktailPreferences, variant = 0):
   const recipe = buildGeneratedRecipe(baseSpirit, preferences, variant);
   const name = buildGeneratedName(baseSpirit, preferences, variant);
 
-  const description = buildDescription(name, baseSpirit, preferences, variant, recipe.technique);
+  const description = buildDescription(name, baseSpirit, preferences, variant, recipe.technique, recipe.ingredients);
   const balance = explainBalance(baseSpirit, preferences, recipe.doses);
-  
-  console.log("[generateCocktail] variant:", variant, "name:", name);
-  console.log("  description:", description.substring(0, 80) + "...");
-  console.log("  balance:", balance.substring(0, 80) + "...");
 
   return {
     name,
