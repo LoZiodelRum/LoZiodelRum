@@ -731,6 +731,8 @@ button:active { transform: scale(0.98); }
     max-width: none !important;
     padding: 20px 10px !important;
     border-radius: 18px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
   }
 
   .registration-form-section {
@@ -738,6 +740,8 @@ button:active { transform: scale(0.98); }
     padding-left: 12px !important;
     padding-right: 12px !important;
     border-radius: 14px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
   }
 
   .registration-choice-card {
