@@ -496,8 +496,8 @@ export default function Crea() {
             {cocktail.source === "generated" && (
               <section className="crea-fallback" style={fallbackStyle}>
                 <p className="crea-fallback-text" style={fallbackTextStyle}>Scegli il nome per questo Cocktail</p>
-                <div style={fallbackTopRowStyle}>
-                  <div className="crea-generated-field" style={{ ...generatedFieldStyle, width: "min(44%, 420px)", minWidth: 280 }}>
+                <div className="crea-fallback-top-row" style={fallbackTopRowStyle}>
+                  <div className="crea-generated-field crea-fallback-name-field" style={{ ...generatedFieldStyle, width: "min(52%, 460px)", minWidth: 0, flex: "1 1 280px" }}>
                     <input
                       value={customGeneratedNames[cocktail.name] ?? ""}
                       onChange={(event) => {
@@ -926,7 +926,7 @@ const emptyStateStyle: React.CSSProperties = {
 const mobileCreaLayoutStyle = `
   @media (max-width: 768px) {
     .crea-page {
-      padding: 12px 8px 22px !important;
+      padding: 12px 6px 22px !important;
       max-width: 100% !important;
     }
 
@@ -999,8 +999,8 @@ const mobileCreaLayoutStyle = `
       border-radius: 16px !important;
       border: 1px solid rgba(51, 65, 85, 0.85) !important;
       background: linear-gradient(155deg, rgba(15, 23, 42, 0.98), rgba(10, 16, 30, 0.98)) !important;
-      width: calc(100% - 16px) !important;
-      max-width: 580px !important;
+      width: calc(100% - 8px) !important;
+      max-width: 620px !important;
       margin-left: auto !important;
       margin-right: auto !important;
       box-sizing: border-box !important;
@@ -1061,6 +1061,26 @@ const mobileCreaLayoutStyle = `
       margin-top: 12px !important;
       padding: 12px !important;
       border-radius: 14px !important;
+    }
+
+    .crea-fallback-top-row {
+      display: flex !important;
+      flex-direction: column !important;
+      gap: 10px !important;
+      align-items: stretch !important;
+    }
+
+    .crea-fallback-name-field {
+      width: 100% !important;
+      min-width: 0 !important;
+      flex: 1 1 auto !important;
+    }
+
+    .crea-fallback-top-row .btn-primary {
+      width: 100% !important;
+      justify-content: center !important;
+      min-height: 44px !important;
+      padding: 10px 12px !important;
     }
   }
 `;
