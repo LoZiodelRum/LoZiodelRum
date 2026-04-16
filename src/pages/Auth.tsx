@@ -77,7 +77,15 @@ export default function Auth() {
     }
 
     if (error) {
-      setMsg("Credenziali errate. Prova con email completa oppure username.");
+      const rawError = String(error?.message || "");
+      const lowerError = rawError.toLowerCase();
+      if (lowerError.includes("email not confirmed")) {
+        setMsg("Email non confermata. Apri il link ricevuto via email e riprova.");
+      } else if (lowerError.includes("invalid login credentials")) {
+        setMsg("Credenziali errate. Prova con email completa oppure username.");
+      } else {
+        setMsg(rawError || "Errore login");
+      }
       setLoading(false);
       return;
     }
@@ -96,7 +104,16 @@ export default function Auth() {
       .eq("id", user.id)
       .maybeSingle();
 
-    if (profiloError) {
+    const profiloErrorMessage = String(profiloError?.message || "").toLowerCase();
+    const profiloErrorCode = String((profiloError as any)?.code || "");
+    const profileReadBlocked =
+      profiloErrorCode === "42501" ||
+      profiloErrorMessage.includes("permission") ||
+      profiloErrorMessage.includes("row-level") ||
+      profiloErrorMessage.includes("violates row-level security");
+    const profileMissing = profiloErrorCode === "PGRST116";
+
+    if (profiloError && !profileReadBlocked && !profileMissing) {
       setMsg("Errore verifica profilo");
       setLoading(false);
       return;
@@ -125,9 +142,18 @@ export default function Auth() {
         .maybeSingle();
 
       if (recoverError) {
-        setMsg("Errore verifica profilo");
-        setLoading(false);
-        return;
+        const recoverMessage = String(recoverError?.message || "").toLowerCase();
+        const recoverCode = String((recoverError as any)?.code || "");
+        const recoverBlocked =
+          recoverCode === "42501" ||
+          recoverMessage.includes("permission") ||
+          recoverMessage.includes("row-level") ||
+          recoverMessage.includes("violates row-level security");
+        if (!recoverBlocked) {
+          setMsg("Errore verifica profilo");
+          setLoading(false);
+          return;
+        }
       }
 
       effectiveProfile = recoveredProfile || fallbackProfile;
