@@ -52,7 +52,7 @@ export default function PannelloControllo() {
 
   async function loadData() {
     const { data: localiData } = await supabase.from("Locali").select("*");
-    const { data: utentiData } = await supabase.from("profili").select("*");
+    const { data: utentiData } = await supabase.from("Profili").select("*");
     const { data: articoliData } = await supabase.from("articoli").select("*");
     const { data: cocktailData } = await supabase.from("cocktail").select("*");
     const { data: distillatiData } = await supabase.from("distillati").select("*");
@@ -96,7 +96,7 @@ export default function PannelloControllo() {
 
   async function toggleApprovazione(user: any) {
     await supabase
-      .from("profili")
+      .from("Profili")
       .update({ approvato: !user.approvato })
       .eq("id", user.id);
 

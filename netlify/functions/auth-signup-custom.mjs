@@ -85,8 +85,36 @@ export async function handler(event) {
     return json(400, { ok: false, message });
   }
 
+  const userId = data?.user?.id;
+  if (!userId) {
+    return json(500, { ok: false, message: "Utente creato senza id" });
+  }
+
+  const { error: profileError } = await supabaseAdmin
+    .from("Profili")
+    .upsert(
+      [
+        {
+          id: userId,
+          nome,
+          cognome,
+          username,
+          email,
+          ruolo: "utente",
+          status: "attivo",
+        },
+      ],
+      { onConflict: "id" }
+    );
+
+  if (profileError) {
+    await supabaseAdmin.auth.admin.deleteUser(userId).catch(() => undefined);
+    return json(500, { ok: false, message: `Errore salvataggio profilo: ${profileError.message}` });
+  }
+
   const actionLink = data?.properties?.action_link || data?.action_link;
   if (!actionLink) {
+    await supabaseAdmin.auth.admin.deleteUser(userId).catch(() => undefined);
     return json(500, { ok: false, message: "Link conferma non disponibile" });
   }
 
@@ -122,6 +150,7 @@ export async function handler(event) {
 
   if (!resendResponse.ok) {
     const resendErrorText = await resendResponse.text();
+    await supabaseAdmin.auth.admin.deleteUser(userId).catch(() => undefined);
     return json(502, {
       ok: false,
       message: `Invio email fallito: ${resendErrorText || resendResponse.status}`,
