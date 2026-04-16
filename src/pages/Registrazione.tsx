@@ -49,8 +49,8 @@ export default function Registrazione() {
 
     const isNetlifyHost = window.location.hostname.includes("netlify");
     const endpoints = isNetlifyHost
-      ? ["/.netlify/functions/auth-signup-custom", "/api/auth-signup-custom"]
-      : ["/api/auth-signup-custom", "/.netlify/functions/auth-signup-custom"];
+      ? ["/.netlify/functions/auth-signup", "/api/auth-signup"]
+      : ["/api/auth-signup", "/.netlify/functions/auth-signup"];
 
     let lastMessage = "Registrazione fallita";
 
@@ -67,6 +67,7 @@ export default function Registrazione() {
             username,
             email,
             password,
+            ruolo: "utente",
           }),
         });
 

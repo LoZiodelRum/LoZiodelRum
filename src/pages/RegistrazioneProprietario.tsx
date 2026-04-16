@@ -54,56 +54,103 @@ export default function RegistrazioneProprietario() {
       return;
     }
 
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
+    const isNetlifyHost = window.location.hostname.includes("netlify");
+    const endpoints = isNetlifyHost
+      ? ["/.netlify/functions/auth-signup", "/api/auth-signup"]
+      : ["/api/auth-signup", "/.netlify/functions/auth-signup"];
 
-    if (error) {
-      alert(error.message);
-      return;
+    let lastError = "Registrazione fallita";
+    const localeData = {
+      nome_locale: nomeLocale,
+      indirizzo,
+      citta: cittaLocale,
+      telefono,
+      email_business: emailBusiness,
+      descrizione,
+      tipologia,
+      fascia_prezzo: fasciaPrezzo,
+      target,
+      motivazione,
+      instagram,
+      sito,
+      preferenze_drink: preferenzeDrink,
+      visione,
+    };
+
+    // Prova endpoint server custom
+    for (const endpoint of endpoints) {
+      try {
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            nome,
+            cognome,
+            username,
+            email,
+            password,
+            ruolo: "proprietario",
+            datiSpecifici: { localeData },
+          }),
+        });
+
+        const payload = await response.json().catch(() => ({}));
+        if (response.ok && payload?.ok) {
+          alert("Registrazione inviata! Controlla la tua email per confermare.");
+          return;
+        }
+
+        lastError = payload?.message || `HTTP ${response.status}`;
+        if ((payload?.message || "").toLowerCase().includes("server env not configured")) {
+          break;
+        }
+        if (response.status !== 404 && response.status !== 405) {
+          break;
+        }
+      } catch (err: any) {
+        lastError = err?.message || "Errore di rete";
+      }
     }
 
-    const user = data.user;
-
-    // PROFILO
-    await supabase.from("Profili").insert([
-      {
-        id: user?.id,
-        nome,
-        cognome,
-        username,
+    // Fallback: registrazione diretta con Supabase (trigger creerà profilo)
+    try {
+      const { data, error } = await supabase.auth.signUp({
         email,
-        data_nascita: dataNascita,
-        citta,
-        bio,
-        ruolo: "proprietario",
-        status: "in_attesa",
-      },
-    ]);
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth`,
+          data: { nome, cognome, username },
+        },
+      });
 
-    // LOCALE
-    await supabase.from("Locali").insert([
-      {
-        id: user?.id,
-        nome_locale: nomeLocale,
-        indirizzo,
-        citta: cittaLocale,
-        telefono,
-        email_business: emailBusiness,
-        descrizione,
-        tipologia,
-        fascia_prezzo: fasciaPrezzo,
-        target,
-        motivazione,
-        instagram,
-        sito,
-        preferenze_drink: preferenzeDrink,
-        visione,
-      },
-    ]);
+      if (error) {
+        alert(error.message);
+        return;
+      }
 
-    alert("Registrazione inviata");
+      const user = data.user;
+      if (!user) {
+        alert("Errore creazione utente");
+        return;
+      }
+
+      // Inserisci solo i dati specifici (profilo creato dal trigger)
+      await supabase.from("Locali").insert([
+        {
+          id: user.id,
+          ...localeData,
+        },
+      ]);
+
+      if (data.session) {
+        await supabase.auth.signOut();
+        alert("Account creato. Conferma la tua email per completare la registrazione.");
+      } else {
+        alert("Registrazione inviata! Controlla la tua email per confermare.");
+      }
+    } catch (err: any) {
+      alert(`Errore: ${err.message || "Registrazione fallita"}`);
+    }
   }
 
   return (

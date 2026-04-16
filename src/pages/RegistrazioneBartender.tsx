@@ -56,56 +56,105 @@ export default function RegistrazioneBartender() {
       return;
     }
 
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-    });
+    const isNetlifyHost = window.location.hostname.includes("netlify");
+    const endpoints = isNetlifyHost
+      ? ["/.netlify/functions/auth-signup", "/api/auth-signup"]
+      : ["/api/auth-signup", "/.netlify/functions/auth-signup"];
 
-    if (error) {
-      alert(error.message);
-      return;
+    let lastError = "Registrazione fallita";
+    const bartenderData = {
+      scuole_corsi: scuoleCorsi,
+      certificazioni,
+      masterclass,
+      autodidatta,
+      locali_lavorati: localiLavorati,
+      ruoli_ricoperti: ruoliRicoperti,
+      anni_esperienza: anniEsperienza,
+      nome_locale_attuale: nomeLocaleAttuale,
+      ruolo_attuale: ruoloAttuale,
+      citta_attuale: cittaAttuale,
+      nome_signature: nomeSignature,
+      descrizione_signature: descrizioneSignature,
+      filosofia_drink: filosofiaDrink,
+      spiriti_preferiti: spiritiPreferiti,
+      stile_miscelazione: stileMiscelazione,
+      descrizione_personale: descrizionePersonale,
+    };
+
+    // Prova endpoint server custom
+    for (const endpoint of endpoints) {
+      try {
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            nome,
+            cognome,
+            username,
+            email,
+            password,
+            ruolo: "bartender",
+            datiSpecifici: { bartenderData },
+          }),
+        });
+
+        const payload = await response.json().catch(() => ({}));
+        if (response.ok && payload?.ok) {
+          alert("Registrazione inviata! Controlla la tua email per confermare.");
+          return;
+        }
+
+        lastError = payload?.message || `HTTP ${response.status}`;
+        if ((payload?.message || "").toLowerCase().includes("server env not configured")) {
+          break;
+        }
+        if (response.status !== 404 && response.status !== 405) {
+          break;
+        }
+      } catch (err: any) {
+        lastError = err?.message || "Errore di rete";
+      }
     }
 
-    const user = data.user;
-
-    await supabase.from("Profili").insert([
-      {
-        id: user?.id,
-        nome,
-        cognome,
-        username,
+    // Fallback: registrazione diretta con Supabase (trigger creerà profilo)
+    try {
+      const { data, error } = await supabase.auth.signUp({
         email,
-        data_nascita: dataNascita,
-        citta,
-        bio,
-        ruolo: "bartender",
-        status: "in_attesa",
-      },
-    ]);
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth`,
+          data: { nome, cognome, username },
+        },
+      });
 
-    await supabase.from("Bartender").insert([
-      {
-        id: user?.id,
-        scuole_corsi: scuoleCorsi,
-        certificazioni,
-        masterclass,
-        autodidatta,
-        locali_lavorati: localiLavorati,
-        ruoli_ricoperti: ruoliRicoperti,
-        anni_esperienza: anniEsperienza,
-        nome_locale_attuale: nomeLocaleAttuale,
-        ruolo_attuale: ruoloAttuale,
-        citta_attuale: cittaAttuale,
-        nome_signature: nomeSignature,
-        descrizione_signature: descrizioneSignature,
-        filosofia_drink: filosofiaDrink,
-        spiriti_preferiti: spiritiPreferiti,
-        stile_miscelazione: stileMiscelazione,
-        descrizione_personale: descrizionePersonale,
-      },
-    ]);
+      if (error) {
+        alert(error.message);
+        return;
+      }
 
-    alert("Registrazione inviata");
+      const user = data.user;
+      if (!user) {
+        alert("Errore creazione utente");
+        return;
+      }
+
+      // Inserisci solo i dati specifici (profilo creato dal trigger)
+      await supabase.from("Bartender").insert([
+        {
+          id: user.id,
+          ...bartenderData,
+        },
+      ]);
+
+      if (data.session) {
+        await supabase.auth.signOut();
+        alert("Account creato. Conferma la tua email per completare la registrazione.");
+      } else {
+        alert("Registrazione inviata! Controlla la tua email per confermare.");
+      }
+    } catch (err: any) {
+      alert(`Errore: ${err.message || "Registrazione fallita"}`);
+    }
   }
 
   return (
