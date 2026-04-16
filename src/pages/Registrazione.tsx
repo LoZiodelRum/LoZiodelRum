@@ -1,6 +1,5 @@
 import "../App.css";
 import { useState } from "react";
-import { supabase } from "../lib/supabaseClient";
 
 export default function Registrazione() {
   const [nome, setNome] = useState("");
@@ -10,33 +9,57 @@ export default function Registrazione() {
   const [password, setPassword] = useState("");
 
   const [messaggio, setMessaggio] = useState("");
+  const [loading, setLoading] = useState(false);
 
   async function handleRegister(e: any) {
     e.preventDefault();
 
     console.log("START REGISTER");
+    setLoading(true);
+    setMessaggio("");
 
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: { nome, cognome, username },
-      },
-    });
+    const isNetlifyHost = window.location.hostname.includes("netlify");
+    const endpoints = isNetlifyHost
+      ? ["/.netlify/functions/auth-signup-custom", "/api/auth-signup-custom"]
+      : ["/api/auth-signup-custom", "/.netlify/functions/auth-signup-custom"];
 
-    console.log("AUTH:", data, error);
+    let lastMessage = "Registrazione fallita";
 
-    if (error) {
-      setMessaggio(error.message);
-      return;
+    for (const endpoint of endpoints) {
+      try {
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            nome,
+            cognome,
+            username,
+            email,
+            password,
+          }),
+        });
+
+        const payload = await response.json().catch(() => ({}));
+        if (response.ok && payload?.ok) {
+          setMessaggio(payload.message || "Registrazione completata! Controlla la tua email per confermare l'account.");
+          setLoading(false);
+          return;
+        }
+
+        lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
+        if (response.status !== 404 && response.status !== 405) {
+          break;
+        }
+      } catch (err: any) {
+        lastMessage = err?.message || `Errore di rete su ${endpoint}`;
+      }
     }
 
-    if (!data.user) {
-      setMessaggio("Utente non creato");
-      return;
-    }
-
-    setMessaggio("Registrazione completata! Controlla la tua email per confermare l'account.");
+    setMessaggio(lastMessage);
+    setLoading(false);
+    return;
   }
 
   return (
@@ -44,13 +67,13 @@ export default function Registrazione() {
       <form onSubmit={handleRegister} className="form-card registration-form-shell">
         <h1>Registrazione Utente</h1>
 
-        <input placeholder="Nome" onChange={(e: any) => setNome(e.target.value)} />
-        <input placeholder="Cognome" onChange={(e: any) => setCognome(e.target.value)} />
-        <input placeholder="Username" onChange={(e: any) => setUsername(e.target.value)} />
-        <input placeholder="Email" onChange={(e: any) => setEmail(e.target.value)} />
-        <input type="password" placeholder="Password" onChange={(e: any) => setPassword(e.target.value)} />
+        <input placeholder="Nome" onChange={(e: any) => setNome(e.target.value)} required />
+        <input placeholder="Cognome" onChange={(e: any) => setCognome(e.target.value)} required />
+        <input placeholder="Username" onChange={(e: any) => setUsername(e.target.value)} required />
+        <input type="email" placeholder="Email" onChange={(e: any) => setEmail(e.target.value)} required />
+        <input type="password" placeholder="Password" onChange={(e: any) => setPassword(e.target.value)} required />
 
-        <button type="submit">Registrati</button>
+        <button type="submit" disabled={loading}>{loading ? "Invio in corso..." : "Registrati"}</button>
 
         {messaggio && <p style={{ marginTop: 10 }}>{messaggio}</p>}
       </form>

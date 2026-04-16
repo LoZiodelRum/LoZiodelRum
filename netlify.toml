@@ -25,6 +25,11 @@
   to = "/.netlify/functions/admin-save-locale"
   status = 200
 
+[[redirects]]
+  from = "/api/auth-signup-custom"
+  to = "/.netlify/functions/auth-signup-custom"
+  status = 200
+
 [[headers]]
   for = "/index.html"
   [headers.values]
