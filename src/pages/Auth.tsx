@@ -34,7 +34,8 @@ export default function Auth() {
     setLoading(true);
     setMsg("");
 
-    const loginValue = username.trim().toLowerCase();
+    const loginRaw = username.trim();
+    const loginValue = loginRaw.toLowerCase();
     const candidateEmails: string[] = [];
 
     if (loginValue.includes("@")) {
@@ -43,7 +44,7 @@ export default function Auth() {
       const { data: profileByUsername } = await supabase
         .from("Profili")
         .select("email")
-        .eq("username", loginValue)
+        .ilike("username", loginRaw)
         .maybeSingle();
 
       const resolvedEmail = String(profileByUsername?.email || "").trim().toLowerCase();
@@ -52,12 +53,15 @@ export default function Auth() {
       }
 
       // Backward compatibility for legacy accounts created as username@loziodelrum.it.
+      candidateEmails.push(`${loginRaw}@loziodelrum.it`);
       candidateEmails.push(`${loginValue}@loziodelrum.it`);
     }
 
+    const uniqueCandidateEmails = [...new Set(candidateEmails.map((value) => value.trim().toLowerCase()).filter(Boolean))];
+
     let data: any = null;
     let error: any = null;
-    for (const email of candidateEmails) {
+    for (const email of uniqueCandidateEmails) {
       const attempt = await supabase.auth.signInWithPassword({
         email,
         password,
@@ -88,9 +92,9 @@ export default function Auth() {
 
     const { data: profilo, error: profiloError } = await supabase
       .from("Profili")
-      .select("approvato")
+      .select("approvato, ruolo")
       .eq("id", user.id)
-      .single();
+      .maybeSingle();
 
     if (profiloError) {
       setMsg("Errore verifica profilo");
@@ -98,7 +102,38 @@ export default function Auth() {
       return;
     }
 
-    if (!profilo?.approvato) {
+    let effectiveProfile = profilo;
+
+    if (!effectiveProfile) {
+      const metadata = (user.user_metadata || {}) as Record<string, any>;
+      const fallbackRuolo = String(metadata.ruolo || "utente");
+      const fallbackProfile = {
+        id: user.id,
+        nome: String(metadata.nome || "").trim() || null,
+        cognome: String(metadata.cognome || "").trim() || null,
+        username: String(metadata.username || loginRaw || user.email?.split("@")[0] || "").trim() || null,
+        email: String(user.email || "").trim().toLowerCase() || null,
+        telefono: String(metadata.telefono || "").trim() || null,
+        ruolo: fallbackRuolo,
+        approvato: fallbackRuolo === "bartender" || fallbackRuolo === "proprietario" ? false : true,
+      };
+
+      const { data: recoveredProfile, error: recoverError } = await supabase
+        .from("Profili")
+        .upsert([fallbackProfile], { onConflict: "id" })
+        .select("approvato, ruolo")
+        .maybeSingle();
+
+      if (recoverError) {
+        setMsg("Errore verifica profilo");
+        setLoading(false);
+        return;
+      }
+
+      effectiveProfile = recoveredProfile || fallbackProfile;
+    }
+
+    if (!effectiveProfile?.approvato) {
       await supabase.auth.signOut();
       setMsg("Account in attesa di approvazione");
       setLoading(false);
