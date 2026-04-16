@@ -34,15 +34,46 @@ export default function Auth() {
     setLoading(true);
     setMsg("");
 
-    const email = `${username}@loziodelrum.it`;
+    const loginValue = username.trim().toLowerCase();
+    const candidateEmails: string[] = [];
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+    if (loginValue.includes("@")) {
+      candidateEmails.push(loginValue);
+    } else {
+      const { data: profileByUsername } = await supabase
+        .from("Profili")
+        .select("email")
+        .eq("username", loginValue)
+        .maybeSingle();
+
+      const resolvedEmail = String(profileByUsername?.email || "").trim().toLowerCase();
+      if (resolvedEmail) {
+        candidateEmails.push(resolvedEmail);
+      }
+
+      // Backward compatibility for legacy accounts created as username@loziodelrum.it.
+      candidateEmails.push(`${loginValue}@loziodelrum.it`);
+    }
+
+    let data: any = null;
+    let error: any = null;
+    for (const email of candidateEmails) {
+      const attempt = await supabase.auth.signInWithPassword({
+        email,
+        password,
+      });
+
+      if (!attempt.error && attempt.data?.user) {
+        data = attempt.data;
+        error = null;
+        break;
+      }
+
+      error = attempt.error;
+    }
 
     if (error) {
-      setMsg("Credenziali errate");
+      setMsg("Credenziali errate. Prova con email completa oppure username.");
       setLoading(false);
       return;
     }
@@ -237,7 +268,7 @@ export default function Auth() {
         {!isRegister && (
           <>
             <input
-              placeholder="Username"
+              placeholder="Email o Username"
               value={username}
               onChange={(e) => setUsername(e.target.value)}
               required
