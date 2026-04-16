@@ -1,65 +1,128 @@
 import "../App.css";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "../lib/supabaseClient";
 
 export default function Registrazione() {
+  const navigate = useNavigate();
+
   const [nome, setNome] = useState("");
   const [cognome, setCognome] = useState("");
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [phone, setPhone] = useState("");
+  const [otpCode, setOtpCode] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const [metodo, setMetodo] = useState<"sms" | "email">("sms");
 
   const [messaggio, setMessaggio] = useState("");
   const [loading, setLoading] = useState(false);
 
+  function normalizePhone(raw: string) {
+    const cleaned = raw.replace(/[\s()-]/g, "").trim();
+    if (!cleaned) return "";
+    if (cleaned.startsWith("+")) return cleaned;
+    if (cleaned.startsWith("00")) return `+${cleaned.slice(2)}`;
+    return `+39${cleaned}`;
+  }
+
+  async function handleEmailRegister() {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { nome, cognome, username },
+      },
+    });
+
+    if (error) {
+      setMessaggio(error.message);
+      return;
+    }
+
+    if (!data.user) {
+      setMessaggio("Utente non creato");
+      return;
+    }
+
+    setMessaggio("Registrazione completata! Controlla la tua email per confermare l'account.");
+  }
+
+  async function handleSmsSendOtp() {
+    const normalizedPhone = normalizePhone(phone);
+    if (!/^\+[1-9]\d{7,14}$/.test(normalizedPhone)) {
+      setMessaggio("Numero non valido. Inserisci il prefisso, es: +393331234567");
+      return;
+    }
+
+    const { error } = await supabase.auth.signInWithOtp({
+      phone: normalizedPhone,
+      options: {
+        shouldCreateUser: true,
+        data: { nome, cognome, username },
+      },
+    });
+
+    if (error) {
+      setMessaggio(error.message);
+      return;
+    }
+
+    setOtpSent(true);
+    setMessaggio("Codice SMS inviato. Inserisci l'OTP per completare la registrazione.");
+  }
+
+  async function handleSmsVerifyOtp() {
+    const normalizedPhone = normalizePhone(phone);
+    const code = otpCode.trim();
+
+    if (!code) {
+      setMessaggio("Inserisci il codice OTP ricevuto via SMS");
+      return;
+    }
+
+    const { error } = await supabase.auth.verifyOtp({
+      phone: normalizedPhone,
+      token: code,
+      type: "sms",
+    });
+
+    if (error) {
+      setMessaggio(error.message);
+      return;
+    }
+
+    setMessaggio("Registrazione completata con SMS");
+    setTimeout(() => {
+      navigate("/");
+      window.location.reload();
+    }, 500);
+  }
+
   async function handleRegister(e: any) {
     e.preventDefault();
 
-    console.log("START REGISTER");
     setLoading(true);
     setMessaggio("");
 
-    const isNetlifyHost = window.location.hostname.includes("netlify");
-    const endpoints = isNetlifyHost
-      ? ["/.netlify/functions/auth-signup-custom", "/api/auth-signup-custom"]
-      : ["/api/auth-signup-custom", "/.netlify/functions/auth-signup-custom"];
+    if (!nome.trim() || !cognome.trim() || !username.trim()) {
+      setMessaggio("Compila nome, cognome e username");
+      setLoading(false);
+      return;
+    }
 
-    let lastMessage = "Registrazione fallita";
-
-    for (const endpoint of endpoints) {
-      try {
-        const response = await fetch(endpoint, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            nome,
-            cognome,
-            username,
-            email,
-            password,
-          }),
-        });
-
-        const payload = await response.json().catch(() => ({}));
-        if (response.ok && payload?.ok) {
-          setMessaggio(payload.message || "Registrazione completata! Controlla la tua email per confermare l'account.");
-          setLoading(false);
-          return;
-        }
-
-        lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
-        if (response.status !== 404 && response.status !== 405) {
-          break;
-        }
-      } catch (err: any) {
-        lastMessage = err?.message || `Errore di rete su ${endpoint}`;
+    if (metodo === "email") {
+      await handleEmailRegister();
+    } else {
+      if (!otpSent) {
+        await handleSmsSendOtp();
+      } else {
+        await handleSmsVerifyOtp();
       }
     }
 
-    setMessaggio(lastMessage);
     setLoading(false);
-    return;
   }
 
   return (
@@ -67,13 +130,75 @@ export default function Registrazione() {
       <form onSubmit={handleRegister} className="form-card registration-form-shell">
         <h1>Registrazione Utente</h1>
 
-        <input placeholder="Nome" onChange={(e: any) => setNome(e.target.value)} required />
-        <input placeholder="Cognome" onChange={(e: any) => setCognome(e.target.value)} required />
-        <input placeholder="Username" onChange={(e: any) => setUsername(e.target.value)} required />
-        <input type="email" placeholder="Email" onChange={(e: any) => setEmail(e.target.value)} required />
-        <input type="password" placeholder="Password" onChange={(e: any) => setPassword(e.target.value)} required />
+        <div style={{ display: "flex", gap: 8 }}>
+          <button
+            type="button"
+            onClick={() => {
+              setMetodo("sms");
+              setOtpSent(false);
+              setOtpCode("");
+              setMessaggio("");
+            }}
+            style={{ opacity: metodo === "sms" ? 1 : 0.7 }}
+          >
+            SMS
+          </button>
+          <button
+            type="button"
+            onClick={() => {
+              setMetodo("email");
+              setOtpSent(false);
+              setOtpCode("");
+              setMessaggio("");
+            }}
+            style={{ opacity: metodo === "email" ? 1 : 0.7 }}
+          >
+            Email
+          </button>
+        </div>
 
-        <button type="submit" disabled={loading}>{loading ? "Invio in corso..." : "Registrati"}</button>
+        <input placeholder="Nome" value={nome} onChange={(e: any) => setNome(e.target.value)} required />
+        <input placeholder="Cognome" value={cognome} onChange={(e: any) => setCognome(e.target.value)} required />
+        <input placeholder="Username" value={username} onChange={(e: any) => setUsername(e.target.value)} required />
+
+        {metodo === "email" && (
+          <>
+            <input type="email" placeholder="Email" value={email} onChange={(e: any) => setEmail(e.target.value)} required />
+            <input type="password" placeholder="Password" value={password} onChange={(e: any) => setPassword(e.target.value)} required />
+          </>
+        )}
+
+        {metodo === "sms" && (
+          <>
+            <input
+              type="tel"
+              placeholder="Cellulare (+393331234567)"
+              value={phone}
+              onChange={(e: any) => setPhone(e.target.value)}
+              required
+            />
+
+            {otpSent && (
+              <input
+                type="text"
+                placeholder="Codice OTP"
+                value={otpCode}
+                onChange={(e: any) => setOtpCode(e.target.value)}
+                required
+              />
+            )}
+          </>
+        )}
+
+        <button type="submit" disabled={loading}>
+          {loading
+            ? "Invio in corso..."
+            : metodo === "sms"
+              ? otpSent
+                ? "Verifica Codice SMS"
+                : "Invia Codice SMS"
+              : "Registrati"}
+        </button>
 
         {messaggio && <p style={{ marginTop: 10 }}>{messaggio}</p>}
       </form>

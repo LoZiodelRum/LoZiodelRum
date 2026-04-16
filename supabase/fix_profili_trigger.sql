@@ -7,13 +7,17 @@ BEGIN
   INSERT INTO public."Profili" (id, nome, cognome, username, email, ruolo, status)
   VALUES (
     NEW.id,
-    NEW.raw_user_meta_data->>'nome',
-    NEW.raw_user_meta_data->>'cognome',
-    NEW.raw_user_meta_data->>'username',
-    NEW.email,
+    COALESCE(NEW.raw_user_meta_data->>'nome', ''),
+    COALESCE(NEW.raw_user_meta_data->>'cognome', ''),
+    COALESCE(
+      NEW.raw_user_meta_data->>'username',
+      split_part(COALESCE(NEW.email, NEW.phone, 'utente'), '@', 1)
+    ),
+    COALESCE(NEW.email, NEW.phone),
     'utente',
     'attivo'
-  );
+  )
+  ON CONFLICT (id) DO NOTHING;
   RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
