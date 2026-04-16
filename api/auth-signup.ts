@@ -71,7 +71,12 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     email,
     password,
     options: {
-        data: { nome, cognome, username, telefono },
+      data: { nome, cognome, username, telefono },
+      redirectTo,
+    },
+  });
+
+  if (error) {
     const message = error.message || "Errore in registrazione";
     if (message.toLowerCase().includes("already") || message.toLowerCase().includes("exists")) {
       return res.status(409).json({ ok: false, message: "Email gia registrata" });
@@ -96,6 +101,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
             cognome,
             username,
             email,
+            telefono,
             ruolo,
             status: ruolo === "utente" ? "attivo" : "in_attesa",
           },

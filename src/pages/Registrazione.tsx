@@ -19,7 +19,7 @@ export default function Registrazione() {
       password,
       options: {
         emailRedirectTo: `${window.location.origin}/auth`,
-        data: { nome, cognome, username },
+        data: { nome, cognome, username, telefono: telefono || null },
       },
     });
 
@@ -82,6 +82,11 @@ export default function Registrazione() {
 
         lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
         if ((payload?.message || "").toLowerCase().includes("server env not configured")) {
+          await registerWithSupabaseDirect();
+          setLoading(false);
+          return;
+        }
+        if (response.status >= 500) {
           await registerWithSupabaseDirect();
           setLoading(false);
           return;
