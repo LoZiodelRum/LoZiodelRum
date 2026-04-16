@@ -16,7 +16,7 @@ const SUPABASE_URL = env.SUPABASE_URL || env.VITE_SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = env.SUPABASE_SERVICE_ROLE_KEY;
 const AUTH_FROM_EMAIL = env.AUTH_FROM_EMAIL || "info@loziodelrum.it";
 const AUTH_FROM_NAME = env.AUTH_FROM_NAME || "DrinkWise by Lo Zio del Rum";
-const APP_URL = env.APP_URL || env.URL || env.VITE_APP_URL || "https://loziodelrum.it";
+const APP_URL = env.APP_URL || env.URL || "https://loziodelrum.it";
 const RESEND_API_KEY = env.RESEND_API_KEY;
 
 function normalizeEmail(value: unknown) {
