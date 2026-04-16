@@ -1,10 +1,14 @@
 import { createClient } from "@supabase/supabase-js";
+import nodemailer from "nodemailer";
 
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
-const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const AUTH_FROM_EMAIL = process.env.AUTH_FROM_EMAIL || "info@loziodelrum.it";
 const AUTH_FROM_NAME = process.env.AUTH_FROM_NAME || "DrinkWise by Lo Zio del Rum";
+const SMTP_HOST = process.env.SMTP_HOST || "smtp.aruba.it";
+const SMTP_PORT = Number(process.env.SMTP_PORT || 587);
+const SMTP_USER = process.env.SMTP_USER || AUTH_FROM_EMAIL;
+const SMTP_PASSWORD = process.env.SMTP_PASSWORD || process.env.AUTH_EMAIL_PASSWORD;
 const APP_URL =
   process.env.APP_URL ||
   process.env.URL ||
@@ -33,7 +37,7 @@ export async function handler(event) {
     return json(405, { ok: false, message: "Method not allowed" });
   }
 
-  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !RESEND_API_KEY) {
+  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !SMTP_PASSWORD) {
     return json(500, { ok: false, message: "Server env not configured" });
   }
 
@@ -175,26 +179,28 @@ export async function handler(event) {
     </div>
   `;
 
-  const resendResponse = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${RESEND_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
+  try {
+    const transporter = nodemailer.createTransport({
+      host: SMTP_HOST,
+      port: SMTP_PORT,
+      secure: SMTP_PORT === 465,
+      auth: {
+        user: SMTP_USER,
+        pass: SMTP_PASSWORD,
+      },
+    });
+
+    await transporter.sendMail({
       from,
-      to: [email],
+      to: email,
       subject,
       html,
-    }),
-  });
-
-  if (!resendResponse.ok) {
-    const resendErrorText = await resendResponse.text();
+    });
+  } catch (smtpError) {
     await supabaseAdmin.auth.admin.deleteUser(userId).catch(() => undefined);
     return json(502, {
       ok: false,
-      message: `Invio email fallito: ${resendErrorText || resendResponse.status}`,
+      message: `Invio email fallito: ${smtpError?.message || "SMTP error"}`,
     });
   }
 

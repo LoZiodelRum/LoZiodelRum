@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import nodemailer from "nodemailer";
 
 type ApiRequest = {
   method?: string;
@@ -13,10 +14,13 @@ type ApiResponse = {
 const env = ((globalThis as any)?.process?.env || {}) as Record<string, string | undefined>;
 const SUPABASE_URL = env.SUPABASE_URL || env.VITE_SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = env.SUPABASE_SERVICE_ROLE_KEY;
-const RESEND_API_KEY = env.RESEND_API_KEY;
 const AUTH_FROM_EMAIL = env.AUTH_FROM_EMAIL || "info@loziodelrum.it";
 const AUTH_FROM_NAME = env.AUTH_FROM_NAME || "DrinkWise by Lo Zio del Rum";
 const APP_URL = env.APP_URL || env.URL || env.VITE_APP_URL || "https://loziodelrum.it";
+const SMTP_HOST = env.SMTP_HOST || "smtp.aruba.it";
+const SMTP_PORT = Number(env.SMTP_PORT || 587);
+const SMTP_USER = env.SMTP_USER || AUTH_FROM_EMAIL;
+const SMTP_PASSWORD = env.SMTP_PASSWORD || env.AUTH_EMAIL_PASSWORD;
 
 function normalizeEmail(value: unknown) {
   return String(value || "").trim().toLowerCase();
@@ -31,7 +35,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     return res.status(405).json({ ok: false, message: "Method not allowed" });
   }
 
-  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !RESEND_API_KEY) {
+  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !SMTP_PASSWORD) {
     return res.status(500).json({ ok: false, message: "Server env not configured" });
   }
 
@@ -166,26 +170,28 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     </div>
   `;
 
-  const resendResponse = await fetch("https://api.resend.com/emails", {
-    method: "POST",
-    headers: {
-      Authorization: `Bearer ${RESEND_API_KEY}`,
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify({
+  try {
+    const transporter = nodemailer.createTransport({
+      host: SMTP_HOST,
+      port: SMTP_PORT,
+      secure: SMTP_PORT === 465,
+      auth: {
+        user: SMTP_USER,
+        pass: SMTP_PASSWORD,
+      },
+    });
+
+    await transporter.sendMail({
       from,
-      to: [email],
+      to: email,
       subject,
       html,
-    }),
-  });
-
-  if (!resendResponse.ok) {
-    const resendErrorText = await resendResponse.text();
+    });
+  } catch (smtpError: any) {
     await supabaseAdmin.auth.admin.deleteUser(userId).catch(() => undefined);
     return res.status(502).json({
       ok: false,
-      message: `Invio email fallito: ${resendErrorText || resendResponse.status}`,
+      message: `Invio email fallito: ${smtpError?.message || "SMTP error"}`,
     });
   }
 
