@@ -1,14 +1,11 @@
 import { createClient } from "@supabase/supabase-js";
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const AUTH_FROM_EMAIL = process.env.AUTH_FROM_EMAIL || "info@loziodelrum.it";
 const AUTH_FROM_NAME = process.env.AUTH_FROM_NAME || "DrinkWise by Lo Zio del Rum";
-const SMTP_HOST = process.env.SMTP_HOST || "smtp.aruba.it";
-const SMTP_PORT = Number(process.env.SMTP_PORT || 587);
-const SMTP_USER = process.env.SMTP_USER || AUTH_FROM_EMAIL;
-const SMTP_PASSWORD = process.env.SMTP_PASSWORD || process.env.AUTH_EMAIL_PASSWORD;
+const RESEND_API_KEY = process.env.RESEND_API_KEY;
 const APP_URL =
   process.env.APP_URL ||
   process.env.URL ||
@@ -51,7 +48,7 @@ export async function handler(event) {
   const missingEnv = [];
   if (!SUPABASE_URL) missingEnv.push("SUPABASE_URL");
   if (!SUPABASE_SERVICE_ROLE_KEY) missingEnv.push("SUPABASE_SERVICE_ROLE_KEY");
-  if (!SMTP_PASSWORD) missingEnv.push("SMTP_PASSWORD");
+  if (!RESEND_API_KEY) missingEnv.push("RESEND_API_KEY");
 
   if (missingEnv.length > 0) {
     return json(500, { ok: false, message: `Server env not configured: ${missingEnv.join(", ")}` });
@@ -199,27 +196,21 @@ export async function handler(event) {
   `;
 
   try {
-    const transporter = nodemailer.createTransport({
-      host: SMTP_HOST,
-      port: SMTP_PORT,
-      secure: SMTP_PORT === 465,
-      auth: {
-        user: SMTP_USER,
-        pass: SMTP_PASSWORD,
-      },
-    });
-
-    await transporter.sendMail({
+    const resend = new Resend(RESEND_API_KEY);
+    const { error: emailError } = await resend.emails.send({
       from,
       to: email,
       subject,
       html,
     });
+    if (emailError) {
+      throw new Error(emailError.message);
+    }
   } catch (smtpError) {
     await supabaseAdmin.auth.admin.deleteUser(userId).catch(() => undefined);
     return json(502, {
       ok: false,
-      message: `Invio email fallito: ${smtpError?.message || "SMTP error"}`,
+      message: `Invio email fallito: ${smtpError?.message || "Resend error"}`,
     });
   }
 

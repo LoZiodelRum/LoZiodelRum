@@ -1,5 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
-import nodemailer from "nodemailer";
+import { Resend } from "resend";
 
 type ApiRequest = {
   method?: string;
@@ -17,10 +17,7 @@ const SUPABASE_SERVICE_ROLE_KEY = env.SUPABASE_SERVICE_ROLE_KEY;
 const AUTH_FROM_EMAIL = env.AUTH_FROM_EMAIL || "info@loziodelrum.it";
 const AUTH_FROM_NAME = env.AUTH_FROM_NAME || "DrinkWise by Lo Zio del Rum";
 const APP_URL = env.APP_URL || env.URL || env.VITE_APP_URL || "https://loziodelrum.it";
-const SMTP_HOST = env.SMTP_HOST || "smtp.aruba.it";
-const SMTP_PORT = Number(env.SMTP_PORT || 587);
-const SMTP_USER = env.SMTP_USER || AUTH_FROM_EMAIL;
-const SMTP_PASSWORD = env.SMTP_PASSWORD || env.AUTH_EMAIL_PASSWORD;
+const RESEND_API_KEY = env.RESEND_API_KEY;
 
 function normalizeEmail(value: unknown) {
   return String(value || "").trim().toLowerCase();
@@ -49,7 +46,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
   const missingEnv: string[] = [];
   if (!SUPABASE_URL) missingEnv.push("SUPABASE_URL");
   if (!SUPABASE_SERVICE_ROLE_KEY) missingEnv.push("SUPABASE_SERVICE_ROLE_KEY");
-  if (!SMTP_PASSWORD) missingEnv.push("SMTP_PASSWORD");
+  if (!RESEND_API_KEY) missingEnv.push("RESEND_API_KEY");
 
   if (missingEnv.length > 0) {
     return res.status(500).json({
@@ -193,27 +190,21 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
   `;
 
   try {
-    const transporter = nodemailer.createTransport({
-      host: SMTP_HOST,
-      port: SMTP_PORT,
-      secure: SMTP_PORT === 465,
-      auth: {
-        user: SMTP_USER,
-        pass: SMTP_PASSWORD,
-      },
-    });
-
-    await transporter.sendMail({
+    const resend = new Resend(RESEND_API_KEY);
+    const { error: emailError } = await resend.emails.send({
       from,
       to: email,
       subject,
       html,
     });
+    if (emailError) {
+      throw new Error(emailError.message);
+    }
   } catch (smtpError: any) {
     await supabaseAdmin.auth.admin.deleteUser(userId).catch(() => undefined);
     return res.status(502).json({
       ok: false,
-      message: `Invio email fallito: ${smtpError?.message || "SMTP error"}`,
+      message: `Invio email fallito: ${smtpError?.message || "Resend error"}`,
     });
   }
 
