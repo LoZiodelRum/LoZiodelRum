@@ -19,6 +19,9 @@ export default function Registrazione() {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
+      options: {
+        data: { nome, cognome, username },
+      },
     });
 
     console.log("AUTH:", data, error);
@@ -28,33 +31,12 @@ export default function Registrazione() {
       return;
     }
 
-    const user = data.user;
-
-    if (!user) {
+    if (!data.user) {
       setMessaggio("Utente non creato");
       return;
     }
 
-    const { error: profiloError } = await supabase.from("Profili").insert([
-      {
-        id: user.id,
-        nome,
-        cognome,
-        username,
-        email,
-        ruolo: "utente",
-        status: "attivo",
-      },
-    ]);
-
-    console.log("PROFILO:", profiloError);
-
-    if (profiloError) {
-      setMessaggio(profiloError.message);
-      return;
-    }
-
-    setMessaggio("Registrazione completata");
+    setMessaggio("Registrazione completata! Controlla la tua email per confermare l'account.");
   }
 
   return (
