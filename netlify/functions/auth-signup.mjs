@@ -49,6 +49,7 @@ export async function handler(event) {
   const username = String(parsed?.username || "").trim();
   const email = normalizeEmail(parsed?.email);
   const password = String(parsed?.password || "");
+  const telefono = String(parsed?.telefono || "").trim() || null;
   const ruolo = String(parsed?.ruolo || "utente").trim();
   const datiSpecifici = parsed?.datiSpecifici || {};
 
@@ -79,7 +80,7 @@ export async function handler(event) {
     email,
     password,
     options: {
-      data: { nome, cognome, username },
+      data: { nome, cognome, username, telefono },
       redirectTo,
     },
   });
@@ -109,6 +110,7 @@ export async function handler(event) {
             cognome,
             username,
             email,
+            telefono,
             ruolo,
             status: ruolo === "utente" ? "attivo" : "in_attesa",
           },

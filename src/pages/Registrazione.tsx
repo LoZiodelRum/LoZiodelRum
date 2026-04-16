@@ -8,6 +8,7 @@ export default function Registrazione() {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [telefono, setTelefono] = useState("");
 
   const [messaggio, setMessaggio] = useState("");
   const [loading, setLoading] = useState(false);
@@ -68,6 +69,7 @@ export default function Registrazione() {
             email,
             password,
             ruolo: "utente",
+            telefono: telefono || null,
           }),
         });
 
@@ -112,6 +114,7 @@ export default function Registrazione() {
         <input placeholder="Username" onChange={(e: any) => setUsername(e.target.value)} required />
         <input type="email" placeholder="Email" onChange={(e: any) => setEmail(e.target.value)} required />
         <input type="password" placeholder="Password" onChange={(e: any) => setPassword(e.target.value)} required />
+        <input type="tel" placeholder="Cellulare (opzionale)" onChange={(e: any) => setTelefono(e.target.value)} />
 
         <button type="submit" disabled={loading}>{loading ? "Invio in corso..." : "Registrati"}</button>
 

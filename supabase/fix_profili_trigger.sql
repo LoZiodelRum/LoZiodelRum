@@ -4,7 +4,7 @@
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public."Profili" (id, nome, cognome, username, email, ruolo, status)
+  INSERT INTO public."Profili" (id, nome, cognome, username, email, telefono, ruolo, status)
   VALUES (
     NEW.id,
     COALESCE(NEW.raw_user_meta_data->>'nome', ''),
@@ -14,6 +14,7 @@ BEGIN
       split_part(COALESCE(NEW.email, NEW.phone, 'utente'), '@', 1)
     ),
     COALESCE(NEW.email, NEW.phone),
+    NULLIF(NEW.raw_user_meta_data->>'telefono', ''),
     'utente',
     'attivo'
   )

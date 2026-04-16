@@ -40,6 +40,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
   const username = String(req.body?.username || "").trim();
   const email = normalizeEmail(req.body?.email);
   const password = String(req.body?.password || "");
+  const telefono = String(req.body?.telefono || "").trim() || null;
   const ruolo = String(req.body?.ruolo || "utente").trim();
   const datiSpecifici = req.body?.datiSpecifici || {};
 
@@ -70,12 +71,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     email,
     password,
     options: {
-      data: { nome, cognome, username },
-      redirectTo,
-    },
-  });
-
-  if (error) {
+        data: { nome, cognome, username, telefono },
     const message = error.message || "Errore in registrazione";
     if (message.toLowerCase().includes("already") || message.toLowerCase().includes("exists")) {
       return res.status(409).json({ ok: false, message: "Email gia registrata" });
