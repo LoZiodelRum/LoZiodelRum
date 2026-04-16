@@ -86,11 +86,6 @@ export default function Registrazione() {
           setLoading(false);
           return;
         }
-        if (response.status >= 500) {
-          await registerWithSupabaseDirect();
-          setLoading(false);
-          return;
-        }
         if (response.status !== 404 && response.status !== 405) {
           break;
         }

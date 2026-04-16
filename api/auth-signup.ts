@@ -30,6 +30,17 @@ function isValidEmail(value: string) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
+function getProfileConflictMessage(error: any) {
+  const raw = String(error?.message || "").toLowerCase();
+  if (raw.includes("username")) {
+    return "Username gia in uso";
+  }
+  if (raw.includes("email")) {
+    return "Email gia in uso";
+  }
+  return "Conflitto dati profilo: username o email gia usati";
+}
+
 export default async function handler(req: ApiRequest, res: ApiResponse) {
   if (req.method !== "POST") {
     return res.status(405).json({ ok: false, message: "Method not allowed" });
@@ -115,6 +126,9 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
 
     if (profileError) {
       await supabaseAdmin.auth.admin.deleteUser(userId).catch(() => undefined);
+      if (String(profileError?.code || "") === "23505" || String(profileError?.message || "").toLowerCase().includes("duplicate")) {
+        return res.status(409).json({ ok: false, message: getProfileConflictMessage(profileError) });
+      }
       return res.status(500).json({ ok: false, message: `Errore salvataggio profilo: ${profileError.message}` });
     }
 

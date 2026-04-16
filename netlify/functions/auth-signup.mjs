@@ -32,6 +32,17 @@ function isValidEmail(value) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
+function getProfileConflictMessage(error) {
+  const raw = String(error?.message || "").toLowerCase();
+  if (raw.includes("username")) {
+    return "Username gia in uso";
+  }
+  if (raw.includes("email")) {
+    return "Email gia in uso";
+  }
+  return "Conflitto dati profilo: username o email gia usati";
+}
+
 export async function handler(event) {
   if (event.httpMethod !== "POST") {
     return json(405, { ok: false, message: "Method not allowed" });
@@ -124,6 +135,9 @@ export async function handler(event) {
 
     if (profileError) {
       await supabaseAdmin.auth.admin.deleteUser(userId).catch(() => undefined);
+      if (String(profileError?.code || "") === "23505" || String(profileError?.message || "").toLowerCase().includes("duplicate")) {
+        return json(409, { ok: false, message: getProfileConflictMessage(profileError) });
+      }
       return json(500, { ok: false, message: `Errore salvataggio profilo: ${profileError.message}` });
     }
 
