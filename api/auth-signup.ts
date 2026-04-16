@@ -46,8 +46,16 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     return res.status(405).json({ ok: false, message: "Method not allowed" });
   }
 
-  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !SMTP_PASSWORD) {
-    return res.status(500).json({ ok: false, message: "Server env not configured" });
+  const missingEnv: string[] = [];
+  if (!SUPABASE_URL) missingEnv.push("SUPABASE_URL");
+  if (!SUPABASE_SERVICE_ROLE_KEY) missingEnv.push("SUPABASE_SERVICE_ROLE_KEY");
+  if (!SMTP_PASSWORD) missingEnv.push("SMTP_PASSWORD");
+
+  if (missingEnv.length > 0) {
+    return res.status(500).json({
+      ok: false,
+      message: `Server env not configured: ${missingEnv.join(", ")}`,
+    });
   }
 
   const nome = String(req.body?.nome || "").trim();

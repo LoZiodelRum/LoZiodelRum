@@ -48,8 +48,13 @@ export async function handler(event) {
     return json(405, { ok: false, message: "Method not allowed" });
   }
 
-  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !SMTP_PASSWORD) {
-    return json(500, { ok: false, message: "Server env not configured" });
+  const missingEnv = [];
+  if (!SUPABASE_URL) missingEnv.push("SUPABASE_URL");
+  if (!SUPABASE_SERVICE_ROLE_KEY) missingEnv.push("SUPABASE_SERVICE_ROLE_KEY");
+  if (!SMTP_PASSWORD) missingEnv.push("SMTP_PASSWORD");
+
+  if (missingEnv.length > 0) {
+    return json(500, { ok: false, message: `Server env not configured: ${missingEnv.join(", ")}` });
   }
 
   let parsed;
