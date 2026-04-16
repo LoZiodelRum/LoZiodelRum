@@ -1,5 +1,6 @@
 import "../App.css";
 import { useState } from "react";
+import { supabase } from "../lib/supabaseClient";
 
 export default function Registrazione() {
   const [nome, setNome] = useState("");
@@ -10,6 +11,28 @@ export default function Registrazione() {
 
   const [messaggio, setMessaggio] = useState("");
   const [loading, setLoading] = useState(false);
+
+  async function registerWithSupabaseDirect() {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: {
+        data: { nome, cognome, username },
+      },
+    });
+
+    if (error) {
+      setMessaggio(error.message);
+      return;
+    }
+
+    if (!data.user) {
+      setMessaggio("Utente non creato");
+      return;
+    }
+
+    setMessaggio("Registrazione completata! Controlla la tua email per confermare l'account.");
+  }
 
   async function handleRegister(e: any) {
     e.preventDefault();
@@ -48,12 +71,23 @@ export default function Registrazione() {
         }
 
         lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
+        if ((payload?.message || "").toLowerCase().includes("server env not configured")) {
+          await registerWithSupabaseDirect();
+          setLoading(false);
+          return;
+        }
         if (response.status !== 404 && response.status !== 405) {
           break;
         }
       } catch (err: any) {
         lastMessage = err?.message || `Errore di rete su ${endpoint}`;
       }
+    }
+
+    if (lastMessage.toLowerCase().includes("server env not configured")) {
+      await registerWithSupabaseDirect();
+      setLoading(false);
+      return;
     }
 
     setMessaggio(lastMessage);
