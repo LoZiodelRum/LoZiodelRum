@@ -6,11 +6,19 @@ const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const AUTH_FROM_EMAIL = process.env.AUTH_FROM_EMAIL || "info@loziodelrum.it";
 const AUTH_FROM_NAME = process.env.AUTH_FROM_NAME || "DrinkWise by Lo Zio del Rum";
 const RESEND_API_KEY = process.env.RESEND_API_KEY;
-const APP_URL =
-  process.env.APP_URL ||
-  process.env.URL ||
-  process.env.SITE_URL ||
-  "https://loziodelrum.it";
+const DEFAULT_APP_URL = "https://loziodelrum.it";
+
+function resolveAppUrl(...candidates) {
+  for (const candidate of candidates) {
+    const value = String(candidate || "").trim().replace(/\/$/, "");
+    if (!value) continue;
+    if (/^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/i.test(value)) continue;
+    return value;
+  }
+  return DEFAULT_APP_URL;
+}
+
+const APP_URL = resolveAppUrl(process.env.APP_URL, process.env.URL, process.env.SITE_URL);
 
 function json(statusCode, payload) {
   return {
@@ -89,7 +97,7 @@ export async function handler(event) {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 
-  const redirectTo = `${APP_URL.replace(/\/$/, "")}/auth`;
+  const redirectTo = `${APP_URL}/auth`;
 
   const { data, error } = await supabaseAdmin.auth.admin.generateLink({
     type: "signup",
