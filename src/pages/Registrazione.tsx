@@ -17,6 +17,7 @@ export default function Registrazione() {
       email,
       password,
       options: {
+        emailRedirectTo: `${window.location.origin}/auth`,
         data: { nome, cognome, username },
       },
     });
@@ -28,6 +29,12 @@ export default function Registrazione() {
 
     if (!data.user) {
       setMessaggio("Utente non creato");
+      return;
+    }
+
+    if (data.session) {
+      await supabase.auth.signOut();
+      setMessaggio("Account creato. Conferma email attualmente disattivata in Supabase: attivala per richiedere la verifica obbligatoria.");
       return;
     }
 
