@@ -9,7 +9,6 @@ const APP_URL =
   process.env.APP_URL ||
   process.env.URL ||
   process.env.SITE_URL ||
-  process.env.VITE_APP_URL ||
   "https://loziodelrum.it";
 
 function json(statusCode, payload) {
