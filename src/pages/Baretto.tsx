@@ -282,143 +282,221 @@ export default function Baretto() {
     setTestoNuovo("");
   }
 
-  return (
-    <div className="page page-full-bleed fade-in" style={{ minHeight: "100vh", background: "#0c0a09", padding: 0, display: "flex", flexDirection: "column" }}>
-      <div style={{ maxWidth: 1400, margin: "0 auto", padding: isMobile ? "12px 8px" : 24, width: "100%", flex: 1, display: "flex", flexDirection: "column" }}>
-        {/* HEADER */}
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: isMobile ? 8 : 12, gap: 8 }}>
-          <h1 style={{ margin: 0, color: "#f5a623", fontSize: isMobile ? "1.1rem" : "clamp(1.3rem, 2.4vw, 2rem)", flex: 1 }}>Il Baretto</h1>
-          
-          {isMobile && (
+  return isMobile ? (
+    // ===== MOBILE LAYOUT =====
+    <div style={{ height: "100vh", background: "#0c0a09", display: "flex", flexDirection: "column", overflow: "hidden" }}>
+      {/* HEADER */}
+      <div style={{ padding: "10px 12px", borderBottom: "1px solid rgba(68,64,60,0.5)", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, flexShrink: 0 }}>
+        <h1 style={{ margin: 0, color: "#f5a623", fontSize: "1rem", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>Il Baretto</h1>
+        <button
+          onClick={() => navigate("/community")}
+          style={{
+            background: "transparent",
+            border: "none",
+            color: "#f5a623",
+            cursor: "pointer",
+            fontSize: "1.2rem",
+            flexShrink: 0,
+          }}
+        >
+          ◀
+        </button>
+      </div>
+
+      {/* STANZE SCROLL ORIZZONTALE */}
+      <div style={{ padding: "8px 12px", borderBottom: "1px solid rgba(68,64,60,0.5)", display: "flex", gap: 6, overflowX: "auto", WebkitOverflowScrolling: "touch", flexShrink: 0 }}>
+        {stanze.map((stanza) => {
+          const attiva = stanza === stanzaCorrente;
+          return (
             <button
-              onClick={() => setSidebarAperta(!sidebarAperta)}
+              key={stanza}
+              onClick={() => setStanzaSelezionata(stanza)}
               style={{
-                background: "transparent",
-                border: "1px solid rgba(120,113,108,0.5)",
-                color: "#d6d3d1",
-                borderRadius: 8,
-                padding: "8px 12px",
+                padding: "6px 12px",
+                borderRadius: 6,
+                border: attiva ? "1px solid #f5a623" : "1px solid rgba(120,113,108,0.4)",
+                background: attiva ? "rgba(245,166,35,0.15)" : "rgba(12,10,9,0.8)",
+                color: attiva ? "#fcd34d" : "#e7e5e4",
                 cursor: "pointer",
-                fontSize: "0.85rem",
+                fontSize: "0.8rem",
+                whiteSpace: "nowrap",
                 flexShrink: 0,
               }}
             >
-              ☰
+              {stanza}
             </button>
-          )}
+          );
+        })}
+      </div>
 
+      {/* MESSAGGI AREA */}
+      <div ref={listaRef} style={{ flex: 1, overflowY: "auto", padding: "12px", display: "flex", flexDirection: "column", gap: 8, WebkitOverflowScrolling: "touch", minHeight: 0 }}>
+        {!caricamento && messaggi.length === 0 && (
+          <div style={{ color: "#a8a29e", fontSize: "0.85rem", textAlign: "center", padding: "20px 0" }}>
+            Nessuna conversazione
+          </div>
+        )}
+
+        {messaggi.map((msg) => {
+          const online = utentiOnline.includes(msg.username);
+          return (
+            <div key={msg.id} style={{ display: "flex", gap: 6, alignItems: "flex-start" }}>
+              <span style={{ width: 6, height: 6, borderRadius: 999, background: online ? "#22c55e" : "#78716c", flexShrink: 0, marginTop: "5px" }} />
+              <div style={{ flex: 1, minWidth: 0 }}>
+                <div style={{ color: "#f5a623", fontSize: "0.8rem", fontWeight: 700, marginBottom: 2 }}>{msg.username}</div>
+                <div style={{ color: "#fafaf9", fontSize: "0.85rem", wordBreak: "break-word" }}>{msg.testo}</div>
+              </div>
+            </div>
+          );
+        })}
+      </div>
+
+      {/* INPUT FORM */}
+      <form
+        onSubmit={inviaMessaggio}
+        style={{
+          borderTop: "1px solid rgba(68,64,60,0.5)",
+          padding: "8px 10px",
+          display: "flex",
+          gap: 6,
+          background: "rgba(28,25,23,0.95)",
+          flexShrink: 0,
+        }}
+      >
+        <input
+          value={testoNuovo}
+          onChange={(event) => setTestoNuovo(event.target.value)}
+          placeholder={user || isAdmin ? "Scrivi..." : "Accedi"}
+          disabled={!user && !isAdmin}
+          style={{
+            flex: 1,
+            borderRadius: 6,
+            border: "1px solid rgba(120,113,108,0.5)",
+            background: "#1a1a1a",
+            color: "#f5f5f4",
+            padding: "8px 10px",
+            fontSize: "0.9rem",
+            outline: "none",
+          }}
+        />
+        <button
+          type="submit"
+          disabled={(!user && !isAdmin) || !testoNuovo.trim()}
+          style={{
+            borderRadius: 6,
+            border: "none",
+            background: (user || isAdmin) && testoNuovo.trim() ? "#f59e0b" : "#57534e",
+            color: "#1c1917",
+            fontWeight: 700,
+            padding: "8px 12px",
+            cursor: (user || isAdmin) && testoNuovo.trim() ? "pointer" : "not-allowed",
+            fontSize: "1rem",
+            flexShrink: 0,
+          }}
+        >
+          ↑
+        </button>
+      </form>
+    </div>
+  ) : (
+    // ===== DESKTOP LAYOUT =====
+    <div className="page page-full-bleed fade-in" style={{ minHeight: "100vh", background: "#0c0a09", padding: 0 }}>
+      <div style={{ maxWidth: 1400, margin: "0 auto", padding: 24 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+          <h1 style={{ margin: 0, color: "#f5a623", fontSize: "clamp(1.3rem, 2.4vw, 2rem)" }}>Il Baretto</h1>
           <button
             onClick={() => navigate("/community")}
             style={{
               background: "transparent",
               border: "1px solid rgba(120,113,108,0.5)",
               color: "#d6d3d1",
-              borderRadius: 8,
-              padding: isMobile ? "6px 10px" : "8px 12px",
+              borderRadius: 10,
+              padding: "8px 12px",
               cursor: "pointer",
-              fontSize: isMobile ? "0.75rem" : "0.9rem",
-              whiteSpace: "nowrap",
-              flexShrink: 0,
             }}
           >
-            {isMobile ? "◀" : "Torna"}
+            Torna a Community
           </button>
         </div>
 
-        {/* MAIN LAYOUT */}
         <div
           style={{
-            display: isMobile ? "flex" : "grid",
-            gridTemplateColumns: isMobile ? undefined : "260px minmax(0, 1fr)",
-            flexDirection: isMobile ? "column" : undefined,
-            gap: isMobile ? 0 : 14,
-            minHeight: isMobile ? 0 : "75vh",
-            flex: 1,
-            minWidth: 0,
+            display: "grid",
+            gridTemplateColumns: "260px minmax(0, 1fr)",
+            gap: 14,
+            minHeight: "75vh",
           }}
         >
-          {/* SIDEBAR - Hidden on mobile unless opened */}
-          {(sidebarAperta || !isMobile) && (
-            <aside
-              style={{
-                background: "rgba(28,25,23,0.5)",
-                border: "1px solid rgba(68,64,60,0.5)",
-                borderRadius: 12,
-                padding: isMobile ? 8 : 12,
-                display: "flex",
-                flexDirection: "column",
-                gap: 8,
-                maxHeight: isMobile ? "50vh" : "auto",
-                overflowY: "auto",
-                minWidth: isMobile ? 0 : 260,
-              }}
-            >
-              <div style={{ fontWeight: 700, color: "#fafaf9", marginBottom: 6, fontSize: isMobile ? "0.9rem" : "1rem" }}>Stanze</div>
+          <aside
+            style={{
+              background: "rgba(28,25,23,0.5)",
+              border: "1px solid rgba(68,64,60,0.5)",
+              borderRadius: 18,
+              padding: 12,
+              display: "flex",
+              flexDirection: "column",
+              gap: 8,
+              overflowY: "auto",
+            }}
+          >
+            <div style={{ fontWeight: 700, color: "#fafaf9", marginBottom: 6 }}>Stanze</div>
 
-              {stanze.map((stanza) => {
-                const attiva = stanza === stanzaCorrente;
-                return (
-                  <button
-                    key={stanza}
-                    onClick={() => {
-                      setStanzaSelezionata(stanza);
-                      if (isMobile) setSidebarAperta(false);
-                    }}
-                    style={{
-                      width: "100%",
-                      textAlign: "left",
-                      padding: isMobile ? "8px 10px" : "10px 12px",
-                      borderRadius: 8,
-                      border: attiva ? "1px solid rgba(245,166,35,0.8)" : "1px solid rgba(120,113,108,0.4)",
-                      background: attiva ? "rgba(245,166,35,0.15)" : "rgba(12,10,9,0.55)",
-                      color: attiva ? "#fcd34d" : "#e7e5e4",
-                      cursor: "pointer",
-                      fontSize: isMobile ? "0.85rem" : "0.95rem",
-                    }}
-                  >
-                    {stanza}
-                  </button>
-                );
-              })}
+            {stanze.map((stanza) => {
+              const attiva = stanza === stanzaCorrente;
+              return (
+                <button
+                  key={stanza}
+                  onClick={() => setStanzaSelezionata(stanza)}
+                  style={{
+                    width: "100%",
+                    textAlign: "left",
+                    padding: "10px 12px",
+                    borderRadius: 10,
+                    border: attiva ? "1px solid rgba(245,166,35,0.8)" : "1px solid rgba(120,113,108,0.4)",
+                    background: attiva ? "rgba(245,166,35,0.15)" : "rgba(12,10,9,0.55)",
+                    color: attiva ? "#fcd34d" : "#e7e5e4",
+                    cursor: "pointer",
+                  }}
+                >
+                  {stanza}
+                </button>
+              );
+            })}
 
-              <div style={{ marginTop: 10, borderTop: "1px solid rgba(68,64,60,0.45)", paddingTop: 10 }}>
-                <div style={{ fontWeight: 700, color: "#fafaf9", marginBottom: 6, fontSize: isMobile ? "0.9rem" : "1rem" }}>Online</div>
+            <div style={{ marginTop: 10, borderTop: "1px solid rgba(68,64,60,0.45)", paddingTop: 10 }}>
+              <div style={{ fontWeight: 700, color: "#fafaf9", marginBottom: 6 }}>Utenti online</div>
 
-                {utentiOnline.length === 0 && (
-                  <div style={{ color: "#a8a29e", fontSize: isMobile ? "0.8rem" : 13 }}>Nessuno</div>
-                )}
+              {utentiOnline.length === 0 && (
+                <div style={{ color: "#a8a29e", fontSize: 13 }}>Nessun utente online</div>
+              )}
 
-                {utentiOnline.map((nome) => (
-                  <div key={nome} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6, fontSize: isMobile ? "0.8rem" : 14 }}>
-                    <span style={{ width: 8, height: 8, borderRadius: 999, background: "#22c55e", display: "inline-block", flexShrink: 0 }} />
-                    <span style={{ color: "#e7e5e4", overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>{nome}</span>
-                  </div>
-                ))}
-              </div>
-            </aside>
-          )}
+              {utentiOnline.map((nome) => (
+                <div key={nome} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                  <span style={{ width: 8, height: 8, borderRadius: 999, background: "#22c55e", display: "inline-block" }} />
+                  <span style={{ color: "#e7e5e4", fontSize: 14 }}>{nome}</span>
+                </div>
+              ))}
+            </div>
+          </aside>
 
-          {/* CHAT SECTION */}
           <section
             style={{
               background: "rgba(28,25,23,0.5)",
               border: "1px solid rgba(68,64,60,0.5)",
-              borderRadius: 12,
+              borderRadius: 18,
               padding: 0,
               display: "flex",
               flexDirection: "column",
-              minHeight: isMobile ? "60vh" : 0,
-              flex: isMobile ? 1 : undefined,
-              minWidth: 0,
+              minHeight: 0,
             }}
           >
-            <div style={{ padding: isMobile ? "10px 12px" : "14px 16px", borderBottom: "1px solid rgba(68,64,60,0.45)", color: "#fafaf9", fontWeight: 700, fontSize: isMobile ? "0.9rem" : "1rem" }}>
-              {stanzaCorrente}
+            <div style={{ padding: "14px 16px", borderBottom: "1px solid rgba(68,64,60,0.45)", color: "#fafaf9", fontWeight: 700 }}>
+              Stanza: {stanzaCorrente}
             </div>
 
-            <div ref={listaRef} style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: isMobile ? "10px 12px" : "14px 16px", display: "grid", gap: isMobile ? 8 : 12, WebkitOverflowScrolling: "touch" }}>
+            <div ref={listaRef} style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "14px 16px", display: "grid", gap: 12 }}>
               {!caricamento && messaggi.length === 0 && (
-                <div style={{ color: "#a8a29e", fontSize: isMobile ? "0.85rem" : 14 }}>
+                <div style={{ color: "#a8a29e", fontSize: 14 }}>
                   Nessuna conversazione ancora attiva
                 </div>
               )}
@@ -426,65 +504,55 @@ export default function Baretto() {
               {messaggi.map((msg) => {
                 const online = utentiOnline.includes(msg.username);
                 return (
-                  <div key={msg.id} style={{ display: "flex", alignItems: "flex-start", gap: 6, flexWrap: "wrap" }}>
-                    <span style={{ width: 8, height: 8, borderRadius: 999, background: online ? "#22c55e" : "#78716c", flexShrink: 0, display: "inline-block", marginTop: isMobile ? "3px" : "5px" }} />
-                    <div style={{ display: "flex", flexDirection: "column", gap: 2, flex: 1, minWidth: 0 }}>
-                      <strong style={{ color: "#f5a623", fontSize: isMobile ? "0.85rem" : "0.95rem" }}>{msg.username}</strong>
-                      <span style={{ color: "#fafaf9", fontSize: isMobile ? "0.85rem" : "0.95rem", wordBreak: "break-word" }}>{msg.testo}</span>
-                    </div>
+                  <div key={msg.id} style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                    <span style={{ width: 8, height: 8, borderRadius: 999, background: online ? "#22c55e" : "#78716c", flexShrink: 0, display: "inline-block" }} />
+                    <strong style={{ color: "#f5a623", flexShrink: 0 }}>{msg.username}</strong>
+                    <span style={{ color: "#fafaf9" }}>{msg.testo}</span>
                   </div>
                 );
               })}
             </div>
 
-            {/* INPUT FORM */}
             <form
               onSubmit={inviaMessaggio}
               style={{
                 borderTop: "1px solid rgba(68,64,60,0.45)",
-                padding: isMobile ? "10px 8px" : "12px 14px",
+                padding: "12px 14px",
                 display: "flex",
-                gap: isMobile ? 6 : 8,
+                gap: 8,
                 position: "sticky",
                 bottom: 0,
-                background: "rgba(28,25,23,0.95)",
-                WebkitBackdropFilter: "blur(10px)",
-                backdropFilter: "blur(10px)",
+                background: "rgba(28,25,23,0.92)",
               }}
             >
               <input
                 value={testoNuovo}
                 onChange={(event) => setTestoNuovo(event.target.value)}
-                placeholder={user || isAdmin ? `Scrivi in ${stanzaCorrente}...` : "Accedi"}
+                placeholder={user || isAdmin ? `Scrivi in ${stanzaCorrente}...` : "Accedi per scrivere"}
                 disabled={!user && !isAdmin}
                 style={{
                   flex: 1,
-                  borderRadius: 8,
+                  borderRadius: 10,
                   border: "1px solid rgba(120,113,108,0.5)",
                   background: "#0f0f0f",
                   color: "#f5f5f4",
-                  padding: isMobile ? "10px 10px" : "10px 12px",
-                  fontSize: isMobile ? "0.95rem" : "1rem",
-                  outline: "none",
+                  padding: "10px 12px",
                 }}
               />
               <button
                 type="submit"
                 disabled={(!user && !isAdmin) || !testoNuovo.trim()}
                 style={{
-                  borderRadius: 8,
+                  borderRadius: 10,
                   border: "none",
                   background: (user || isAdmin) && testoNuovo.trim() ? "#f59e0b" : "#57534e",
                   color: "#1c1917",
                   fontWeight: 700,
-                  padding: isMobile ? "10px 10px" : "10px 14px",
+                  padding: "10px 14px",
                   cursor: (user || isAdmin) && testoNuovo.trim() ? "pointer" : "not-allowed",
-                  fontSize: isMobile ? "0.9rem" : "1rem",
-                  minWidth: isMobile ? "50px" : "auto",
-                  flexShrink: 0,
                 }}
               >
-                {isMobile ? "↑" : "Invia"}
+                Invia
               </button>
             </form>
           </section>
