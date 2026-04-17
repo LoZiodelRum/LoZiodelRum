@@ -25,8 +25,6 @@ export default function Community() {
     { title: "Verticale Demerara", date: "25 Apr", seats: "12 posti" },
   ];
 
-  // <BarettoPreview />
-
   const aromas = ["Vaniglia", "Tropicale", "Spezie", "Affumicato", "Cacao", "Agrumato", "Mela", "Erbaceo"];
 
   const labRecipes = [
