@@ -33,11 +33,11 @@ export default function BarettoPreview() {
   }, []);
 
   function nomeProfilo(profilo?: Profilo) {
-    if (!profilo) return "Utente";
+    if (!profilo) return "Lo Zio";
     if (profilo.username && profilo.username.trim()) return profilo.username;
     const nomeCompleto = `${profilo.nome || ""} ${profilo.cognome || ""}`.trim();
     if (nomeCompleto) return nomeCompleto;
-    return "Utente";
+    return "Lo Zio";
   }
 
   async function caricaMessaggi() {
@@ -79,7 +79,7 @@ export default function BarettoPreview() {
       id: msg.id,
       testo: msg.testo,
       created_at: msg.created_at,
-      username: nomeProfilo(msg.id_utente ? mappaProfili.get(msg.id_utente) : undefined) || msg.username || "Utente",
+      username: nomeProfilo(msg.id_utente ? mappaProfili.get(msg.id_utente) : undefined) || msg.username || "Lo Zio",
     }));
 
     setMessaggi(lista);

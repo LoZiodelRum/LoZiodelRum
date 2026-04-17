@@ -128,11 +128,11 @@ export default function Baretto() {
   }, [messaggi]);
 
   function nomeProfilo(profilo?: Profilo) {
-    if (!profilo) return "Utente";
+    if (!profilo) return "Lo Zio";
     if (profilo.username && profilo.username.trim()) return profilo.username;
     const nomeCompleto = `${profilo.nome || ""} ${profilo.cognome || ""}`.trim();
     if (nomeCompleto) return nomeCompleto;
-    return "Utente";
+    return "Lo Zio";
   }
 
   async function risolviNomeUtenteCorrente() {
@@ -145,7 +145,7 @@ export default function Baretto() {
 
       if (error) {
         console.error("Errore caricamento utente corrente baretto:", error);
-        setNomeUtenteCorrente(user.user_metadata?.username || user.email?.split("@")[0] || "Utente");
+        setNomeUtenteCorrente(user.user_metadata?.username || user.email?.split("@")[0] || "Lo Zio");
         return;
       }
 
@@ -154,16 +154,16 @@ export default function Baretto() {
         return;
       }
 
-      setNomeUtenteCorrente(user.user_metadata?.username || user.email?.split("@")[0] || "Utente");
+      setNomeUtenteCorrente(user.user_metadata?.username || user.email?.split("@")[0] || "Lo Zio");
       return;
     }
 
     if (isAdmin) {
-      setNomeUtenteCorrente("Admin");
+      setNomeUtenteCorrente("Lo Zio");
       return;
     }
 
-    setNomeUtenteCorrente("Utente");
+    setNomeUtenteCorrente("Lo Zio");
   }
 
   async function caricaStanze() {
@@ -240,7 +240,7 @@ export default function Baretto() {
       created_at: msg.created_at,
       id_utente: msg.id_utente,
       stanza: msg.stanza || STANZA_DEFAULT,
-      username: nomeProfilo(msg.id_utente ? mappaProfili.get(msg.id_utente) : undefined) || msg.username || "Utente",
+      username: nomeProfilo(msg.id_utente ? mappaProfili.get(msg.id_utente) : undefined) || msg.username || "Lo Zio",
     }));
 
     setMessaggi(lista);
