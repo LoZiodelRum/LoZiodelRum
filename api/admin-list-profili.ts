@@ -15,6 +15,19 @@ const SUPABASE_URL = env.SUPABASE_URL || env.VITE_SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = env.SUPABASE_SERVICE_ROLE_KEY;
 const ADMIN_PASSWORD = env.ADMIN_PASSWORD || env.VITE_ADMIN_PASSWORD;
 
+function mergeProfilesWithAuth(profiles: any[], authUsers: any[]) {
+  const authById = new Map(authUsers.map((user: any) => [user.id, user]));
+  return profiles.map((profile: any) => {
+    const authUser = authById.get(profile.id);
+    return {
+      ...profile,
+      email: profile.email || authUser?.email || null,
+      ultimo_accesso: authUser?.last_sign_in_at || null,
+      email_verificata: Boolean(authUser?.email_confirmed_at),
+    };
+  });
+}
+
 export default async function handler(req: ApiRequest, res: ApiResponse) {
   if (req.method !== "POST") {
     return res.status(405).json({ ok: false, message: "Method not allowed" });
@@ -33,6 +46,12 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 
+  const authUsersResponse = await supabaseAdmin.auth.admin.listUsers({
+    page: 1,
+    perPage: 1000,
+  });
+  const authUsers = authUsersResponse.data?.users || [];
+
   const tableCandidates = ["Profili", "profili"];
   let lastError = "Could not load profiles";
 
@@ -43,7 +62,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       .order("created_at", { ascending: false, nullsFirst: false });
 
     if (!error) {
-      return res.status(200).json({ ok: true, table: tableName, profiles: data || [] });
+      return res.status(200).json({ ok: true, table: tableName, profiles: mergeProfilesWithAuth(data || [], authUsers) });
     }
 
     lastError = error.message || lastError;

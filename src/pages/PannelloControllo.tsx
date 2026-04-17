@@ -227,6 +227,8 @@ export default function PannelloControllo() {
     const isCocktailTable = selectedTable.toLowerCase() === "cocktail";
     const isDistillatiTable = selectedTable.toLowerCase() === "distillati";
     const isLocaliTable = selectedTable === "Locali";
+    const isProfiliTable = selectedTable === "profili";
+    let savedItemFromServer: any = null;
 
     if (isCreating) {
       if (selectedTable.toLowerCase() === "vini") {
@@ -241,11 +243,59 @@ export default function PannelloControllo() {
       }
 
       if (selectedTable === "profili") {
+        const normalizedProfileDraft = normalizeProfiliPayload(cleanData);
+        Object.keys(cleanData).forEach((key) => delete cleanData[key]);
+        Object.assign(cleanData, normalizedProfileDraft);
         cleanData.ruolo = cleanData.ruolo || createRoleHint || "utente";
         cleanData.approvato = cleanData.approvato ?? false;
       }
 
-      if (isCocktailTable) {
+      if (isProfiliTable) {
+        if (!adminPassword) {
+          error = { message: "Password admin non disponibile. Esci e rientra come admin." };
+        } else {
+          const endpoints = isNetlifyHost
+            ? ["/.netlify/functions/admin-save-profili", "/api/admin-save-profili"]
+            : ["/api/admin-save-profili", "/.netlify/functions/admin-save-profili"];
+
+          let lastMessage = "Creazione utente fallita lato server.";
+
+          for (const endpoint of endpoints) {
+            try {
+              const response = await fetch(endpoint, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "x-admin-password": adminPassword,
+                },
+                body: JSON.stringify({
+                  mode: "create",
+                  id: null,
+                  changes: cleanData,
+                }),
+              });
+
+              const payload = await response.json().catch(() => ({}));
+              if (response.ok && payload?.ok) {
+                savedItemFromServer = payload?.profile || null;
+                lastMessage = "";
+                break;
+              }
+
+              lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
+              if (response.status !== 404 && response.status !== 405) {
+                break;
+              }
+            } catch (e: any) {
+              lastMessage = e?.message || `Errore di rete su ${endpoint}`;
+            }
+          }
+
+          if (lastMessage) {
+            error = { message: lastMessage };
+          }
+        }
+      } else if (isCocktailTable) {
         if (!adminPassword) {
           error = { message: "Password admin non disponibile. Esci e rientra come admin." };
         } else {
@@ -387,7 +437,53 @@ export default function PannelloControllo() {
       }
     } else {
       // Per gli articoli usiamo endpoint serverless admin: evita blocchi RLS lato client.
-      if (selectedTable === "articoli") {
+      if (isProfiliTable) {
+        if (!adminPassword) {
+          error = { message: "Password admin non disponibile. Esci e rientra come admin." };
+        } else {
+          const normalizedProfileChanges = normalizeProfiliPayload(changedData);
+          const endpoints = isNetlifyHost
+            ? ["/.netlify/functions/admin-save-profili", "/api/admin-save-profili"]
+            : ["/api/admin-save-profili", "/.netlify/functions/admin-save-profili"];
+
+          let lastMessage = "Salvataggio utente fallito lato server.";
+
+          for (const endpoint of endpoints) {
+            try {
+              const response = await fetch(endpoint, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "x-admin-password": adminPassword,
+                },
+                body: JSON.stringify({
+                  mode: "update",
+                  id: hasValidId ? id : null,
+                  changes: normalizedProfileChanges,
+                }),
+              });
+
+              const payload = await response.json().catch(() => ({}));
+              if (response.ok && payload?.ok) {
+                savedItemFromServer = payload?.profile || null;
+                lastMessage = "";
+                break;
+              }
+
+              lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
+              if (response.status !== 404 && response.status !== 405) {
+                break;
+              }
+            } catch (e: any) {
+              lastMessage = e?.message || `Errore di rete su ${endpoint}`;
+            }
+          }
+
+          if (lastMessage) {
+            error = { message: lastMessage };
+          }
+        }
+      } else if (selectedTable === "articoli") {
         if (!adminPassword) {
           error = { message: "Password admin non disponibile. Esci e rientra come admin." };
         } else {
@@ -649,7 +745,7 @@ export default function PannelloControllo() {
     setIsCreating(false);
     setCreateRoleHint(null);
 
-    if (!isCreating) {
+    if (!isCreating && !isProfiliTable) {
       let refreshQuery = supabase
         .from(selectedTable)
         .select("*");
@@ -666,6 +762,10 @@ export default function PannelloControllo() {
         setSelectedItem(refreshedItem);
         setSelectedOriginalItem(refreshedItem);
       }
+    } else if (savedItemFromServer) {
+      const normalizedSavedProfile = ensureProfiliEditorFields(savedItemFromServer);
+      setSelectedItem(normalizedSavedProfile);
+      setSelectedOriginalItem(normalizedSavedProfile);
     }
 
     await loadData();
@@ -695,6 +795,74 @@ export default function PannelloControllo() {
     const isCocktailTable = selectedTable.toLowerCase() === "cocktail";
     const isDistillatiTable = selectedTable.toLowerCase() === "distillati";
     const isLocaliTable = selectedTable === "Locali";
+    const isProfiliTable = selectedTable === "profili";
+
+    if (isProfiliTable) {
+      if (!hasValidId) {
+        setSaveStatus("error");
+        alert("Impossibile eliminare utente: id record mancante.");
+        return;
+      }
+
+      if (!adminPassword) {
+        setSaveStatus("error");
+        alert("Password admin non disponibile. Esci e rientra come admin.");
+        return;
+      }
+
+      const isNetlifyHost = typeof window !== "undefined" && window.location.hostname.includes("netlify");
+      const endpoints = isNetlifyHost
+        ? ["/.netlify/functions/admin-save-profili", "/api/admin-save-profili"]
+        : ["/api/admin-save-profili", "/.netlify/functions/admin-save-profili"];
+
+      let lastMessage = "Eliminazione utente fallita lato server.";
+
+      for (const endpoint of endpoints) {
+        try {
+          const response = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-admin-password": adminPassword,
+            },
+            body: JSON.stringify({
+              mode: "delete",
+              id: selectedItem.id,
+            }),
+          });
+
+          const payload = await response.json().catch(() => ({}));
+          if (response.ok && payload?.ok) {
+            lastMessage = "";
+            break;
+          }
+
+          lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
+          if (response.status !== 404 && response.status !== 405) {
+            break;
+          }
+        } catch (e: any) {
+          lastMessage = e?.message || `Errore di rete su ${endpoint}`;
+        }
+      }
+
+      if (lastMessage) {
+        setSaveStatus("error");
+        alert(lastMessage);
+        return;
+      }
+
+      setSaveStatus("ok");
+
+      setTimeout(() => {
+        setSaveStatus(null);
+      }, 2000);
+
+      setSelectedItem(null);
+      setSelectedOriginalItem(null);
+      await loadData();
+      return;
+    }
 
     if (isCocktailTable) {
       if (!hasValidId) {
@@ -1010,7 +1178,7 @@ export default function PannelloControllo() {
   if (loading) return null;
   if (!isAdmin) return <div style={{ padding: 20, color: "red" }}>Accesso negato</div>;
 
-  const booleanFields = new Set(["approvato", "in_evidenza", "verificato"]);
+  const booleanFields = new Set(["approvato", "in_evidenza", "verificato", "email_verificata"]);
   const toBoolean = (value: any) => {
     if (typeof value === "boolean") return value;
     if (typeof value === "number") return value === 1;
@@ -1170,6 +1338,91 @@ export default function PannelloControllo() {
     "in_evidenza",
   ];
 
+  const profiliSelectOptions: Record<string, string[]> = {
+    ruolo: ["utente", "bartender", "proprietario", "admin"],
+    status: ["attivo", "sospeso", "admin"],
+    genere: ["uomo", "donna"],
+    distillato_preferito: ["Rum", "Whisky", "Gin", "Vodka", "Tequila", "Mezcal", "Brandy", "Cognac", "Amaro", "Vermouth"],
+    intensita_preferita: ["Bassa", "Media", "Alta"],
+    profilo_gustativo_preferito: [...TASTE_PROFILE_OPTIONS],
+    famiglia_aromatica_preferita: [...AROMATIC_FAMILY_OPTIONS],
+    metodo_consumo_preferito: ["On the rocks", "Highball", "Straight up", "Neat", "Frozen", "Shakerato", "Con soda", "Con tonica"],
+  };
+
+  const profiliEditorKeyOrder = [
+    "id",
+    "nome",
+    "cognome",
+    "username",
+    "email",
+    "telefono",
+    "password",
+    "ruolo",
+    "status",
+    "bio_breve",
+    "avatar_url",
+    "city",
+    "paese",
+    "genere",
+    "distillato_preferito",
+    "cocktail_preferito",
+    "intensita_preferita",
+    "profilo_gustativo_preferito",
+    "famiglia_aromatica_preferita",
+    "metodo_consumo_preferito",
+    "level",
+    "points",
+    "badges",
+    "numero_recensioni",
+    "numero_locali_visitati",
+    "numero_cocktail_creati",
+    "recensioni",
+    "cocktail_creati",
+    "locali_segnalati",
+    "preferiti",
+    "instagram",
+    "tiktok",
+    "sito_web",
+    "nome_locale",
+    "esperienza_anni",
+    "specialita",
+    "certificazioni",
+    "menu_caricato",
+    "indirizzo_locale",
+    "citta_locale",
+    "partita_iva",
+    "numero_dipendenti",
+    "descrizione_locale",
+    "created_at",
+    "updated_at",
+    "ultimo_accesso",
+    "email_verificata",
+    "approvato",
+  ];
+
+  const profiliTextareaFields = new Set([
+    "bio_breve",
+    "certificazioni",
+    "descrizione_locale",
+    "recensioni",
+    "cocktail_creati",
+    "locali_segnalati",
+    "preferiti",
+  ]);
+
+  const profiliNumberFields = new Set([
+    "level",
+    "points",
+    "numero_recensioni",
+    "numero_locali_visitati",
+    "numero_cocktail_creati",
+    "esperienza_anni",
+    "numero_dipendenti",
+  ]);
+
+  const profiliArrayFields = new Set(["badges", "recensioni", "cocktail_creati", "locali_segnalati", "preferiti"]);
+  const profiliReadonlyFields = new Set(["id", "created_at", "updated_at", "ultimo_accesso"]);
+
   const fieldLabelMap: Record<string, string> = {
     name: "nome",
     image_url: "immagine",
@@ -1179,7 +1432,122 @@ export default function PannelloControllo() {
     competenza_staff: "competenza staff",
     atmosfera: "atmosfera",
     qualita_prezzo: "qualita/prezzo",
+    telefono: "cellulare",
+    status: "stato",
+    bio_breve: "bio",
+    avatar_url: "foto_profilo",
+    city: "citta",
+    level: "livello",
+    points: "punti",
+    badges: "badge",
+    specialita: "specializzazione",
+    indirizzo_locale: "indirizzo_locale",
+    citta_locale: "citta_locale",
   };
+
+  function stringifyProfileCollection(value: unknown) {
+    if (Array.isArray(value)) {
+      return value.map((item) => String(item).trim()).filter(Boolean).join(", ");
+    }
+    return String(value ?? "").trim();
+  }
+
+  function ensureProfiliEditorFields(item: any) {
+    const ruolo = String(item?.ruolo || "utente").trim().toLowerCase();
+    const status = String(item?.status || item?.stato || (ruolo === "admin" ? "admin" : item?.approvato ? "attivo" : "sospeso") || "attivo").trim().toLowerCase();
+
+    return {
+      id: item?.id ?? "",
+      nome: item?.nome ?? "",
+      cognome: item?.cognome ?? "",
+      username: item?.username ?? "",
+      email: item?.email ?? "",
+      telefono: item?.telefono ?? item?.cellulare ?? "",
+      password: "",
+      ruolo,
+      status,
+      bio_breve: item?.bio_breve ?? item?.bio ?? "",
+      avatar_url: item?.avatar_url ?? item?.foto_profilo ?? "",
+      city: item?.city ?? item?.citta ?? item?.citta_operativa ?? "",
+      paese: item?.paese ?? "",
+      genere: item?.genere ?? "",
+      distillato_preferito: item?.distillato_preferito ?? "",
+      cocktail_preferito: item?.cocktail_preferito ?? "",
+      intensita_preferita: item?.intensita_preferita ?? "",
+      profilo_gustativo_preferito: item?.profilo_gustativo_preferito ?? "",
+      famiglia_aromatica_preferita: item?.famiglia_aromatica_preferita ?? "",
+      metodo_consumo_preferito: item?.metodo_consumo_preferito ?? "",
+      level: item?.level ?? 1,
+      points: item?.points ?? 0,
+      badges: stringifyProfileCollection(item?.badges),
+      numero_recensioni: item?.numero_recensioni ?? 0,
+      numero_locali_visitati: item?.numero_locali_visitati ?? 0,
+      numero_cocktail_creati: item?.numero_cocktail_creati ?? 0,
+      recensioni: stringifyProfileCollection(item?.recensioni),
+      cocktail_creati: stringifyProfileCollection(item?.cocktail_creati),
+      locali_segnalati: stringifyProfileCollection(item?.locali_segnalati),
+      preferiti: stringifyProfileCollection(item?.preferiti),
+      instagram: item?.instagram ?? item?.social_links ?? "",
+      tiktok: item?.tiktok ?? "",
+      sito_web: item?.sito_web ?? "",
+      nome_locale: item?.nome_locale ?? "",
+      esperienza_anni: item?.esperienza_anni ?? 0,
+      specialita: item?.specialita ?? item?.specializzazione ?? "",
+      certificazioni: item?.certificazioni ?? "",
+      menu_caricato: item?.menu_caricato ?? "",
+      indirizzo_locale: item?.indirizzo_locale ?? item?.indirizzo ?? "",
+      citta_locale: item?.citta_locale ?? "",
+      partita_iva: item?.partita_iva ?? "",
+      numero_dipendenti: item?.numero_dipendenti ?? 0,
+      descrizione_locale: item?.descrizione_locale ?? "",
+      created_at: item?.created_at ?? "",
+      updated_at: item?.updated_at ?? "",
+      ultimo_accesso: item?.ultimo_accesso ?? "",
+      email_verificata: Boolean(item?.email_verificata),
+      approvato: item?.approvato ?? (status === "attivo" || status === "admin"),
+    };
+  }
+
+  function getProfiliEditorKeys(item: any) {
+    const ruolo = String(item?.ruolo || "utente").toLowerCase();
+    return profiliEditorKeyOrder.filter((key) => {
+      if (["nome_locale", "esperienza_anni", "specialita", "certificazioni", "menu_caricato"].includes(key) && ruolo !== "bartender") {
+        return false;
+      }
+
+      if (["nome_locale", "indirizzo_locale", "citta_locale", "partita_iva", "numero_dipendenti", "descrizione_locale"].includes(key) && ruolo !== "proprietario") {
+        return !["nome_locale"].includes(key) ? false : ruolo === "bartender";
+      }
+
+      return true;
+    });
+  }
+
+  function normalizeProfiliPayload(item: any) {
+    const normalized = { ...item };
+
+    profiliArrayFields.forEach((field) => {
+      normalized[field] = stringifyProfileCollection(normalized[field]);
+    });
+
+    profiliNumberFields.forEach((field) => {
+      const raw = normalized[field];
+      normalized[field] = raw === "" || raw === null || raw === undefined ? 0 : Number(raw);
+      if (Number.isNaN(normalized[field])) {
+        normalized[field] = 0;
+      }
+    });
+
+    normalized.ruolo = String(normalized.ruolo || "utente").trim().toLowerCase();
+    normalized.status = String(normalized.status || (normalized.approvato ? "attivo" : "sospeso")).trim().toLowerCase();
+    normalized.approvato = normalized.status === "attivo" || normalized.status === "admin";
+
+    if (!String(normalized.password || "").trim()) {
+      delete normalized.password;
+    }
+
+    return normalized;
+  }
 
   function mapCocktailOptionValue(key: string, rawValue: unknown): string {
     const cleaned = String(rawValue ?? "").trim();
@@ -1337,7 +1705,11 @@ export default function PannelloControllo() {
     if (!Array.isArray(data) || data.length === 0) return;
 
     const firstItem = table === "cocktail" ? normalizeCocktailItemValues(data[0]) : { ...data[0] };
-    const normalizedFirstItem = table === "Locali" ? ensureLocaliEditorFields(firstItem) : firstItem;
+    const normalizedFirstItem = table === "Locali"
+      ? ensureLocaliEditorFields(firstItem)
+      : table === "profili"
+        ? ensureProfiliEditorFields(firstItem)
+        : firstItem;
 
     setSelectedTable(table);
     setSelectedItem(normalizedFirstItem);
@@ -1410,9 +1782,16 @@ export default function PannelloControllo() {
     }
 
     if (table === "profili") {
-      draft.ruolo = roleHint || "utente";
-      draft.approvato = false;
-      draft.status = draft.status || "in_attesa";
+      const profiliTemplate = ensureProfiliEditorFields({
+        ruolo: roleHint || "utente",
+        approvato: roleHint === "admin",
+        status: roleHint === "admin" ? "admin" : "attivo",
+        email_verificata: false,
+      });
+
+      Object.keys(profiliTemplate).forEach((k) => {
+        draft[k] = draft[k] ?? profiliTemplate[k];
+      });
     }
 
     if (table.toLowerCase() === "vini") {
@@ -1488,6 +1867,10 @@ export default function PannelloControllo() {
               const normalizedItem = ensureLocaliEditorFields(item);
               setSelectedItem(normalizedItem);
               setSelectedOriginalItem(normalizedItem);
+            } else if (table === "profili" && item) {
+              const normalizedItem = ensureProfiliEditorFields(item);
+              setSelectedItem(normalizedItem);
+              setSelectedOriginalItem(normalizedItem);
             } else if (table === "cocktail" && item) {
               const normalizedItem = normalizeCocktailItemValues(item);
               setSelectedItem(normalizedItem);
@@ -1520,6 +1903,11 @@ export default function PannelloControllo() {
     : selectedTable === "distillati"
       ? uploadingDistillatoImage
       : uploadingWineImage;
+  const editorKeys = selectedTable === "Locali"
+    ? getLocaliEditorKeys(selectedItem)
+    : selectedTable === "profili"
+      ? getProfiliEditorKeys(selectedItem)
+      : Object.keys(selectedItem || {});
 
   useEffect(() => {
     setImagePreviewError(false);
@@ -1629,8 +2017,8 @@ export default function PannelloControllo() {
             {isImageSidebarTable ? (
               <div style={{ display: "flex", gap: 20, alignItems: "flex-start" }}>
                 <div style={{ flex: 1, display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 15 }}>
-                  {(selectedTable === "Locali" ? getLocaliEditorKeys(selectedItem) : Object.keys(selectedItem)).map(key => {
-                    if (key === "id" || (selectedTable === "cocktail" && (key === "data_creazione" || key === "created_at" || key === "texture")) || key === "immagine") return null;
+                  {editorKeys.map(key => {
+                    if ((key === "id" && selectedTable !== "profili") || (selectedTable === "cocktail" && (key === "data_creazione" || key === "created_at" || key === "texture")) || key === "immagine") return null;
                     if (selectedTable === "Locali" && removedLocaliFields.has(key)) return null;
                     return (
                       <React.Fragment key={key}>
@@ -1834,8 +2222,8 @@ export default function PannelloControllo() {
               </div>
             ) : (
               <div style={formGridStyle}>
-                {(selectedTable === "Locali" ? getLocaliEditorKeys(selectedItem) : Object.keys(selectedItem)).map(key => {
-                  if (key === "id" || (selectedTable === "cocktail" && (key === "data_creazione" || key === "created_at" || key === "texture"))) return null;
+                {editorKeys.map(key => {
+                  if ((key === "id" && selectedTable !== "profili") || (selectedTable === "cocktail" && (key === "data_creazione" || key === "created_at" || key === "texture"))) return null;
                   if (selectedTable === "Locali" && removedLocaliFields.has(key)) return null;
                   return (
                     <React.Fragment key={key}>
@@ -1847,7 +2235,22 @@ export default function PannelloControllo() {
                       }
                     >
                     <label style={labelStyle}>{fieldLabelMap[key] ?? key}</label>
-                    {booleanFields.has(key) ? (
+                    {selectedTable === "profili" && key === "password" ? (
+                      <input
+                        type="password"
+                        value={selectedItem[key] ?? ""}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          setSelectedItem((prev: any) => ({
+                            ...prev,
+                            [key]: value,
+                          }));
+                          setSaveStatus(null);
+                        }}
+                        placeholder={isCreating ? "Imposta password iniziale" : "Lascia vuoto per non cambiarla"}
+                        style={inputStyle}
+                      />
+                    ) : booleanFields.has(key) ? (
                       <select
                         value={String(toBoolean(selectedItem[key]))}
                         onChange={(e) => {
@@ -1862,6 +2265,25 @@ export default function PannelloControllo() {
                       >
                         <option value="true">true</option>
                         <option value="false">false</option>
+                      </select>
+                    ) : selectedTable === "profili" && profiliSelectOptions[key] ? (
+                      <select
+                        value={selectedItem[key] ?? ""}
+                        disabled={profiliReadonlyFields.has(key)}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          setSelectedItem((prev: any) => ({
+                            ...prev,
+                            [key]: value,
+                          }));
+                          setSaveStatus(null);
+                        }}
+                        style={{ ...selectStyle, opacity: profiliReadonlyFields.has(key) ? 0.7 : 1 }}
+                      >
+                        <option value="">Scegli</option>
+                        {profiliSelectOptions[key].map((option) => (
+                          <option key={option} value={option}>{option}</option>
+                        ))}
                       </select>
                     ) : selectedTable === "Locali" && localiSelectOptions[key] ? (
                       <select
@@ -2052,6 +2474,20 @@ export default function PannelloControllo() {
                           })}
                         </div>
                       </details>
+                    ) : selectedTable === "profili" && profiliTextareaFields.has(key) ? (
+                      <textarea
+                        rows={4}
+                        value={selectedItem[key] ?? ""}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          setSelectedItem((prev: any) => ({
+                            ...prev,
+                            [key]: value,
+                          }));
+                          setSaveStatus(null);
+                        }}
+                        style={{ ...inputStyle, width: "100%", minHeight: 110, resize: "vertical" }}
+                      />
                     ) : key === "contenuto" ? (
                       <textarea
                         rows={6}
@@ -2068,7 +2504,9 @@ export default function PannelloControllo() {
                       />
                     ) : (
                       <input
+                        type={selectedTable === "profili" && profiliNumberFields.has(key) ? "number" : "text"}
                         value={selectedItem[key] ?? ""}
+                        disabled={selectedTable === "profili" && profiliReadonlyFields.has(key)}
                         onChange={(e) => {
                           const value = e.target.value;
                           setSelectedItem((prev: any) => ({
@@ -2077,7 +2515,7 @@ export default function PannelloControllo() {
                           }));
                           setSaveStatus(null);
                         }}
-                        style={inputStyle}
+                        style={{ ...inputStyle, opacity: selectedTable === "profili" && profiliReadonlyFields.has(key) ? 0.7 : 1 }}
                       />
                     )}
                   </div>

@@ -4,6 +4,19 @@ const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
 const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || process.env.VITE_ADMIN_PASSWORD;
 
+function mergeProfilesWithAuth(profiles, authUsers) {
+  const authById = new Map(authUsers.map((user) => [user.id, user]));
+  return profiles.map((profile) => {
+    const authUser = authById.get(profile.id);
+    return {
+      ...profile,
+      email: profile.email || authUser?.email || null,
+      ultimo_accesso: authUser?.last_sign_in_at || null,
+      email_verificata: Boolean(authUser?.email_confirmed_at),
+    };
+  });
+}
+
 function json(statusCode, payload) {
   return {
     statusCode,
@@ -30,6 +43,12 @@ export async function handler(event) {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 
+  const authUsersResponse = await supabaseAdmin.auth.admin.listUsers({
+    page: 1,
+    perPage: 1000,
+  });
+  const authUsers = authUsersResponse.data?.users || [];
+
   const tableCandidates = ["Profili", "profili"];
   let lastError = "Could not load profiles";
 
@@ -40,7 +59,7 @@ export async function handler(event) {
       .order("created_at", { ascending: false, nullsFirst: false });
 
     if (!error) {
-      return json(200, { ok: true, table: tableName, profiles: data || [] });
+      return json(200, { ok: true, table: tableName, profiles: mergeProfilesWithAuth(data || [], authUsers) });
     }
 
     lastError = error.message || lastError;
