@@ -7,6 +7,7 @@ type MessaggioDb = {
   testo: string;
   id_utente: string | null;
   created_at: string;
+  username: string | null;
 };
 
 type Profilo = {
@@ -42,7 +43,7 @@ export default function BarettoPreview() {
   async function caricaMessaggi() {
     const { data, error } = await supabase
       .from("baretto_messaggi")
-      .select("id, testo, id_utente, created_at")
+      .select("id, testo, id_utente, created_at, username")
       .order("created_at", { ascending: false })
       .limit(3);
 
@@ -78,7 +79,7 @@ export default function BarettoPreview() {
       id: msg.id,
       testo: msg.testo,
       created_at: msg.created_at,
-      username: nomeProfilo(msg.id_utente ? mappaProfili.get(msg.id_utente) : undefined),
+      username: nomeProfilo(msg.id_utente ? mappaProfili.get(msg.id_utente) : undefined) || msg.username || "Utente",
     }));
 
     setMessaggi(lista);

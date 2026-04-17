@@ -9,6 +9,7 @@ type MessaggioDb = {
   created_at: string;
   id_utente: string | null;
   stanza: string | null;
+  username: string | null;
 };
 
 type Profilo = {
@@ -31,12 +32,14 @@ const STANZA_DEFAULT = "Generale";
 
 export default function Baretto() {
   const navigate = useNavigate();
-  const { user } = useUser();
+  const { user, isAdmin } = useUser();
 
   const [stanze, setStanze] = useState<string[]>([]);
   const [stanzaSelezionata, setStanzaSelezionata] = useState<string>(STANZA_DEFAULT);
   const [messaggi, setMessaggi] = useState<Messaggio[]>([]);
   const [testoNuovo, setTestoNuovo] = useState("");
+  const [utentiOnline, setUtentiOnline] = useState<string[]>([]);
+  const [nomeUtenteCorrente, setNomeUtenteCorrente] = useState("Utente");
   const [caricamento, setCaricamento] = useState(false);
 
   const listaRef = useRef<HTMLDivElement | null>(null);
@@ -49,6 +52,10 @@ export default function Baretto() {
   useEffect(() => {
     void caricaStanze();
   }, []);
+
+  useEffect(() => {
+    void risolviNomeUtenteCorrente();
+  }, [user, isAdmin]);
 
   useEffect(() => {
     void caricaMessaggi(stanzaCorrente);
@@ -82,6 +89,37 @@ export default function Baretto() {
   }, [stanzaCorrente]);
 
   useEffect(() => {
+    const chiavePresenza = user?.id || `admin-${crypto.randomUUID()}`;
+    const canalePresenza = supabase.channel("baretto-presenza", {
+      config: {
+        presence: {
+          key: chiavePresenza,
+        },
+      },
+    });
+
+    canalePresenza
+      .on("presence", { event: "sync" }, () => {
+        const statoPresenza = canalePresenza.presenceState<{ nomeUtente?: string }>();
+        const nomi = Object.values(statoPresenza)
+          .flat()
+          .map((presenza) => String(presenza.nomeUtente || "Utente"));
+
+        setUtentiOnline(Array.from(new Set(nomi)));
+      })
+      .subscribe(async (stato) => {
+        if (stato === "SUBSCRIBED") {
+          await canalePresenza.track({ nomeUtente: nomeUtenteCorrente });
+        }
+      });
+
+    return () => {
+      void canalePresenza.untrack();
+      supabase.removeChannel(canalePresenza);
+    };
+  }, [user?.id, nomeUtenteCorrente]);
+
+  useEffect(() => {
     if (!listaRef.current) return;
     listaRef.current.scrollTo({
       top: listaRef.current.scrollHeight,
@@ -95,6 +133,37 @@ export default function Baretto() {
     const nomeCompleto = `${profilo.nome || ""} ${profilo.cognome || ""}`.trim();
     if (nomeCompleto) return nomeCompleto;
     return "Utente";
+  }
+
+  async function risolviNomeUtenteCorrente() {
+    if (user?.id) {
+      const { data, error } = await supabase
+        .from("Profili")
+        .select("id, username, nome, cognome")
+        .eq("id", user.id)
+        .maybeSingle();
+
+      if (error) {
+        console.error("Errore caricamento utente corrente baretto:", error);
+        setNomeUtenteCorrente(user.user_metadata?.username || user.email?.split("@")[0] || "Utente");
+        return;
+      }
+
+      if (data) {
+        setNomeUtenteCorrente(nomeProfilo(data as Profilo));
+        return;
+      }
+
+      setNomeUtenteCorrente(user.user_metadata?.username || user.email?.split("@")[0] || "Utente");
+      return;
+    }
+
+    if (isAdmin) {
+      setNomeUtenteCorrente("Admin");
+      return;
+    }
+
+    setNomeUtenteCorrente("Utente");
   }
 
   async function caricaStanze() {
@@ -131,7 +200,7 @@ export default function Baretto() {
 
     const { data, error } = await supabase
       .from("baretto_messaggi")
-      .select("id, testo, created_at, id_utente, stanza")
+      .select("id, testo, created_at, id_utente, stanza, username")
       .eq("stanza", stanza)
       .order("created_at", { ascending: true });
 
@@ -171,7 +240,7 @@ export default function Baretto() {
       created_at: msg.created_at,
       id_utente: msg.id_utente,
       stanza: msg.stanza || STANZA_DEFAULT,
-      username: nomeProfilo(msg.id_utente ? mappaProfili.get(msg.id_utente) : undefined),
+      username: nomeProfilo(msg.id_utente ? mappaProfili.get(msg.id_utente) : undefined) || msg.username || "Utente",
     }));
 
     setMessaggi(lista);
@@ -182,11 +251,13 @@ export default function Baretto() {
     event.preventDefault();
 
     const testoPulito = testoNuovo.trim();
-    if (!testoPulito || !user) return;
+    const puoInviare = Boolean(user) || isAdmin;
+    if (!testoPulito || !puoInviare) return;
 
     const { error } = await supabase.from("baretto_messaggi").insert({
       testo: testoPulito,
-      id_utente: user.id,
+      id_utente: user?.id || null,
+      username: nomeUtenteCorrente,
       stanza: stanzaCorrente,
     });
 
@@ -261,6 +332,21 @@ export default function Baretto() {
                 </button>
               );
             })}
+
+            <div style={{ marginTop: 10, borderTop: "1px solid rgba(68,64,60,0.45)", paddingTop: 10 }}>
+              <div style={{ fontWeight: 700, color: "#fafaf9", marginBottom: 6 }}>Utenti online</div>
+
+              {utentiOnline.length === 0 && (
+                <div style={{ color: "#a8a29e", fontSize: 13 }}>Nessun utente online</div>
+              )}
+
+              {utentiOnline.map((nome) => (
+                <div key={nome} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
+                  <span style={{ width: 8, height: 8, borderRadius: 999, background: "#22c55e", display: "inline-block" }} />
+                  <span style={{ color: "#e7e5e4", fontSize: 14 }}>{nome}</span>
+                </div>
+              ))}
+            </div>
           </aside>
 
           <section
@@ -312,8 +398,8 @@ export default function Baretto() {
               <input
                 value={testoNuovo}
                 onChange={(event) => setTestoNuovo(event.target.value)}
-                placeholder={user ? `Scrivi in ${stanzaCorrente}...` : "Accedi per scrivere"}
-                disabled={!user}
+                placeholder={user || isAdmin ? `Scrivi in ${stanzaCorrente}...` : "Accedi per scrivere"}
+                disabled={!user && !isAdmin}
                 style={{
                   flex: 1,
                   borderRadius: 10,
@@ -325,15 +411,15 @@ export default function Baretto() {
               />
               <button
                 type="submit"
-                disabled={!user || !testoNuovo.trim()}
+                disabled={(!user && !isAdmin) || !testoNuovo.trim()}
                 style={{
                   borderRadius: 10,
                   border: "none",
-                  background: user && testoNuovo.trim() ? "#f59e0b" : "#57534e",
+                  background: (user || isAdmin) && testoNuovo.trim() ? "#f59e0b" : "#57534e",
                   color: "#1c1917",
                   fontWeight: 700,
                   padding: "10px 14px",
-                  cursor: user && testoNuovo.trim() ? "pointer" : "not-allowed",
+                  cursor: (user || isAdmin) && testoNuovo.trim() ? "pointer" : "not-allowed",
                 }}
               >
                 Invia
