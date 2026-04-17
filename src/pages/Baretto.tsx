@@ -372,13 +372,9 @@ export default function Baretto() {
               )}
 
               {messaggi.map((msg) => (
-                <div key={msg.id} style={{ display: "grid", gap: 4 }}>
-                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-                    <span style={{ width: 8, height: 8, borderRadius: 999, background: "#22c55e", display: "inline-block" }} />
-                    <strong style={{ color: "#fafaf9" }}>{msg.username}</strong>
-                    <span style={{ color: "#a8a29e", fontSize: 12 }}>Online</span>
-                  </div>
-                  <div style={{ color: "#d6d3d1", marginLeft: 16 }}>{msg.testo}</div>
+                <div key={msg.id} style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
+                  <strong style={{ color: "#f5a623", flexShrink: 0 }}>{msg.username}</strong>
+                  <span style={{ color: "#fafaf9" }}>{msg.testo}</span>
                 </div>
               ))}
             </div>
