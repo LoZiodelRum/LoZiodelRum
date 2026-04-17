@@ -294,7 +294,7 @@ export default function Baretto() {
       style={{
         minHeight: "100vh",
         background: "linear-gradient(180deg, #071325 0%, #081629 45%, #050f1f 100%)",
-        padding: "10px 10px max(12px, env(safe-area-inset-bottom))",
+        padding: "8px 4px max(8px, env(safe-area-inset-bottom))",
         display: "flex",
         flexDirection: "column",
       }}
@@ -489,7 +489,7 @@ export default function Baretto() {
             <input
               value={testoNuovo}
               onChange={(event) => setTestoNuovo(event.target.value)}
-              placeholder={user || isAdmin ? "Type a message..." : "Accedi per scrivere"}
+              placeholder={user || isAdmin ? "Scrivi un messaggio..." : "Accedi per scrivere"}
               disabled={!user && !isAdmin}
               style={{
                 flex: 1,
