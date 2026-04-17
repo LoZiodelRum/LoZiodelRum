@@ -41,7 +41,6 @@ export default function Baretto() {
   const [utentiOnline, setUtentiOnline] = useState<string[]>([]);
   const [nomeUtenteCorrente, setNomeUtenteCorrente] = useState("Utente");
   const [caricamento, setCaricamento] = useState(false);
-  const [sidebarAperta, setSidebarAperta] = useState(false);
 
   const listaRef = useRef<HTMLDivElement | null>(null);
   const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
@@ -50,7 +49,6 @@ export default function Baretto() {
   useEffect(() => {
     const handleResize = () => {
       setIsMobile(window.innerWidth < 768);
-      setSidebarAperta(false); // Chiudi sidebar al resize
     };
 
     window.addEventListener("resize", handleResize);
@@ -146,6 +144,15 @@ export default function Baretto() {
     const nomeCompleto = `${profilo.nome || ""} ${profilo.cognome || ""}`.trim();
     if (nomeCompleto) return nomeCompleto;
     return "Utente";
+  }
+
+  function formattaOra(timestamp: string) {
+    const data = new Date(timestamp);
+    if (Number.isNaN(data.getTime())) return "";
+    return data.toLocaleTimeString("it-IT", {
+      hour: "2-digit",
+      minute: "2-digit",
+    });
   }
 
   async function risolviNomeUtenteCorrente() {
@@ -283,120 +290,239 @@ export default function Baretto() {
   }
 
   return isMobile ? (
-    // ===== MOBILE LAYOUT =====
-    <div style={{ height: "100vh", background: "#0c0a09", display: "flex", flexDirection: "column", overflow: "hidden" }}>
-      {/* HEADER */}
-      <div style={{ padding: "10px 12px", borderBottom: "1px solid rgba(68,64,60,0.5)", display: "flex", alignItems: "center", justifyContent: "space-between", gap: 8, flexShrink: 0 }}>
-        <h1 style={{ margin: 0, color: "#f5a623", fontSize: "1rem", flex: 1, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>Il Baretto</h1>
-        <button
-          onClick={() => navigate("/community")}
-          style={{
-            background: "transparent",
-            border: "none",
-            color: "#f5a623",
-            cursor: "pointer",
-            fontSize: "1.2rem",
-            flexShrink: 0,
-          }}
-        >
-          ◀
-        </button>
-      </div>
-
-      {/* STANZE SCROLL ORIZZONTALE */}
-      <div style={{ padding: "8px 12px", borderBottom: "1px solid rgba(68,64,60,0.5)", display: "flex", gap: 6, overflowX: "auto", WebkitOverflowScrolling: "touch", flexShrink: 0 }}>
-        {stanze.map((stanza) => {
-          const attiva = stanza === stanzaCorrente;
-          return (
-            <button
-              key={stanza}
-              onClick={() => setStanzaSelezionata(stanza)}
-              style={{
-                padding: "6px 12px",
-                borderRadius: 6,
-                border: attiva ? "1px solid #f5a623" : "1px solid rgba(120,113,108,0.4)",
-                background: attiva ? "rgba(245,166,35,0.15)" : "rgba(12,10,9,0.8)",
-                color: attiva ? "#fcd34d" : "#e7e5e4",
-                cursor: "pointer",
-                fontSize: "0.8rem",
-                whiteSpace: "nowrap",
-                flexShrink: 0,
-              }}
-            >
-              {stanza}
-            </button>
-          );
-        })}
-      </div>
-
-      {/* MESSAGGI AREA */}
-      <div ref={listaRef} style={{ flex: 1, overflowY: "auto", padding: "12px", display: "flex", flexDirection: "column", gap: 8, WebkitOverflowScrolling: "touch", minHeight: 0 }}>
-        {!caricamento && messaggi.length === 0 && (
-          <div style={{ color: "#a8a29e", fontSize: "0.85rem", textAlign: "center", padding: "20px 0" }}>
-            Nessuna conversazione
-          </div>
-        )}
-
-        {messaggi.map((msg) => {
-          const online = utentiOnline.includes(msg.username);
-          return (
-            <div key={msg.id} style={{ display: "flex", gap: 6, alignItems: "flex-start" }}>
-              <span style={{ width: 6, height: 6, borderRadius: 999, background: online ? "#22c55e" : "#78716c", flexShrink: 0, marginTop: "5px" }} />
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <div style={{ color: "#f5a623", fontSize: "0.8rem", fontWeight: 700, marginBottom: 2 }}>{msg.username}</div>
-                <div style={{ color: "#fafaf9", fontSize: "0.85rem", wordBreak: "break-word" }}>{msg.testo}</div>
-              </div>
-            </div>
-          );
-        })}
-      </div>
-
-      {/* INPUT FORM */}
-      <form
-        onSubmit={inviaMessaggio}
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "linear-gradient(180deg, #071325 0%, #081629 45%, #050f1f 100%)",
+        padding: "10px 10px max(12px, env(safe-area-inset-bottom))",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
+      <div
         style={{
-          borderTop: "1px solid rgba(68,64,60,0.5)",
-          padding: "8px 10px",
+          borderRadius: 26,
+          border: "1px solid rgba(126, 169, 196, 0.2)",
+          background: "linear-gradient(180deg, #0b3349 0%, #08273c 100%)",
+          boxShadow: "0 14px 42px rgba(0, 0, 0, 0.38)",
+          overflow: "hidden",
+          flex: 1,
+          minHeight: 0,
           display: "flex",
-          gap: 6,
-          background: "rgba(28,25,23,0.95)",
-          flexShrink: 0,
+          flexDirection: "column",
         }}
       >
-        <input
-          value={testoNuovo}
-          onChange={(event) => setTestoNuovo(event.target.value)}
-          placeholder={user || isAdmin ? "Scrivi..." : "Accedi"}
-          disabled={!user && !isAdmin}
+        <div
           style={{
-            flex: 1,
-            borderRadius: 6,
-            border: "1px solid rgba(120,113,108,0.5)",
-            background: "#1a1a1a",
-            color: "#f5f5f4",
-            padding: "8px 10px",
-            fontSize: "0.9rem",
-            outline: "none",
-          }}
-        />
-        <button
-          type="submit"
-          disabled={(!user && !isAdmin) || !testoNuovo.trim()}
-          style={{
-            borderRadius: 6,
-            border: "none",
-            background: (user || isAdmin) && testoNuovo.trim() ? "#f59e0b" : "#57534e",
-            color: "#1c1917",
-            fontWeight: 700,
-            padding: "8px 12px",
-            cursor: (user || isAdmin) && testoNuovo.trim() ? "pointer" : "not-allowed",
-            fontSize: "1rem",
-            flexShrink: 0,
+            padding: "12px 12px 10px",
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+            borderBottom: "1px solid rgba(126, 169, 196, 0.18)",
+            background: "rgba(4, 27, 43, 0.75)",
+            backdropFilter: "blur(8px)",
           }}
         >
-          ↑
-        </button>
-      </form>
+          <button
+            onClick={() => navigate("/community")}
+            style={{
+              background: "transparent",
+              border: "none",
+              color: "#d9f0ff",
+              cursor: "pointer",
+              fontSize: "1.1rem",
+              lineHeight: 1,
+            }}
+          >
+            ←
+          </button>
+          <div
+            style={{
+              width: 32,
+              height: 32,
+              borderRadius: 999,
+              background: "linear-gradient(145deg, #5cb0d8 0%, #2b6888 100%)",
+              border: "1px solid rgba(180, 225, 247, 0.6)",
+              flexShrink: 0,
+            }}
+          />
+          <div style={{ minWidth: 0, flex: 1 }}>
+            <div style={{ color: "#ecf8ff", fontWeight: 700, fontSize: "0.92rem", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
+              {stanzaCorrente}
+            </div>
+            <div style={{ color: "#9fd0e8", fontSize: "0.73rem", opacity: 0.9 }}>
+              {utentiOnline.length > 0 ? `${utentiOnline.length} online` : "Nessuno online"}
+            </div>
+          </div>
+          <button
+            onClick={() => void caricaMessaggi(stanzaCorrente)}
+            style={{
+              background: "transparent",
+              border: "none",
+              color: "#d9f0ff",
+              fontSize: "1.15rem",
+              cursor: "pointer",
+              lineHeight: 1,
+            }}
+            aria-label="Aggiorna messaggi"
+          >
+            ⋮
+          </button>
+        </div>
+
+        <div
+          style={{
+            padding: "8px 10px",
+            display: "flex",
+            gap: 8,
+            overflowX: "auto",
+            WebkitOverflowScrolling: "touch",
+            borderBottom: "1px solid rgba(126, 169, 196, 0.12)",
+            background: "rgba(4, 27, 43, 0.46)",
+          }}
+        >
+          {stanze.map((stanza) => {
+            const attiva = stanza === stanzaCorrente;
+            return (
+              <button
+                key={stanza}
+                onClick={() => setStanzaSelezionata(stanza)}
+                style={{
+                  padding: "7px 13px",
+                  borderRadius: 999,
+                  border: attiva ? "1px solid rgba(179, 230, 255, 0.68)" : "1px solid rgba(126, 169, 196, 0.35)",
+                  background: attiva ? "rgba(80, 165, 215, 0.32)" : "rgba(11, 51, 73, 0.6)",
+                  color: attiva ? "#eef9ff" : "#a9d4ea",
+                  fontSize: "0.77rem",
+                  fontWeight: 600,
+                  whiteSpace: "nowrap",
+                  flexShrink: 0,
+                  cursor: "pointer",
+                }}
+              >
+                {stanza}
+              </button>
+            );
+          })}
+        </div>
+
+        <div
+          ref={listaRef}
+          style={{
+            flex: 1,
+            minHeight: 0,
+            overflowY: "auto",
+            padding: "14px 10px",
+            display: "flex",
+            flexDirection: "column",
+            gap: 10,
+            WebkitOverflowScrolling: "touch",
+          }}
+        >
+          {!caricamento && messaggi.length === 0 && (
+            <div style={{ color: "#98bfd5", fontSize: "0.84rem", textAlign: "center", paddingTop: 12 }}>
+              Nessun messaggio in questa stanza
+            </div>
+          )}
+
+          {messaggi.map((msg) => {
+            const isMine = (Boolean(user?.id) && msg.id_utente === user?.id) || msg.username === nomeUtenteCorrente;
+            return (
+              <div
+                key={msg.id}
+                style={{
+                  display: "flex",
+                  flexDirection: "column",
+                  alignItems: isMine ? "flex-end" : "flex-start",
+                }}
+              >
+                {!isMine && (
+                  <div style={{ color: "#9fd0e8", fontSize: "0.72rem", fontWeight: 700, marginBottom: 3, paddingLeft: 3 }}>
+                    {msg.username}
+                  </div>
+                )}
+                <div
+                  style={{
+                    maxWidth: "82%",
+                    borderRadius: isMine ? "16px 16px 6px 16px" : "16px 16px 16px 6px",
+                    background: isMine ? "linear-gradient(180deg, #2d8fd0 0%, #2372a8 100%)" : "rgba(18, 74, 102, 0.9)",
+                    border: isMine
+                      ? "1px solid rgba(126, 201, 248, 0.62)"
+                      : "1px solid rgba(115, 171, 204, 0.4)",
+                    color: "#eef9ff",
+                    padding: "9px 11px",
+                    boxShadow: "0 6px 16px rgba(0, 0, 0, 0.24)",
+                    wordBreak: "break-word",
+                    fontSize: "0.88rem",
+                    lineHeight: 1.32,
+                  }}
+                >
+                  {msg.testo}
+                </div>
+                <div style={{ color: "#80b4ce", fontSize: "0.68rem", marginTop: 3, paddingInline: 4 }}>
+                  {formattaOra(msg.created_at)}
+                </div>
+              </div>
+            );
+          })}
+        </div>
+
+        <form
+          onSubmit={inviaMessaggio}
+          style={{
+            padding: "10px",
+            borderTop: "1px solid rgba(126, 169, 196, 0.18)",
+            background: "rgba(4, 27, 43, 0.8)",
+          }}
+        >
+          <div
+            style={{
+              display: "flex",
+              alignItems: "center",
+              gap: 8,
+              background: "rgba(9, 40, 58, 0.95)",
+              border: "1px solid rgba(126, 169, 196, 0.34)",
+              borderRadius: 999,
+              padding: "6px 8px 6px 12px",
+            }}
+          >
+            <input
+              value={testoNuovo}
+              onChange={(event) => setTestoNuovo(event.target.value)}
+              placeholder={user || isAdmin ? "Type a message..." : "Accedi per scrivere"}
+              disabled={!user && !isAdmin}
+              style={{
+                flex: 1,
+                border: "none",
+                background: "transparent",
+                color: "#ecf8ff",
+                fontSize: "0.9rem",
+                outline: "none",
+              }}
+            />
+            <button
+              type="submit"
+              disabled={(!user && !isAdmin) || !testoNuovo.trim()}
+              style={{
+                width: 34,
+                height: 34,
+                borderRadius: 999,
+                border: "none",
+                background: (user || isAdmin) && testoNuovo.trim() ? "#2687cf" : "#2d5168",
+                color: "#ecf8ff",
+                fontSize: "1rem",
+                fontWeight: 700,
+                display: "inline-flex",
+                alignItems: "center",
+                justifyContent: "center",
+                cursor: (user || isAdmin) && testoNuovo.trim() ? "pointer" : "not-allowed",
+              }}
+            >
+              ➤
+            </button>
+          </div>
+        </form>
+      </div>
     </div>
   ) : (
     // ===== DESKTOP LAYOUT =====
