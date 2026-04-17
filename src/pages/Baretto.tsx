@@ -371,12 +371,16 @@ export default function Baretto() {
                 </div>
               )}
 
-              {messaggi.map((msg) => (
-                <div key={msg.id} style={{ display: "flex", alignItems: "baseline", gap: 8, flexWrap: "wrap" }}>
-                  <strong style={{ color: "#f5a623", flexShrink: 0 }}>{msg.username}</strong>
-                  <span style={{ color: "#fafaf9" }}>{msg.testo}</span>
-                </div>
-              ))}
+              {messaggi.map((msg) => {
+                const online = utentiOnline.includes(msg.username);
+                return (
+                  <div key={msg.id} style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
+                    <span style={{ width: 8, height: 8, borderRadius: 999, background: online ? "#22c55e" : "#78716c", flexShrink: 0, display: "inline-block" }} />
+                    <strong style={{ color: "#f5a623", flexShrink: 0 }}>{msg.username}</strong>
+                    <span style={{ color: "#fafaf9" }}>{msg.testo}</span>
+                  </div>
+                );
+              })}
             </div>
 
             <form
