@@ -71,17 +71,43 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       .eq("id", user.id)
       .maybeSingle();
 
-    // PROFILO NON TROVATO
+    // PROFILO NON TROVATO - TENTATIVO DI RECOVERY
     if (!profilo) {
-      setUser(null);
+      const metadata = (user.user_metadata || {}) as Record<string, any>;
+      const fallbackProfile = {
+        id: user.id,
+        nome: String(metadata.nome || "").trim() || null,
+        cognome: String(metadata.cognome || "").trim() || null,
+        username: String(metadata.username || user.email?.split("@")[0] || "").trim() || null,
+        email: String(user.email || "").trim().toLowerCase() || null,
+        telefono: String(metadata.telefono || "").trim() || null,
+        ruolo: String(metadata.ruolo || "utente"),
+        status: "attivo",
+      };
+
+      const { data: recoveredProfile } = await supabase
+        .from("Profili")
+        .upsert([fallbackProfile], { onConflict: "id" })
+        .select("*")
+        .maybeSingle();
+
+      if (recoveredProfile) {
+        setUser(user);
+        setRole(recoveredProfile.ruolo || "utente");
+        setStatus(recoveredProfile.status);
+        setLoading(false);
+        return;
+      }
+
+      // Se il recovery non funziona, manteniamo l'utente ma senza ruolo
+      setUser(user);
       setRole(null);
       setStatus(null);
       setLoading(false);
       return;
     }
 
-    // ✅ NON FACCIAMO LOGOUT
-    // 🔥 gestiamo tutto via status
+    // ✅ PROFILO TROVATO
     setUser(user);
     setRole(profilo.ruolo || "utente");
     setStatus(profilo.status);
