@@ -100,7 +100,7 @@ export default function Auth() {
 
     const { data: profilo, error: profiloError } = await supabase
       .from("Profili")
-      .select("approvato, ruolo")
+      .select("ruolo")
       .eq("id", user.id)
       .maybeSingle();
 
@@ -132,13 +132,12 @@ export default function Auth() {
         email: String(user.email || "").trim().toLowerCase() || null,
         telefono: String(metadata.telefono || "").trim() || null,
         ruolo: fallbackRuolo,
-        approvato: fallbackRuolo === "bartender" || fallbackRuolo === "proprietario" ? false : true,
       };
 
       const { data: recoveredProfile, error: recoverError } = await supabase
         .from("Profili")
         .upsert([fallbackProfile], { onConflict: "id" })
-        .select("approvato, ruolo")
+        .select("ruolo")
         .maybeSingle();
 
       if (recoverError) {
@@ -157,13 +156,6 @@ export default function Auth() {
       }
 
       effectiveProfile = recoveredProfile || fallbackProfile;
-    }
-
-    if (!effectiveProfile?.approvato) {
-      await supabase.auth.signOut();
-      setMsg("Account in attesa di approvazione");
-      setLoading(false);
-      return;
     }
 
     navigate("/");

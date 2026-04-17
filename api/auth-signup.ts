@@ -135,8 +135,6 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
             email,
             telefono,
             ruolo,
-            status: ruolo === "utente" ? "attivo" : "in_attesa",
-            approvato: ruolo === "utente",
           },
         ],
         { onConflict: "id" }

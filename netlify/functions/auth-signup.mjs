@@ -136,8 +136,6 @@ export async function handler(event) {
             email,
             telefono,
             ruolo,
-            status: ruolo === "utente" ? "attivo" : "in_attesa",
-            approvato: ruolo === "utente",
           },
         ],
         { onConflict: "id" }

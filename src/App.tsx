@@ -54,9 +54,6 @@ function Protected({
 
   const effectiveRole = isAdmin ? "admin" : role;
 
-  // NON APPROVATO
-  if (!isAdmin && user && status === "in_attesa") return <Navigate to="/in-attesa" />;
-
   // RIFIUTATO
   if (!isAdmin && user && status === "rifiutato") return <Navigate to="/auth" />;
 
