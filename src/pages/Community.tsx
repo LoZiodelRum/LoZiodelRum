@@ -7,7 +7,6 @@ import {
   CalendarDays,
   Circle,
   Flame,
-  MessageSquareText,
   Sparkles,
   Trophy,
   Users,
@@ -26,11 +25,7 @@ export default function Community() {
     { title: "Verticale Demerara", date: "25 Apr", seats: "12 posti" },
   ];
 
-  const messages = [
-    { user: "Giada", text: "Chi viene alla masterclass di giovedi?", online: true },
-    { user: "Lorenzo", text: "Ho appena caricato una ricetta tiki low-ABV.", online: true },
-    { user: "Marta", text: "Scambio sample Hampden 8y per Foursquare ECS.", online: false },
-  ];
+  // <BarettoPreview />
 
   const aromas = ["Vaniglia", "Tropicale", "Spezie", "Affumicato", "Cacao", "Agrumato", "Mela", "Erbaceo"];
 
@@ -187,22 +182,6 @@ export default function Community() {
                   <div style={{ width: `${passportProgress}%`, height: "100%", background: "linear-gradient(90deg, #f59e0b, #fbbf24)" }} />
                 </div>
               </div>
-            </div>
-          </motion.section>
-
-          {/* BLOCCO 2 - Il Baretto (Chat) */}
-          <motion.section className="community-card span-5" variants={cardVariants}>
-            <h3 style={{ display: "flex", alignItems: "center", gap: 8 }}><MessageSquareText size={18} color="#f5a623" /> Il Baretto</h3>
-            <div style={{ display: "grid", gap: 10 }}>
-              {messages.map((m) => (
-                <div key={m.user} style={{ display: "flex", gap: 10 }}>
-                  <Circle size={10} fill={m.online ? "#22c55e" : "#78716c"} color={m.online ? "#22c55e" : "#78716c"} style={{ marginTop: 6 }} />
-                  <div>
-                    <div style={{ fontWeight: 600 }}>{m.user} <span className="community-meta">{m.online ? "Online" : "Offline"}</span></div>
-                    <div className="community-meta">{m.text}</div>
-                  </div>
-                </div>
-              ))}
             </div>
           </motion.section>
 
