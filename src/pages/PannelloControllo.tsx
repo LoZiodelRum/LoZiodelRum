@@ -52,7 +52,49 @@ export default function PannelloControllo() {
 
   async function loadData() {
     const { data: localiData } = await supabase.from("Locali").select("*");
-    const { data: utentiData } = await supabase.from("Profili").select("*");
+    const adminPassword =
+      localStorage.getItem("adminPassword") ||
+      import.meta.env.VITE_ADMIN_PASSWORD ||
+      "";
+
+    let utentiData: any[] | null = null;
+    if (adminPassword) {
+      const isNetlifyHost = typeof window !== "undefined" && window.location.hostname.includes("netlify");
+      const endpoints = isNetlifyHost
+        ? ["/.netlify/functions/admin-list-profili", "/api/admin-list-profili"]
+        : ["/api/admin-list-profili", "/.netlify/functions/admin-list-profili"];
+
+      for (const endpoint of endpoints) {
+        try {
+          const response = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-admin-password": adminPassword,
+            },
+            body: JSON.stringify({}),
+          });
+
+          const payload = await response.json().catch(() => ({}));
+          if (response.ok && payload?.ok && Array.isArray(payload?.profiles)) {
+            utentiData = payload.profiles;
+            break;
+          }
+
+          if (response.status !== 404 && response.status !== 405) {
+            break;
+          }
+        } catch {
+          // Keep fallback below if the endpoint is not reachable.
+        }
+      }
+    }
+
+    if (!utentiData) {
+      const fallbackUsers = await supabase.from("Profili").select("*");
+      utentiData = (fallbackUsers.data as any[]) || [];
+    }
+
     const { data: articoliData } = await supabase.from("articoli").select("*");
     const { data: cocktailData } = await supabase.from("cocktail").select("*");
     const { data: distillatiData } = await supabase.from("distillati").select("*");
@@ -71,7 +113,20 @@ export default function PannelloControllo() {
       }
     }
 
-    const safeUsers = Array.isArray(utentiData) ? utentiData : [];
+    const normalizeRole = (value: unknown) => String(value || "utente").trim().toLowerCase();
+    const normalizeApproved = (user: any) => {
+      if (typeof user?.approvato === "boolean") return user.approvato;
+      const statusValue = String(user?.status || user?.stato || "").toLowerCase();
+      if (["approved", "approvato", "attivo", "active"].includes(statusValue)) return true;
+      if (["pending", "in_attesa", "in attesa"].includes(statusValue)) return false;
+      return false;
+    };
+
+    const safeUsers = (Array.isArray(utentiData) ? utentiData : []).map((user: any) => ({
+      ...user,
+      ruolo: normalizeRole(user?.ruolo),
+      approvato: normalizeApproved(user),
+    }));
     const safeCocktail = Array.isArray(cocktailData) ? cocktailData : [];
 
     setLocali(localiData || []);
