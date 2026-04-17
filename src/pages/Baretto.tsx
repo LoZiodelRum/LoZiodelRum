@@ -1,0 +1,347 @@
+import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "../lib/supabaseClient";
+import { useUser } from "../context/UserContext";
+
+type MessaggioDb = {
+  id: string;
+  testo: string;
+  created_at: string;
+  id_utente: string | null;
+  stanza: string | null;
+};
+
+type Profilo = {
+  id: string;
+  username: string | null;
+  nome: string | null;
+  cognome: string | null;
+};
+
+type Messaggio = {
+  id: string;
+  testo: string;
+  created_at: string;
+  id_utente: string | null;
+  stanza: string;
+  username: string;
+};
+
+const STANZA_DEFAULT = "Generale";
+
+export default function Baretto() {
+  const navigate = useNavigate();
+  const { user } = useUser();
+
+  const [stanze, setStanze] = useState<string[]>([]);
+  const [stanzaSelezionata, setStanzaSelezionata] = useState<string>(STANZA_DEFAULT);
+  const [messaggi, setMessaggi] = useState<Messaggio[]>([]);
+  const [testoNuovo, setTestoNuovo] = useState("");
+  const [caricamento, setCaricamento] = useState(false);
+
+  const listaRef = useRef<HTMLDivElement | null>(null);
+
+  const stanzaCorrente = useMemo(() => {
+    if (stanzaSelezionata && stanzaSelezionata.trim()) return stanzaSelezionata;
+    return STANZA_DEFAULT;
+  }, [stanzaSelezionata]);
+
+  useEffect(() => {
+    void caricaStanze();
+  }, []);
+
+  useEffect(() => {
+    void caricaMessaggi(stanzaCorrente);
+  }, [stanzaCorrente]);
+
+  useEffect(() => {
+    const channel = supabase
+      .channel("baretto-realtime")
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "baretto_messaggi",
+        },
+        async (payload) => {
+          const nuovaStanza = (payload.new as { stanza?: string | null })?.stanza || STANZA_DEFAULT;
+
+          if (nuovaStanza === stanzaCorrente) {
+            await caricaMessaggi(stanzaCorrente);
+          }
+
+          await caricaStanze();
+        }
+      )
+      .subscribe();
+
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [stanzaCorrente]);
+
+  useEffect(() => {
+    if (!listaRef.current) return;
+    listaRef.current.scrollTo({
+      top: listaRef.current.scrollHeight,
+      behavior: "smooth",
+    });
+  }, [messaggi]);
+
+  function nomeProfilo(profilo?: Profilo) {
+    if (!profilo) return "Utente";
+    if (profilo.username && profilo.username.trim()) return profilo.username;
+    const nomeCompleto = `${profilo.nome || ""} ${profilo.cognome || ""}`.trim();
+    if (nomeCompleto) return nomeCompleto;
+    return "Utente";
+  }
+
+  async function caricaStanze() {
+    const { data, error } = await supabase
+      .from("baretto_messaggi")
+      .select("stanza")
+      .order("created_at", { ascending: false });
+
+    if (error) {
+      console.error("Errore caricamento stanze baretto:", error);
+      setStanze([STANZA_DEFAULT]);
+      return;
+    }
+
+    const nomiStanze = Array.from(
+      new Set(
+        (data || []).map((item) => {
+          const nome = String(item.stanza || "").trim();
+          return nome || STANZA_DEFAULT;
+        })
+      )
+    );
+
+    const elenco = nomiStanze.length > 0 ? nomiStanze : [STANZA_DEFAULT];
+    setStanze(elenco);
+
+    if (!elenco.includes(stanzaCorrente)) {
+      setStanzaSelezionata(elenco[0]);
+    }
+  }
+
+  async function caricaMessaggi(stanza: string) {
+    setCaricamento(true);
+
+    const { data, error } = await supabase
+      .from("baretto_messaggi")
+      .select("id, testo, created_at, id_utente, stanza")
+      .eq("stanza", stanza)
+      .order("created_at", { ascending: true });
+
+    if (error) {
+      console.error("Errore caricamento messaggi baretto:", error);
+      setMessaggi([]);
+      setCaricamento(false);
+      return;
+    }
+
+    const messaggiDb = (data || []) as MessaggioDb[];
+    if (messaggiDb.length === 0) {
+      setMessaggi([]);
+      setCaricamento(false);
+      return;
+    }
+
+    const idUtenti = Array.from(new Set(messaggiDb.map((msg) => msg.id_utente).filter(Boolean))) as string[];
+    let mappaProfili = new Map<string, Profilo>();
+
+    if (idUtenti.length > 0) {
+      const { data: profiliData, error: profiliError } = await supabase
+        .from("Profili")
+        .select("id, username, nome, cognome")
+        .in("id", idUtenti);
+
+      if (profiliError) {
+        console.error("Errore caricamento profili baretto:", profiliError);
+      } else {
+        mappaProfili = new Map((profiliData || []).map((profilo) => [profilo.id, profilo as Profilo]));
+      }
+    }
+
+    const lista = messaggiDb.map((msg) => ({
+      id: msg.id,
+      testo: msg.testo,
+      created_at: msg.created_at,
+      id_utente: msg.id_utente,
+      stanza: msg.stanza || STANZA_DEFAULT,
+      username: nomeProfilo(msg.id_utente ? mappaProfili.get(msg.id_utente) : undefined),
+    }));
+
+    setMessaggi(lista);
+    setCaricamento(false);
+  }
+
+  async function inviaMessaggio(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    const testoPulito = testoNuovo.trim();
+    if (!testoPulito || !user) return;
+
+    const { error } = await supabase.from("baretto_messaggi").insert({
+      testo: testoPulito,
+      id_utente: user.id,
+      stanza: stanzaCorrente,
+    });
+
+    if (error) {
+      console.error("Errore invio messaggio baretto:", error);
+      return;
+    }
+
+    setTestoNuovo("");
+  }
+
+  return (
+    <div className="page page-full-bleed fade-in" style={{ minHeight: "100vh", background: "#0c0a09", padding: 0 }}>
+      <div style={{ maxWidth: 1400, margin: "0 auto", padding: 24 }}>
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+          <h1 style={{ margin: 0, color: "#f5a623", fontSize: "clamp(1.3rem, 2.4vw, 2rem)" }}>Il Baretto</h1>
+          <button
+            onClick={() => navigate("/community")}
+            style={{
+              background: "transparent",
+              border: "1px solid rgba(120,113,108,0.5)",
+              color: "#d6d3d1",
+              borderRadius: 10,
+              padding: "8px 12px",
+              cursor: "pointer",
+            }}
+          >
+            Torna a Community
+          </button>
+        </div>
+
+        <div
+          style={{
+            display: "grid",
+            gridTemplateColumns: "260px minmax(0, 1fr)",
+            gap: 14,
+            minHeight: "75vh",
+          }}
+        >
+          <aside
+            style={{
+              background: "rgba(28,25,23,0.5)",
+              border: "1px solid rgba(68,64,60,0.5)",
+              borderRadius: 18,
+              padding: 12,
+              display: "flex",
+              flexDirection: "column",
+              gap: 8,
+              overflowY: "auto",
+            }}
+          >
+            <div style={{ fontWeight: 700, color: "#fafaf9", marginBottom: 6 }}>Stanze</div>
+
+            {stanze.map((stanza) => {
+              const attiva = stanza === stanzaCorrente;
+              return (
+                <button
+                  key={stanza}
+                  onClick={() => setStanzaSelezionata(stanza)}
+                  style={{
+                    width: "100%",
+                    textAlign: "left",
+                    padding: "10px 12px",
+                    borderRadius: 10,
+                    border: attiva ? "1px solid rgba(245,166,35,0.8)" : "1px solid rgba(120,113,108,0.4)",
+                    background: attiva ? "rgba(245,166,35,0.15)" : "rgba(12,10,9,0.55)",
+                    color: attiva ? "#fcd34d" : "#e7e5e4",
+                    cursor: "pointer",
+                  }}
+                >
+                  {stanza}
+                </button>
+              );
+            })}
+          </aside>
+
+          <section
+            style={{
+              background: "rgba(28,25,23,0.5)",
+              border: "1px solid rgba(68,64,60,0.5)",
+              borderRadius: 18,
+              padding: 0,
+              display: "flex",
+              flexDirection: "column",
+              minHeight: 0,
+            }}
+          >
+            <div style={{ padding: "14px 16px", borderBottom: "1px solid rgba(68,64,60,0.45)", color: "#fafaf9", fontWeight: 700 }}>
+              Stanza: {stanzaCorrente}
+            </div>
+
+            <div ref={listaRef} style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "14px 16px", display: "grid", gap: 12 }}>
+              {!caricamento && messaggi.length === 0 && (
+                <div style={{ color: "#a8a29e", fontSize: 14 }}>
+                  Nessuna conversazione ancora attiva
+                </div>
+              )}
+
+              {messaggi.map((msg) => (
+                <div key={msg.id} style={{ display: "grid", gap: 4 }}>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+                    <span style={{ width: 8, height: 8, borderRadius: 999, background: "#22c55e", display: "inline-block" }} />
+                    <strong style={{ color: "#fafaf9" }}>{msg.username}</strong>
+                    <span style={{ color: "#a8a29e", fontSize: 12 }}>Online</span>
+                  </div>
+                  <div style={{ color: "#d6d3d1", marginLeft: 16 }}>{msg.testo}</div>
+                </div>
+              ))}
+            </div>
+
+            <form
+              onSubmit={inviaMessaggio}
+              style={{
+                borderTop: "1px solid rgba(68,64,60,0.45)",
+                padding: "12px 14px",
+                display: "flex",
+                gap: 8,
+                position: "sticky",
+                bottom: 0,
+                background: "rgba(28,25,23,0.92)",
+              }}
+            >
+              <input
+                value={testoNuovo}
+                onChange={(event) => setTestoNuovo(event.target.value)}
+                placeholder={user ? `Scrivi in ${stanzaCorrente}...` : "Accedi per scrivere"}
+                disabled={!user}
+                style={{
+                  flex: 1,
+                  borderRadius: 10,
+                  border: "1px solid rgba(120,113,108,0.5)",
+                  background: "#0f0f0f",
+                  color: "#f5f5f4",
+                  padding: "10px 12px",
+                }}
+              />
+              <button
+                type="submit"
+                disabled={!user || !testoNuovo.trim()}
+                style={{
+                  borderRadius: 10,
+                  border: "none",
+                  background: user && testoNuovo.trim() ? "#f59e0b" : "#57534e",
+                  color: "#1c1917",
+                  fontWeight: 700,
+                  padding: "10px 14px",
+                  cursor: user && testoNuovo.trim() ? "pointer" : "not-allowed",
+                }}
+              >
+                Invia
+              </button>
+            </form>
+          </section>
+        </div>
+      </div>
+    </div>
+  );
+}

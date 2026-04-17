@@ -7,15 +7,19 @@ import {
   CalendarDays,
   Circle,
   Flame,
+  MessageSquareText,
   Sparkles,
   Trophy,
   Users,
 } from "lucide-react";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import SignupInviteBox from "../components/SignupInviteBox";
+import BarettoPreview from "../components/BarettoPreview";
 
 export default function Community() {
+  const navigate = useNavigate();
   const { isAuthenticated, loading, user } = useUser();
   const [selectedAroma, setSelectedAroma] = useState("Vaniglia");
 
@@ -180,6 +184,19 @@ export default function Community() {
                   <div style={{ width: `${passportProgress}%`, height: "100%", background: "linear-gradient(90deg, #f59e0b, #fbbf24)" }} />
                 </div>
               </div>
+            </div>
+          </motion.section>
+
+          {/* BLOCCO 2 - Il Baretto (Chat) */}
+          <motion.section
+            className="community-card span-5"
+            variants={cardVariants}
+            onClick={() => navigate("/community/baretto")}
+            style={{ cursor: "pointer" }}
+          >
+            <h3 style={{ display: "flex", alignItems: "center", gap: 8 }}><MessageSquareText size={18} color="#f5a623" /> Il Baretto</h3>
+            <div style={{ display: "grid", gap: 10 }}>
+              <BarettoPreview />
             </div>
           </motion.section>
 

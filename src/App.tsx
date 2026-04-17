@@ -8,6 +8,7 @@ import Navbar from "./components/Navbar";
 import Home from "./pages/Home";
 import Auth from "./pages/Auth";
 import Community from "./pages/Community";
+import Baretto from "./pages/Baretto";
 import Crea from "./pages/Crea";
 import CreaVino from "./pages/CreaVino";
 import Drink from "./pages/Drink";
@@ -127,6 +128,17 @@ function AppContent() {
             <PageShell>
               <Protected>
                 <Community />
+              </Protected>
+            </PageShell>
+          }
+        />
+
+        <Route
+          path="/community/baretto"
+          element={
+            <PageShell fullBleed>
+              <Protected>
+                <Baretto />
               </Protected>
             </PageShell>
           }
