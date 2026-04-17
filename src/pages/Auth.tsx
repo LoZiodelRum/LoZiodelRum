@@ -62,23 +62,27 @@ export default function Auth() {
     let data: any = null;
     let error: any = null;
     for (const email of uniqueCandidateEmails) {
+      console.log("Tentando login con email:", email);
       const attempt = await supabase.auth.signInWithPassword({
         email,
         password,
       });
 
       if (!attempt.error && attempt.data?.user) {
+        console.log("Login riuscito con email:", email);
         data = attempt.data;
         error = null;
         break;
       }
 
+      console.error("Tentativo fallito con email:", email, "Errore:", attempt.error?.message);
       error = attempt.error;
     }
 
     if (error) {
       const rawError = String(error?.message || "");
       const lowerError = rawError.toLowerCase();
+      console.error("Login error details:", { rawError, lowerError, error });
       if (lowerError.includes("email not confirmed")) {
         setMsg("Email non confermata. Apri il link ricevuto via email e riprova.");
       } else if (lowerError.includes("invalid login credentials")) {
