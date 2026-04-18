@@ -324,28 +324,7 @@ export default function Baretto() {
               }
             }}
           />
-          <button
-            type="submit"
-            style={{
-              flexShrink: 0,
-              marginLeft: 6,
-              padding: typeof window !== 'undefined' && window.innerWidth < 800 ? '10px 22px' : '12px 22px',
-              borderRadius: 12,
-              border: 'none',
-              background: '#f5a623',
-              color: '#181818',
-              fontWeight: 700,
-              fontSize: 17,
-              cursor: 'pointer',
-              minWidth: 56,
-              minHeight: 38,
-              boxShadow: 'none',
-              outline: 'none',
-              whiteSpace: 'nowrap',
-            }}
-          >
-            Invia
-          </button>
+
         </form>
       </main>
     </div>
