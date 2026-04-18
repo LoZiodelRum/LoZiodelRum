@@ -33,8 +33,44 @@ export default function Baretto() {
   const [testoNuovo, setTestoNuovo] = useState<string>("");
   const listaRef = useRef<HTMLDivElement>(null);
 
-  const nomeUtenteCorrente =
-    user?.username || user?.nome || user?.email || "Anonimo";
+  // Mostra solo username, se admin mostra 'Lo Zio'
+  // Mostra solo username, mai la mail. Se admin mostra 'Lo Zio'.
+  let nomeUtenteCorrente = "Anonimo";
+  if (isAdmin) {
+    nomeUtenteCorrente = "Lo Zio";
+  } else if (user?.user_metadata?.username && !user?.user_metadata?.username.includes("@")) {
+    nomeUtenteCorrente = user.user_metadata.username;
+  } else if (user?.user_metadata?.username && user?.user_metadata?.username.includes("@")) {
+    nomeUtenteCorrente = user.user_metadata.username.split("@")[0];
+  } else if (user?.username && !user?.username.includes("@")) {
+    nomeUtenteCorrente = user.username;
+  } else if (user?.username && user?.username.includes("@")) {
+    nomeUtenteCorrente = user.username.split("@")[0];
+  } else if (user?.nome) {
+    nomeUtenteCorrente = user.nome;
+  } else {
+    nomeUtenteCorrente = "Utente";
+  }
+
+  // Forza lo sfondo su body
+  useEffect(() => {
+    const prev = document.body.style.background;
+    document.body.style.background = [
+      "url('/bg-drinks.png')",
+      `url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"400\" height=\"400\">${Array.from({length: 40}).map((_,i)=>`<image href='/bg-drinks.png' x='${Math.random()*360}' y='${Math.random()*360}' width='32' height='32'/>`).join('')}</svg>')`
+    ].join(",");
+    document.body.style.backgroundRepeat = "repeat, repeat";
+    document.body.style.backgroundSize = "80px 80px, 400px 400px";
+    document.body.style.backgroundPosition = "0 0, 0 0";
+    document.body.style.backgroundColor = "#181818";
+    return () => {
+      document.body.style.background = prev;
+      document.body.style.backgroundRepeat = "";
+      document.body.style.backgroundSize = "";
+      document.body.style.backgroundPosition = "";
+      document.body.style.backgroundColor = "";
+    };
+  }, []);
 
   function formattaOra(data: string) {
     const d = new Date(data);
@@ -49,6 +85,9 @@ export default function Baretto() {
       .eq("stanza", stanzaCorrente)
       .order("created_at", { ascending: true })
       .then(({ data, error }) => {
+        if (error) {
+          console.error("Errore caricamento messaggi:", error);
+        }
         if (!error && data) setMessaggi(data as MessaggioDb[]);
         setCaricamento(false);
       });
@@ -69,16 +108,23 @@ export default function Baretto() {
     supabase
       .from("messaggi_baretto")
       .insert([nuovo])
-      .then(() => {
-        setTestoNuovo("");
-        supabase
-          .from("messaggi_baretto")
-          .select("*")
-          .eq("stanza", stanzaCorrente)
-          .order("created_at", { ascending: true })
-          .then(({ data, error }) => {
-            if (!error && data) setMessaggi(data as MessaggioDb[]);
-          });
+      .then(({ error, data }) => {
+        if (error) {
+          console.error("Errore invio messaggio:", error, nuovo);
+        } else {
+          setTestoNuovo("");
+          supabase
+            .from("messaggi_baretto")
+            .select("*")
+            .eq("stanza", stanzaCorrente)
+            .order("created_at", { ascending: true })
+            .then(({ data, error }) => {
+              if (error) {
+                console.error("Errore ricarica messaggi:", error);
+              }
+              if (!error && data) setMessaggi(data as MessaggioDb[]);
+            });
+        }
       });
   }
 
@@ -97,10 +143,9 @@ export default function Baretto() {
       className="page page-full-bleed fade-in"
       style={{
         minHeight: "100vh",
-        background: "url('/bg-chat.png') repeat fixed",
-        backgroundSize: "60px",
         padding: 0,
         margin: 0,
+        background: "transparent"
       }}
     >
       <div
