@@ -37,13 +37,30 @@ export default function Baretto() {
     setUtentiOnline([nomeUtenteCorrente]);
   }, [nomeUtenteCorrente]);
 
+  // Carica messaggi all'avvio
   useEffect(() => {
-    setTimeout(() => {
-      if (listaRef.current) {
-        listaRef.current.scrollTop = listaRef.current.scrollHeight;
-      }
-    }, 50);
-  }, [messaggi]);
+    async function fetchMessaggi() {
+      const { data } = await supabase
+        .from("baretto_messaggi")
+        .select("*")
+        .order("created_at", { ascending: true });
+      if (data) setMessaggi(data);
+    }
+    fetchMessaggi();
+  }, []);
+
+  // Aggiornamento realtime
+  useEffect(() => {
+    const channel = supabase
+      .channel("baretto")
+      .on(
+        "postgres_changes",
+        { event: "INSERT", schema: "public", table: "baretto_messaggi" },
+        (payload) => setMessaggi((prev) => [...prev, payload.new])
+      )
+      .subscribe();
+    return () => supabase.removeChannel(channel);
+  }, []);
 
   function inviaMessaggio(e: any) {
     e.preventDefault();
@@ -55,9 +72,15 @@ export default function Baretto() {
       stanza: stanzaCorrente,
       username: nomeUtenteCorrente,
     };
-    setMessaggi((old) => [...old, { ...nuovo, id: Math.random().toString() }]);
+    // Salva su Supabase
+    supabase.from("baretto_messaggi").insert({
+      testo: testoNuovo,
+      id_utente: user?.id,
+      username: nomeUtenteCorrente,
+      created_at: nuovo.created_at,
+      stanza: stanzaCorrente,
+    });
     setTestoNuovo("");
-    // Qui puoi aggiungere la logica per inviare il messaggio a supabase
   }
 
   function formattaOra(iso: string) {
