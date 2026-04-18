@@ -73,7 +73,7 @@ export default function Baretto() {
           background: "rgba(28,25,23,0.5)",
           border: "1px solid rgba(68,64,60,0.5)",
           borderRadius: 18,
-          padding: typeof window !== "undefined" && window.innerWidth < 800 ? "10px 10px 6px 10px" : 18,
+          padding: typeof window !== "undefined" && window.innerWidth < 800 ? "10px 0 6px 0" : 18, // padding laterale 0
           display: "flex",
           flexDirection: "column",
           gap: typeof window !== "undefined" && window.innerWidth < 800 ? 6 : 18,
