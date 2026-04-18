@@ -56,7 +56,12 @@ export default function Baretto() {
   useEffect(() => {
     // Sfondo visibile ovunque, nessun nero
     const prev = document.body.style.background;
-    document.body.style.background = "url('/bg-drinks.png') repeat 0 0 / 80px 80px, url('data:image/svg+xml;utf8,<svg xmlns=\\\"http://www.w3.org/2000/svg\\\" width=\\\"400\\\" height=\\\"400\\\">${Array.from({length: 40}).map((_,i)=>`<image href='/bg-drinks.png' x='${Math.random()*360}' y='${Math.random()*360}' width='32' height='32'/>`).join('')}<\/svg>') repeat 0 0 / 400px 400px";
+    const isMobile = typeof window !== "undefined" && window.innerWidth < 800;
+    if (isMobile) {
+      document.body.style.background = "#181818";
+    } else {
+      document.body.style.background = "url('/bg-drinks.png') repeat 0 0 / 80px 80px, url('data:image/svg+xml;utf8,<svg xmlns=\\\"http://www.w3.org/2000/svg\\\" width=\\\"400\\\" height=\\\"400\\\">${Array.from({length: 40}).map((_,i)=>`<image href='/bg-drinks.png' x='${Math.random()*360}' y='${Math.random()*360}' width='32' height='32'/>`).join('')}<\/svg>') repeat 0 0 / 400px 400px";
+    }
     document.body.style.backgroundColor = "#181818";
     return () => {
       document.body.style.background = prev;
@@ -351,31 +356,31 @@ export default function Baretto() {
             <form
               onSubmit={inviaMessaggio}
               style={{
-                position: "sticky",
+                position: "fixed",
                 bottom: 0,
                 left: 0,
-                width: "100%",
-                background: "rgba(18,18,18,0.92)",
+                width: "100vw",
+                background: "rgba(18,18,18,0.97)",
                 display: "flex",
                 gap: 8,
                 padding: 12,
                 borderTop: "1px solid #333",
-                zIndex: 10,
+                zIndex: 1000,
                 boxSizing: "border-box"
               }}
             >
               <textarea
                 value={testoNuovo}
                 onChange={(e) => setTestoNuovo(e.target.value)}
-                rows={1}
+                rows={2}
                 placeholder="Scrivi un messaggio..."
                 style={{
-                  flex: 1,
+                  width: "100%",
                   resize: "none",
                   borderRadius: 8,
                   border: "1px solid #444",
                   padding: 10,
-                  fontSize: 16,
+                  fontSize: 18,
                   background: "#222",
                   color: "#fff",
                   minHeight: 38,
@@ -398,7 +403,7 @@ export default function Baretto() {
                   borderRadius: 8,
                   padding: "0 22px",
                   fontWeight: 700,
-                  fontSize: 17,
+                  fontSize: 18,
                   cursor: "pointer",
                   minHeight: 38,
                 }}
