@@ -69,7 +69,7 @@ export default function Baretto() {
     <div style={{ display: "flex", flexDirection: typeof window !== "undefined" && window.innerWidth < 800 ? "column" : "row", minHeight: "100vh", width: "100%", height: "100%" }}>
       <aside
         style={{
-          width: typeof window !== "undefined" && window.innerWidth < 800 ? "96vw" : 270, // ridotto da 100vw a 96vw
+          width: typeof window !== "undefined" && window.innerWidth < 800 ? "88vw" : 270, // ancora più stretto
           background: "rgba(28,25,23,0.5)",
           border: "1px solid rgba(68,64,60,0.5)",
           borderRadius: 18,
@@ -80,8 +80,8 @@ export default function Baretto() {
           minHeight: typeof window !== "undefined" && window.innerWidth < 800 ? undefined : 420,
           marginBottom: typeof window !== "undefined" && window.innerWidth < 800 ? 6 : 0,
           overflowX: typeof window !== "undefined" && window.innerWidth < 800 ? "hidden" : undefined,
-          marginLeft: typeof window !== "undefined" && window.innerWidth < 800 ? "auto" : undefined,
-          marginRight: typeof window !== "undefined" && window.innerWidth < 800 ? "auto" : undefined,
+          marginLeft: typeof window !== "undefined" && window.innerWidth < 800 ? 0 : undefined, // allinea a sinistra
+          marginRight: typeof window !== "undefined" && window.innerWidth < 800 ? "auto" : undefined, // margine destro auto
         }}
       >
         <div
