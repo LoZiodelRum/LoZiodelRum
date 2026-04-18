@@ -107,7 +107,7 @@ export default function Registrazione() {
   return (
     <div className="form-page fade-in registration-form-page">
       <form onSubmit={handleRegister} className="form-card registration-form-shell">
-        <h1>Registrazione Utente</h1>
+        <h1 translate="no">Registrazione Utente</h1>
 
         <input placeholder="Nome" onChange={(e: any) => setNome(e.target.value)} required />
         <input placeholder="Cognome" onChange={(e: any) => setCognome(e.target.value)} required />

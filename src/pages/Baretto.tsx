@@ -412,7 +412,7 @@ export default function Baretto() {
             flex: 1,
             minHeight: 0,
             overflowY: "auto",
-            padding: "14px 10px",
+            padding: "14px 10px 70px 10px", // spazio extra in basso per il form
             display: "flex",
             flexDirection: "column",
             gap: 10,
@@ -438,7 +438,7 @@ export default function Baretto() {
               >
                 {!isMine && (
                   <div style={{ color: "#9fd0e8", fontSize: "0.72rem", fontWeight: 700, marginBottom: 3, paddingLeft: 3 }}>
-                    {msg.username}
+                    <span translate="no">{msg.username}</span>
                   </div>
                 )}
                 <div
@@ -470,9 +470,16 @@ export default function Baretto() {
         <form
           onSubmit={inviaMessaggio}
           style={{
-            padding: "10px",
+            position: "fixed",
+            left: 0,
+            right: 0,
+            bottom: 0,
+            zIndex: 20,
+            padding: "10px 8px 10px 8px",
             borderTop: "1px solid rgba(126, 169, 196, 0.18)",
-            background: "rgba(4, 27, 43, 0.8)",
+            background: "rgba(4, 27, 43, 0.97)",
+            maxWidth: 600,
+            margin: "0 auto"
           }}
         >
           <div
@@ -599,7 +606,7 @@ export default function Baretto() {
               {utentiOnline.map((nome) => (
                 <div key={nome} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
                   <span style={{ width: 8, height: 8, borderRadius: 999, background: "#22c55e", display: "inline-block" }} />
-                  <span style={{ color: "#e7e5e4", fontSize: 14 }}>{nome}</span>
+                  <span style={{ color: "#e7e5e4", fontSize: 14 }} translate="no">{nome}</span>
                 </div>
               ))}
             </div>
@@ -620,7 +627,7 @@ export default function Baretto() {
               Stanza: {stanzaCorrente}
             </div>
 
-            <div ref={listaRef} style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "14px 16px", display: "grid", gap: 12 }}>
+            <div ref={listaRef} style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "14px 16px", display: "grid", gap: 2 }}>
               {!caricamento && messaggi.length === 0 && (
                 <div style={{ color: "#a8a29e", fontSize: 14 }}>
                   Nessuna conversazione ancora attiva
@@ -632,7 +639,7 @@ export default function Baretto() {
                 return (
                   <div key={msg.id} style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
                     <span style={{ width: 8, height: 8, borderRadius: 999, background: online ? "#22c55e" : "#78716c", flexShrink: 0, display: "inline-block" }} />
-                    <strong style={{ color: "#f5a623", flexShrink: 0 }}>{msg.username}</strong>
+                    <strong style={{ color: "#f5a623", flexShrink: 0 }} translate="no">{msg.username}</strong>
                     <span style={{ color: "#fafaf9" }}>{msg.testo}</span>
                   </div>
                 );

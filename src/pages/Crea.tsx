@@ -505,6 +505,7 @@ export default function Crea() {
                         setCustomGeneratedNames((prev) => ({ ...prev, [cocktail.name]: value }));
                       }}
                       placeholder="inserisci nome cocktail"
+                      translate="no"
                       style={inputStyle}
                     />
                   </div>

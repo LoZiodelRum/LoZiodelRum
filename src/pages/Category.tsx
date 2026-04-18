@@ -245,7 +245,7 @@ export default function Category() {
                 <div className="no-img-placeholder">NO IMG</div>
               )}
               <div className="drink-card-caption">
-                <h3>{item.nome}</h3>
+                <h3 translate="no">{item.nome}</h3>
               </div>
             </article>
           ))}
