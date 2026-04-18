@@ -404,45 +404,7 @@ export default function Baretto() {
                 }
               }}
             />
-            <button
-              type="submit"
-              style={typeof window !== 'undefined' && window.innerWidth < 800 ? {
-                background: '#f5a623',
-                color: '#181818',
-                border: 'none',
-                borderRadius: '0 24px 24px 0',
-                padding: '0 10px',
-                fontWeight: 700,
-                fontSize: 16,
-                cursor: 'pointer',
-                minHeight: 44,
-                height: 48,
-                alignSelf: 'stretch',
-                flex: 'none',
-                whiteSpace: 'nowrap',
-                margin: 0,
-                boxShadow: '0 2px 8px #0004',
-                letterSpacing: 0.2,
-              } : {
-                background: '#f5a623',
-                color: '#181818',
-                border: 'none',
-                borderRadius: '0 24px 24px 0',
-                padding: '0 16px',
-                fontWeight: 700,
-                fontSize: 16,
-                cursor: 'pointer',
-                minHeight: 32,
-                height: 36,
-                alignSelf: 'stretch',
-                flex: 'none',
-                whiteSpace: 'nowrap',
-                margin: 0,
-                letterSpacing: 0.2,
-              }}
-            >
-              Invia
-            </button>
+            {/* Pulsante Invia eliminato su richiesta */}
           </form>
       </main>
     </div>
