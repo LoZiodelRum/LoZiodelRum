@@ -581,6 +581,7 @@ export default function Baretto() {
             }}
           >
 
+
             <div style={{ fontWeight: 700, color: "#fafaf9", marginBottom: 6 }}>Stanze</div>
 
             <button
@@ -608,22 +609,25 @@ export default function Baretto() {
               + Crea un tavolo
             </button>
 
-            {stanze.map((stanza) => {
-              const attiva = stanza === stanzaCorrente;
-              return (
-                <button
-                  key={stanza}
-                  onClick={() => setStanzaSelezionata(stanza)}
-                  style={{
-                    width: "100%",
-                    textAlign: "left",
-                    padding: "10px 12px",
-                    borderRadius: 10,
-                    border: attiva ? "1px solid rgba(245,166,35,0.8)" : "1px solid rgba(120,113,108,0.4)",
-                    background: attiva ? "rgba(245,166,35,0.15)" : "rgba(12,10,9,0.55)",
-                    color: attiva ? "#fcd34d" : "#e7e5e4",
-                    cursor: "pointer",
-                  }}
+            <button
+              onClick={() => {
+                const nome = prompt("Nome del nuovo tavolo (stanza)?");
+                if (nome && !stanze.includes(nome)) {
+                  setStanze([...stanze, nome]);
+                  setStanzaSelezionata(nome);
+                }
+              }}
+              style={{
+                width: "100%",
+                textAlign: "left",
+                padding: "10px 12px",
+                borderRadius: 10,
+                border: "1px solid #f5a623",
+                background: "#f5a623",
+                color: "#23272f",
+                fontWeight: 700,
+                marginBottom: 10,
+                cursor: "pointer",
                 <div
                   style={{
                     padding: "8px 10px",
@@ -637,6 +641,29 @@ export default function Baretto() {
                 >
                   {stanze.map((stanza) => {
                     const attiva = stanza === stanzaCorrente;
+                    return (
+                      <button
+                        key={stanza}
+                        onClick={() => setStanzaSelezionata(stanza)}
+                        style={{
+                          padding: "7px 13px",
+                          borderRadius: 999,
+                          border: attiva ? "2px solid #f5a623" : "1px solid rgba(126, 169, 196, 0.35)",
+                          background: attiva ? "#f5a623" : "rgba(11, 51, 73, 0.6)",
+                          color: attiva ? "#23272f" : "#a9d4ea",
+                          fontSize: "0.95rem",
+                          fontWeight: 700,
+                          whiteSpace: "nowrap",
+                          flexShrink: 0,
+                          cursor: "pointer",
+                          marginBottom: 2
+                        }}
+                      >
+                        {stanza}
+                      </button>
+                    );
+                  })}
+                </div>
                     return (
                       <button
                         key={stanza}
