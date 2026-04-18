@@ -11,7 +11,7 @@ export default function Baretto() {
 
   const [stanze, setStanze] = useState<string[]>([STANZA_DEFAULT]);
   const [stanzaCorrente, setStanzaSelezionata] = useState<string>(STANZA_DEFAULT);
-  const [utentiOnline, setUtentiOnline] = useState<string[]>([]);
+  const [utentiOnline, setUtentiOnline] = useState<any[]>([]);
   const [messaggi, setMessaggi] = useState<any[]>([]);
   const [testoNuovo, setTestoNuovo] = useState<string>("");
   const listaRef = useRef<HTMLDivElement>(null);
@@ -33,9 +33,55 @@ export default function Baretto() {
     nomeUtenteCorrente = "Utente";
   }
 
+  // PRESENZA: inserisci presenza all'ingresso, rimuovi all'uscita, ascolta realtime
   useEffect(() => {
-    setUtentiOnline([nomeUtenteCorrente]);
-  }, [nomeUtenteCorrente]);
+    if (!user) return;
+    let presenzaId: string | null = null;
+    let isMounted = true;
+    async function addPresenza() {
+      const { data, error } = await supabase
+        .from("baretto_presenze")
+        .insert({
+          id_utente: user.id,
+          username: nomeUtenteCorrente,
+          stanza: stanzaCorrente,
+          last_active: new Date().toISOString(),
+        })
+        .select("id").single();
+      if (data && isMounted) presenzaId = data.id;
+    }
+    addPresenza();
+    // Rimuovi presenza all'uscita
+    return () => {
+      isMounted = false;
+      if (user && presenzaId) {
+        supabase.from("baretto_presenze").delete().eq("id", presenzaId);
+      }
+    };
+    // eslint-disable-next-line
+  }, [user, stanzaCorrente]);
+
+  // Carica presenze e aggiorna in realtime
+  useEffect(() => {
+    async function fetchPresenze() {
+      const { data } = await supabase
+        .from("baretto_presenze")
+        .select("id, id_utente, username, stanza, last_active");
+      if (data) setUtentiOnline(data);
+    }
+    fetchPresenze();
+    const channel = supabase
+      .channel("baretto-presenze")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "baretto_presenze" },
+        fetchPresenze
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [stanzaCorrente]);
 
   // Carica messaggi all'avvio
   useEffect(() => {
