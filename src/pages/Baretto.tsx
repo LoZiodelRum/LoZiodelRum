@@ -77,7 +77,7 @@ export default function Baretto() {
   useEffect(() => {
     setCaricamento(true);
     supabase
-      .from("messaggi_baretto")
+      .from("baretto_messaggi")
       .select("*")
       .eq("stanza", stanzaCorrente)
       .order("created_at", { ascending: true })
@@ -103,7 +103,7 @@ export default function Baretto() {
     };
 
     supabase
-      .from("messaggi_baretto")
+      .from("baretto_messaggi")
       .insert([nuovo])
       .then(({ error, data }) => {
         if (error) {
