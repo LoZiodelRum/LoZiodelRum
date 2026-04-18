@@ -1,25 +1,4 @@
-import { FormEvent, useEffect, useRef, useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { supabase } from "../lib/supabaseClient";
-import { useUser } from "../context/UserContext";
-      .then(({ error, data }) => {
-        if (error) {
-          console.error("Errore invio messaggio:", error, nuovo);
-        } else {
-          // Aggiorna subito la chat room in locale
-          setMessaggi((old) => {
-            const updated = [...old, { ...nuovo, id: Math.random().toString() }];
-            setTimeout(() => {
-              if (listaRef.current) {
-                listaRef.current.scrollTop = listaRef.current.scrollHeight;
-              }
-            }, 50);
-            return updated;
-          });
-          setTestoNuovo("");
-        }
-      });
-  }
+
 
   useEffect(() => {
     // Scrolla sempre in fondo dopo ogni aggiornamento messaggi
