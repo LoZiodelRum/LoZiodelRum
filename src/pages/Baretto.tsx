@@ -33,29 +33,24 @@ export default function Baretto() {
     nomeUtenteCorrente = "Utente";
   }
 
-  // PRESENZA: inserisci presenza all'ingresso, rimuovi all'uscita, ascolta realtime
+  // PRESENZA: upsert presenza all'ingresso, rimuovi all'uscita, ascolta realtime
   useEffect(() => {
     if (!user) return;
-    let presenzaId: string | null = null;
-    let isMounted = true;
-    async function addPresenza() {
-      const { data, error } = await supabase
+    async function upsertPresenza() {
+      await supabase
         .from("baretto_presenze")
-        .insert({
+        .upsert({
           id_utente: user.id,
           username: nomeUtenteCorrente,
           stanza: stanzaCorrente,
           last_active: new Date().toISOString(),
-        })
-        .select("id").single();
-      if (data && isMounted) presenzaId = data.id;
+        }, { onConflict: ["id_utente", "stanza"] });
     }
-    addPresenza();
+    upsertPresenza();
     // Rimuovi presenza all'uscita
     return () => {
-      isMounted = false;
-      if (user && presenzaId) {
-        supabase.from("baretto_presenze").delete().eq("id", presenzaId);
+      if (user) {
+        supabase.from("baretto_presenze").delete().eq("id_utente", user.id).eq("stanza", stanzaCorrente);
       }
     };
     // eslint-disable-next-line
