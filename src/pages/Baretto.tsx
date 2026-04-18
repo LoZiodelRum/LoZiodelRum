@@ -147,6 +147,23 @@ export default function Baretto() {
     );
   }
 
+  // Costruisci la lista utenti online, aggiungendo "Lo Zio" se admin
+  let utentiOnlineEffettivi = utentiOnline;
+  if (isAdmin) {
+    const presente = utentiOnline.some(u => u.username === "Lo Zio");
+    if (!presente) {
+      utentiOnlineEffettivi = [
+        ...utentiOnline,
+        {
+          id_utente: "admin-local",
+          username: "Lo Zio",
+          stanza: stanzaCorrente,
+          last_active: new Date().toISOString(),
+        },
+      ];
+    }
+  }
+
   return (
     <div style={{ display: "flex", flexDirection: typeof window !== "undefined" && window.innerWidth < 800 ? "column" : "row", minHeight: "100vh", width: "100%", height: "100%" }}>
       <aside
@@ -196,7 +213,7 @@ export default function Baretto() {
         >
           Utenti collegati
           <span style={{ color: "#f5a623", fontSize: 17, fontWeight: 700 }}>
-            ({utentiOnline.length})
+            ({utentiOnlineEffettivi.length})
           </span>
         </div>
         <div
@@ -207,12 +224,12 @@ export default function Baretto() {
             marginBottom: 18,
           }}
         >
-          {utentiOnline.length === 0 && (
+          {utentiOnlineEffettivi.length === 0 && (
             <span style={{ color: "#888", fontSize: 15 }}>
               Nessuno online
             </span>
           )}
-          {utentiOnline.map((utente) => (
+          {utentiOnlineEffettivi.map((utente) => (
             <div
               key={utente.id_utente + utente.stanza}
               style={{
