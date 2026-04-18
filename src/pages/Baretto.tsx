@@ -337,78 +337,7 @@ export default function Baretto() {
             })}
           </div>
 
-          <form
-            onSubmit={inviaMessaggio}
-            style={{
-              display: "flex",
-              alignItems: "flex-end",
-              gap: typeof window !== "undefined" && window.innerWidth < 800 ? 4 : 8,
-              width: typeof window !== "undefined" && window.innerWidth < 800 ? "100vw" : "100%",
-              margin: 0,
-              padding: typeof window !== "undefined" && window.innerWidth < 800 ? "8px 4px 8px 4px" : 0,
-              position: "fixed",
-              left: 0,
-              right: 0,
-              bottom: 0,
-              background: "#181818",
-              border: "none",
-              zIndex: 100,
-              overflowX: typeof window !== "undefined" && window.innerWidth < 800 ? "hidden" : undefined,
-              boxShadow: typeof window !== "undefined" && window.innerWidth < 800 ? "0 -2px 12px #0008" : undefined,
-              borderTop: typeof window !== "undefined" && window.innerWidth < 800 ? "1.5px solid #222" : undefined,
-            }}
-          >
-            <textarea
-              value={testoNuovo}
-              onChange={(e) => setTestoNuovo(e.target.value)}
-              rows={1}
-              placeholder="Scrivi un messaggio..."
-              style={{
-                flexGrow: 1,
-                flexShrink: 1,
-                flexBasis: 0,
-                width: typeof window !== "undefined" && window.innerWidth < 800 ? "calc(100vw - 70px)" : "100%",
-                resize: "none",
-                borderRadius: 8,
-                border: "1px solid #444",
-                padding: typeof window !== "undefined" && window.innerWidth < 800 ? "10px 12px" : "6px 10px",
-                fontSize: typeof window !== "undefined" && window.innerWidth < 800 ? 18 : 17,
-                background: "#222",
-                color: "#fff",
-                minHeight: typeof window !== "undefined" && window.innerWidth < 800 ? 38 : 24,
-                maxHeight: 80,
-                boxSizing: "border-box",
-                marginRight: 0
-              }}
-              onKeyDown={e => {
-                if (e.key === "Enter" && !e.shiftKey) {
-                  e.preventDefault();
-                  inviaMessaggio(e);
-                }
-              }}
-            />
-            <button
-              type="submit"
-              style={{
-                background: "#c47a2c",
-                color: "#181818",
-                border: "none",
-                borderRadius: 8,
-                padding: typeof window !== "undefined" && window.innerWidth < 800 ? "0 18px" : "0 14px",
-                fontWeight: 700,
-                fontSize: typeof window !== "undefined" && window.innerWidth < 800 ? 17 : 15,
-                cursor: "pointer",
-                minHeight: typeof window !== "undefined" && window.innerWidth < 800 ? 38 : 24,
-                height: typeof window !== "undefined" && window.innerWidth < 800 ? 44 : 32,
-                alignSelf: "flex-end",
-                flex: "none",
-                whiteSpace: "nowrap",
-                marginLeft: typeof window !== "undefined" && window.innerWidth < 800 ? 4 : 0
-              }}
-            >
-              Invia
-            </button>
-          </form>
+          {/* Input chat rimosso, pronto per essere ricreato */}
       </main>
     </div>
   );
