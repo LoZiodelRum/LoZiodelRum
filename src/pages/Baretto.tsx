@@ -375,12 +375,12 @@ export default function Baretto() {
                 alignItems: "center",
                 gap: 8,
                 width: "100%",
-                marginTop: 12,
+                margin: 0,
+                padding: 0,
                 position: "sticky",
                 bottom: 0,
                 background: "none",
                 border: "none",
-                padding: 0,
                 zIndex: 10
               }}
             >
@@ -390,7 +390,9 @@ export default function Baretto() {
                 rows={1}
                 placeholder="Scrivi un messaggio..."
                 style={{
-                  flex: 1,
+                  flexGrow: 1,
+                  flexShrink: 1,
+                  flexBasis: 0,
                   resize: "none",
                   borderRadius: 8,
                   border: "1px solid #444",
@@ -417,13 +419,15 @@ export default function Baretto() {
                   color: "#181818",
                   border: "none",
                   borderRadius: 8,
-                  padding: "0 18px",
+                  padding: "0 14px",
                   fontWeight: 700,
                   fontSize: 15,
                   cursor: "pointer",
                   minHeight: 24,
                   height: 32,
-                  alignSelf: "flex-end"
+                  alignSelf: "flex-end",
+                  flex: "none",
+                  whiteSpace: "nowrap"
                 }}
               >
                 Invia
