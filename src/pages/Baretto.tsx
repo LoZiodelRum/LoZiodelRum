@@ -200,9 +200,15 @@ export default function Baretto() {
                 color: "#fafaf9",
                 fontSize: 18,
                 marginBottom: 8,
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
               }}
             >
               Utenti collegati
+              <span style={{ color: "#f5a623", fontSize: 17, fontWeight: 700 }}>
+                ({utentiOnline.length})
+              </span>
             </div>
 
             <div
