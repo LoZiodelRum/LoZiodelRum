@@ -212,9 +212,9 @@ export default function Baretto() {
               Nessuno online
             </span>
           )}
-          {utentiOnline.map((nome) => (
+          {utentiOnline.map((utente) => (
             <div
-              key={nome}
+              key={utente.id_utente + utente.stanza}
               style={{
                 display: "flex",
                 alignItems: "center",
@@ -234,7 +234,7 @@ export default function Baretto() {
                   border: "1.5px solid #222",
                 }}
               />
-              <span>{nome}</span>
+              <span>{utente.username}</span>
             </div>
           ))}
         </div>
