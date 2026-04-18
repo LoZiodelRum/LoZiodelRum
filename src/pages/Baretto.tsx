@@ -55,12 +55,12 @@ export default function Baretto() {
   // Sfondo: tante miniature random di bg-drinks.png su tutta la pagina
   useEffect(() => {
     const prev = document.body.style.background;
-    // Genera uno sfondo SVG con tante miniature random
+    // Genera uno sfondo SVG con tante miniature random di 'sfondo chat.png'
     const icons = Array.from({ length: 120 })
       .map((_, i) => {
         const x = Math.random() * 1920;
         const y = Math.random() * 1400;
-        return `<image href='/bg-drinks.png' x='${x}' y='${y}' width='22' height='22'/>`;
+        return `<image href='/sfondo%20chat.png' x='${x}' y='${y}' width='22' height='22'/>`;
       })
       .join('');
     const svg = `url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1920\" height=\"1400\">${icons}</svg>')`;
