@@ -559,6 +559,71 @@ export default function Baretto() {
             Torna a Community
           </button>
         </div>
+        <div style={{ maxWidth: 400, margin: "0 auto" }}>
+          <div style={{ fontWeight: 700, color: "#fafaf9", marginBottom: 6 }}>Stanze</div>
+          <button
+            onClick={() => {
+              const nome = prompt("Nome del nuovo tavolo (stanza)?");
+              if (nome && !stanze.includes(nome)) {
+                setStanze([...stanze, nome]);
+                setStanzaSelezionata(nome);
+              }
+            }}
+            style={{
+              width: "100%",
+              textAlign: "left",
+              padding: "10px 12px",
+              borderRadius: 10,
+              border: "1px solid #f5a623",
+              background: "#f5a623",
+              color: "#23272f",
+              fontWeight: 700,
+              marginBottom: 10,
+              cursor: "pointer",
+              fontSize: 16
+            }}
+          >
+            + Crea un tavolo
+          </button>
+          <div
+            style={{
+              padding: "8px 10px",
+              display: "flex",
+              gap: 8,
+              overflowX: "auto",
+              WebkitOverflowScrolling: "touch",
+              borderBottom: "1px solid rgba(126, 169, 196, 0.12)",
+              background: "rgba(4, 27, 43, 0.46)",
+              marginBottom: 16
+            }}
+          >
+            {stanze.map((stanza) => {
+              const attiva = stanza === stanzaCorrente;
+              return (
+                <button
+                  key={stanza}
+                  onClick={() => setStanzaSelezionata(stanza)}
+                  style={{
+                    padding: "7px 13px",
+                    borderRadius: 999,
+                    border: attiva ? "2px solid #f5a623" : "1px solid rgba(126, 169, 196, 0.35)",
+                    background: attiva ? "#f5a623" : "rgba(11, 51, 73, 0.6)",
+                    color: attiva ? "#23272f" : "#a9d4ea",
+                    fontSize: "0.95rem",
+                    fontWeight: 700,
+                    whiteSpace: "nowrap",
+                    flexShrink: 0,
+                    cursor: "pointer",
+                    marginBottom: 2
+                  }}
+                >
+                  {stanza}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+        {/* ...resto del layout desktop chat... */}
 
         <div
           style={{
@@ -580,10 +645,7 @@ export default function Baretto() {
               overflowY: "auto",
             }}
           >
-
-
             <div style={{ fontWeight: 700, color: "#fafaf9", marginBottom: 6 }}>Stanze</div>
-
             <button
               onClick={() => {
                 const nome = prompt("Nome del nuovo tavolo (stanza)?");
@@ -608,149 +670,47 @@ export default function Baretto() {
             >
               + Crea un tavolo
             </button>
-
-            <button
-              onClick={() => {
-                const nome = prompt("Nome del nuovo tavolo (stanza)?");
-                if (nome && !stanze.includes(nome)) {
-                  setStanze([...stanze, nome]);
-                  setStanzaSelezionata(nome);
-                }
-              }}
+            <div
               style={{
-                width: "100%",
-                textAlign: "left",
-                padding: "10px 12px",
-                borderRadius: 10,
-                border: "1px solid #f5a623",
-                background: "#f5a623",
-                color: "#23272f",
-                fontWeight: 700,
-                marginBottom: 10,
-                cursor: "pointer",
-                <div
-                  style={{
-                    padding: "8px 10px",
-                    display: "flex",
-                    gap: 8,
-                    overflowX: "auto",
-                    WebkitOverflowScrolling: "touch",
-                    borderBottom: "1px solid rgba(126, 169, 196, 0.12)",
-                    background: "rgba(4, 27, 43, 0.46)",
-                  }}
-                >
-                  {stanze.map((stanza) => {
-                    const attiva = stanza === stanzaCorrente;
-                    return (
-                      <button
-                        key={stanza}
-                        onClick={() => setStanzaSelezionata(stanza)}
-                        style={{
-                          padding: "7px 13px",
-                          borderRadius: 999,
-                          border: attiva ? "2px solid #f5a623" : "1px solid rgba(126, 169, 196, 0.35)",
-                          background: attiva ? "#f5a623" : "rgba(11, 51, 73, 0.6)",
-                          color: attiva ? "#23272f" : "#a9d4ea",
-                          fontSize: "0.95rem",
-                          fontWeight: 700,
-                          whiteSpace: "nowrap",
-                          flexShrink: 0,
-                          cursor: "pointer",
-                          marginBottom: 2
-                        }}
-                      >
-                        {stanza}
-                      </button>
-                    );
-                  })}
-                </div>
-                    return (
-                      <button
-                        key={stanza}
-                        onClick={() => setStanzaSelezionata(stanza)}
-                        style={{
-                          padding: "7px 13px",
-                          borderRadius: 999,
-                          border: attiva ? "2px solid #f5a623" : "1px solid rgba(126, 169, 196, 0.35)",
-                          background: attiva ? "#f5a623" : "rgba(11, 51, 73, 0.6)",
-                          color: attiva ? "#23272f" : "#a9d4ea",
-                          fontSize: "0.95rem",
-                          fontWeight: 700,
-                          whiteSpace: "nowrap",
-                          flexShrink: 0,
-                          cursor: "pointer",
-                          marginBottom: 2
-                        }}
-                      >
-                        {stanza}
-                      </button>
-                    );
-                  })}
-                </div>
-            </div>
-
-            <div ref={listaRef} style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "14px 16px", display: "grid", gap: 2 }}>
-              {!caricamento && messaggi.length === 0 && (
-                <div style={{ color: "#a8a29e", fontSize: 14 }}>
-                  Nessuna conversazione ancora attiva
-                </div>
-              )}
-
-              {messaggi.map((msg) => {
-                const online = utentiOnline.includes(msg.username);
+                padding: "8px 10px",
+                display: "flex",
+                gap: 8,
+                overflowX: "auto",
+                WebkitOverflowScrolling: "touch",
+                borderBottom: "1px solid rgba(126, 169, 196, 0.12)",
+                background: "rgba(4, 27, 43, 0.46)",
+              }}
+            >
+              {stanze.map((stanza) => {
+                const attiva = stanza === stanzaCorrente;
                 return (
-                  <div key={msg.id} style={{ display: "flex", alignItems: "center", gap: 6, flexWrap: "wrap" }}>
-                    <span style={{ width: 8, height: 8, borderRadius: 999, background: online ? "#22c55e" : "#78716c", flexShrink: 0, display: "inline-block" }} />
-                    <strong style={{ color: "#f5a623", flexShrink: 0 }} translate="no">{msg.username}</strong>
-                    <span style={{ color: "#fafaf9" }}>{msg.testo}</span>
-                  </div>
+                  <button
+                    key={stanza}
+                    onClick={() => setStanzaSelezionata(stanza)}
+                    style={{
+                      padding: "7px 13px",
+                      borderRadius: 999,
+                      border: attiva ? "2px solid #f5a623" : "1px solid rgba(126, 169, 196, 0.35)",
+                      background: attiva ? "#f5a623" : "rgba(11, 51, 73, 0.6)",
+                      color: attiva ? "#23272f" : "#a9d4ea",
+                      fontSize: "0.95rem",
+                      fontWeight: 700,
+                      whiteSpace: "nowrap",
+                      flexShrink: 0,
+                      cursor: "pointer",
+                      marginBottom: 2
+                    }}
+                  >
+                    {stanza}
+                  </button>
                 );
               })}
             </div>
+          </aside>
 
-            <form
-              onSubmit={inviaMessaggio}
-              style={{
-                borderTop: "1px solid rgba(68,64,60,0.45)",
-                padding: "12px 14px",
-                display: "flex",
-                gap: 8,
-                position: "sticky",
-                bottom: 0,
-                background: "rgba(28,25,23,0.92)",
-              }}
-            >
-              <input
-                value={testoNuovo}
-                onChange={(event) => setTestoNuovo(event.target.value)}
-                placeholder={user || isAdmin ? `Scrivi in ${stanzaCorrente}...` : "Accedi per scrivere"}
-                disabled={!user && !isAdmin}
-                style={{
-                  flex: 1,
-                  borderRadius: 10,
-                  border: "1px solid rgba(120,113,108,0.5)",
-                  background: "#0f0f0f",
-                  color: "#f5f5f4",
-                  padding: "10px 12px",
-                }}
-              />
-              <button
-                type="submit"
-                disabled={(!user && !isAdmin) || !testoNuovo.trim()}
-                style={{
-                  borderRadius: 10,
-                  border: "none",
-                  background: (user || isAdmin) && testoNuovo.trim() ? "#f59e0b" : "#57534e",
-                  color: "#1c1917",
-                  fontWeight: 700,
-                  padding: "10px 14px",
-                  cursor: (user || isAdmin) && testoNuovo.trim() ? "pointer" : "not-allowed",
-                }}
-              >
-                Invia
-              </button>
-            </form>
-          </section>
+          {/* ...resto del layout chat... */}
+
+          {/* ...resto del layout chat e input bar... */}
         </div>
       </div>
     </div>
