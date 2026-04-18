@@ -276,10 +276,12 @@ export default function Baretto() {
             rows={1}
             placeholder="Scrivi un messaggio..."
             style={typeof window !== 'undefined' && window.innerWidth < 800 ? {
-              flex: 1,
-              width: '100%',
+              width: '58vw', // poco più della metà
               minWidth: 0,
               maxWidth: 'unset',
+              alignSelf: 'flex-start',
+              marginLeft: 0,
+              marginRight: 0,
               resize: 'none',
               borderRadius: 10,
               border: '1px solid #444',
@@ -295,7 +297,6 @@ export default function Baretto() {
               minHeight: 38,
               maxHeight: 60,
               boxSizing: 'border-box',
-              margin: 0,
               display: 'block',
               overflowX: 'auto',
               whiteSpace: 'nowrap',
