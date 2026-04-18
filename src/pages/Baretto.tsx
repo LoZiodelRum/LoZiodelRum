@@ -138,6 +138,15 @@ export default function Baretto() {
     return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   }
 
+  if (!user?.id) {
+    return (
+      <div style={{ color: '#fff', background: '#181818', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, textAlign: 'center' }}>
+        Devi confermare la tua email per accedere alla chat.<br />
+        Controlla la posta e clicca sul link di conferma.
+      </div>
+    );
+  }
+
   return (
     <div style={{ display: "flex", flexDirection: typeof window !== "undefined" && window.innerWidth < 800 ? "column" : "row", minHeight: "100vh", width: "100%", height: "100%" }}>
       <aside
