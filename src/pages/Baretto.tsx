@@ -284,4 +284,28 @@
                 margin: '10px 0',
                 outline: 'none',
                 display: 'block',
-              {/* RIMOSSO: secondo <form> e <style> errati, struttura JSX ripristinata */}
+            />
+            <button
+              type="submit"
+              style={{
+                marginLeft: 8,
+                padding: typeof window !== 'undefined' && window.innerWidth < 800 ? '12px 18px' : '12px 22px',
+                borderRadius: 18,
+                border: 'none',
+                background: '#f5a623',
+                color: '#181818',
+                fontWeight: 700,
+                fontSize: 18,
+                cursor: 'pointer',
+                minWidth: 60,
+                minHeight: 44,
+                boxShadow: 'none',
+                outline: 'none',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              Invia
+            </button>
+          </form>
+        </main>
+      </div>
