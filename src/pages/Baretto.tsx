@@ -138,11 +138,11 @@ export default function Baretto() {
     return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   }
 
-  if (!user?.id) {
+  if (!user?.id && !isAdmin) {
     return (
       <div style={{ color: '#fff', background: '#181818', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, textAlign: 'center' }}>
-        Devi confermare la tua email per accedere alla chat.<br />
-        Controlla la posta e clicca sul link di conferma.
+        Devi accedere per usare la chat.<br />
+        Effettua il login.
       </div>
     );
   }
