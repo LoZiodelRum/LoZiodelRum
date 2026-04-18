@@ -52,10 +52,19 @@ export default function Baretto() {
     nomeUtenteCorrente = "Utente";
   }
 
-  // Sfondo unico: solo bg-drinks.png su tutto il body
+  // Sfondo: tante miniature random di bg-drinks.png su tutta la pagina
   useEffect(() => {
     const prev = document.body.style.background;
-    document.body.style.background = "url('/bg-drinks.png') repeat 0 0 / 80px 80px";
+    // Genera uno sfondo SVG con tante miniature random
+    const icons = Array.from({ length: 120 })
+      .map((_, i) => {
+        const x = Math.random() * 1920;
+        const y = Math.random() * 1400;
+        return `<image href='/bg-drinks.png' x='${x}' y='${y}' width='22' height='22'/>`;
+      })
+      .join('');
+    const svg = `url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"1920\" height=\"1400\">${icons}</svg>')`;
+    document.body.style.background = `${svg} repeat 0 0 / 480px 350px`;
     document.body.style.backgroundColor = "";
     return () => {
       document.body.style.background = prev;
