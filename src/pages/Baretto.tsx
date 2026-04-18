@@ -377,9 +377,11 @@ export default function Baretto() {
                 minHeight: 44,
                 maxHeight: 90,
                 boxSizing: 'border-box',
-                margin: '10px 0 10px 2px',
+                margin: '10px 0',
                 outline: 'none',
                 display: 'block',
+                overflowX: 'auto',
+                whiteSpace: 'nowrap',
               } : {
                 width: '65vw',
                 maxWidth: 520,
@@ -399,7 +401,8 @@ export default function Baretto() {
                 display: 'block',
               }}
               onKeyDown={e => {
-                if (e.key === 'Enter' && !e.shiftKey) {
+                // Blocca sempre il ritorno a capo
+                if (e.key === 'Enter') {
                   e.preventDefault();
                   inviaMessaggio(e);
                 }
