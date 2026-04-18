@@ -296,12 +296,13 @@ export default function Baretto() {
         inset: 0,
         minHeight: "100vh",
         width: "100vw",
-        background: "linear-gradient(180deg, #071325 0%, #081629 45%, #050f1f 100%)",
+        background: "url('/bg-chat.png') repeat",
+        backgroundSize: "60px",
         padding: 0,
         margin: 0,
         display: "flex",
         flexDirection: "column",
-        zIndex: 10
+        zIndex: 10,
       }}
     >
       <div
@@ -310,7 +311,7 @@ export default function Baretto() {
           minHeight: 0,
           display: "flex",
           flexDirection: "column",
-          background: "transparent",
+          background: "rgba(18,18,18,0.82)", // overlay scuro per contrasto
           border: 0,
           borderRadius: 0,
           boxShadow: "none",
@@ -482,7 +483,7 @@ export default function Baretto() {
             zIndex: 20,
             padding: "10px 8px 10px 8px",
             borderTop: "1px solid rgba(126, 169, 196, 0.18)",
-            background: "rgba(4, 27, 43, 0.97)",
+            background: "rgba(18,18,18,0.98)",
             maxWidth: 600,
             margin: "0 auto"
           }}
@@ -506,10 +507,12 @@ export default function Baretto() {
               style={{
                 flex: 1,
                 border: "none",
-                background: "transparent",
-                color: "#ecf8ff",
-                fontSize: "0.9rem",
+                background: "#23272f",
+                color: "#fff",
+                fontSize: "0.98rem",
                 outline: "none",
+                borderRadius: 8,
+                padding: "8px 10px"
               }}
             />
             <button
@@ -520,8 +523,8 @@ export default function Baretto() {
                 height: 34,
                 borderRadius: 999,
                 border: "none",
-                background: (user || isAdmin) && testoNuovo.trim() ? "#2687cf" : "#2d5168",
-                color: "#ecf8ff",
+                background: (user || isAdmin) && testoNuovo.trim() ? "#f5a623" : "#2d5168",
+                color: "#23272f",
                 fontSize: "1rem",
                 fontWeight: 700,
                 display: "inline-flex",
