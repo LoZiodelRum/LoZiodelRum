@@ -363,23 +363,39 @@ export default function Baretto() {
               onChange={e => setTestoNuovo(e.target.value)}
               rows={1}
               placeholder="Scrivi un messaggio..."
-              style={{
+              style={typeof window !== 'undefined' && window.innerWidth < 800 ? {
                 flex: 1,
                 resize: 'none',
                 borderRadius: 24,
                 border: '1.5px solid #444',
-                padding: typeof window !== 'undefined' && window.innerWidth < 800 ? '14px 16px' : '10px 16px',
-                fontSize: typeof window !== 'undefined' && window.innerWidth < 800 ? 18 : 17,
+                padding: '14px 16px',
+                fontSize: 18,
                 background: '#222',
                 color: '#fff',
-                minHeight: typeof window !== 'undefined' && window.innerWidth < 800 ? 44 : 32,
+                minHeight: 44,
                 maxHeight: 90,
                 boxSizing: 'border-box',
                 margin: 0,
                 outline: 'none',
                 borderTopRightRadius: 0,
                 borderBottomRightRadius: 0,
-                width: typeof window !== 'undefined' && window.innerWidth < 800 ? 'calc(100vw - 60px)' : undefined,
+                width: 'calc(100vw - 54px)',
+              } : {
+                flex: 1,
+                resize: 'none',
+                borderRadius: 24,
+                border: '1.5px solid #444',
+                padding: '10px 16px',
+                fontSize: 17,
+                background: '#222',
+                color: '#fff',
+                minHeight: 32,
+                maxHeight: 90,
+                boxSizing: 'border-box',
+                margin: 0,
+                outline: 'none',
+                borderTopRightRadius: 0,
+                borderBottomRightRadius: 0,
               }}
               onKeyDown={e => {
                 if (e.key === 'Enter' && !e.shiftKey) {
@@ -390,22 +406,38 @@ export default function Baretto() {
             />
             <button
               type="submit"
-              style={{
+              style={typeof window !== 'undefined' && window.innerWidth < 800 ? {
                 background: '#f5a623',
                 color: '#181818',
                 border: 'none',
                 borderRadius: '0 24px 24px 0',
-                padding: typeof window !== 'undefined' && window.innerWidth < 800 ? '0 12px' : '0 16px',
+                padding: '0 10px',
                 fontWeight: 700,
-                fontSize: typeof window !== 'undefined' && window.innerWidth < 800 ? 16 : 16,
+                fontSize: 16,
                 cursor: 'pointer',
-                minHeight: typeof window !== 'undefined' && window.innerWidth < 800 ? 44 : 32,
-                height: typeof window !== 'undefined' && window.innerWidth < 800 ? 48 : 36,
+                minHeight: 44,
+                height: 48,
                 alignSelf: 'stretch',
                 flex: 'none',
                 whiteSpace: 'nowrap',
                 margin: 0,
-                boxShadow: typeof window !== 'undefined' && window.innerWidth < 800 ? '0 2px 8px #0004' : undefined,
+                boxShadow: '0 2px 8px #0004',
+                letterSpacing: 0.2,
+              } : {
+                background: '#f5a623',
+                color: '#181818',
+                border: 'none',
+                borderRadius: '0 24px 24px 0',
+                padding: '0 16px',
+                fontWeight: 700,
+                fontSize: 16,
+                cursor: 'pointer',
+                minHeight: 32,
+                height: 36,
+                alignSelf: 'stretch',
+                flex: 'none',
+                whiteSpace: 'nowrap',
+                margin: 0,
                 letterSpacing: 0.2,
               }}
             >
