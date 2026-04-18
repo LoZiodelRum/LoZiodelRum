@@ -59,7 +59,9 @@ export default function Baretto() {
         (payload) => setMessaggi((prev) => [...prev, payload.new])
       )
       .subscribe();
-    return () => supabase.removeChannel(channel);
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   function inviaMessaggio(e: any) {
