@@ -340,22 +340,22 @@ export default function Baretto() {
           <form
             onSubmit={inviaMessaggio}
             style={{
-              display: "flex",
-              alignItems: "flex-end",
-              gap: typeof window !== "undefined" && window.innerWidth < 800 ? 6 : 10,
-              width: typeof window !== "undefined" && window.innerWidth < 800 ? "100vw" : "100%",
+              display: 'flex',
+              alignItems: 'center',
+              gap: typeof window !== 'undefined' && window.innerWidth < 800 ? 0 : 10,
+              width: '100vw',
               margin: 0,
-              padding: typeof window !== "undefined" && window.innerWidth < 800 ? "8px 6px 8px 6px" : "12px 0 12px 0",
-              position: "fixed",
+              padding: typeof window !== 'undefined' && window.innerWidth < 800 ? '0' : '12px 0',
+              position: 'fixed',
               left: 0,
               right: 0,
               bottom: 0,
-              background: "#181818",
-              border: "none",
+              background: '#181818',
+              border: 'none',
               zIndex: 100,
-              overflowX: typeof window !== "undefined" && window.innerWidth < 800 ? "hidden" : undefined,
-              boxShadow: typeof window !== "undefined" && window.innerWidth < 800 ? "0 -2px 12px #0008" : undefined,
-              borderTop: "1.5px solid #222"
+              overflowX: 'hidden',
+              boxShadow: typeof window !== 'undefined' && window.innerWidth < 800 ? '0 -2px 12px #0008' : undefined,
+              borderTop: '1.5px solid #222',
             }}
           >
             <textarea
@@ -365,21 +365,23 @@ export default function Baretto() {
               placeholder="Scrivi un messaggio..."
               style={{
                 flex: 1,
-                resize: "none",
+                resize: 'none',
                 borderRadius: 24,
-                border: "1.5px solid #444",
-                padding: typeof window !== "undefined" && window.innerWidth < 800 ? "13px 16px" : "10px 16px",
-                fontSize: typeof window !== "undefined" && window.innerWidth < 800 ? 18 : 17,
-                background: "#222",
-                color: "#fff",
-                minHeight: typeof window !== "undefined" && window.innerWidth < 800 ? 44 : 32,
+                border: '1.5px solid #444',
+                padding: typeof window !== 'undefined' && window.innerWidth < 800 ? '14px 16px' : '10px 16px',
+                fontSize: typeof window !== 'undefined' && window.innerWidth < 800 ? 18 : 17,
+                background: '#222',
+                color: '#fff',
+                minHeight: typeof window !== 'undefined' && window.innerWidth < 800 ? 44 : 32,
                 maxHeight: 90,
-                boxSizing: "border-box",
-                marginRight: 0,
-                outline: "none"
+                boxSizing: 'border-box',
+                margin: 0,
+                outline: 'none',
+                borderTopRightRadius: 0,
+                borderBottomRightRadius: 0,
               }}
               onKeyDown={e => {
-                if (e.key === "Enter" && !e.shiftKey) {
+                if (e.key === 'Enter' && !e.shiftKey) {
                   e.preventDefault();
                   inviaMessaggio(e);
                 }
@@ -388,21 +390,21 @@ export default function Baretto() {
             <button
               type="submit"
               style={{
-                background: "#f5a623",
-                color: "#181818",
-                border: "none",
-                borderRadius: 999,
-                padding: typeof window !== "undefined" && window.innerWidth < 800 ? "0 22px" : "0 20px",
+                background: '#f5a623',
+                color: '#181818',
+                border: 'none',
+                borderRadius: '0 24px 24px 0',
+                padding: typeof window !== 'undefined' && window.innerWidth < 800 ? '0 26px' : '0 20px',
                 fontWeight: 700,
-                fontSize: typeof window !== "undefined" && window.innerWidth < 800 ? 18 : 16,
-                cursor: "pointer",
-                minHeight: typeof window !== "undefined" && window.innerWidth < 800 ? 44 : 32,
-                height: typeof window !== "undefined" && window.innerWidth < 800 ? 48 : 36,
-                alignSelf: "flex-end",
-                flex: "none",
-                whiteSpace: "nowrap",
-                marginLeft: typeof window !== "undefined" && window.innerWidth < 800 ? 6 : 10,
-                boxShadow: typeof window !== "undefined" && window.innerWidth < 800 ? "0 2px 8px #0004" : undefined
+                fontSize: typeof window !== 'undefined' && window.innerWidth < 800 ? 20 : 16,
+                cursor: 'pointer',
+                minHeight: typeof window !== 'undefined' && window.innerWidth < 800 ? 44 : 32,
+                height: typeof window !== 'undefined' && window.innerWidth < 800 ? 48 : 36,
+                alignSelf: 'stretch',
+                flex: 'none',
+                whiteSpace: 'nowrap',
+                margin: 0,
+                boxShadow: typeof window !== 'undefined' && window.innerWidth < 800 ? '0 2px 8px #0004' : undefined,
               }}
             >
               Invia
