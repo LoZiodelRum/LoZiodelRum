@@ -13,55 +13,53 @@ type Profilo = {
 type MessaggioDb = {
   id: string;
   testo: string;
-  created_at: string;
-  id_utente?: string;
-  stanza?: string;
-  username?: string;
-};
+            <aside
+              style={{
+                width: typeof window !== "undefined" && window.innerWidth < 800 ? "100vw" : 270,
+                background: "rgba(28,25,23,0.5)",
+                border: "1px solid rgba(68,64,60,0.5)",
+                borderRadius: 18,
+                padding: typeof window !== "undefined" && window.innerWidth < 800 ? "10px 10px 6px 10px" : 18,
+                display: "flex",
+                flexDirection: "column",
+                gap: typeof window !== "undefined" && window.innerWidth < 800 ? 6 : 18,
+                minHeight: typeof window !== "undefined" && window.innerWidth < 800 ? undefined : 420,
+                marginBottom: typeof window !== "undefined" && window.innerWidth < 800 ? 6 : 0,
+                overflowX: typeof window !== "undefined" && window.innerWidth < 800 ? "hidden" : undefined,
+              }}
+            >
+              {utentiOnline.length === 0 && (
+                <span style={{ color: "#888", fontSize: 15 }}>
+                  Nessuno online
+                </span>
+              )}
 
-const STANZA_DEFAULT = "Generale";
-
-export default function Baretto() {
-  const navigate = useNavigate();
-  const { user, isAdmin } = useUser();
-
-  const [stanze, setStanze] = useState<string[]>([STANZA_DEFAULT]);
-  const [stanzaCorrente, setStanzaSelezionata] = useState<string>(STANZA_DEFAULT);
-  const [utentiOnline, setUtentiOnline] = useState<string[]>([]);
-  const [messaggi, setMessaggi] = useState<MessaggioDb[]>([]);
-  const [caricamento, setCaricamento] = useState<boolean>(true);
-  const [testoNuovo, setTestoNuovo] = useState<string>("");
-  const listaRef = useRef<HTMLDivElement>(null);
-
-  // Mostra solo username, se admin mostra 'Lo Zio'
-  // Mostra solo username, mai la mail. Se admin mostra 'Lo Zio'.
-  let nomeUtenteCorrente = "Anonimo";
-  if (isAdmin) {
-    nomeUtenteCorrente = "Lo Zio";
-  } else if (user?.user_metadata?.username && !user?.user_metadata?.username.includes("@")) {
-    nomeUtenteCorrente = user.user_metadata.username;
-  } else if (user?.user_metadata?.username && user?.user_metadata?.username.includes("@")) {
-    nomeUtenteCorrente = user.user_metadata.username.split("@")[0];
-  } else if (user?.username && !user?.username.includes("@")) {
-    nomeUtenteCorrente = user.username;
-  } else if (user?.username && user?.username.includes("@")) {
-    nomeUtenteCorrente = user.username.split("@")[0];
-  } else if (user?.nome) {
-    nomeUtenteCorrente = user.nome;
-  } else {
-    nomeUtenteCorrente = "Utente";
-  }
-
-  // Sfondo: tante miniature random di bg-drinks.png su tutta la pagina
-  useEffect(() => {
-    const prevBg = document.body.style.background;
-    const prevColor = document.body.style.backgroundColor;
-    document.body.style.background = "none";
-    document.body.style.backgroundColor = "#181818";
-    return () => {
-      document.body.style.background = prevBg;
-      document.body.style.backgroundColor = prevColor;
-    };
+              {utentiOnline.map((nome) => (
+                <div
+                  key={nome}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    fontSize: 15,
+                    color: "#e6e6e6",
+                  }}
+                >
+                  <span
+                    style={{
+                      display: "inline-block",
+                      width: 10,
+                      height: 10,
+                      borderRadius: 999,
+                      background: "#2ecc40",
+                      marginRight: 4,
+                      border: "1.5px solid #222",
+                    }}
+                  />
+                  <span>{nome}</span>
+                </div>
+              ))}
+            </aside>
   }, []);
 
   function formattaOra(data: string) {
