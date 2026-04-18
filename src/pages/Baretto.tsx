@@ -310,8 +310,14 @@ export default function Baretto() {
               minWidth: 0,
               display: "flex",
               flexDirection: "column",
-              height: typeof window !== "undefined" && window.innerWidth < 800 ? "60vh" : "70vh",
+              height: typeof window !== "undefined" && window.innerWidth < 800 ? "85vh" : "85vh",
               position: "relative",
+              justifyContent: "flex-start",
+              marginTop: 0,
+              marginBottom: 0,
+              maxWidth: 700,
+              marginLeft: "auto",
+              marginRight: "auto"
             }}
           >
             <div
@@ -365,36 +371,37 @@ export default function Baretto() {
             <form
               onSubmit={inviaMessaggio}
               style={{
+                display: "flex",
+                alignItems: "center",
+                gap: 8,
+                width: "100%",
+                marginTop: 12,
                 position: "sticky",
                 bottom: 0,
-                left: 0,
-                width: "100%",
-                background: "rgba(18,18,18,0.97)",
-                display: "flex",
-                gap: 8,
-                padding: 12,
-                borderTop: "1px solid #333",
-                zIndex: 10,
-                boxSizing: "border-box"
+                background: "none",
+                border: "none",
+                padding: 0,
+                zIndex: 10
               }}
             >
               <textarea
                 value={testoNuovo}
                 onChange={(e) => setTestoNuovo(e.target.value)}
-                rows={2}
+                rows={1}
                 placeholder="Scrivi un messaggio..."
                 style={{
-                  width: "100%",
+                  flex: 1,
                   resize: "none",
                   borderRadius: 8,
                   border: "1px solid #444",
-                  padding: 10,
-                  fontSize: 18,
+                  padding: "6px 10px",
+                  fontSize: 17,
                   background: "#222",
                   color: "#fff",
-                  minHeight: 38,
-                  maxHeight: 120,
-                  boxSizing: "border-box"
+                  minHeight: 24,
+                  maxHeight: 48,
+                  boxSizing: "border-box",
+                  marginRight: 0
                 }}
                 onKeyDown={e => {
                   if (e.key === "Enter" && !e.shiftKey) {
@@ -410,11 +417,13 @@ export default function Baretto() {
                   color: "#181818",
                   border: "none",
                   borderRadius: 8,
-                  padding: "0 22px",
+                  padding: "0 18px",
                   fontWeight: 700,
-                  fontSize: 18,
+                  fontSize: 15,
                   cursor: "pointer",
-                  minHeight: 38,
+                  minHeight: 24,
+                  height: 32,
+                  alignSelf: "flex-end"
                 }}
               >
                 Invia
