@@ -364,8 +364,8 @@ export default function Baretto() {
               rows={1}
               placeholder="Scrivi un messaggio..."
               style={{
-                width: '75vw',
-                maxWidth: 600,
+                width: '65vw',
+                maxWidth: 520,
                 minWidth: 120,
                 resize: 'none',
                 borderRadius: 18,
@@ -377,7 +377,7 @@ export default function Baretto() {
                 minHeight: 44,
                 maxHeight: 90,
                 boxSizing: 'border-box',
-                margin: '10px 0',
+                margin: '10px 0 10px 12px',
                 outline: 'none',
                 display: 'block',
               }}
