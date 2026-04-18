@@ -142,16 +142,22 @@ export default function Baretto() {
         background: "none",
         backdropFilter: "none",
         WebkitBackdropFilter: "none",
+        width: typeof window !== "undefined" && window.innerWidth < 800 ? "100vw" : undefined,
+        minWidth: typeof window !== "undefined" && window.innerWidth < 800 ? "100vw" : undefined,
+        maxWidth: typeof window !== "undefined" && window.innerWidth < 800 ? "100vw" : undefined,
+        overflowX: typeof window !== "undefined" && window.innerWidth < 800 ? "hidden" : undefined,
       }}
     >
       <div
         style={{
-          width: "100%",
-          maxWidth: 1400,
-          margin: "0 auto",
-          padding: 24,
+          width: typeof window !== "undefined" && window.innerWidth < 800 ? "100vw" : "100%",
+          maxWidth: typeof window !== "undefined" && window.innerWidth < 800 ? "100vw" : 1400,
+          minWidth: typeof window !== "undefined" && window.innerWidth < 800 ? "100vw" : undefined,
+          margin: typeof window !== "undefined" && window.innerWidth < 800 ? 0 : "0 auto",
+          padding: typeof window !== "undefined" && window.innerWidth < 800 ? 4 : 24,
           background: "none",
           borderRadius: 0,
+          overflowX: typeof window !== "undefined" && window.innerWidth < 800 ? "hidden" : undefined,
         }}
       >
         <div
@@ -165,7 +171,9 @@ export default function Baretto() {
         >
           <aside
             style={{
-              width: typeof window !== "undefined" && window.innerWidth < 800 ? "100%" : 270,
+              width: typeof window !== "undefined" && window.innerWidth < 800 ? "100vw" : 270,
+              minWidth: typeof window !== "undefined" && window.innerWidth < 800 ? "100vw" : undefined,
+              maxWidth: typeof window !== "undefined" && window.innerWidth < 800 ? "100vw" : undefined,
               background: "rgba(28,25,23,0.5)",
               border: "1px solid rgba(68,64,60,0.5)",
               borderRadius: 18,
@@ -175,6 +183,7 @@ export default function Baretto() {
               gap: typeof window !== "undefined" && window.innerWidth < 800 ? 2 : 18,
               minHeight: typeof window !== "undefined" && window.innerWidth < 800 ? undefined : 420,
               marginBottom: typeof window !== "undefined" && window.innerWidth < 800 ? 2 : 0,
+              overflowX: typeof window !== "undefined" && window.innerWidth < 800 ? "hidden" : undefined,
             }}
           >
             <div
@@ -315,10 +324,12 @@ export default function Baretto() {
               justifyContent: "flex-start",
               marginTop: 0,
               marginBottom: 0,
-              maxWidth: typeof window !== "undefined" && window.innerWidth < 800 ? "100%" : 700,
-              width: typeof window !== "undefined" && window.innerWidth < 800 ? "100%" : undefined,
+              maxWidth: typeof window !== "undefined" && window.innerWidth < 800 ? "100vw" : 700,
+              width: typeof window !== "undefined" && window.innerWidth < 800 ? "100vw" : undefined,
+              minWidth: typeof window !== "undefined" && window.innerWidth < 800 ? "100vw" : undefined,
               marginLeft: typeof window !== "undefined" && window.innerWidth < 800 ? 0 : "auto",
-              marginRight: typeof window !== "undefined" && window.innerWidth < 800 ? 0 : "auto"
+              marginRight: typeof window !== "undefined" && window.innerWidth < 800 ? 0 : "auto",
+              overflowX: typeof window !== "undefined" && window.innerWidth < 800 ? "hidden" : undefined,
             }}
           >
             <div
@@ -375,14 +386,17 @@ export default function Baretto() {
                 display: "flex",
                 alignItems: "center",
                 gap: 8,
-                width: "100%",
+                width: typeof window !== "undefined" && window.innerWidth < 800 ? "100vw" : "100%",
+                minWidth: typeof window !== "undefined" && window.innerWidth < 800 ? "100vw" : undefined,
+                maxWidth: typeof window !== "undefined" && window.innerWidth < 800 ? "100vw" : undefined,
                 margin: 0,
                 padding: 0,
                 position: "sticky",
                 bottom: 0,
                 background: "none",
                 border: "none",
-                zIndex: 10
+                zIndex: 10,
+                overflowX: typeof window !== "undefined" && window.innerWidth < 800 ? "hidden" : undefined,
               }}
             >
               <textarea
@@ -394,7 +408,9 @@ export default function Baretto() {
                   flexGrow: 1,
                   flexShrink: 1,
                   flexBasis: 0,
-                  width: typeof window !== "undefined" && window.innerWidth < 800 ? "100%" : undefined,
+                  width: typeof window !== "undefined" && window.innerWidth < 800 ? "100vw" : "100%",
+                  minWidth: typeof window !== "undefined" && window.innerWidth < 800 ? "100vw" : undefined,
+                  maxWidth: typeof window !== "undefined" && window.innerWidth < 800 ? "100vw" : undefined,
                   resize: "none",
                   borderRadius: 8,
                   border: "1px solid #444",
