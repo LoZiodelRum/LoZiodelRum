@@ -154,7 +154,7 @@ export default function Baretto() {
           maxWidth: typeof window !== "undefined" && window.innerWidth < 800 ? "100vw" : 1400,
           minWidth: typeof window !== "undefined" && window.innerWidth < 800 ? "100vw" : undefined,
           margin: typeof window !== "undefined" && window.innerWidth < 800 ? 0 : "0 auto",
-          padding: typeof window !== "undefined" && window.innerWidth < 800 ? 4 : 24,
+          padding: typeof window !== "undefined" && window.innerWidth < 800 ? "0 8px" : 24,
           background: "none",
           borderRadius: 0,
           overflowX: typeof window !== "undefined" && window.innerWidth < 800 ? "hidden" : undefined,
@@ -213,21 +213,21 @@ export default function Baretto() {
               Utenti collegati
               <span style={{ color: "#f5a623", fontSize: 17, fontWeight: 700 }}>
                 ({utentiOnline.length})
-              </span>
-            </div>
-
-            <div
-              style={{
-                display: "flex",
-                flexDirection: "column",
-                gap: 8,
-                marginBottom: 18,
-              }}
-            >
-              {utentiOnline.length === 0 && (
-                <span style={{ color: "#888", fontSize: 15 }}>
-                  Nessuno online
-                </span>
+              <aside
+                style={{
+                  width: typeof window !== "undefined" && window.innerWidth < 800 ? "100vw" : 270,
+                  background: "rgba(28,25,23,0.5)",
+                  border: "1px solid rgba(68,64,60,0.5)",
+                  borderRadius: 18,
+                  padding: typeof window !== "undefined" && window.innerWidth < 800 ? "10px 10px 6px 10px" : 18,
+                  display: "flex",
+                  flexDirection: "column",
+                  gap: typeof window !== "undefined" && window.innerWidth < 800 ? 6 : 18,
+                  minHeight: typeof window !== "undefined" && window.innerWidth < 800 ? undefined : 420,
+                  marginBottom: typeof window !== "undefined" && window.innerWidth < 800 ? 6 : 0,
+                  overflowX: typeof window !== "undefined" && window.innerWidth < 800 ? "hidden" : undefined,
+                }}
+              >
               )}
 
               {utentiOnline.map((nome) => (
@@ -325,6 +325,7 @@ export default function Baretto() {
               marginTop: 0,
               marginBottom: 0,
               width: typeof window !== "undefined" && window.innerWidth < 800 ? "100vw" : 700,
+              padding: typeof window !== "undefined" && window.innerWidth < 800 ? "0 6px 0 6px" : 0,
               marginLeft: typeof window !== "undefined" && window.innerWidth < 800 ? 0 : "auto",
               marginRight: typeof window !== "undefined" && window.innerWidth < 800 ? 0 : "auto",
               overflowX: typeof window !== "undefined" && window.innerWidth < 800 ? "hidden" : undefined,
@@ -386,13 +387,16 @@ export default function Baretto() {
                 gap: 8,
                 width: typeof window !== "undefined" && window.innerWidth < 800 ? "100vw" : "100%",
                 margin: 0,
-                padding: 0,
-                position: "sticky",
+                padding: typeof window !== "undefined" && window.innerWidth < 800 ? "8px 6px 8px 6px" : 0,
+                position: "fixed",
+                left: 0,
+                right: 0,
                 bottom: 0,
-                background: "none",
+                background: "#181818",
                 border: "none",
-                zIndex: 10,
+                zIndex: 100,
                 overflowX: typeof window !== "undefined" && window.innerWidth < 800 ? "hidden" : undefined,
+                boxShadow: typeof window !== "undefined" && window.innerWidth < 800 ? "0 -2px 12px #0008" : undefined,
               }}
             >
               <textarea
@@ -404,7 +408,7 @@ export default function Baretto() {
                   flexGrow: 1,
                   flexShrink: 1,
                   flexBasis: 0,
-                  width: typeof window !== "undefined" && window.innerWidth < 800 ? "100vw" : "100%",
+                  width: typeof window !== "undefined" && window.innerWidth < 800 ? "100%" : "100%",
                   resize: "none",
                   borderRadius: 8,
                   border: "1px solid #444",
