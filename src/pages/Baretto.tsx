@@ -292,24 +292,29 @@ export default function Baretto() {
   return isMobile ? (
     <div
       style={{
+        position: "fixed",
+        inset: 0,
         minHeight: "100vh",
+        width: "100vw",
         background: "linear-gradient(180deg, #071325 0%, #081629 45%, #050f1f 100%)",
-        padding: "8px 4px max(8px, env(safe-area-inset-bottom))",
+        padding: 0,
+        margin: 0,
         display: "flex",
         flexDirection: "column",
+        zIndex: 10
       }}
     >
       <div
         style={{
-          borderRadius: 26,
-          border: "1px solid rgba(126, 169, 196, 0.2)",
-          background: "linear-gradient(180deg, #0b3349 0%, #08273c 100%)",
-          boxShadow: "0 14px 42px rgba(0, 0, 0, 0.38)",
-          overflow: "hidden",
           flex: 1,
           minHeight: 0,
           display: "flex",
           flexDirection: "column",
+          background: "transparent",
+          border: 0,
+          borderRadius: 0,
+          boxShadow: "none",
+          overflow: "hidden"
         }}
       >
         <div
@@ -533,8 +538,8 @@ export default function Baretto() {
     </div>
   ) : (
     // ===== DESKTOP LAYOUT =====
-    <div className="page page-full-bleed fade-in" style={{ minHeight: "100vh", background: "#0c0a09", padding: 0 }}>
-      <div style={{ maxWidth: 1400, margin: "0 auto", padding: 24 }}>
+    <div className="page page-full-bleed fade-in" style={{ position: "fixed", inset: 0, minHeight: "100vh", width: "100vw", background: "#0c0a09", padding: 0, margin: 0, zIndex: 10 }}>
+      <div style={{ width: "100vw", height: "100vh", maxWidth: "100vw", margin: 0, padding: 0 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
           <h1 style={{ margin: 0, color: "#f5a623", fontSize: "clamp(1.3rem, 2.4vw, 2rem)" }}>Il Baretto</h1>
           <button
