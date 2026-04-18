@@ -80,8 +80,8 @@ export default function Baretto() {
           minHeight: typeof window !== "undefined" && window.innerWidth < 800 ? undefined : 420,
           marginBottom: typeof window !== "undefined" && window.innerWidth < 800 ? 6 : 0,
           overflowX: typeof window !== "undefined" && window.innerWidth < 800 ? "hidden" : undefined,
-          marginLeft: typeof window !== "undefined" && window.innerWidth < 800 ? 0 : undefined, // allinea a sinistra
-          marginRight: typeof window !== "undefined" && window.innerWidth < 800 ? "auto" : undefined, // margine destro auto
+          marginLeft: typeof window !== "undefined" && window.innerWidth < 800 ? "auto" : undefined, // centra
+          marginRight: typeof window !== "undefined" && window.innerWidth < 800 ? "auto" : undefined, // centra
         }}
       >
         <div
