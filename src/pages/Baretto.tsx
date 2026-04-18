@@ -174,21 +174,22 @@ export default function Baretto() {
               background: "rgba(28,25,23,0.5)",
               border: "1px solid rgba(68,64,60,0.5)",
               borderRadius: 18,
-              padding: 18,
+              padding: typeof window !== "undefined" && window.innerWidth < 800 ? 8 : 18,
               display: "flex",
               flexDirection: "column",
-              gap: 18,
+              gap: typeof window !== "undefined" && window.innerWidth < 800 ? 8 : 18,
               minHeight: typeof window !== "undefined" && window.innerWidth < 800 ? undefined : 420,
-              marginBottom: typeof window !== "undefined" && window.innerWidth < 800 ? 18 : 0,
+              marginBottom: typeof window !== "undefined" && window.innerWidth < 800 ? 10 : 0,
             }}
           >
             <div
               style={{
                 fontWeight: 700,
                 color: "#f5a623",
-                fontSize: 28,
-                marginBottom: 18,
+                fontSize: typeof window !== "undefined" && window.innerWidth < 800 ? 19 : 28,
+                marginBottom: typeof window !== "undefined" && window.innerWidth < 800 ? 8 : 18,
                 letterSpacing: 0.5,
+                lineHeight: 1.1,
               }}
             >
               Il Baretto
@@ -256,7 +257,7 @@ export default function Baretto() {
               onClick={() => setStanzaSelezionata(STANZA_DEFAULT)}
               style={{
                 width: "100%",
-                padding: "13px 0",
+                padding: typeof window !== "undefined" && window.innerWidth < 800 ? "7px 0" : "13px 0",
                 borderRadius: 999,
                 border:
                   stanzaCorrente === STANZA_DEFAULT
@@ -271,8 +272,8 @@ export default function Baretto() {
                     ? "#181818"
                     : "#f5a623",
                 fontWeight: 700,
-                fontSize: "1.13rem",
-                marginBottom: 10,
+                fontSize: typeof window !== "undefined" && window.innerWidth < 800 ? 15 : "1.13rem",
+                marginBottom: typeof window !== "undefined" && window.innerWidth < 800 ? 6 : 10,
                 cursor: "pointer",
               }}
             >
@@ -293,14 +294,15 @@ export default function Baretto() {
               }}
               style={{
                 width: "100%",
-                padding: "13px 0",
+                padding: typeof window !== "undefined" && window.innerWidth < 800 ? "7px 0" : "13px 0",
                 borderRadius: 999,
                 border: "1px solid #444",
                 background: "#181818",
                 color: "#f5a623",
                 fontWeight: 700,
-                fontSize: "1.13rem",
+                fontSize: typeof window !== "undefined" && window.innerWidth < 800 ? 15 : "1.13rem",
                 cursor: "pointer",
+                marginBottom: typeof window !== "undefined" && window.innerWidth < 800 ? 2 : 0,
               }}
             >
               Crea un tavolo
