@@ -35,14 +35,16 @@ export default function Baretto() {
 
   // PRESENZA: upsert presenza all'ingresso, rimuovi all'uscita, ascolta realtime
   useEffect(() => {
-    if (!user) return;
+    // Se non autenticato e non admin, non fare nulla
+    if (!user && !isAdmin) return;
+    // Costruisci la presenza
+    const presenza = {
+      id_utente: isAdmin && (!user?.id) ? "admin-local" : user.id,
+      username: isAdmin ? "Lo Zio" : nomeUtenteCorrente,
+      stanza: stanzaCorrente,
+      last_active: new Date().toISOString(),
+    };
     async function upsertPresenza() {
-      const presenza = {
-        id_utente: user.id,
-        username: nomeUtenteCorrente,
-        stanza: stanzaCorrente,
-        last_active: new Date().toISOString(),
-      };
       console.log("UPD PRESENZA su Supabase:", presenza);
       const { error, data } = await supabase
         .from("baretto_presenze")
@@ -53,13 +55,14 @@ export default function Baretto() {
     upsertPresenza();
     // Rimuovi presenza all'uscita
     return () => {
-      if (user) {
-        console.log("DELETE presenza su Supabase", user.id, stanzaCorrente);
-        supabase.from("baretto_presenze").delete().eq("id_utente", user.id).eq("stanza", stanzaCorrente);
+      const idToDelete = isAdmin && (!user?.id) ? "admin-local" : user?.id;
+      if (idToDelete) {
+        console.log("DELETE presenza su Supabase", idToDelete, stanzaCorrente);
+        supabase.from("baretto_presenze").delete().eq("id_utente", idToDelete).eq("stanza", stanzaCorrente);
       }
     };
     // eslint-disable-next-line
-  }, [user, stanzaCorrente]);
+  }, [user, isAdmin, stanzaCorrente]);
 
   // Carica presenze e aggiorna in realtime
   useEffect(() => {
@@ -147,22 +150,8 @@ export default function Baretto() {
     );
   }
 
-  // Costruisci la lista utenti online, aggiungendo "Lo Zio" se admin
-  let utentiOnlineEffettivi = utentiOnline;
-  if (isAdmin) {
-    const presente = utentiOnline.some(u => u.username === "Lo Zio");
-    if (!presente) {
-      utentiOnlineEffettivi = [
-        ...utentiOnline,
-        {
-          id_utente: "admin-local",
-          username: "Lo Zio",
-          stanza: stanzaCorrente,
-          last_active: new Date().toISOString(),
-        },
-      ];
-    }
-  }
+  // Nessuna aggiunta locale: la presenza admin ora è reale su Supabase
+  const utentiOnlineEffettivi = utentiOnline;
 
   return (
     <div style={{ display: "flex", flexDirection: typeof window !== "undefined" && window.innerWidth < 800 ? "column" : "row", minHeight: "100vh", width: "100%", height: "100%" }}>
