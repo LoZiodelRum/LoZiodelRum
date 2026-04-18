@@ -541,8 +541,8 @@ export default function Baretto() {
     </div>
   ) : (
     // ===== DESKTOP LAYOUT =====
-    <div className="page page-full-bleed fade-in" style={{ position: "fixed", inset: 0, minHeight: "100vh", width: "100vw", background: "#0c0a09", padding: 0, margin: 0, zIndex: 10 }}>
-      <div style={{ width: "100vw", height: "100vh", maxWidth: "100vw", margin: 0, padding: 0 }}>
+    <div className="page page-full-bleed fade-in" style={{ minHeight: "100vh", background: "url('/bg-chat.png') repeat", backgroundSize: "60px", padding: 0, margin: 0 }}>
+      <div style={{ width: "100%", maxWidth: 1400, margin: "0 auto", padding: 24, background: "rgba(18,18,18,0.82)", borderRadius: 0 }}>
         <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
           <h1 style={{ margin: 0, color: "#f5a623", fontSize: "clamp(1.3rem, 2.4vw, 2rem)" }}>Il Baretto</h1>
           <button
