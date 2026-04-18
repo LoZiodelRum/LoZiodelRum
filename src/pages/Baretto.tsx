@@ -52,20 +52,13 @@ export default function Baretto() {
     nomeUtenteCorrente = "Utente";
   }
 
-  // Forza lo sfondo su body
+  // Sfondo unico: solo bg-drinks.png su tutto il body
   useEffect(() => {
-    // Sfondo visibile ovunque, nessun nero
     const prev = document.body.style.background;
-    const isMobile = typeof window !== "undefined" && window.innerWidth < 800;
-    if (isMobile) {
-      document.body.style.background = "#181818";
-    } else {
-      document.body.style.background = "url('/bg-drinks.png') repeat 0 0 / 80px 80px, url('data:image/svg+xml;utf8,<svg xmlns=\\\"http://www.w3.org/2000/svg\\\" width=\\\"400\\\" height=\\\"400\\\">${Array.from({length: 40}).map((_,i)=>`<image href='/bg-drinks.png' x='${Math.random()*360}' y='${Math.random()*360}' width='32' height='32'/>`).join('')}<\/svg>') repeat 0 0 / 400px 400px";
-    }
-    document.body.style.backgroundColor = "#181818";
+    document.body.style.background = "url('/bg-drinks.png') repeat 0 0 / 80px 80px";
+    document.body.style.backgroundColor = "";
     return () => {
       document.body.style.background = prev;
-      document.body.style.backgroundColor = "";
     };
   }, []);
 
@@ -144,9 +137,9 @@ export default function Baretto() {
         minHeight: "100vh",
         padding: 0,
         margin: 0,
-        background: "rgba(18,18,18,0.78)",
-        backdropFilter: "blur(2px)",
-        WebkitBackdropFilter: "blur(2px)",
+        background: "none",
+        backdropFilter: "none",
+        WebkitBackdropFilter: "none",
       }}
     >
       <div
@@ -155,7 +148,7 @@ export default function Baretto() {
           maxWidth: 1400,
           margin: "0 auto",
           padding: 24,
-          background: "rgba(18,18,18,0.82)",
+          background: "none",
           borderRadius: 0,
         }}
       >
