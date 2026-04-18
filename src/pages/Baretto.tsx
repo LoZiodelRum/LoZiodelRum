@@ -1,5 +1,3 @@
-
-
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
@@ -268,6 +266,7 @@ export default function Baretto() {
             boxShadow: typeof window !== 'undefined' && window.innerWidth < 800 ? '0 -2px 12px #0008' : undefined,
             borderTop: '1.5px solid #222',
             gap: 6,
+            justifyContent: typeof window !== 'undefined' && window.innerWidth >= 800 ? 'center' : undefined,
           }}
         >
           <textarea
