@@ -379,7 +379,7 @@ export default function Baretto() {
                 outline: 'none',
                 borderTopRightRadius: 0,
                 borderBottomRightRadius: 0,
-                width: 'calc(100vw - 90px)',
+                width: 'calc(50vw)',
               } : {
                 flex: 1,
                 resize: 'none',
