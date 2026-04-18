@@ -275,7 +275,7 @@ export default function Baretto() {
             rows={1}
             placeholder="Scrivi un messaggio..."
             style={typeof window !== 'undefined' && window.innerWidth < 800 ? {
-              width: '58vw',
+              width: '62vw', // poco più della metà
               minWidth: 0,
               maxWidth: 'unset',
               alignSelf: 'flex-start',
@@ -283,7 +283,7 @@ export default function Baretto() {
               marginRight: 0,
               resize: 'none',
               borderRadius: 10,
-              border: '1px solid #444',
+              border: 'none', // tolta la riga grigia
               boxShadow: 'none',
               outline: 'none',
               appearance: 'none',
@@ -330,7 +330,8 @@ export default function Baretto() {
             style={{
               flexShrink: 0,
               marginLeft: 6,
-              padding: typeof window !== 'undefined' && window.innerWidth < 800 ? '10px 22px' : '12px 22px',
+              width: typeof window !== 'undefined' && window.innerWidth < 800 ? '28vw' : undefined, // il resto dello spazio
+              padding: typeof window !== 'undefined' && window.innerWidth < 800 ? '10px 0' : '12px 22px',
               borderRadius: 12,
               border: 'none',
               background: '#f5a623',
