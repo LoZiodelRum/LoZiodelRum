@@ -110,7 +110,15 @@ export default function Baretto() {
           console.error("Errore invio messaggio:", error, nuovo);
         } else {
           // Aggiorna subito la chat room in locale
-          setMessaggi((old) => [...old, { ...nuovo, id: Math.random().toString() }]);
+          setMessaggi((old) => {
+            const updated = [...old, { ...nuovo, id: Math.random().toString() }];
+            setTimeout(() => {
+              if (listaRef.current) {
+                listaRef.current.scrollTop = listaRef.current.scrollHeight;
+              }
+            }, 50);
+            return updated;
+          });
           setTestoNuovo("");
         }
       });
