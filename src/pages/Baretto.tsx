@@ -363,7 +363,7 @@ export default function Baretto() {
               onChange={e => setTestoNuovo(e.target.value)}
               rows={1}
               placeholder="Scrivi un messaggio..."
-              style={{
+              style={typeof window !== 'undefined' && window.innerWidth < 800 ? {
                 width: '65vw',
                 maxWidth: 520,
                 minWidth: 120,
@@ -377,7 +377,24 @@ export default function Baretto() {
                 minHeight: 44,
                 maxHeight: 90,
                 boxSizing: 'border-box',
-                margin: '10px 0 10px 12px',
+                margin: '10px 0 10px 2px',
+                outline: 'none',
+                display: 'block',
+              } : {
+                width: '65vw',
+                maxWidth: 520,
+                minWidth: 120,
+                resize: 'none',
+                borderRadius: 18,
+                border: '1.5px solid #444',
+                padding: '14px 16px',
+                fontSize: 18,
+                background: '#222',
+                color: '#fff',
+                minHeight: 44,
+                maxHeight: 90,
+                boxSizing: 'border-box',
+                margin: '10px 0',
                 outline: 'none',
                 display: 'block',
               }}
