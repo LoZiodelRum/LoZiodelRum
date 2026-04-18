@@ -329,15 +329,17 @@ export default function Baretto() {
               ))}
             </div>
 
+
             <div
               ref={listaRef}
               style={{
                 flex: 1,
                 overflowY: "auto",
-                padding: "10px 0 110px 0",
+                padding: typeof window !== "undefined" && window.innerWidth < 800 ? "10px 0 90px 0" : "10px 0 110px 0",
                 display: "flex",
                 flexDirection: "column",
                 gap: 10,
+                background: typeof window !== "undefined" && window.innerWidth < 800 ? "#181818" : undefined,
               }}
             >
               {messaggi.map((msg) => {
@@ -345,11 +347,45 @@ export default function Baretto() {
                   msg.id_utente === user?.id ||
                   msg.username === nomeUtenteCorrente;
 
+                // Stile WhatsApp-like solo su mobile
+                const isMobile = typeof window !== "undefined" && window.innerWidth < 800;
                 return (
-                  <div key={msg.id}>
-                    <div>{msg.username}</div>
-                    <div>{msg.testo}</div>
-                    <div>{formattaOra(msg.created_at)}</div>
+                  <div
+                    key={msg.id}
+                    style={
+                      isMobile
+                        ? {
+                            alignSelf: isMine ? "flex-end" : "flex-start",
+                            background: isMine ? "#dcf8c6" : "#23272a",
+                            color: isMine ? "#222" : "#fafafa",
+                            borderRadius: 18,
+                            borderTopRightRadius: isMine ? 6 : 18,
+                            borderTopLeftRadius: isMine ? 18 : 6,
+                            padding: "8px 14px 6px 14px",
+                            marginBottom: 2,
+                            maxWidth: "80vw",
+                            minWidth: 60,
+                            fontSize: 16,
+                            boxShadow: "0 1px 2px rgba(0,0,0,0.08)",
+                            position: "relative",
+                          }
+                        : {
+                            background: isMine ? "#f5a623" : "#23272a",
+                            color: isMine ? "#222" : "#fafafa",
+                            borderRadius: 14,
+                            padding: "10px 18px 8px 18px",
+                            marginBottom: 2,
+                            maxWidth: 520,
+                            alignSelf: isMine ? "flex-end" : "flex-start",
+                            fontSize: 17,
+                          }
+                    }
+                  >
+                    <div style={{ fontWeight: 700, fontSize: 13, marginBottom: 2, opacity: 0.7 }}>
+                      {msg.username}
+                    </div>
+                    <div style={{ wordBreak: "break-word", marginBottom: 2 }}>{msg.testo}</div>
+                    <div style={{ fontSize: 11, textAlign: "right", opacity: 0.5 }}>{formattaOra(msg.created_at)}</div>
                   </div>
                 );
               })}
@@ -362,10 +398,10 @@ export default function Baretto() {
                 bottom: 0,
                 left: 0,
                 width: "100%",
-                background: "rgba(18,18,18,0.97)",
+                background: typeof window !== "undefined" && window.innerWidth < 800 ? "#181818" : "rgba(18,18,18,0.97)",
                 display: "flex",
                 gap: 8,
-                padding: 12,
+                padding: typeof window !== "undefined" && window.innerWidth < 800 ? 8 : 12,
                 borderTop: "1px solid #333",
                 zIndex: 10,
                 boxSizing: "border-box"
@@ -379,11 +415,11 @@ export default function Baretto() {
                 style={{
                   width: "100%",
                   resize: "none",
-                  borderRadius: 8,
-                  border: "1px solid #444",
-                  padding: 10,
-                  fontSize: 18,
-                  background: "#222",
+                  borderRadius: 18,
+                  border: "1.5px solid #444",
+                  padding: typeof window !== "undefined" && window.innerWidth < 800 ? "10px 14px" : "10px",
+                  fontSize: typeof window !== "undefined" && window.innerWidth < 800 ? 17 : 18,
+                  background: "#23272a",
                   color: "#fff",
                   minHeight: 38,
                   maxHeight: 120,
@@ -399,15 +435,17 @@ export default function Baretto() {
               <button
                 type="submit"
                 style={{
-                  background: "#c47a2c",
-                  color: "#181818",
+                  background: typeof window !== "undefined" && window.innerWidth < 800 ? "#25d366" : "#c47a2c",
+                  color: typeof window !== "undefined" && window.innerWidth < 800 ? "#fff" : "#181818",
                   border: "none",
-                  borderRadius: 8,
-                  padding: "0 22px",
+                  borderRadius: 18,
+                  padding: typeof window !== "undefined" && window.innerWidth < 800 ? "0 18px" : "0 22px",
                   fontWeight: 700,
-                  fontSize: 18,
+                  fontSize: typeof window !== "undefined" && window.innerWidth < 800 ? 18 : 18,
                   cursor: "pointer",
                   minHeight: 38,
+                  boxShadow: typeof window !== "undefined" && window.innerWidth < 800 ? "0 2px 8px rgba(37,211,102,0.12)" : undefined,
+                  transition: "background 0.2s"
                 }}
               >
                 Invia
