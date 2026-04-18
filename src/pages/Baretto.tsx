@@ -370,6 +370,8 @@ export default function Baretto() {
                 resize: 'none',
                 borderRadius: 18,
                 border: '1.5px solid #444',
+                borderBottom: '1.5px solid #444',
+                boxShadow: 'none',
                 padding: '14px 16px',
                 fontSize: 18,
                 background: '#222',
