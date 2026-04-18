@@ -276,7 +276,7 @@ export default function Baretto() {
             rows={1}
             placeholder="Scrivi un messaggio..."
             style={typeof window !== 'undefined' && window.innerWidth < 800 ? {
-              width: '58vw', // poco più della metà
+              width: '58vw',
               minWidth: 0,
               maxWidth: 'unset',
               alignSelf: 'flex-start',
@@ -318,6 +318,7 @@ export default function Baretto() {
               outline: 'none',
               display: 'block',
             }}
+
             onKeyDown={e => {
               if (e.key === 'Enter') {
                 e.preventDefault();
@@ -325,6 +326,28 @@ export default function Baretto() {
               }
             }}
           />
+          <button
+            type="submit"
+            style={{
+              flexShrink: 0,
+              marginLeft: 6,
+              padding: typeof window !== 'undefined' && window.innerWidth < 800 ? '10px 22px' : '12px 22px',
+              borderRadius: 12,
+              border: 'none',
+              background: '#f5a623',
+              color: '#181818',
+              fontWeight: 700,
+              fontSize: 17,
+              cursor: 'pointer',
+              minWidth: 56,
+              minHeight: 38,
+              boxShadow: 'none',
+              outline: 'none',
+              whiteSpace: 'nowrap',
+            }}
+          >
+            Invia
+          </button>
 
         </form>
       </main>
