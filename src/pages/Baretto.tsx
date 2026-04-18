@@ -4,102 +4,104 @@ import { supabase } from "../lib/supabaseClient";
 import { useUser } from "../context/UserContext";
 
 type Profilo = {
-  id: string;
-  username?: string;
-  nome?: string;
-  cognome?: string;
-};
-
-type MessaggioDb = {
-  id: string;
-  testo: string;
-  created_at: string;
-  id_utente?: string;
-  stanza?: string;
-  username?: string;
-};
-
-const STANZA_DEFAULT = "Generale";
-
-export default function Baretto() {
-  const navigate = useNavigate();
-  const { user, isAdmin } = useUser();
-
-  const [stanze, setStanze] = useState<string[]>([STANZA_DEFAULT]);
-  const [stanzaCorrente, setStanzaSelezionata] = useState<string>(STANZA_DEFAULT);
-  const [utentiOnline, setUtentiOnline] = useState<string[]>([]);
-  const [messaggi, setMessaggi] = useState<MessaggioDb[]>([]);
-  const [caricamento, setCaricamento] = useState<boolean>(true);
-  const [testoNuovo, setTestoNuovo] = useState<string>("");
-  const listaRef = useRef<HTMLDivElement>(null);
-
-  // Mostra solo username, se admin mostra 'Lo Zio'
-  // Mostra solo username, mai la mail. Se admin mostra 'Lo Zio'.
-  let nomeUtenteCorrente = "Anonimo";
-  if (isAdmin) {
-    nomeUtenteCorrente = "Lo Zio";
-  } else if (user?.user_metadata?.username && !user?.user_metadata?.username.includes("@")) {
-    nomeUtenteCorrente = user.user_metadata.username;
-  } else if (user?.user_metadata?.username && user?.user_metadata?.username.includes("@")) {
-    nomeUtenteCorrente = user.user_metadata.username.split("@")[0];
-  } else if (user?.username && !user?.username.includes("@")) {
-    nomeUtenteCorrente = user.username;
-  } else if (user?.username && user?.username.includes("@")) {
-    nomeUtenteCorrente = user.username.split("@")[0];
-  } else if (user?.nome) {
-    nomeUtenteCorrente = user.nome;
-  } else {
-    nomeUtenteCorrente = "Utente";
-  }
-
-  // Sfondo: tante miniature random di bg-drinks.png su tutta la pagina
-  useEffect(() => {
-    const prevBg = document.body.style.background;
-    const prevColor = document.body.style.backgroundColor;
-    document.body.style.background = "none";
-    document.body.style.backgroundColor = "#181818";
-    return () => {
-      document.body.style.background = prevBg;
-      document.body.style.backgroundColor = prevColor;
-    };
-  }, []);
-
-  function formattaOra(data: string) {
-    const d = new Date(data);
-    return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  }
-
-  useEffect(() => {
-    setCaricamento(true);
-    supabase
-      .from("baretto_messaggi")
-      .select("*")
-      .eq("stanza", stanzaCorrente)
-      .order("created_at", { ascending: true })
-      .then(({ data, error }) => {
-        if (error) {
-          console.error("Errore caricamento messaggi:", error);
-        }
-        if (!error && data) setMessaggi(data as MessaggioDb[]);
-        setCaricamento(false);
-      });
-  }, [stanzaCorrente]);
-
-  function inviaMessaggio(e: FormEvent) {
-    e.preventDefault();
-    if (!testoNuovo.trim()) return;
-
-    const nuovo: Omit<MessaggioDb, "id"> = {
-      testo: testoNuovo,
-      created_at: new Date().toISOString(),
-      id_utente: user?.id,
-      stanza: stanzaCorrente,
-      username: nomeUtenteCorrente,
-    };
-
-    supabase
-      .from("baretto_messaggi")
-      .insert([nuovo])
+          <form
+            onSubmit={inviaMessaggio}
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              width: '100vw',
+              margin: 0,
+              padding: typeof window !== 'undefined' && window.innerWidth < 800 ? '0' : '12px 0',
+              position: 'fixed',
+              left: 0,
+              right: 0,
+              bottom: 0,
+              background: '#181818',
+              border: 'none',
+              zIndex: 100,
+              overflowX: 'hidden',
+              boxShadow: typeof window !== 'undefined' && window.innerWidth < 800 ? '0 -2px 12px #0008' : undefined,
+              borderTop: '1.5px solid #222',
+            }}
+          >
+            <textarea
+              value={testoNuovo}
+              onChange={e => setTestoNuovo(e.target.value)}
+              rows={1}
+              placeholder="Scrivi un messaggio..."
+              style={typeof window !== 'undefined' && window.innerWidth < 800 ? {
+                width: '65vw',
+                maxWidth: 520,
+                minWidth: 120,
+                resize: 'none',
+                borderRadius: 18,
+                border: '1.5px solid #444',
+                boxShadow: 'none',
+                outline: 'none',
+                appearance: 'none',
+                WebkitAppearance: 'none',
+                MozAppearance: 'none',
+                background: '#181818',
+                color: '#fff',
+                padding: '14px 16px',
+                fontSize: 18,
+                minHeight: 44,
+                maxHeight: 90,
+                boxSizing: 'border-box',
+                margin: '10px 0',
+                display: 'block',
+                overflowX: 'auto',
+                whiteSpace: 'nowrap',
+              } : {
+                width: '65vw',
+                maxWidth: 520,
+                minWidth: 120,
+                resize: 'none',
+                borderRadius: 18,
+                border: '1.5px solid #444',
+                padding: '14px 16px',
+                fontSize: 18,
+                background: '#222',
+                color: '#fff',
+                minHeight: 44,
+                maxHeight: 90,
+                boxSizing: 'border-box',
+                margin: '10px 0',
+                outline: 'none',
+                display: 'block',
+              }}
+              onKeyDown={e => {
+                if (e.key === 'Enter') {
+                  e.preventDefault();
+                  inviaMessaggio(e as any);
+                }
+              }}
+            />
+            <button
+              type="submit"
+              style={{
+                marginLeft: 8,
+                padding: typeof window !== 'undefined' && window.innerWidth < 800 ? '12px 18px' : '12px 22px',
+                borderRadius: 18,
+                border: 'none',
+                background: '#f5a623',
+                color: '#181818',
+                fontWeight: 700,
+                fontSize: 18,
+                cursor: 'pointer',
+                minWidth: 60,
+                minHeight: 44,
+                boxShadow: 'none',
+                outline: 'none',
+                whiteSpace: 'nowrap',
+              }}
+            >
+              Invia
+            </button>
+          </form>
+        </main>
+      </div>
       .then(({ error, data }) => {
         if (error) {
           console.error("Errore invio messaggio:", error, nuovo);
