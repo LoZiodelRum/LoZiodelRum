@@ -341,8 +341,8 @@ export default function Baretto() {
             onSubmit={inviaMessaggio}
             style={{
               display: 'flex',
+              justifyContent: 'center',
               alignItems: 'center',
-              gap: typeof window !== 'undefined' && window.innerWidth < 800 ? 0 : 10,
               width: '100vw',
               margin: 0,
               padding: typeof window !== 'undefined' && window.innerWidth < 800 ? '0' : '12px 0',
@@ -358,7 +358,36 @@ export default function Baretto() {
               borderTop: '1.5px solid #222',
             }}
           >
-            {/* Textarea eliminata su richiesta */}
+            <textarea
+              value={testoNuovo}
+              onChange={e => setTestoNuovo(e.target.value)}
+              rows={1}
+              placeholder="Scrivi un messaggio..."
+              style={{
+                width: '75vw',
+                maxWidth: 600,
+                minWidth: 120,
+                resize: 'none',
+                borderRadius: 18,
+                border: '1.5px solid #444',
+                padding: '14px 16px',
+                fontSize: 18,
+                background: '#222',
+                color: '#fff',
+                minHeight: 44,
+                maxHeight: 90,
+                boxSizing: 'border-box',
+                margin: '10px 0',
+                outline: 'none',
+                display: 'block',
+              }}
+              onKeyDown={e => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  inviaMessaggio(e);
+                }
+              }}
+            />
             {/* Pulsante Invia eliminato su richiesta */}
           </form>
       </main>
