@@ -109,18 +109,9 @@ export default function Baretto() {
         if (error) {
           console.error("Errore invio messaggio:", error, nuovo);
         } else {
+          // Aggiorna subito la chat room in locale
+          setMessaggi((old) => [...old, { ...nuovo, id: Math.random().toString() }]);
           setTestoNuovo("");
-          supabase
-            .from("messaggi_baretto")
-            .select("*")
-            .eq("stanza", stanzaCorrente)
-            .order("created_at", { ascending: true })
-            .then(({ data, error }) => {
-              if (error) {
-                console.error("Errore ricarica messaggi:", error);
-              }
-              if (!error && data) setMessaggi(data as MessaggioDb[]);
-            });
         }
       });
   }
