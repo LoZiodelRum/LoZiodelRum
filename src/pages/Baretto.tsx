@@ -54,13 +54,13 @@ export default function Baretto() {
 
   // Sfondo: tante miniature random di bg-drinks.png su tutta la pagina
   useEffect(() => {
-    const prev = document.body.style.background;
-    // Usa direttamente l'immagine PNG come sfondo ripetuto
-    document.body.style.background = "url('/sfondo%20chat.png') repeat";
-    document.body.style.backgroundSize = "auto";
-    document.body.style.backgroundColor = "";
+    const prevBg = document.body.style.background;
+    const prevColor = document.body.style.backgroundColor;
+    document.body.style.background = "none";
+    document.body.style.backgroundColor = "#181818";
     return () => {
-      document.body.style.background = prev;
+      document.body.style.background = prevBg;
+      document.body.style.backgroundColor = prevColor;
     };
   }, []);
 
