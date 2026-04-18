@@ -54,20 +54,12 @@ export default function Baretto() {
 
   // Forza lo sfondo su body
   useEffect(() => {
+    // Sfondo visibile ovunque, nessun nero
     const prev = document.body.style.background;
-    document.body.style.background = [
-      "url('/bg-drinks.png')",
-      `url('data:image/svg+xml;utf8,<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"400\" height=\"400\">${Array.from({length: 40}).map((_,i)=>`<image href='/bg-drinks.png' x='${Math.random()*360}' y='${Math.random()*360}' width='32' height='32'/>`).join('')}</svg>')`
-    ].join(",");
-    document.body.style.backgroundRepeat = "repeat, repeat";
-    document.body.style.backgroundSize = "80px 80px, 400px 400px";
-    document.body.style.backgroundPosition = "0 0, 0 0";
+    document.body.style.background = "url('/bg-drinks.png') repeat 0 0 / 80px 80px, url('data:image/svg+xml;utf8,<svg xmlns=\\\"http://www.w3.org/2000/svg\\\" width=\\\"400\\\" height=\\\"400\\\">${Array.from({length: 40}).map((_,i)=>`<image href='/bg-drinks.png' x='${Math.random()*360}' y='${Math.random()*360}' width='32' height='32'/>`).join('')}<\/svg>') repeat 0 0 / 400px 400px";
     document.body.style.backgroundColor = "#181818";
     return () => {
       document.body.style.background = prev;
-      document.body.style.backgroundRepeat = "";
-      document.body.style.backgroundSize = "";
-      document.body.style.backgroundPosition = "";
       document.body.style.backgroundColor = "";
     };
   }, []);
@@ -145,7 +137,9 @@ export default function Baretto() {
         minHeight: "100vh",
         padding: 0,
         margin: 0,
-        background: "transparent"
+        background: "rgba(18,18,18,0.78)",
+        backdropFilter: "blur(2px)",
+        WebkitBackdropFilter: "blur(2px)",
       }}
     >
       <div
@@ -164,11 +158,12 @@ export default function Baretto() {
             alignItems: "stretch",
             gap: 32,
             minHeight: "70vh",
+            flexDirection: typeof window !== "undefined" && window.innerWidth < 800 ? "column" : "row",
           }}
         >
           <aside
             style={{
-              width: 270,
+              width: typeof window !== "undefined" && window.innerWidth < 800 ? "100%" : 270,
               background: "rgba(28,25,23,0.5)",
               border: "1px solid rgba(68,64,60,0.5)",
               borderRadius: 18,
@@ -176,7 +171,8 @@ export default function Baretto() {
               display: "flex",
               flexDirection: "column",
               gap: 18,
-              minHeight: 420,
+              minHeight: typeof window !== "undefined" && window.innerWidth < 800 ? undefined : 420,
+              marginBottom: typeof window !== "undefined" && window.innerWidth < 800 ? 18 : 0,
             }}
           >
             <div
@@ -304,7 +300,7 @@ export default function Baretto() {
               minWidth: 0,
               display: "flex",
               flexDirection: "column",
-              height: "70vh",
+              height: typeof window !== "undefined" && window.innerWidth < 800 ? "60vh" : "70vh",
               position: "relative",
             }}
           >
@@ -352,12 +348,63 @@ export default function Baretto() {
               })}
             </div>
 
-            <form onSubmit={inviaMessaggio}>
-              <input
+            <form
+              onSubmit={inviaMessaggio}
+              style={{
+                position: "sticky",
+                bottom: 0,
+                left: 0,
+                width: "100%",
+                background: "rgba(18,18,18,0.92)",
+                display: "flex",
+                gap: 8,
+                padding: 12,
+                borderTop: "1px solid #333",
+                zIndex: 10,
+                boxSizing: "border-box"
+              }}
+            >
+              <textarea
                 value={testoNuovo}
                 onChange={(e) => setTestoNuovo(e.target.value)}
+                rows={1}
+                placeholder="Scrivi un messaggio..."
+                style={{
+                  flex: 1,
+                  resize: "none",
+                  borderRadius: 8,
+                  border: "1px solid #444",
+                  padding: 10,
+                  fontSize: 16,
+                  background: "#222",
+                  color: "#fff",
+                  minHeight: 38,
+                  maxHeight: 120,
+                  boxSizing: "border-box"
+                }}
+                onKeyDown={e => {
+                  if (e.key === "Enter" && !e.shiftKey) {
+                    e.preventDefault();
+                    inviaMessaggio(e);
+                  }
+                }}
               />
-              <button type="submit">Invia</button>
+              <button
+                type="submit"
+                style={{
+                  background: "#c47a2c",
+                  color: "#181818",
+                  border: "none",
+                  borderRadius: 8,
+                  padding: "0 22px",
+                  fontWeight: 700,
+                  fontSize: 17,
+                  cursor: "pointer",
+                  minHeight: 38,
+                }}
+              >
+                Invia
+              </button>
             </form>
           </main>
         </div>
