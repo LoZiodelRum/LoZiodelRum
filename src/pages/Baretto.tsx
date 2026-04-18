@@ -284,7 +284,15 @@
                 margin: '10px 0',
                 outline: 'none',
                 display: 'block',
-            />
+              }
+            }
+            onKeyDown={e => {
+              if (e.key === 'Enter') {
+                e.preventDefault();
+                inviaMessaggio(e as any);
+              }
+            }}
+          />
             <button
               type="submit"
               style={{
