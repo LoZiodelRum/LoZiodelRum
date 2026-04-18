@@ -90,6 +90,10 @@ export default function Baretto() {
             marginBottom: typeof window !== "undefined" && window.innerWidth < 800 ? 4 : 18,
             letterSpacing: 0.5,
             lineHeight: 1.1,
+            maxWidth: typeof window !== "undefined" && window.innerWidth < 800 ? "90vw" : undefined,
+            marginLeft: typeof window !== "undefined" && window.innerWidth < 800 ? "auto" : undefined,
+            marginRight: typeof window !== "undefined" && window.innerWidth < 800 ? "auto" : undefined,
+            textAlign: typeof window !== "undefined" && window.innerWidth < 800 ? "center" : undefined,
           }}
         >
           Il Baretto
