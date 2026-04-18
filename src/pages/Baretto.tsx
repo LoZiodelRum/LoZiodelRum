@@ -379,6 +379,7 @@ export default function Baretto() {
                 outline: 'none',
                 borderTopRightRadius: 0,
                 borderBottomRightRadius: 0,
+                width: typeof window !== 'undefined' && window.innerWidth < 800 ? 'calc(100vw - 60px)' : undefined,
               }}
               onKeyDown={e => {
                 if (e.key === 'Enter' && !e.shiftKey) {
@@ -394,9 +395,9 @@ export default function Baretto() {
                 color: '#181818',
                 border: 'none',
                 borderRadius: '0 24px 24px 0',
-                padding: typeof window !== 'undefined' && window.innerWidth < 800 ? '0 26px' : '0 20px',
+                padding: typeof window !== 'undefined' && window.innerWidth < 800 ? '0 12px' : '0 16px',
                 fontWeight: 700,
-                fontSize: typeof window !== 'undefined' && window.innerWidth < 800 ? 20 : 16,
+                fontSize: typeof window !== 'undefined' && window.innerWidth < 800 ? 16 : 16,
                 cursor: 'pointer',
                 minHeight: typeof window !== 'undefined' && window.innerWidth < 800 ? 44 : 32,
                 height: typeof window !== 'undefined' && window.innerWidth < 800 ? 48 : 36,
@@ -405,6 +406,7 @@ export default function Baretto() {
                 whiteSpace: 'nowrap',
                 margin: 0,
                 boxShadow: typeof window !== 'undefined' && window.innerWidth < 800 ? '0 2px 8px #0004' : undefined,
+                letterSpacing: 0.2,
               }}
             >
               Invia
