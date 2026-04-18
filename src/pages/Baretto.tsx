@@ -347,9 +347,9 @@ export default function Baretto() {
 
                 return (
                   <div key={msg.id}>
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
-                      <span style={{ color: "#f5a623", fontWeight: 700, fontSize: 15 }}>{msg.username}</span>
-                      <span style={{ color: "#aaa", fontSize: 12, fontWeight: 400 }}>
+                    <div style={{ display: "flex", alignItems: "flex-end", gap: 8, marginBottom: 2 }}>
+                      <span style={{ color: "#f5a623", fontWeight: 700, fontSize: 15, lineHeight: 1 }}>{msg.username}</span>
+                      <span style={{ color: "#aaa", fontSize: 12, fontWeight: 400, lineHeight: 1, position: "relative", top: 2 }}>
                         - {formattaOra(msg.created_at)}
                       </span>
                     </div>
