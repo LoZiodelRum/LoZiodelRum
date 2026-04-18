@@ -37,21 +37,24 @@ export default function Baretto() {
   useEffect(() => {
     if (!user) return;
     async function upsertPresenza() {
-      await supabase
+      const presenza = {
+        id_utente: user.id,
+        username: nomeUtenteCorrente,
+        stanza: stanzaCorrente,
+        last_active: new Date().toISOString(),
+      };
+      console.log("UPD PRESENZA su Supabase:", presenza);
+      const { error, data } = await supabase
         .from("baretto_presenze")
-        .upsert([
-          {
-            id_utente: user.id,
-            username: nomeUtenteCorrente,
-            stanza: stanzaCorrente,
-            last_active: new Date().toISOString(),
-          }
-        ], { onConflict: "id_utente,stanza" });
+        .upsert([presenza], { onConflict: "id_utente,stanza" });
+      if (error) console.error("Errore upsert presenza:", error);
+      else console.log("Risposta upsert presenza:", data);
     }
     upsertPresenza();
     // Rimuovi presenza all'uscita
     return () => {
       if (user) {
+        console.log("DELETE presenza su Supabase", user.id, stanzaCorrente);
         supabase.from("baretto_presenze").delete().eq("id_utente", user.id).eq("stanza", stanzaCorrente);
       }
     };
@@ -61,9 +64,11 @@ export default function Baretto() {
   // Carica presenze e aggiorna in realtime
   useEffect(() => {
     async function fetchPresenze() {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("baretto_presenze")
-        .select("id, id_utente, username, stanza, last_active");
+        .select("id_utente, username, stanza, last_active");
+      if (error) console.error("Errore fetch presenze:", error);
+      else console.log("Presenze lette da Supabase:", data);
       if (data) setUtentiOnline(data);
     }
     fetchPresenze();
