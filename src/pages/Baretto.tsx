@@ -125,9 +125,12 @@ export default function Baretto() {
   }
 
   useEffect(() => {
-    if (listaRef.current) {
-      listaRef.current.scrollTop = listaRef.current.scrollHeight;
-    }
+    // Scrolla sempre in fondo dopo ogni aggiornamento messaggi
+    setTimeout(() => {
+      if (listaRef.current) {
+        listaRef.current.scrollTop = listaRef.current.scrollHeight;
+      }
+    }, 50);
   }, [messaggi]);
 
   useEffect(() => {
