@@ -356,16 +356,16 @@ export default function Baretto() {
             <form
               onSubmit={inviaMessaggio}
               style={{
-                position: "fixed",
+                position: "sticky",
                 bottom: 0,
                 left: 0,
-                width: "100vw",
+                width: "100%",
                 background: "rgba(18,18,18,0.97)",
                 display: "flex",
                 gap: 8,
                 padding: 12,
                 borderTop: "1px solid #333",
-                zIndex: 1000,
+                zIndex: 10,
                 boxSizing: "border-box"
               }}
             >
