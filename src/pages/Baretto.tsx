@@ -82,6 +82,9 @@ export default function Baretto() {
           overflowX: typeof window !== "undefined" && window.innerWidth < 800 ? "hidden" : undefined,
           marginLeft: typeof window !== "undefined" && window.innerWidth < 800 ? "auto" : undefined, // centra
           marginRight: typeof window !== "undefined" && window.innerWidth < 800 ? "auto" : undefined, // centra
+          boxSizing: typeof window !== "undefined" && window.innerWidth < 800 ? "border-box" : undefined,
+          // aggiungi padding laterale extra
+          ...(typeof window !== "undefined" && window.innerWidth < 800 ? { paddingLeft: "6vw", paddingRight: "6vw" } : {}),
         }}
       >
         <div
