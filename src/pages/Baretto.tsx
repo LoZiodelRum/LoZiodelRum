@@ -369,8 +369,7 @@ export default function Baretto() {
                 minWidth: 120,
                 resize: 'none',
                 borderRadius: 18,
-                border: 'none',
-                borderBottom: 'none',
+                border: '1.5px solid #444',
                 boxShadow: 'none',
                 outline: 'none',
                 appearance: 'none',
@@ -404,18 +403,28 @@ export default function Baretto() {
                 margin: '10px 0',
                 outline: 'none',
                 display: 'block',
-              }}
-              onKeyDown={e => {
-                // Blocca sempre il ritorno a capo
-                if (e.key === 'Enter') {
-                  e.preventDefault();
-                  inviaMessaggio(e);
-                }
-              }}
-            />
-            {/* Pulsante Invia eliminato su richiesta */}
-          </form>
-      </main>
-    </div>
-  );
-}
+              <form
+                onSubmit={inviaMessaggio}
+                style={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  width: '100%',
+                  background: 'transparent',
+                  border: 'none',
+                  boxShadow: 'none',
+                  borderTop: 'none',
+                  padding: 0,
+                  margin: 0,
+                  position: 'sticky',
+                  bottom: 0,
+                  zIndex: 10,
+                }}
+              >
+                {/* Rimuovi ogni bordo superiore dal form e dal suo container per eliminare la riga grigia */}
+                <style>{`
+                  form[style], form[style]::before, form[style]::after {
+                    border-top: none !important;
+                    box-shadow: none !important;
+                    background: transparent !important;
+                  }
+                `}</style>
