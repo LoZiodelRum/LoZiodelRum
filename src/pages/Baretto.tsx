@@ -275,7 +275,7 @@ export default function Baretto() {
             rows={1}
             placeholder="Scrivi un messaggio..."
             style={typeof window !== 'undefined' && window.innerWidth < 800 ? {
-              width: '62vw', // poco più della metà
+              width: '70vw', // aumenta ancora la textarea
               minWidth: 0,
               maxWidth: 'unset',
               alignSelf: 'flex-start',
@@ -283,7 +283,7 @@ export default function Baretto() {
               marginRight: 0,
               resize: 'none',
               borderRadius: 10,
-              border: 'none', // tolta la riga grigia
+              border: 'none',
               boxShadow: 'none',
               outline: 'none',
               appearance: 'none',
@@ -330,7 +330,7 @@ export default function Baretto() {
             style={{
               flexShrink: 0,
               marginLeft: 6,
-              width: typeof window !== 'undefined' && window.innerWidth < 800 ? '28vw' : undefined, // il resto dello spazio
+              width: typeof window !== 'undefined' && window.innerWidth < 800 ? '20vw' : undefined, // riduci bottone
               padding: typeof window !== 'undefined' && window.innerWidth < 800 ? '10px 0' : '12px 22px',
               borderRadius: 12,
               border: 'none',
@@ -339,7 +339,7 @@ export default function Baretto() {
               fontWeight: 700,
               fontSize: 17,
               cursor: 'pointer',
-              minWidth: 56,
+              minWidth: 44,
               minHeight: 38,
               boxShadow: 'none',
               outline: 'none',
