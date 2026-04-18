@@ -1,624 +1,320 @@
-import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
+import { FormEvent, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import { useUser } from "../context/UserContext";
-    // ===== DESKTOP LAYOUT =====
-    <div className="page page-full-bleed fade-in" style={{ minHeight: "100vh", background: "url('/bg-chat.png') repeat fixed", backgroundSize: "60px", padding: 0, margin: 0 }}>
-      <div style={{ width: "100%", maxWidth: 1400, margin: "0 auto", padding: 24, background: "rgba(18,18,18,0.82)", borderRadius: 0 }}>
-        <div style={{ display: "flex", alignItems: "flex-start", gap: 32, minHeight: "70vh" }}>
-          {/* Sidebar sinistra */}
-          <aside style={{ width: 260, background: "rgba(28,25,23,0.5)", border: "1px solid rgba(68,64,60,0.5)", borderRadius: 18, padding: 18, display: "flex", flexDirection: "column", gap: 18, minHeight: 420 }}>
-            <div style={{ fontWeight: 700, color: "#fafaf9", fontSize: 22, marginBottom: 2 }}>Stanze</div>
-            <div style={{ color: "#9fd0e8", fontSize: "0.95rem", marginBottom: 8, minHeight: 18 }}>
-              {utentiOnline.length > 0 ? `${utentiOnline.length} online: ${utentiOnline.join(", ")}` : "Nessuno online"}
-            </div>
-            <button
-              onClick={() => {
-                const nome = prompt("Nome del nuovo tavolo (stanza)?");
-                if (nome && !stanze.includes(nome)) {
-                  setStanze([...stanze, nome]);
-                  setStanzaSelezionata(nome);
-                }
-              }}
-              style={{
-                width: "100%",
-                padding: "11px 0",
-                borderRadius: 999,
-                border: "2px solid #f5a623",
-                background: "#f5a623",
-                color: "#23272f",
-                fontWeight: 700,
-                fontSize: "1.05rem",
-                cursor: "pointer",
-                marginBottom: 10
-              }}
-            >
-              Crea un tavolo
-            </button>
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {["Generale", ...stanze.filter(s => s !== "Generale")].map((stanza) => {
-                const attiva = stanza === stanzaCorrente;
-                return (
-                  <button
-                    key={stanza}
-                    onClick={() => setStanzaSelezionata(stanza)}
-                    style={{
-                      width: "100%",
-                      padding: "11px 0",
-                      borderRadius: 999,
-                      border: attiva ? "2px solid #f5a623" : "1px solid rgba(126, 169, 196, 0.35)",
-                      background: attiva ? "#f5a623" : "rgba(11, 51, 73, 0.6)",
-                      color: attiva ? "#23272f" : "#a9d4ea",
-                      fontSize: "1.05rem",
-                      fontWeight: 700,
-                      whiteSpace: "nowrap",
-                      flexShrink: 0,
-                      cursor: "pointer"
-                    }}
-                  >
-                    {stanza}
-                  </button>
-                );
-              })}
-            </div>
-          </aside>
-          {/* Colonna destra: chat */}
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-              <h1 style={{ margin: 0, color: "#f5a623", fontSize: "clamp(1.3rem, 2.4vw, 2rem)" }}>Il Baretto</h1>
-              <button
-                onClick={() => navigate("/community")}
-                style={{
-                  background: "transparent",
-                  border: "1px solid rgba(120,113,108,0.5)",
-                  color: "#d6d3d1",
-                  borderRadius: 10,
-                  padding: "8px 12px",
-                  cursor: "pointer",
-                }}
-              >
-                Torna a Community
-              </button>
-            </div>
-            {/* ...resto del layout chat e input bar... */}
-            {/* Qui rimane la chat vera e propria, già presente nel file */}
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-          await caricaStanze();
-        }
-      )
-      .subscribe();
 
-    return () => {
-      supabase.removeChannel(channel);
-    };
+type Profilo = {
+  id: string;
+  username?: string;
+  nome?: string;
+  cognome?: string;
+};
+
+type MessaggioDb = {
+  id: string;
+  testo: string;
+  created_at: string;
+  id_utente?: string;
+  stanza?: string;
+  username?: string;
+};
+
+const STANZA_DEFAULT = "Generale";
+
+export default function Baretto() {
+  const navigate = useNavigate();
+  const { user, isAdmin } = useUser();
+
+  const [stanze, setStanze] = useState<string[]>([STANZA_DEFAULT]);
+  const [stanzaCorrente, setStanzaSelezionata] = useState<string>(STANZA_DEFAULT);
+  const [utentiOnline, setUtentiOnline] = useState<string[]>([]);
+  const [messaggi, setMessaggi] = useState<MessaggioDb[]>([]);
+  const [caricamento, setCaricamento] = useState<boolean>(true);
+  const [testoNuovo, setTestoNuovo] = useState<string>("");
+  const listaRef = useRef<HTMLDivElement>(null);
+
+  const nomeUtenteCorrente =
+    user?.username || user?.nome || user?.email || "Anonimo";
+
+  function formattaOra(data: string) {
+    const d = new Date(data);
+    return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
+  }
+
+  useEffect(() => {
+    setCaricamento(true);
+    supabase
+      .from("messaggi_baretto")
+      .select("*")
+      .eq("stanza", stanzaCorrente)
+      .order("created_at", { ascending: true })
+      .then(({ data, error }) => {
+        if (!error && data) setMessaggi(data as MessaggioDb[]);
+        setCaricamento(false);
+      });
   }, [stanzaCorrente]);
 
-  useEffect(() => {
-    const chiavePresenza = user?.id || `admin-${crypto.randomUUID()}`;
-    const canalePresenza = supabase.channel("baretto-presenza", {
-      config: {
-        presence: {
-          key: chiavePresenza,
-        },
-      },
-    });
+  function inviaMessaggio(e: FormEvent) {
+    e.preventDefault();
+    if (!testoNuovo.trim()) return;
 
-    canalePresenza
-      .on("presence", { event: "sync" }, () => {
-        const statoPresenza = canalePresenza.presenceState<{ nomeUtente?: string }>();
-        const nomi = Object.values(statoPresenza)
-          .flat()
-          .map((presenza) => String(presenza.nomeUtente || "Utente"));
-
-        setUtentiOnline(Array.from(new Set(nomi)));
-      })
-      .subscribe(async (stato) => {
-        if (stato === "SUBSCRIBED") {
-          await canalePresenza.track({ nomeUtente: nomeUtenteCorrente });
-        }
-      });
-
-    return () => {
-      void canalePresenza.untrack();
-      supabase.removeChannel(canalePresenza);
+    const nuovo: Omit<MessaggioDb, "id"> = {
+      testo: testoNuovo,
+      created_at: new Date().toISOString(),
+      id_utente: user?.id,
+      stanza: stanzaCorrente,
+      username: nomeUtenteCorrente,
     };
-  }, [user?.id, nomeUtenteCorrente]);
+
+    supabase
+      .from("messaggi_baretto")
+      .insert([nuovo])
+      .then(() => {
+        setTestoNuovo("");
+        supabase
+          .from("messaggi_baretto")
+          .select("*")
+          .eq("stanza", stanzaCorrente)
+          .order("created_at", { ascending: true })
+          .then(({ data, error }) => {
+            if (!error && data) setMessaggi(data as MessaggioDb[]);
+          });
+      });
+  }
 
   useEffect(() => {
-    if (!listaRef.current) return;
-    listaRef.current.scrollTo({
-      top: listaRef.current.scrollHeight,
-      behavior: "smooth",
-    });
+    if (listaRef.current) {
+      listaRef.current.scrollTop = listaRef.current.scrollHeight;
+    }
   }, [messaggi]);
 
-  function nomeProfilo(profilo?: Profilo) {
-    if (!profilo) return "Utente";
-    if (profilo.username && profilo.username.trim()) return profilo.username;
-    const nomeCompleto = `${profilo.nome || ""} ${profilo.cognome || ""}`.trim();
-    if (nomeCompleto) return nomeCompleto;
-    return "Utente";
-  }
+  useEffect(() => {
+    setUtentiOnline([nomeUtenteCorrente]);
+  }, [nomeUtenteCorrente]);
 
-  function formattaOra(timestamp: string) {
-    const data = new Date(timestamp);
-    if (Number.isNaN(data.getTime())) return "";
-    return data.toLocaleTimeString("it-IT", {
-      hour: "2-digit",
-      minute: "2-digit",
-    });
-  }
-
-  async function risolviNomeUtenteCorrente() {
-    if (user?.id) {
-      const { data, error } = await supabase
-        .from("Profili")
-        .select("id, username, nome, cognome")
-        .eq("id", user.id)
-        .maybeSingle();
-
-      if (error) {
-        console.error("Errore caricamento utente corrente baretto:", error);
-        setNomeUtenteCorrente(user.user_metadata?.username || user.email?.split("@")[0] || "Utente");
-        return;
-      }
-
-      if (data) {
-        setNomeUtenteCorrente(nomeProfilo(data as Profilo));
-        return;
-      }
-
-      setNomeUtenteCorrente(user.user_metadata?.username || user.email?.split("@")[0] || "Utente");
-      return;
-    }
-
-    if (isAdmin) {
-      setNomeUtenteCorrente("Lo Zio");
-      return;
-    }
-
-    setNomeUtenteCorrente("Utente");
-  }
-
-  async function caricaStanze() {
-    const { data, error } = await supabase
-      .from("baretto_messaggi")
-      .select("stanza")
-      .order("created_at", { ascending: false });
-
-    if (error) {
-      console.error("Errore caricamento stanze baretto:", error);
-      setStanze([STANZA_DEFAULT]);
-      return;
-    }
-
-    const nomiStanze = Array.from(
-      new Set(
-        (data || []).map((item) => {
-          const nome = String(item.stanza || "").trim();
-          return nome || STANZA_DEFAULT;
-        })
-      )
-    );
-
-    const elenco = nomiStanze.length > 0 ? nomiStanze : [STANZA_DEFAULT];
-    setStanze(elenco);
-
-    if (!elenco.includes(stanzaCorrente)) {
-      setStanzaSelezionata(elenco[0]);
-    }
-  }
-
-  async function caricaMessaggi(stanza: string) {
-    setCaricamento(true);
-
-    const { data, error } = await supabase
-      .from("baretto_messaggi")
-      .select("id, testo, created_at, id_utente, stanza, username")
-      .eq("stanza", stanza)
-      .order("created_at", { ascending: true });
-
-    if (error) {
-      console.error("Errore caricamento messaggi baretto:", error);
-      setMessaggi([]);
-      setCaricamento(false);
-      return;
-    }
-
-    const messaggiDb = (data || []) as MessaggioDb[];
-    if (messaggiDb.length === 0) {
-      setMessaggi([]);
-      setCaricamento(false);
-      return;
-    }
-
-    const idUtenti = Array.from(new Set(messaggiDb.map((msg) => msg.id_utente).filter(Boolean))) as string[];
-    let mappaProfili = new Map<string, Profilo>();
-
-    if (idUtenti.length > 0) {
-      const { data: profiliData, error: profiliError } = await supabase
-        .from("Profili")
-        .select("id, username, nome, cognome")
-        .in("id", idUtenti);
-
-      if (profiliError) {
-        console.error("Errore caricamento profili baretto:", profiliError);
-      } else {
-        mappaProfili = new Map((profiliData || []).map((profilo) => [profilo.id, profilo as Profilo]));
-      }
-    }
-
-    const lista = messaggiDb.map((msg) => ({
-      id: msg.id,
-      testo: msg.testo,
-      created_at: msg.created_at,
-      id_utente: msg.id_utente,
-      stanza: msg.stanza || STANZA_DEFAULT,
-      username: nomeProfilo(msg.id_utente ? mappaProfili.get(msg.id_utente) : undefined) || msg.username || "Utente",
-    }));
-
-    setMessaggi(lista);
-    setCaricamento(false);
-  }
-
-  async function inviaMessaggio(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault();
-
-    const testoPulito = testoNuovo.trim();
-    const puoInviare = Boolean(user) || isAdmin;
-    if (!testoPulito || !puoInviare) return;
-
-    const { error } = await supabase.from("baretto_messaggi").insert({
-      testo: testoPulito,
-      id_utente: user?.id || null,
-      username: nomeUtenteCorrente,
-      stanza: stanzaCorrente,
-    });
-
-    if (error) {
-      console.error("Errore invio messaggio baretto:", error);
-      return;
-    }
-
-    setTestoNuovo("");
-  }
-
-  return isMobile ? (
+  return (
     <div
+      className="page page-full-bleed fade-in"
       style={{
-        position: "fixed",
-        inset: 0,
         minHeight: "100vh",
-        width: "100vw",
-        background: "url('/bg-chat.png') repeat",
+        background: "url('/bg-chat.png') repeat fixed",
         backgroundSize: "60px",
         padding: 0,
         margin: 0,
-        display: "flex",
-        flexDirection: "column",
-        zIndex: 10,
       }}
     >
       <div
         style={{
-          flex: 1,
-          minHeight: 0,
-          display: "flex",
-          flexDirection: "column",
-          background: "rgba(18,18,18,0.82)", // overlay scuro per contrasto
-          border: 0,
+          width: "100%",
+          maxWidth: 1400,
+          margin: "0 auto",
+          padding: 24,
+          background: "rgba(18,18,18,0.82)",
           borderRadius: 0,
-          boxShadow: "none",
-          overflow: "hidden"
         }}
       >
         <div
           style={{
-            padding: "12px 12px 10px",
             display: "flex",
-            alignItems: "center",
-            gap: 10,
-            borderBottom: "1px solid rgba(126, 169, 196, 0.18)",
-            background: "rgba(4, 27, 43, 0.75)",
-            backdropFilter: "blur(8px)",
+            alignItems: "stretch",
+            gap: 32,
+            minHeight: "70vh",
           }}
         >
-          <button
-            onClick={() => navigate("/community")}
+          <aside
             style={{
-              background: "transparent",
-              border: "none",
-              color: "#d9f0ff",
-              cursor: "pointer",
-              fontSize: "1.1rem",
-              lineHeight: 1,
-            }}
-          >
-            ←
-          </button>
-          <div
-            style={{
-              width: 32,
-              height: 32,
-              borderRadius: 999,
-              background: "linear-gradient(145deg, #5cb0d8 0%, #2b6888 100%)",
-              border: "1px solid rgba(180, 225, 247, 0.6)",
-              flexShrink: 0,
-            }}
-          />
-          <div style={{ minWidth: 0, flex: 1 }}>
-            <div style={{ color: "#ecf8ff", fontWeight: 700, fontSize: "0.92rem", whiteSpace: "nowrap", overflow: "hidden", textOverflow: "ellipsis" }}>
-              {stanzaCorrente}
-            </div>
-            <div style={{ color: "#9fd0e8", fontSize: "0.73rem", opacity: 0.9 }}>
-              {utentiOnline.length > 0 ? `${utentiOnline.length} online` : "Nessuno online"}
-            </div>
-          </div>
-          <button
-            onClick={() => void caricaMessaggi(stanzaCorrente)}
-            style={{
-              background: "transparent",
-              border: "none",
-              color: "#d9f0ff",
-              fontSize: "1.15rem",
-              cursor: "pointer",
-              lineHeight: 1,
-            }}
-            aria-label="Aggiorna messaggi"
-          >
-            ⋮
-          </button>
-        </div>
-
-        <div
-          style={{
-            padding: "8px 10px",
-            display: "flex",
-            gap: 8,
-            overflowX: "auto",
-            WebkitOverflowScrolling: "touch",
-            borderBottom: "1px solid rgba(126, 169, 196, 0.12)",
-            background: "rgba(4, 27, 43, 0.46)",
-          }}
-        >
-          {stanze.map((stanza) => {
-            const attiva = stanza === stanzaCorrente;
-            return (
-              <button
-                key={stanza}
-                onClick={() => setStanzaSelezionata(stanza)}
-                style={{
-                  padding: "7px 13px",
-                  borderRadius: 999,
-                  border: attiva ? "1px solid rgba(179, 230, 255, 0.68)" : "1px solid rgba(126, 169, 196, 0.35)",
-                  background: attiva ? "rgba(80, 165, 215, 0.32)" : "rgba(11, 51, 73, 0.6)",
-                  color: attiva ? "#eef9ff" : "#a9d4ea",
-                  fontSize: "0.77rem",
-                  fontWeight: 600,
-                  whiteSpace: "nowrap",
-                  flexShrink: 0,
-                  cursor: "pointer",
-                }}
-              >
-                {stanza}
-              </button>
-            );
-          })}
-        </div>
-
-        <div
-          ref={listaRef}
-          style={{
-            flex: 1,
-            minHeight: 0,
-            overflowY: "auto",
-            padding: "14px 10px 70px 10px", // spazio extra in basso per il form
-            display: "flex",
-            flexDirection: "column",
-            gap: 10,
-            WebkitOverflowScrolling: "touch",
-          }}
-        >
-          {!caricamento && messaggi.length === 0 && (
-            <div style={{ color: "#98bfd5", fontSize: "0.84rem", textAlign: "center", paddingTop: 12 }}>
-              Nessun messaggio in questa stanza
-            </div>
-          )}
-
-          {messaggi.map((msg) => {
-            const isMine = (Boolean(user?.id) && msg.id_utente === user?.id) || msg.username === nomeUtenteCorrente;
-            return (
-              <div
-                key={msg.id}
-                style={{
-                  display: "flex",
-                  flexDirection: "column",
-                  alignItems: isMine ? "flex-end" : "flex-start",
-                }}
-              >
-                {!isMine && (
-                  <div style={{ color: "#9fd0e8", fontSize: "0.72rem", fontWeight: 700, marginBottom: 3, paddingLeft: 3 }}>
-                    <span translate="no">{msg.username}</span>
-                  </div>
-                )}
-                <div
-                  style={{
-                    maxWidth: "82%",
-                    borderRadius: isMine ? "16px 16px 6px 16px" : "16px 16px 16px 6px",
-                    background: isMine ? "linear-gradient(180deg, #2d8fd0 0%, #2372a8 100%)" : "rgba(18, 74, 102, 0.9)",
-                    border: isMine
-                      ? "1px solid rgba(126, 201, 248, 0.62)"
-                      : "1px solid rgba(115, 171, 204, 0.4)",
-                    color: "#eef9ff",
-                    padding: "9px 11px",
-                    boxShadow: "0 6px 16px rgba(0, 0, 0, 0.24)",
-                    wordBreak: "break-word",
-                    fontSize: "0.88rem",
-                    lineHeight: 1.32,
-                  }}
-                >
-                  {msg.testo}
-                </div>
-                <div style={{ color: "#80b4ce", fontSize: "0.68rem", marginTop: 3, paddingInline: 4 }}>
-                  {formattaOra(msg.created_at)}
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        <form
-          onSubmit={inviaMessaggio}
-          style={{
-            position: "fixed",
-            left: 0,
-            right: 0,
-            bottom: 0,
-            zIndex: 20,
-            padding: "10px 8px 10px 8px",
-            borderTop: "1px solid rgba(126, 169, 196, 0.18)",
-            background: "rgba(18,18,18,0.98)",
-            maxWidth: 600,
-            margin: "0 auto"
-          }}
-        >
-          <div
-            style={{
+              width: 270,
+              background: "rgba(28,25,23,0.5)",
+              border: "1px solid rgba(68,64,60,0.5)",
+              borderRadius: 18,
+              padding: 18,
               display: "flex",
-              alignItems: "center",
-              gap: 8,
-              background: "rgba(9, 40, 58, 0.95)",
-              border: "1px solid rgba(126, 169, 196, 0.34)",
-              borderRadius: 999,
-              padding: "6px 8px 6px 12px",
+              flexDirection: "column",
+              gap: 18,
+              minHeight: 420,
             }}
           >
-            <input
-              value={testoNuovo}
-              onChange={(event) => setTestoNuovo(event.target.value)}
-              placeholder={user || isAdmin ? "Scrivi un messaggio..." : "Accedi per scrivere"}
-              disabled={!user && !isAdmin}
+            <div
               style={{
-                flex: 1,
-                border: "none",
-                background: "#23272f",
-                color: "#fff",
-                fontSize: "0.98rem",
-                outline: "none",
-                borderRadius: 8,
-                padding: "8px 10px"
-              }}
-            />
-            <button
-              type="submit"
-              disabled={(!user && !isAdmin) || !testoNuovo.trim()}
-              style={{
-                width: 34,
-                height: 34,
-                borderRadius: 999,
-                border: "none",
-                background: (user || isAdmin) && testoNuovo.trim() ? "#f5a623" : "#2d5168",
-                color: "#23272f",
-                fontSize: "1rem",
                 fontWeight: 700,
-                display: "inline-flex",
-                alignItems: "center",
-                justifyContent: "center",
-                cursor: (user || isAdmin) && testoNuovo.trim() ? "pointer" : "not-allowed",
+                color: "#f5a623",
+                fontSize: 28,
+                marginBottom: 18,
+                letterSpacing: 0.5,
               }}
             >
-              ➤
-            </button>
-          </div>
-        </form>
-      </div>
-    </div>
-  ) : (
-    // ===== DESKTOP LAYOUT =====
-    <div className="page page-full-bleed fade-in" style={{ minHeight: "100vh", background: "url('/bg-chat.png') repeat fixed", backgroundSize: "60px", padding: 0, margin: 0 }}>
-      <div style={{ width: "100%", maxWidth: 1400, margin: "0 auto", padding: 24, background: "rgba(18,18,18,0.82)", borderRadius: 0 }}>
-        <div style={{ display: "flex", alignItems: "flex-start", gap: 32, minHeight: "70vh" }}>
-          {/* Sidebar sinistra */}
-          <aside style={{ width: 260, background: "rgba(28,25,23,0.5)", border: "1px solid rgba(68,64,60,0.5)", borderRadius: 18, padding: 18, display: "flex", flexDirection: "column", gap: 18, minHeight: 420 }}>
-            <div style={{ fontWeight: 700, color: "#fafaf9", fontSize: 22, marginBottom: 2 }}>Stanze</div>
-            <div style={{ color: "#9fd0e8", fontSize: "0.95rem", marginBottom: 8, minHeight: 18 }}>
-              {utentiOnline.length > 0 ? `${utentiOnline.length} online: ${utentiOnline.join(", ")}` : "Nessuno online"}
+              Il Baretto
             </div>
+
+            <div
+              style={{
+                fontWeight: 700,
+                color: "#fafaf9",
+                fontSize: 18,
+                marginBottom: 8,
+              }}
+            >
+              Utenti collegati
+            </div>
+
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 8,
+                marginBottom: 18,
+              }}
+            >
+              {utentiOnline.length === 0 && (
+                <span style={{ color: "#888", fontSize: 15 }}>
+                  Nessuno online
+                </span>
+              )}
+
+              {utentiOnline.map((nome) => (
+                <div
+                  key={nome}
+                  style={{
+                    display: "flex",
+                    alignItems: "center",
+                    gap: 8,
+                    fontSize: 15,
+                    color: "#e6e6e6",
+                  }}
+                >
+                  <span
+                    style={{
+                      display: "inline-block",
+                      width: 10,
+                      height: 10,
+                      borderRadius: 999,
+                      background: "#2ecc40",
+                      marginRight: 4,
+                      border: "1.5px solid #222",
+                    }}
+                  />
+                  <span>{nome}</span>
+                </div>
+              ))}
+            </div>
+
+            <button
+              onClick={() => setStanzaSelezionata(STANZA_DEFAULT)}
+              style={{
+                width: "100%",
+                padding: "13px 0",
+                borderRadius: 999,
+                border:
+                  stanzaCorrente === STANZA_DEFAULT
+                    ? "2px solid #f5a623"
+                    : "1px solid #444",
+                background:
+                  stanzaCorrente === STANZA_DEFAULT
+                    ? "#f5a623"
+                    : "#181818",
+                color:
+                  stanzaCorrente === STANZA_DEFAULT
+                    ? "#181818"
+                    : "#f5a623",
+                fontWeight: 700,
+                fontSize: "1.13rem",
+                marginBottom: 10,
+                cursor: "pointer",
+              }}
+            >
+              Generale
+            </button>
+
             <button
               onClick={() => {
-                const nome = prompt("Nome del nuovo tavolo (stanza)?");
-                if (nome && !stanze.includes(nome)) {
-                  setStanze([...stanze, nome]);
-                  setStanzaSelezionata(nome);
+                const nome = prompt("Nome del nuovo tavolo?");
+                if (
+                  nome &&
+                  nome.trim() &&
+                  !stanze.includes(nome.trim())
+                ) {
+                  setStanze([...stanze, nome.trim()]);
+                  setStanzaSelezionata(nome.trim());
                 }
               }}
               style={{
                 width: "100%",
-                padding: "11px 0",
+                padding: "13px 0",
                 borderRadius: 999,
-                border: "2px solid #f5a623",
-                background: "#f5a623",
-                color: "#23272f",
+                border: "1px solid #444",
+                background: "#181818",
+                color: "#f5a623",
                 fontWeight: 700,
-                fontSize: "1.05rem",
+                fontSize: "1.13rem",
                 cursor: "pointer",
-                marginBottom: 10
               }}
             >
               Crea un tavolo
             </button>
-            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-              {["Generale", ...stanze.filter(s => s !== "Generale")].map((stanza) => {
-                const attiva = stanza === stanzaCorrente;
+          </aside>
+
+          <main
+            style={{
+              flex: 1,
+              minWidth: 0,
+              display: "flex",
+              flexDirection: "column",
+              height: "70vh",
+              position: "relative",
+            }}
+          >
+            <div
+              style={{
+                display: "flex",
+                gap: 8,
+                marginBottom: 12,
+                flexWrap: "wrap",
+              }}
+            >
+              {stanze.map((stanza) => (
+                <button
+                  key={stanza}
+                  onClick={() => setStanzaSelezionata(stanza)}
+                >
+                  {stanza}
+                </button>
+              ))}
+            </div>
+
+            <div
+              ref={listaRef}
+              style={{
+                flex: 1,
+                overflowY: "auto",
+                padding: "10px 0 110px 0",
+                display: "flex",
+                flexDirection: "column",
+                gap: 10,
+              }}
+            >
+              {messaggi.map((msg) => {
+                const isMine =
+                  msg.id_utente === user?.id ||
+                  msg.username === nomeUtenteCorrente;
+
                 return (
-                  <button
-                    key={stanza}
-                    onClick={() => setStanzaSelezionata(stanza)}
-                    style={{
-                      width: "100%",
-                      padding: "11px 0",
-                      borderRadius: 999,
-                      border: attiva ? "2px solid #f5a623" : "1px solid rgba(126, 169, 196, 0.35)",
-                      background: attiva ? "#f5a623" : "rgba(11, 51, 73, 0.6)",
-                      color: attiva ? "#23272f" : "#a9d4ea",
-                      fontSize: "1.05rem",
-                      fontWeight: 700,
-                      whiteSpace: "nowrap",
-                      flexShrink: 0,
-                      cursor: "pointer"
-                    }}
-                  >
-                    {stanza}
-                  </button>
+                  <div key={msg.id}>
+                    <div>{msg.username}</div>
+                    <div>{msg.testo}</div>
+                    <div>{formattaOra(msg.created_at)}</div>
+                  </div>
                 );
               })}
             </div>
-          </aside>
-          {/* Colonna destra: chat */}
-          <div style={{ flex: 1, minWidth: 0 }}>
-            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-              <h1 style={{ margin: 0, color: "#f5a623", fontSize: "clamp(1.3rem, 2.4vw, 2rem)" }}>Il Baretto</h1>
-              <button
-                onClick={() => navigate("/community")}
-                style={{
-                  background: "transparent",
-                  border: "1px solid rgba(120,113,108,0.5)",
-                  color: "#d6d3d1",
-                  borderRadius: 10,
-                  padding: "8px 12px",
-                  cursor: "pointer",
-                }}
-              >
-                Torna a Community
-              </button>
-            </div>
-            {/* ...resto del layout chat e input bar... */}
-            {/* Qui rimane la chat vera e propria, già presente nel file */}
-          </div>
+
+            <form onSubmit={inviaMessaggio}>
+              <input
+                value={testoNuovo}
+                onChange={(e) => setTestoNuovo(e.target.value)}
+              />
+              <button type="submit">Invia</button>
+            </form>
+          </main>
         </div>
       </div>
     </div>
