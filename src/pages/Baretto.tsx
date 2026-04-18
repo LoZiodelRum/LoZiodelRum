@@ -39,12 +39,14 @@ export default function Baretto() {
     async function upsertPresenza() {
       await supabase
         .from("baretto_presenze")
-        .upsert({
-          id_utente: user.id,
-          username: nomeUtenteCorrente,
-          stanza: stanzaCorrente,
-          last_active: new Date().toISOString(),
-        }, { onConflict: ["id_utente", "stanza"] });
+        .upsert([
+          {
+            id_utente: user.id,
+            username: nomeUtenteCorrente,
+            stanza: stanzaCorrente,
+            last_active: new Date().toISOString(),
+          }
+        ], { onConflict: "id_utente,stanza" });
     }
     upsertPresenza();
     // Rimuovi presenza all'uscita
