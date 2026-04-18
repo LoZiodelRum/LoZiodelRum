@@ -580,7 +580,33 @@ export default function Baretto() {
               overflowY: "auto",
             }}
           >
+
             <div style={{ fontWeight: 700, color: "#fafaf9", marginBottom: 6 }}>Stanze</div>
+
+            <button
+              onClick={() => {
+                const nome = prompt("Nome del nuovo tavolo (stanza)?");
+                if (nome && !stanze.includes(nome)) {
+                  setStanze([...stanze, nome]);
+                  setStanzaSelezionata(nome);
+                }
+              }}
+              style={{
+                width: "100%",
+                textAlign: "left",
+                padding: "10px 12px",
+                borderRadius: 10,
+                border: "1px solid #f5a623",
+                background: "#f5a623",
+                color: "#23272f",
+                fontWeight: 700,
+                marginBottom: 10,
+                cursor: "pointer",
+                fontSize: 16
+              }}
+            >
+              + Crea un tavolo
+            </button>
 
             {stanze.map((stanza) => {
               const attiva = stanza === stanzaCorrente;
@@ -598,41 +624,42 @@ export default function Baretto() {
                     color: attiva ? "#fcd34d" : "#e7e5e4",
                     cursor: "pointer",
                   }}
+                <div
+                  style={{
+                    padding: "8px 10px",
+                    display: "flex",
+                    gap: 8,
+                    overflowX: "auto",
+                    WebkitOverflowScrolling: "touch",
+                    borderBottom: "1px solid rgba(126, 169, 196, 0.12)",
+                    background: "rgba(4, 27, 43, 0.46)",
+                  }}
                 >
-                  {stanza}
-                </button>
-              );
-            })}
-
-            <div style={{ marginTop: 10, borderTop: "1px solid rgba(68,64,60,0.45)", paddingTop: 10 }}>
-              <div style={{ fontWeight: 700, color: "#fafaf9", marginBottom: 6 }}>Utenti online</div>
-
-              {utentiOnline.length === 0 && (
-                <div style={{ color: "#a8a29e", fontSize: 13 }}>Nessun utente online</div>
-              )}
-
-              {utentiOnline.map((nome) => (
-                <div key={nome} style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 6 }}>
-                  <span style={{ width: 8, height: 8, borderRadius: 999, background: "#22c55e", display: "inline-block" }} />
-                  <span style={{ color: "#e7e5e4", fontSize: 14 }} translate="no">{nome}</span>
+                  {stanze.map((stanza) => {
+                    const attiva = stanza === stanzaCorrente;
+                    return (
+                      <button
+                        key={stanza}
+                        onClick={() => setStanzaSelezionata(stanza)}
+                        style={{
+                          padding: "7px 13px",
+                          borderRadius: 999,
+                          border: attiva ? "2px solid #f5a623" : "1px solid rgba(126, 169, 196, 0.35)",
+                          background: attiva ? "#f5a623" : "rgba(11, 51, 73, 0.6)",
+                          color: attiva ? "#23272f" : "#a9d4ea",
+                          fontSize: "0.95rem",
+                          fontWeight: 700,
+                          whiteSpace: "nowrap",
+                          flexShrink: 0,
+                          cursor: "pointer",
+                          marginBottom: 2
+                        }}
+                      >
+                        {stanza}
+                      </button>
+                    );
+                  })}
                 </div>
-              ))}
-            </div>
-          </aside>
-
-          <section
-            style={{
-              background: "rgba(28,25,23,0.5)",
-              border: "1px solid rgba(68,64,60,0.5)",
-              borderRadius: 18,
-              padding: 0,
-              display: "flex",
-              flexDirection: "column",
-              minHeight: 0,
-            }}
-          >
-            <div style={{ padding: "14px 16px", borderBottom: "1px solid rgba(68,64,60,0.45)", color: "#fafaf9", fontWeight: 700 }}>
-              Stanza: {stanzaCorrente}
             </div>
 
             <div ref={listaRef} style={{ flex: 1, minHeight: 0, overflowY: "auto", padding: "14px 16px", display: "grid", gap: 2 }}>
