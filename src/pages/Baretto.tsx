@@ -358,53 +358,7 @@ export default function Baretto() {
               borderTop: '1.5px solid #222',
             }}
           >
-            <textarea
-              value={testoNuovo}
-              onChange={e => setTestoNuovo(e.target.value)}
-              rows={1}
-              placeholder="Scrivi un messaggio..."
-              style={typeof window !== 'undefined' && window.innerWidth < 800 ? {
-                flex: 1,
-                resize: 'none',
-                borderRadius: 24,
-                border: '1.5px solid #444',
-                padding: '14px 16px',
-                fontSize: 18,
-                background: '#222',
-                color: '#fff',
-                minHeight: 44,
-                maxHeight: 90,
-                boxSizing: 'border-box',
-                margin: '0 auto',
-                outline: 'none',
-                borderTopRightRadius: 0,
-                borderBottomRightRadius: 0,
-                width: '95vw',
-                maxWidth: 500,
-              } : {
-                flex: 1,
-                resize: 'none',
-                borderRadius: 24,
-                border: '1.5px solid #444',
-                padding: '10px 16px',
-                fontSize: 17,
-                background: '#222',
-                color: '#fff',
-                minHeight: 32,
-                maxHeight: 90,
-                boxSizing: 'border-box',
-                margin: 0,
-                outline: 'none',
-                borderTopRightRadius: 0,
-                borderBottomRightRadius: 0,
-              }}
-              onKeyDown={e => {
-                if (e.key === 'Enter' && !e.shiftKey) {
-                  e.preventDefault();
-                  inviaMessaggio(e);
-                }
-              }}
-            />
+            {/* Textarea eliminata su richiesta */}
             {/* Pulsante Invia eliminato su richiesta */}
           </form>
       </main>
