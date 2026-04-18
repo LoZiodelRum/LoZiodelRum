@@ -169,12 +169,12 @@ export default function Baretto() {
               background: "rgba(28,25,23,0.5)",
               border: "1px solid rgba(68,64,60,0.5)",
               borderRadius: 18,
-              padding: typeof window !== "undefined" && window.innerWidth < 800 ? 4 : 18,
+              padding: typeof window !== "undefined" && window.innerWidth < 800 ? 2 : 18,
               display: "flex",
               flexDirection: "column",
-              gap: typeof window !== "undefined" && window.innerWidth < 800 ? 4 : 18,
+              gap: typeof window !== "undefined" && window.innerWidth < 800 ? 2 : 18,
               minHeight: typeof window !== "undefined" && window.innerWidth < 800 ? undefined : 420,
-              marginBottom: typeof window !== "undefined" && window.innerWidth < 800 ? 4 : 0,
+              marginBottom: typeof window !== "undefined" && window.innerWidth < 800 ? 2 : 0,
             }}
           >
             <div
@@ -315,9 +315,10 @@ export default function Baretto() {
               justifyContent: "flex-start",
               marginTop: 0,
               marginBottom: 0,
-              maxWidth: 700,
-              marginLeft: "auto",
-              marginRight: "auto"
+              maxWidth: typeof window !== "undefined" && window.innerWidth < 800 ? "100%" : 700,
+              width: typeof window !== "undefined" && window.innerWidth < 800 ? "100%" : undefined,
+              marginLeft: typeof window !== "undefined" && window.innerWidth < 800 ? 0 : "auto",
+              marginRight: typeof window !== "undefined" && window.innerWidth < 800 ? 0 : "auto"
             }}
           >
             <div
@@ -393,6 +394,7 @@ export default function Baretto() {
                   flexGrow: 1,
                   flexShrink: 1,
                   flexBasis: 0,
+                  width: typeof window !== "undefined" && window.innerWidth < 800 ? "100%" : undefined,
                   resize: "none",
                   borderRadius: 8,
                   border: "1px solid #444",
