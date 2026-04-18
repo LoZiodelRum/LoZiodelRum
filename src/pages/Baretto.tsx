@@ -37,14 +37,18 @@ export default function Baretto() {
   useEffect(() => {
     // Se non autenticato e non admin, non fare nulla
     if (!user && !isAdmin) return;
-    // Costruisci la presenza
-    const presenza = {
-      id_utente: isAdmin && (!user?.id) ? "admin-local" : user.id,
-      username: isAdmin ? "Lo Zio" : nomeUtenteCorrente,
-      stanza: stanzaCorrente,
-      last_active: new Date().toISOString(),
-    };
+
+    let stopped = false;
+    const id_utente = isAdmin && (!user?.id) ? "admin-local" : user?.id;
+    const username = isAdmin ? "Lo Zio" : nomeUtenteCorrente;
+
     async function upsertPresenza() {
+      const presenza = {
+        id_utente,
+        username,
+        stanza: stanzaCorrente,
+        last_active: new Date().toISOString(),
+      };
       console.log("UPD PRESENZA su Supabase:", presenza);
       const { error, data } = await supabase
         .from("baretto_presenze")
@@ -52,13 +56,22 @@ export default function Baretto() {
       if (error) console.error("Errore upsert presenza:", error);
       else console.log("Risposta upsert presenza:", data);
     }
+
+    // Primo inserimento
     upsertPresenza();
+
+    // Heartbeat ogni 20 secondi
+    const interval = setInterval(() => {
+      if (!stopped) upsertPresenza();
+    }, 20000);
+
     // Rimuovi presenza all'uscita
     return () => {
-      const idToDelete = isAdmin && (!user?.id) ? "admin-local" : user?.id;
-      if (idToDelete) {
-        console.log("DELETE presenza su Supabase", idToDelete, stanzaCorrente);
-        supabase.from("baretto_presenze").delete().eq("id_utente", idToDelete).eq("stanza", stanzaCorrente);
+      stopped = true;
+      clearInterval(interval);
+      if (id_utente) {
+        console.log("DELETE presenza su Supabase", id_utente, stanzaCorrente);
+        supabase.from("baretto_presenze").delete().eq("id_utente", id_utente).eq("stanza", stanzaCorrente);
       }
     };
     // eslint-disable-next-line
