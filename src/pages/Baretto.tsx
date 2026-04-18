@@ -624,13 +624,6 @@ export default function Baretto() {
           </div>
         </div>
         {/* ...resto del layout desktop chat... */}
-
-        {/* aside duplicato rimosso: la sezione Stanze è solo sopra */}
-
-          {/* ...resto del layout chat... */}
-
-          {/* ...resto del layout chat e input bar... */}
-        </div>
       </div>
     </div>
   );
