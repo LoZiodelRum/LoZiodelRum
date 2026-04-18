@@ -213,22 +213,23 @@ export default function Baretto() {
               Utenti collegati
               <span style={{ color: "#f5a623", fontSize: 17, fontWeight: 700 }}>
                 ({utentiOnline.length})
-              <aside
-                style={{
-                  width: typeof window !== "undefined" && window.innerWidth < 800 ? "100vw" : 270,
-                  background: "rgba(28,25,23,0.5)",
-                  border: "1px solid rgba(68,64,60,0.5)",
-                  borderRadius: 18,
-                  padding: typeof window !== "undefined" && window.innerWidth < 800 ? "10px 10px 6px 10px" : 18,
-                  display: "flex",
-                  flexDirection: "column",
-                  gap: typeof window !== "undefined" && window.innerWidth < 800 ? 6 : 18,
-                  minHeight: typeof window !== "undefined" && window.innerWidth < 800 ? undefined : 420,
-                  marginBottom: typeof window !== "undefined" && window.innerWidth < 800 ? 6 : 0,
-                  overflowX: typeof window !== "undefined" && window.innerWidth < 800 ? "hidden" : undefined,
-                }}
-              >
-              )}
+              </span>
+            </div>
+            <aside
+              style={{
+                width: typeof window !== "undefined" && window.innerWidth < 800 ? "100vw" : 270,
+                background: "rgba(28,25,23,0.5)",
+                border: "1px solid rgba(68,64,60,0.5)",
+                borderRadius: 18,
+                padding: typeof window !== "undefined" && window.innerWidth < 800 ? "10px 10px 6px 10px" : 18,
+                display: "flex",
+                flexDirection: "column",
+                gap: typeof window !== "undefined" && window.innerWidth < 800 ? 6 : 18,
+                minHeight: typeof window !== "undefined" && window.innerWidth < 800 ? undefined : 420,
+                marginBottom: typeof window !== "undefined" && window.innerWidth < 800 ? 6 : 0,
+                overflowX: typeof window !== "undefined" && window.innerWidth < 800 ? "hidden" : undefined,
+              }}
+            >
 
               {utentiOnline.map((nome) => (
                 <div
