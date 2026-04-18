@@ -283,7 +283,7 @@ export default function Baretto() {
             marginTop: 0,
             marginBottom: 0,
             width: typeof window !== "undefined" && window.innerWidth < 800 ? "100vw" : 700,
-            padding: typeof window !== "undefined" && window.innerWidth < 800 ? "0 6px 0 6px" : 0,
+            padding: typeof window !== "undefined" && window.innerWidth < 800 ? "0 16px 0 16px" : "0 32px 0 32px",
             marginLeft: typeof window !== "undefined" && window.innerWidth < 800 ? 0 : "auto",
             marginRight: typeof window !== "undefined" && window.innerWidth < 800 ? 0 : "auto",
             overflowX: typeof window !== "undefined" && window.innerWidth < 800 ? "hidden" : undefined,
