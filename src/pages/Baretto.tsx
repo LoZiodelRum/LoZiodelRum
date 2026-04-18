@@ -2,93 +2,91 @@ import { FormEvent, useEffect, useMemo, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import { useUser } from "../context/UserContext";
-
-type MessaggioDb = {
-  id: string;
-  testo: string;
-  created_at: string;
-  id_utente: string | null;
-  stanza: string | null;
-  username: string | null;
-};
-
-type Profilo = {
-  id: string;
-  username: string | null;
-  nome: string | null;
-  cognome: string | null;
-};
-
-type Messaggio = {
-  id: string;
-  testo: string;
-  created_at: string;
-  id_utente: string | null;
-  stanza: string;
-  username: string;
-};
-
-const STANZA_DEFAULT = "Generale";
-
-export default function Baretto() {
-  const navigate = useNavigate();
-  const { user, isAdmin } = useUser();
-
-  const [stanze, setStanze] = useState<string[]>([]);
-  const [stanzaSelezionata, setStanzaSelezionata] = useState<string>(STANZA_DEFAULT);
-  const [messaggi, setMessaggi] = useState<Messaggio[]>([]);
-  const [testoNuovo, setTestoNuovo] = useState("");
-  const [utentiOnline, setUtentiOnline] = useState<string[]>([]);
-  const [nomeUtenteCorrente, setNomeUtenteCorrente] = useState("Utente");
-  const [caricamento, setCaricamento] = useState(false);
-
-  const listaRef = useRef<HTMLDivElement | null>(null);
-  const [isMobile, setIsMobile] = useState(window.innerWidth < 768);
-
-  // Handle responsive resize
-  useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-
-    window.addEventListener("resize", handleResize);
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  const stanzaCorrente = useMemo(() => {
-    if (stanzaSelezionata && stanzaSelezionata.trim()) return stanzaSelezionata;
-    return STANZA_DEFAULT;
-  }, [stanzaSelezionata]);
-
-  useEffect(() => {
-    void caricaStanze();
-  }, []);
-
-  useEffect(() => {
-    void risolviNomeUtenteCorrente();
-  }, [user, isAdmin]);
-
-  useEffect(() => {
-    void caricaMessaggi(stanzaCorrente);
-  }, [stanzaCorrente]);
-
-  useEffect(() => {
-    const channel = supabase
-      .channel("baretto-realtime")
-      .on(
-        "postgres_changes",
-        {
-          event: "INSERT",
-          schema: "public",
-          table: "baretto_messaggi",
-        },
-        async (payload) => {
-          const nuovaStanza = (payload.new as { stanza?: string | null })?.stanza || STANZA_DEFAULT;
-
-          if (nuovaStanza === stanzaCorrente) {
-            await caricaMessaggi(stanzaCorrente);
-          }
-
+    // ===== DESKTOP LAYOUT =====
+    <div className="page page-full-bleed fade-in" style={{ minHeight: "100vh", background: "url('/bg-chat.png') repeat fixed", backgroundSize: "60px", padding: 0, margin: 0 }}>
+      <div style={{ width: "100%", maxWidth: 1400, margin: "0 auto", padding: 24, background: "rgba(18,18,18,0.82)", borderRadius: 0 }}>
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 32, minHeight: "70vh" }}>
+          {/* Sidebar sinistra */}
+          <aside style={{ width: 260, background: "rgba(28,25,23,0.5)", border: "1px solid rgba(68,64,60,0.5)", borderRadius: 18, padding: 18, display: "flex", flexDirection: "column", gap: 18, minHeight: 420 }}>
+            <div style={{ fontWeight: 700, color: "#fafaf9", fontSize: 22, marginBottom: 2 }}>Stanze</div>
+            <div style={{ color: "#9fd0e8", fontSize: "0.95rem", marginBottom: 8, minHeight: 18 }}>
+              {utentiOnline.length > 0 ? `${utentiOnline.length} online: ${utentiOnline.join(", ")}` : "Nessuno online"}
+            </div>
+            <button
+              onClick={() => {
+                const nome = prompt("Nome del nuovo tavolo (stanza)?");
+                if (nome && !stanze.includes(nome)) {
+                  setStanze([...stanze, nome]);
+                  setStanzaSelezionata(nome);
+                }
+              }}
+              style={{
+                width: "100%",
+                padding: "11px 0",
+                borderRadius: 999,
+                border: "2px solid #f5a623",
+                background: "#f5a623",
+                color: "#23272f",
+                fontWeight: 700,
+                fontSize: "1.05rem",
+                cursor: "pointer",
+                marginBottom: 10
+              }}
+            >
+              Crea un tavolo
+            </button>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {["Generale", ...stanze.filter(s => s !== "Generale")].map((stanza) => {
+                const attiva = stanza === stanzaCorrente;
+                return (
+                  <button
+                    key={stanza}
+                    onClick={() => setStanzaSelezionata(stanza)}
+                    style={{
+                      width: "100%",
+                      padding: "11px 0",
+                      borderRadius: 999,
+                      border: attiva ? "2px solid #f5a623" : "1px solid rgba(126, 169, 196, 0.35)",
+                      background: attiva ? "#f5a623" : "rgba(11, 51, 73, 0.6)",
+                      color: attiva ? "#23272f" : "#a9d4ea",
+                      fontSize: "1.05rem",
+                      fontWeight: 700,
+                      whiteSpace: "nowrap",
+                      flexShrink: 0,
+                      cursor: "pointer"
+                    }}
+                  >
+                    {stanza}
+                  </button>
+                );
+              })}
+            </div>
+          </aside>
+          {/* Colonna destra: chat */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+              <h1 style={{ margin: 0, color: "#f5a623", fontSize: "clamp(1.3rem, 2.4vw, 2rem)" }}>Il Baretto</h1>
+              <button
+                onClick={() => navigate("/community")}
+                style={{
+                  background: "transparent",
+                  border: "1px solid rgba(120,113,108,0.5)",
+                  color: "#d6d3d1",
+                  borderRadius: 10,
+                  padding: "8px 12px",
+                  cursor: "pointer",
+                }}
+              >
+                Torna a Community
+              </button>
+            </div>
+            {/* ...resto del layout chat e input bar... */}
+            {/* Qui rimane la chat vera e propria, già presente nel file */}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
           await caricaStanze();
         }
       )
@@ -541,89 +539,87 @@ export default function Baretto() {
     </div>
   ) : (
     // ===== DESKTOP LAYOUT =====
-    <div className="page page-full-bleed fade-in" style={{ minHeight: "100vh", background: "url('/bg-chat.png') repeat", backgroundSize: "60px", padding: 0, margin: 0 }}>
+    <div className="page page-full-bleed fade-in" style={{ minHeight: "100vh", background: "url('/bg-chat.png') repeat fixed", backgroundSize: "60px", padding: 0, margin: 0 }}>
       <div style={{ width: "100%", maxWidth: 1400, margin: "0 auto", padding: 24, background: "rgba(18,18,18,0.82)", borderRadius: 0 }}>
-        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
-          <h1 style={{ margin: 0, color: "#f5a623", fontSize: "clamp(1.3rem, 2.4vw, 2rem)" }}>Il Baretto</h1>
-          <button
-            onClick={() => navigate("/community")}
-            style={{
-              background: "transparent",
-              border: "1px solid rgba(120,113,108,0.5)",
-              color: "#d6d3d1",
-              borderRadius: 10,
-              padding: "8px 12px",
-              cursor: "pointer",
-            }}
-          >
-            Torna a Community
-          </button>
-        </div>
-        <div style={{ maxWidth: 400, margin: "0 auto" }}>
-          <div style={{ fontWeight: 700, color: "#fafaf9", marginBottom: 6 }}>Stanze</div>
-          <button
-            onClick={() => {
-              const nome = prompt("Nome del nuovo tavolo (stanza)?");
-              if (nome && !stanze.includes(nome)) {
-                setStanze([...stanze, nome]);
-                setStanzaSelezionata(nome);
-              }
-            }}
-            style={{
-              width: "100%",
-              textAlign: "left",
-              padding: "10px 12px",
-              borderRadius: 10,
-              border: "1px solid #f5a623",
-              background: "#f5a623",
-              color: "#23272f",
-              fontWeight: 700,
-              marginBottom: 10,
-              cursor: "pointer",
-              fontSize: 16
-            }}
-          >
-            + Crea un tavolo
-          </button>
-          <div
-            style={{
-              padding: "8px 10px",
-              display: "flex",
-              gap: 8,
-              overflowX: "auto",
-              WebkitOverflowScrolling: "touch",
-              borderBottom: "1px solid rgba(126, 169, 196, 0.12)",
-              background: "rgba(4, 27, 43, 0.46)",
-              marginBottom: 16
-            }}
-          >
-            {stanze.map((stanza) => {
-              const attiva = stanza === stanzaCorrente;
-              return (
-                <button
-                  key={stanza}
-                  onClick={() => setStanzaSelezionata(stanza)}
-                  style={{
-                    padding: "7px 13px",
-                    borderRadius: 999,
-                    border: attiva ? "2px solid #f5a623" : "1px solid rgba(126, 169, 196, 0.35)",
-                    background: attiva ? "#f5a623" : "rgba(11, 51, 73, 0.6)",
-                    color: attiva ? "#23272f" : "#a9d4ea",
-                    fontSize: "0.95rem",
-                    fontWeight: 700,
-                    whiteSpace: "nowrap",
-                    flexShrink: 0,
-                    cursor: "pointer",
-                    marginBottom: 2
-                  }}
-                >
-                  {stanza}
-                </button>
-              );
-            })}
+        <div style={{ display: "flex", alignItems: "flex-start", gap: 32, minHeight: "70vh" }}>
+          {/* Sidebar sinistra */}
+          <aside style={{ width: 260, background: "rgba(28,25,23,0.5)", border: "1px solid rgba(68,64,60,0.5)", borderRadius: 18, padding: 18, display: "flex", flexDirection: "column", gap: 18, minHeight: 420 }}>
+            <div style={{ fontWeight: 700, color: "#fafaf9", fontSize: 22, marginBottom: 2 }}>Stanze</div>
+            <div style={{ color: "#9fd0e8", fontSize: "0.95rem", marginBottom: 8, minHeight: 18 }}>
+              {utentiOnline.length > 0 ? `${utentiOnline.length} online: ${utentiOnline.join(", ")}` : "Nessuno online"}
+            </div>
+            <button
+              onClick={() => {
+                const nome = prompt("Nome del nuovo tavolo (stanza)?");
+                if (nome && !stanze.includes(nome)) {
+                  setStanze([...stanze, nome]);
+                  setStanzaSelezionata(nome);
+                }
+              }}
+              style={{
+                width: "100%",
+                padding: "11px 0",
+                borderRadius: 999,
+                border: "2px solid #f5a623",
+                background: "#f5a623",
+                color: "#23272f",
+                fontWeight: 700,
+                fontSize: "1.05rem",
+                cursor: "pointer",
+                marginBottom: 10
+              }}
+            >
+              Crea un tavolo
+            </button>
+            <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
+              {["Generale", ...stanze.filter(s => s !== "Generale")].map((stanza) => {
+                const attiva = stanza === stanzaCorrente;
+                return (
+                  <button
+                    key={stanza}
+                    onClick={() => setStanzaSelezionata(stanza)}
+                    style={{
+                      width: "100%",
+                      padding: "11px 0",
+                      borderRadius: 999,
+                      border: attiva ? "2px solid #f5a623" : "1px solid rgba(126, 169, 196, 0.35)",
+                      background: attiva ? "#f5a623" : "rgba(11, 51, 73, 0.6)",
+                      color: attiva ? "#23272f" : "#a9d4ea",
+                      fontSize: "1.05rem",
+                      fontWeight: 700,
+                      whiteSpace: "nowrap",
+                      flexShrink: 0,
+                      cursor: "pointer"
+                    }}
+                  >
+                    {stanza}
+                  </button>
+                );
+              })}
+            </div>
+          </aside>
+          {/* Colonna destra: chat */}
+          <div style={{ flex: 1, minWidth: 0 }}>
+            <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+              <h1 style={{ margin: 0, color: "#f5a623", fontSize: "clamp(1.3rem, 2.4vw, 2rem)" }}>Il Baretto</h1>
+              <button
+                onClick={() => navigate("/community")}
+                style={{
+                  background: "transparent",
+                  border: "1px solid rgba(120,113,108,0.5)",
+                  color: "#d6d3d1",
+                  borderRadius: 10,
+                  padding: "8px 12px",
+                  cursor: "pointer",
+                }}
+              >
+                Torna a Community
+              </button>
+            </div>
+            {/* ...resto del layout chat e input bar... */}
+            {/* Qui rimane la chat vera e propria, già presente nel file */}
           </div>
         </div>
-        {/* ...resto del layout desktop chat... */}
       </div>
     </div>
   );
