@@ -6,10 +6,9 @@ import { AROMATIC_FAMILY_OPTIONS, TASTE_PROFILE_OPTIONS } from "../lib/cocktailO
 
 const PREVIEW_BOX_SIZE = 280;
 
-export default function PannelloControllo() {
-  const { loading } = useUser();
 
-  const isAdmin = localStorage.getItem("isAdmin") === "true";
+export default function PannelloControllo() {
+  const { loading, isAdmin } = useUser();
 
   const [locali, setLocali] = useState<any[]>([]);
   const [utenti, setUtenti] = useState<any[]>([]);
