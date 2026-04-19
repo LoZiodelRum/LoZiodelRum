@@ -175,11 +175,15 @@ export default function Baretto() {
     );
   }
 
-  // Mostra solo utenti realmente online (last_active < 30s fa)
-  const utentiOnlineEffettivi = utentiOnline.filter(u => {
-    if (!u.last_active) return false;
-    const last = new Date(u.last_active).getTime();
-    return Date.now() - last < 30000;
+  // Mostra tutti gli utenti, ma pallino verde se online (<30s), grigio se "scollegato"
+  const now = Date.now();
+  const utentiOnlineEffettivi = utentiOnline.map(u => {
+    let stato = "offline";
+    if (u.last_active) {
+      const last = new Date(u.last_active).getTime();
+      stato = now - last < 30000 ? "online" : "offline";
+    }
+    return { ...u, stato };
   });
 
   return (
@@ -271,7 +275,8 @@ export default function Baretto() {
                 alignItems: "center",
                 gap: 8,
                 fontSize: 15,
-                color: "#e6e6e6",
+                color: utente.stato === "online" ? "#e6e6e6" : "#888",
+                opacity: utente.stato === "online" ? 1 : 0.6,
               }}
             >
               <span
@@ -280,7 +285,7 @@ export default function Baretto() {
                   width: 10,
                   height: 10,
                   borderRadius: 999,
-                  background: "#2ecc40",
+                  background: utente.stato === "online" ? "#2ecc40" : "#888",
                   marginRight: 4,
                   border: "1.5px solid #222",
                 }}
@@ -290,7 +295,7 @@ export default function Baretto() {
                   style={{
                     textDecoration: "underline",
                     cursor: "pointer",
-                    color: "#f5a623",
+                    color: utente.stato === "online" ? "#f5a623" : "#888",
                   }}
                   title="Vedi profilo utente"
                   onClick={() => navigate(`/profilo/${utente.id_utente}`)}
