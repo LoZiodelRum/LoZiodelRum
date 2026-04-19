@@ -7,7 +7,7 @@ const STANZA_DEFAULT = "Generale";
 
 export default function Baretto() {
   const navigate = useNavigate();
-  const { user, isAdmin } = useUser();
+  const { user } = useUser();
 
   const [stanze, setStanze] = useState<string[]>([STANZA_DEFAULT]);
   const [stanzaCorrente, setStanzaSelezionata] = useState<string>(STANZA_DEFAULT);
@@ -17,9 +17,7 @@ export default function Baretto() {
   const listaRef = useRef<HTMLDivElement>(null);
 
   let nomeUtenteCorrente = "Anonimo";
-  if (isAdmin) {
-    nomeUtenteCorrente = "Lo Zio";
-  } else if (user?.user_metadata?.username && !user?.user_metadata?.username.includes("@")) {
+  if (user?.user_metadata?.username && !user?.user_metadata?.username.includes("@")) {
     nomeUtenteCorrente = user.user_metadata.username;
   } else if (user?.user_metadata?.username && user?.user_metadata?.username.includes("@")) {
     nomeUtenteCorrente = user.user_metadata.username.split("@")[0];
@@ -34,13 +32,14 @@ export default function Baretto() {
   }
 
   // PRESENZA: upsert presenza all'ingresso, rimuovi all'uscita, ascolta realtime
+  const [errorePresenzaAdmin, setErrorePresenzaAdmin] = useState<string | null>(null);
   useEffect(() => {
-    // Se non autenticato e non admin, non fare nulla
-    if (!user && !isAdmin) return;
+    // Se non autenticato, non fare nulla
+    if (!user) return;
 
     let stopped = false;
-    const id_utente = isAdmin && (!user?.id) ? "admin-local" : user?.id;
-    const username = isAdmin ? "Lo Zio" : nomeUtenteCorrente;
+    const id_utente = user?.id;
+    const username = nomeUtenteCorrente;
 
     async function upsertPresenza() {
       const presenza = {
@@ -53,29 +52,28 @@ export default function Baretto() {
       const { error, data } = await supabase
         .from("baretto_presenze")
         .upsert([presenza], { onConflict: "id_utente,stanza" });
-      if (error) console.error("Errore upsert presenza:", error);
-      else console.log("Risposta upsert presenza:", data);
+      if (error) {
+        setErrorePresenzaAdmin("Errore presenza: " + (error.message || JSON.stringify(error)));
+        console.error("ERRORE UPSERT PRESENZA:", error);
+      } else {
+        setErrorePresenzaAdmin(null);
+        console.log("Risposta upsert presenza:", data);
+      }
     }
 
-    // Primo inserimento
     upsertPresenza();
-
-    // Heartbeat ogni 20 secondi
     const interval = setInterval(() => {
       if (!stopped) upsertPresenza();
     }, 20000);
-
-    // Rimuovi presenza all'uscita
     return () => {
       stopped = true;
       clearInterval(interval);
       if (id_utente) {
-        console.log("DELETE presenza su Supabase", id_utente, stanzaCorrente);
         supabase.from("baretto_presenze").delete().eq("id_utente", id_utente).eq("stanza", stanzaCorrente);
       }
     };
     // eslint-disable-next-line
-  }, [user, isAdmin, stanzaCorrente]);
+  }, [user, stanzaCorrente]);
 
   // Carica presenze e aggiorna in realtime
   useEffect(() => {
@@ -102,13 +100,20 @@ export default function Baretto() {
   }, [stanzaCorrente]);
 
   // Carica messaggi all'avvio
+  const [erroreLetturaMessaggi, setErroreLetturaMessaggi] = useState<string | null>(null);
   useEffect(() => {
     async function fetchMessaggi() {
-      const { data } = await supabase
+      const { data, error } = await supabase
         .from("baretto_messaggi")
         .select("*")
         .order("created_at", { ascending: true });
-      if (data) setMessaggi(data);
+      if (error) {
+        setErroreLetturaMessaggi("Errore lettura messaggi: " + (error.message || JSON.stringify(error)));
+        console.error("ERRORE LETTURA MESSAGGI:", error);
+      } else {
+        setErroreLetturaMessaggi(null);
+        if (data) setMessaggi(data);
+      }
     }
     fetchMessaggi();
   }, []);
@@ -128,7 +133,8 @@ export default function Baretto() {
     };
   }, []);
 
-  function inviaMessaggio(e: any) {
+  const [erroreInvioMessaggio, setErroreInvioMessaggio] = useState<string | null>(null);
+  async function inviaMessaggio(e: any) {
     e.preventDefault();
     if (!testoNuovo.trim()) return;
     const nuovo = {
@@ -139,14 +145,20 @@ export default function Baretto() {
       username: nomeUtenteCorrente,
     };
     // Salva su Supabase
-    supabase.from("baretto_messaggi").insert({
-      testo: testoNuovo,
-      id_utente: user?.id,
-      username: nomeUtenteCorrente,
+    const { error } = await supabase.from("baretto_messaggi").insert({
+      testo: nuovo.testo,
+      id_utente: nuovo.id_utente,
+      username: nuovo.username,
       created_at: nuovo.created_at,
-      stanza: stanzaCorrente,
+      stanza: nuovo.stanza,
     });
-    setTestoNuovo("");
+    if (error) {
+      setErroreInvioMessaggio("Errore invio messaggio: " + (error.message || JSON.stringify(error)));
+      console.error("ERRORE INVIO MESSAGGIO:", error);
+    } else {
+      setErroreInvioMessaggio(null);
+      setTestoNuovo("");
+    }
   }
 
   function formattaOra(iso: string) {
@@ -154,7 +166,7 @@ export default function Baretto() {
     return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
   }
 
-  if (!user?.id && !isAdmin) {
+  if (!user?.id) {
     return (
       <div style={{ color: '#fff', background: '#181818', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, textAlign: 'center' }}>
         Devi accedere per usare la chat.<br />
@@ -167,9 +179,25 @@ export default function Baretto() {
   const utentiOnlineEffettivi = utentiOnline;
 
   return (
-    <div style={{ display: "flex", flexDirection: typeof window !== "undefined" && window.innerWidth < 800 ? "column" : "row", minHeight: "100vh", width: "100%", height: "100%" }}>
-      <aside
-        style={{
+    <>
+      {errorePresenzaAdmin && (
+        <div style={{background: '#ff0000', color: '#fff', padding: 12, textAlign: 'center', fontWeight: 700}}>
+          {errorePresenzaAdmin}
+        </div>
+      )}
+      {erroreInvioMessaggio && (
+        <div style={{background: '#ff0000', color: '#fff', padding: 12, textAlign: 'center', fontWeight: 700}}>
+          {erroreInvioMessaggio}
+        </div>
+      )}
+      {erroreLetturaMessaggi && (
+        <div style={{background: '#ff0000', color: '#fff', padding: 12, textAlign: 'center', fontWeight: 700}}>
+          {erroreLetturaMessaggi}
+        </div>
+      )}
+      <div style={{ display: "flex", flexDirection: typeof window !== "undefined" && window.innerWidth < 800 ? "column" : "row", minHeight: "100vh", width: "100%", height: "100%" }}>
+        <aside
+          style={{
           width: typeof window !== "undefined" && window.innerWidth < 800 ? "88vw" : 270, // ancora più stretto
           background: "rgba(28,25,23,0.5)",
           border: "1px solid rgba(68,64,60,0.5)",
@@ -458,7 +486,8 @@ export default function Baretto() {
           </button>
 
         </form>
-      </main>
-    </div>
+        </main>
+      </div>
+    </>
   );
 }

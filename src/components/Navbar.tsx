@@ -113,47 +113,7 @@ export default function Navbar() {
         <Link to="/community" style={linkStyle("/community")}>Community</Link>
         <Link to="/crea" style={linkStyle("/crea")}>Crea</Link>
 
-        {isAdmin && (
-          <Link to="/admin" style={{ ...linkStyle("/admin"), color: "#f5a623", fontWeight: 700 }}>
-            Pannello di Controllo
-          </Link>
-        )}
-
-        {!isAdmin ? (
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              e.stopPropagation();
-              setShowAdmin(true);
-              closeMobileMenu();
-            }}
-            style={{
-              background: "none",
-              border: "none",
-              color: "#f5a623",
-              fontSize: "20px",
-              cursor: "pointer",
-              padding: 0,
-            }}
-          >
-            🔑
-          </button>
-        ) : (
-          <button
-            onClick={logoutAdmin}
-            style={{
-              background: "#f5a623",
-              border: "none",
-              padding: "6px 12px",
-              borderRadius: "6px",
-              cursor: "pointer",
-              fontWeight: "bold",
-              color: "#111",
-            }}
-          >
-            Esci
-          </button>
-        )}
+        {/* ...nessun pulsante admin/chiave... */}
 
         {user && (
           <button
@@ -217,47 +177,7 @@ export default function Navbar() {
         <Link to="/community" onClick={closeMobileMenu} style={{ ...linkStyle("/community"), padding: "12px 0", borderBottom: "1px solid #333" }}>Community</Link>
         <Link to="/crea" onClick={closeMobileMenu} style={{ ...linkStyle("/crea"), padding: "12px 0", borderBottom: "1px solid #333" }}>Crea</Link>
 
-        {isAdmin && (
-          <Link to="/admin" onClick={closeMobileMenu} style={{ color: "#f5a623", fontWeight: 700, textDecoration: "none", padding: "12px 0", borderBottom: "1px solid #333" }}>
-            Pannello di Controllo
-          </Link>
-        )}
-
-        {!isAdmin ? (
-          <button
-            onClick={() => {
-              setShowAdmin(true);
-              closeMobileMenu();
-            }}
-            style={{
-              marginTop: "14px",
-              background: "none",
-              border: "1px solid #f5a623",
-              color: "#f5a623",
-              borderRadius: "8px",
-              padding: "10px 12px",
-              cursor: "pointer",
-            }}
-          >
-            Accesso Admin
-          </button>
-        ) : (
-          <button
-            onClick={logoutAdmin}
-            style={{
-              marginTop: "14px",
-              background: "#f5a623",
-              border: "none",
-              color: "#111",
-              borderRadius: "8px",
-              padding: "10px 12px",
-              cursor: "pointer",
-              fontWeight: "bold",
-            }}
-          >
-            Esci Admin
-          </button>
-        )}
+        {/* ...nessun pulsante admin/chiave nel menu mobile... */}
 
         {user && (
           <button
@@ -277,74 +197,7 @@ export default function Navbar() {
         )}
       </div>
 
-      {showAdmin && (
-        <div
-          className="admin-modal"
-          style={{
-            position: "absolute",
-            top: "70px",
-            right: "max(16px, 3vw)",
-            width: "min(92vw, 200px)",
-            background: "#111",
-            padding: "20px",
-            borderRadius: "10px",
-            zIndex: 1200,
-            boxShadow: "0 0 10px rgba(0,0,0,0.6)",
-          }}
-        >
-          <input
-            type="password"
-            placeholder="Password Amministratore"
-            value={adminPass}
-            onChange={(e) => setAdminPass(e.target.value)}
-            style={{
-              padding: "10px",
-              marginBottom: "10px",
-              width: "100%",
-              borderRadius: "6px",
-              border: "none",
-              display: "block",
-              margin: "0 auto 10px auto",
-              fontSize: "12px",
-            }}
-          />
-
-          <div
-            style={{
-              display: "flex",
-              gap: "10px",
-              justifyContent: "center",
-            }}
-          >
-            <button
-              onClick={() => setShowAdmin(false)}
-              style={{
-                padding: "6px 10px",
-                borderRadius: "6px",
-                border: "none",
-                cursor: "pointer",
-              }}
-            >
-              Annulla
-            </button>
-
-            <button
-              onClick={checkAdmin}
-              style={{
-                padding: "6px 10px",
-                borderRadius: "6px",
-                border: "none",
-                background: "#f5a623",
-                color: "#111",
-                cursor: "pointer",
-                fontWeight: "bold",
-              }}
-            >
-              Ok
-            </button>
-          </div>
-        </div>
-      )}
+      {/* ...modale admin rimossa... */}
     </nav>
   );
 }
