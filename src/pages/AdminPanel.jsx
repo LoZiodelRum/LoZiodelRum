@@ -384,11 +384,7 @@ function UserFullCard({ user, refresh }) {
     refresh();
   }
 
-  async function approva() {
-    const { error } = await supabase.from("Profili").update({ stato: "approvato" }).eq("id", edit.id);
-    if (error) console.error("Errore approva Utente:", error);
-    refresh();
-  }
+
 
   async function elimina() {
     if (!confirm("Eliminare utente?")) return;
@@ -405,7 +401,6 @@ function UserFullCard({ user, refresh }) {
       <input name="email" value={edit.email || ""} onChange={change} placeholder="Email utente" style={input} />
 
       <div style={actions}>
-        <button style={green} onClick={approva}>Approva</button>
         <button style={blue} onClick={salva}>Salva</button>
         <button style={red} onClick={elimina}>Cancella</button>
       </div>
