@@ -1938,20 +1938,7 @@ export default function PannelloControllo() {
           <div style={kpiCardStyle}><span style={kpiLabelStyle}>Articoli</span> <strong>{kpi.articoli}</strong></div>
         </div>
 
-        <div style={approvalBoxStyle}>
-          <h3 style={{ fontSize: "1rem", color: "#f59e0b", marginBottom: 10 }}>Approvazioni pendenti</h3>
-          {utenti.filter(u => !u.approvato).map(u => (
-            <div key={u.id} style={approvalRowStyle}>
-              <span style={{ fontSize: "0.9rem" }}>{u.username} ({u.ruolo})</span>
-              <button style={btnApproveStyle} onClick={() => toggleApprovazione(u)}>
-                Approva
-              </button>
-            </div>
-          ))}
-          {utenti.filter(u => !u.approvato).length === 0 && (
-            <p style={{ fontSize: "0.8rem", color: "#666" }}>Nessun utente da approvare.</p>
-          )}
-        </div>
+
 
         <div style={quickActionGridStyle}>
           <div style={quickActionCardStyle}>
