@@ -289,7 +289,7 @@ export default function Baretto() {
                     color: "#f5a623",
                   }}
                   title="Vedi profilo utente"
-                  onClick={() => navigate(`/user/${utente.id_utente}`)}
+                  onClick={() => navigate(`/profilo/${utente.id_utente}`)}
                 >
                   {utente.username}
                 </span>
