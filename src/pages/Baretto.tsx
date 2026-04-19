@@ -508,4 +508,4 @@ export default function Baretto() {
       </div>
     </>
   );
-}console.log(utentiOnlineEffettivi)
+}
