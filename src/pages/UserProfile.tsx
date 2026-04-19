@@ -3,96 +3,178 @@ import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useParams } from "react-router-dom";
 
+// Opzioni per i menu a tendina
+const GENERE_OPTIONS = ["Maschio", "Femmina", "Altro"];
+const RUOLO_OPTIONS = ["utente", "bartender", "proprietario", "admin"];
+const INTENSITA_OPTIONS = ["Leggera", "Media", "Forte"];
+const PROFILO_GUSTATIVO_OPTIONS = ["Dolce", "Secco", "Aromatico", "Fruttato", "Speziato", "Erbaceo", "Altro"];
+const FAMIGLIA_AROMATICA_OPTIONS = ["Floreale", "Fruttata", "Speziata", "Erbacea", "Altro"];
+const METODO_CONSUMO_OPTIONS = ["Liscio", "On the rocks", "Cocktail", "Shot", "Altro"];
+
 export default function UserProfile() {
   const { id } = useParams();
+
   const [user, setUser] = useState<any>(null);
+  const [form, setForm] = useState<any>({});
+  const [loading, setLoading] = useState(true);
+  const [saving, setSaving] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
   useEffect(() => {
     if (id) loadUser();
+    // eslint-disable-next-line
   }, [id]);
 
   async function loadUser() {
+    setLoading(true);
     const { data, error } = await supabase
       .from("Profili")
       .select("*")
       .eq("id", id)
       .single();
-
     if (error) {
-      console.error("Errore user:", error);
+      setError("Errore nel caricamento del profilo: " + error.message);
+      setLoading(false);
       return;
     }
-
     setUser(data);
+    setForm(data);
+    setLoading(false);
   }
 
-  if (!user) return <div className="page fade-in">Caricamento...</div>;
+  function handleChange(e: any) {
+    const { name, value, type, checked } = e.target;
+    setForm((prev: any) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
+  }
+
+  async function handleSave(e: any) {
+    e.preventDefault();
+    setSaving(true);
+    setError(null);
+    setSuccess(null);
+    // Rimuovi chiavi non colonne
+    const toSave = { ...form };
+    delete toSave.id;
+    delete toSave.created_at;
+    const { error } = await supabase
+      .from("Profili")
+      .update(toSave)
+      .eq("id", id);
+    if (error) {
+      setError("Errore nel salvataggio: " + error.message);
+    } else {
+      setSuccess("Profilo aggiornato con successo!");
+      loadUser();
+    }
+    setSaving(false);
+  }
+
+  if (loading) return <div className="page fade-in">Caricamento...</div>;
+
+  // Lista di tutti i campi da mostrare (aggiornata con i campi SQL)
+  const fields = [
+    { name: "nome", label: "Nome" },
+    { name: "cognome", label: "Cognome" },
+    { name: "username", label: "Username" },
+    { name: "email", label: "Email" },
+    { name: "telefono", label: "Telefono" },
+    { name: "paese", label: "Paese" },
+    { name: "genere", label: "Genere", type: "select", options: GENERE_OPTIONS },
+    { name: "ruolo", label: "Ruolo", type: "select", options: RUOLO_OPTIONS },
+    { name: "bio_breve", label: "Bio breve", type: "textarea" },
+    { name: "distillato_preferito", label: "Distillato preferito" },
+    { name: "cocktail_preferito", label: "Cocktail preferito" },
+    { name: "intensita_preferita", label: "Intensità preferita", type: "select", options: INTENSITA_OPTIONS },
+    { name: "profilo_gustativo_preferito", label: "Profilo gustativo preferito", type: "select", options: PROFILO_GUSTATIVO_OPTIONS },
+    { name: "famiglia_aromatica_preferita", label: "Famiglia aromatica preferita", type: "select", options: FAMIGLIA_AROMATICA_OPTIONS },
+    { name: "metodo_consumo_preferito", label: "Metodo consumo preferito", type: "select", options: METODO_CONSUMO_OPTIONS },
+    { name: "numero_recensioni", label: "Numero recensioni", type: "number" },
+    { name: "numero_locali_visitati", label: "N. locali visitati", type: "number" },
+    { name: "numero_cocktail_creati", label: "N. cocktail creati", type: "number" },
+    { name: "instagram", label: "Instagram" },
+    { name: "tiktok", label: "TikTok" },
+    { name: "sito_web", label: "Sito web" },
+    { name: "esperienza_anni", label: "Esperienza (anni)", type: "number" },
+    { name: "certificazioni", label: "Certificazioni" },
+    { name: "menu_caricato", label: "Menu caricato" },
+    { name: "indirizzo_locale", label: "Indirizzo locale" },
+    { name: "citta_locale", label: "Città locale" },
+    { name: "partita_iva", label: "Partita IVA" },
+    { name: "numero_dipendenti", label: "N. dipendenti", type: "number" },
+    { name: "descrizione_locale", label: "Descrizione locale", type: "textarea" },
+  ];
 
   return (
     <div className="page fade-in">
       <div style={card}>
-
-        {/* HEADER */}
-        <div style={header}>
-          <img
-            src={user.avatar_url || "https://via.placeholder.com/120"}
-            style={avatar}
-          />
-
-          <div>
-            <h1 style={name}>
-              {user.nome || ""} {user.cognome || ""}
-            </h1>
-            <p style={username}>@{user.username || "user"}</p>
-            <p style={role}>{user.ruolo || "utente"}</p>
+        <h2 style={{ color: "#f5a623", marginBottom: 20 }}>Profilo Utente</h2>
+        {error && <div style={{ color: "#f55", marginBottom: 10 }}>{error}</div>}
+        {success && <div style={{ color: "#2ecc40", marginBottom: 10 }}>{success}</div>}
+        <form onSubmit={handleSave}>
+          <div style={{ display: "flex", flexWrap: "wrap", gap: 24 }}>
+            {fields.map((field) => (
+              <div key={field.name} style={{ flex: "1 1 320px", minWidth: 220 }}>
+                <label style={{ color: "#fff", fontWeight: 500 }}>
+                  {field.label}
+                  {field.type === "select" ? (
+                    <select
+                      name={field.name}
+                      value={form[field.name] || ""}
+                      onChange={handleChange}
+                      style={{ width: "100%", padding: 8, borderRadius: 6, marginTop: 4 }}
+                    >
+                      <option value="">Seleziona...</option>
+                      {field.options.map((opt: string) => (
+                        <option key={opt} value={opt}>{opt}</option>
+                      ))}
+                    </select>
+                  ) : field.type === "textarea" ? (
+                    <textarea
+                      name={field.name}
+                      value={form[field.name] || ""}
+                      onChange={handleChange}
+                      style={{ width: "100%", padding: 8, borderRadius: 6, marginTop: 4, minHeight: 60 }}
+                    />
+                  ) : (
+                    <input
+                      type={field.type || "text"}
+                      name={field.name}
+                      value={form[field.name] || ""}
+                      onChange={handleChange}
+                      style={{ width: "100%", padding: 8, borderRadius: 6, marginTop: 4 }}
+                    />
+                  )}
+                </label>
+              </div>
+            ))}
           </div>
-        </div>
-
-        {/* BIO */}
-        {user.bio_breve && (
-          <p style={bio}>{user.bio_breve}</p>
-        )}
-
-        {/* INFO BASE */}
-        <div style={section}>
-          <h3 style={sectionTitle}>Info</h3>
-          <p style={row}>Email: {user.email || ''}</p>
-          <p style={row}>Telefono: {user.telefono || ''}</p>
-          <p style={row}>Città: {user.city || ''}</p>
-        </div>
-
-        {/* BARTENDER */}
-        {user.ruolo === "bartender" && (
-          <div style={section}>
-            <h3 style={sectionTitle}>Profilo Bartender</h3>
-            <p style={row}>Esperienze: {user.esperienze_principali || ''}</p>
-            <p style={row}>Specialità: {user.specialita || ''}</p>
-            <p style={row}>Postazione: {user.postazione_attuale || ''}</p>
-          </div>
-        )}
-
-        {/* PROPRIETARIO */}
-        {user.ruolo === "proprietario" && (
-          <div style={section}>
-            <h3 style={sectionTitle}>Locale</h3>
-            <p style={row}>Città operativa: {user.citta_operativa || ''}</p>
-            <p style={row}>Social: {user.social_links || ''}</p>
-          </div>
-        )}
-
-        {/* GAMIFICATION */}
-        <div style={section}>
-          <h3 style={sectionTitle}>Attività</h3>
-
-          <p style={row}>Level: {user.level || 0}</p>
-          <p style={row}>Points: {user.points || 0}</p>
-        </div>
-
+          <button
+            type="submit"
+            disabled={saving}
+            style={{
+              marginTop: 30,
+              background: "#f5a623",
+              color: "#181818",
+              border: "none",
+              borderRadius: 8,
+              padding: "12px 32px",
+              fontWeight: 700,
+              fontSize: 18,
+              cursor: saving ? "not-allowed" : "pointer",
+              opacity: saving ? 0.7 : 1,
+            }}
+          >
+            {saving ? "Salvataggio..." : "Salva"}
+          </button>
+        </form>
       </div>
     </div>
   );
 }
-
 /* STILI */
 
 const card = {
