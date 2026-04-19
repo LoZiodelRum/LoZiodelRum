@@ -177,6 +177,7 @@ export default function Baretto() {
 
   // Mostra tutti gli utenti, ma pallino verde se online (<30s), grigio se "scollegato"
   const now = Date.now();
+  const [utenteOfflineSelezionato, setUtenteOfflineSelezionato] = useState<string|null>(null);
   const utentiOnlineEffettivi = utentiOnline.map(u => {
     let stato = "offline";
     if (u.last_active) {
@@ -295,39 +296,50 @@ export default function Baretto() {
                   <span
                     style={{
                       textDecoration: "underline",
-                      cursor: "pointer",
+                      cursor: utente.stato === "offline" ? "pointer" : "pointer",
                       color: utente.stato === "online" ? "#f5a623" : "#888",
                     }}
-                    title="Vedi profilo utente"
-                    onClick={() => navigate(`/profilo/${utente.id_utente}`)}
+                    title={utente.stato === "offline" ? "Clicca per mostrare elimina" : "Vedi profilo utente"}
+                    onClick={() => {
+                      if (utente.stato === "offline") {
+                        setUtenteOfflineSelezionato(
+                          utente.id_utente + "_" + utente.stanza
+                        );
+                      } else {
+                        navigate(`/profilo/${utente.id_utente}`);
+                      }
+                    }}
                   >
                     {utente.username}
                   </span>
-                  {utente.stato === "offline" && (
-                    <button
-                      style={{
-                        marginLeft: 8,
-                        background: "#222",
-                        color: "#f55",
-                        border: "1px solid #f55",
-                        borderRadius: 6,
-                        padding: "2px 8px",
-                        fontSize: 13,
-                        cursor: "pointer",
-                      }}
-                      title="Elimina presenza utente offline"
-                      onClick={async (e) => {
-                        e.stopPropagation();
-                        await supabase
-                          .from("baretto_presenze")
-                          .delete()
-                          .eq("id_utente", utente.id_utente)
-                          .eq("stanza", utente.stanza);
-                      }}
-                    >
-                      Elimina
-                    </button>
-                  )}
+                  {utente.stato === "offline" &&
+                    utenteOfflineSelezionato ===
+                      utente.id_utente + "_" + utente.stanza && (
+                      <button
+                        style={{
+                          marginLeft: 8,
+                          background: "#222",
+                          color: "#f55",
+                          border: "1px solid #f55",
+                          borderRadius: 6,
+                          padding: "2px 8px",
+                          fontSize: 13,
+                          cursor: "pointer",
+                        }}
+                        title="Elimina presenza utente offline"
+                        onClick={async (e) => {
+                          e.stopPropagation();
+                          await supabase
+                            .from("baretto_presenze")
+                            .delete()
+                            .eq("id_utente", utente.id_utente)
+                            .eq("stanza", utente.stanza);
+                          setUtenteOfflineSelezionato(null);
+                        }}
+                      >
+                        Elimina
+                      </button>
+                    )}
                 </>
               ) : (
                 <span>{utente.username}</span>
