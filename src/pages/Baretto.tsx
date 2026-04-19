@@ -296,17 +296,18 @@ export default function Baretto() {
                   <span
                     style={{
                       textDecoration: "underline",
-                      cursor: utente.stato === "offline" ? "pointer" : "pointer",
+                      cursor: "pointer",
                       color: utente.stato === "online" ? "#f5a623" : "#888",
                     }}
-                    title={utente.stato === "offline" ? "Clicca per mostrare elimina" : "Vedi profilo utente"}
+                    title="Vedi profilo utente"
                     onClick={() => {
+                      navigate(`/profilo/${utente.id_utente}`);
                       if (utente.stato === "offline") {
                         setUtenteOfflineSelezionato(
                           utente.id_utente + "_" + utente.stanza
                         );
                       } else {
-                        navigate(`/profilo/${utente.id_utente}`);
+                        setUtenteOfflineSelezionato(null);
                       }
                     }}
                   >
