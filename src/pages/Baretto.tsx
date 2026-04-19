@@ -177,6 +177,10 @@ export default function Baretto() {
 
   // Nessuna aggiunta locale: la presenza admin ora è reale su Supabase
   const utentiOnlineEffettivi = utentiOnline;
+  // DEBUG: log temporaneo per capire la struttura degli utenti online
+  if (typeof window !== 'undefined') {
+    console.log('utentiOnlineEffettivi', utentiOnlineEffettivi);
+  }
 
   return (
     <>
@@ -504,4 +508,4 @@ export default function Baretto() {
       </div>
     </>
   );
-}
+}console.log(utentiOnlineEffettivi)
