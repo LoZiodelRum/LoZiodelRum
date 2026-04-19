@@ -98,7 +98,10 @@ export default function Navbar() {
         <Link to="/community" style={linkStyle("/community")}>Community</Link>
         <Link to="/crea" style={linkStyle("/crea")}>Crea</Link>
 
-        {/* ...nessun pulsante admin/chiave... */}
+        {/* Mostra il pannello di controllo solo se admin */}
+        {isAdmin && (
+          <Link to="/admin" style={linkStyle("/admin")}>Pannello di Controllo</Link>
+        )}
 
         {user && (
           <button
@@ -162,7 +165,10 @@ export default function Navbar() {
         <Link to="/community" onClick={closeMobileMenu} style={{ ...linkStyle("/community"), padding: "12px 0", borderBottom: "1px solid #333" }}>Community</Link>
         <Link to="/crea" onClick={closeMobileMenu} style={{ ...linkStyle("/crea"), padding: "12px 0", borderBottom: "1px solid #333" }}>Crea</Link>
 
-        {/* ...nessun pulsante admin/chiave nel menu mobile... */}
+        {/* Mostra il pannello di controllo solo se admin (mobile) */}
+        {isAdmin && (
+          <Link to="/admin" onClick={closeMobileMenu} style={{ ...linkStyle("/admin"), padding: "12px 0", borderBottom: "1px solid #333" }}>Pannello di Controllo</Link>
+        )}
 
         {user && (
           <button
