@@ -7,7 +7,7 @@ const STANZA_DEFAULT = "Generale";
 
 export default function Baretto() {
   const navigate = useNavigate();
-  const { user } = useUser();
+  const { user, isAdmin } = useUser();
 
   const [stanze, setStanze] = useState<string[]>([STANZA_DEFAULT]);
   const [stanzaCorrente, setStanzaSelezionata] = useState<string>(STANZA_DEFAULT);
@@ -281,7 +281,21 @@ export default function Baretto() {
                   border: "1.5px solid #222",
                 }}
               />
-              <span>{utente.username}</span>
+              {isAdmin ? (
+                <span
+                  style={{
+                    textDecoration: "underline",
+                    cursor: "pointer",
+                    color: "#f5a623",
+                  }}
+                  title="Vedi profilo utente"
+                  onClick={() => navigate(`/user/${utente.id_utente}`)}
+                >
+                  {utente.username}
+                </span>
+              ) : (
+                <span>{utente.username}</span>
+              )}
             </div>
           ))}
         </div>
