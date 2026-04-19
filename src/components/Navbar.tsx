@@ -37,22 +37,7 @@ export default function Navbar() {
     window.location.reload();
   }
 
-  function checkAdmin() {
-    if (loginAdminWithKey(adminPass)) {
-      setShowAdmin(false);
-      closeMobileMenu();
-      setAdminPass("");
-      navigate("/admin");
-    } else {
-      alert("Password errata");
-    }
-  }
-
-  function logoutAdmin() {
-    logoutAdminKey();
-    closeMobileMenu();
-    navigate("/");
-  }
+  // Funzioni admin rimosse definitivamente
 
   return (
     <nav
