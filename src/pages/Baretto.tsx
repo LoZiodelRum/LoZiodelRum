@@ -175,12 +175,12 @@ export default function Baretto() {
     );
   }
 
-  // Nessuna aggiunta locale: la presenza admin ora è reale su Supabase
-  const utentiOnlineEffettivi = utentiOnline;
-  // DEBUG: log temporaneo per capire la struttura degli utenti online
-  if (typeof window !== 'undefined') {
-    console.log('utentiOnlineEffettivi', utentiOnlineEffettivi);
-  }
+  // Mostra solo utenti realmente online (last_active < 30s fa)
+  const utentiOnlineEffettivi = utentiOnline.filter(u => {
+    if (!u.last_active) return false;
+    const last = new Date(u.last_active).getTime();
+    return Date.now() - last < 30000;
+  });
 
   return (
     <>
