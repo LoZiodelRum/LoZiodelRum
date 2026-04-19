@@ -2,13 +2,17 @@ import "../App.css";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useParams } from "react-router-dom";
+import {
+  TASTE_PROFILE_OPTIONS,
+  AROMATIC_FAMILY_OPTIONS,
+} from "../lib/cocktailOptionSets";
 
-// Opzioni per i menu a tendina
+// Opzioni per i menu a tendina (coerenti con la creazione cocktail)
 const GENERE_OPTIONS = ["Maschio", "Femmina", "Altro"];
 const RUOLO_OPTIONS = ["utente", "bartender", "proprietario", "admin"];
-const INTENSITA_OPTIONS = ["Leggera", "Media", "Forte"];
-const PROFILO_GUSTATIVO_OPTIONS = ["Dolce", "Secco", "Aromatico", "Fruttato", "Speziato", "Erbaceo", "Altro"];
-const FAMIGLIA_AROMATICA_OPTIONS = ["Floreale", "Fruttata", "Speziata", "Erbacea", "Altro"];
+const INTENSITA_OPTIONS = ["Leggera", "Media", "Forte", "Molto forte"];
+const PROFILO_GUSTATIVO_OPTIONS = Array.from(TASTE_PROFILE_OPTIONS);
+const FAMIGLIA_AROMATICA_OPTIONS = Array.from(AROMATIC_FAMILY_OPTIONS);
 const METODO_CONSUMO_OPTIONS = ["Liscio", "On the rocks", "Cocktail", "Shot", "Altro"];
 
 export default function UserProfile() {
