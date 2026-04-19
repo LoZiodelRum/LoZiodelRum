@@ -56,43 +56,27 @@ export default function UserProfile() {
         {/* INFO BASE */}
         <div style={section}>
           <h3 style={sectionTitle}>Info</h3>
-
-          {user.email && <p style={row}>Email: {user.email}</p>}
-          {user.telefono && <p style={row}>Telefono: {user.telefono}</p>}
-          {user.city && <p style={row}>Città: {user.city}</p>}
+          <p style={row}>Email: {user.email || ''}</p>
+          <p style={row}>Telefono: {user.telefono || ''}</p>
+          <p style={row}>Città: {user.city || ''}</p>
         </div>
 
         {/* BARTENDER */}
         {user.ruolo === "bartender" && (
           <div style={section}>
             <h3 style={sectionTitle}>Profilo Bartender</h3>
-
-            {user.esperienze_principali && (
-              <p style={row}>Esperienze: {user.esperienze_principali}</p>
-            )}
-
-            {user.specialita && (
-              <p style={row}>Specialità: {user.specialita}</p>
-            )}
-
-            {user.postazione_attuale && (
-              <p style={row}>Postazione: {user.postazione_attuale}</p>
-            )}
+            <p style={row}>Esperienze: {user.esperienze_principali || ''}</p>
+            <p style={row}>Specialità: {user.specialita || ''}</p>
+            <p style={row}>Postazione: {user.postazione_attuale || ''}</p>
           </div>
         )}
 
         {/* PROPRIETARIO */}
-        {user.ruolo === "proprietario" && ( // ✅ FIX QUI
+        {user.ruolo === "proprietario" && (
           <div style={section}>
             <h3 style={sectionTitle}>Locale</h3>
-
-            {user.citta_operativa && (
-              <p style={row}>Città operativa: {user.citta_operativa}</p>
-            )}
-
-            {user.social_links && (
-              <p style={row}>Social: {user.social_links}</p>
-            )}
+            <p style={row}>Città operativa: {user.citta_operativa || ''}</p>
+            <p style={row}>Social: {user.social_links || ''}</p>
           </div>
         )}
 
