@@ -24,7 +24,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [role, setRole] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  // RIMOSSA logica admin key/password
+  // Logica admin key/password rimossa
 
   async function checkUser() {
     const {
@@ -90,22 +90,12 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   }
 
   useEffect(() => {
-    // Backfill cached admin password for old sessions created before this key was introduced.
-    if (
-      localStorage.getItem(ADMIN_SESSION_KEY) === "true" &&
-      !localStorage.getItem(ADMIN_PASSWORD_CACHE_KEY)
-    ) {
-      localStorage.setItem(ADMIN_PASSWORD_CACHE_KEY, ADMIN_PASSWORD);
-    }
-
     checkUser();
-
     const {
       data: { subscription },
     } = supabase.auth.onAuthStateChange(() => {
       checkUser();
     });
-
     return () => {
       subscription.unsubscribe();
     };
@@ -123,8 +113,6 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         loading,
         isAuthenticated,
         isAdmin,
-        loginAdminWithKey,
-        logoutAdminKey,
       }}
     >
       {children}
