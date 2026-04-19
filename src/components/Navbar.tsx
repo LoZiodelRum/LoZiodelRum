@@ -5,7 +5,7 @@ import { supabase } from "../lib/supabaseClient";
 import { useState } from "react";
 
 export default function Navbar() {
-  const { user, isAdmin, loginAdminWithKey, logoutAdminKey } = useUser();
+  const { user, isAdmin } = useUser();
   const navigate = useNavigate();
   const location = useLocation();
 
