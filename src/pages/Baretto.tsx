@@ -291,17 +291,44 @@ export default function Baretto() {
                 }}
               />
               {isAdmin ? (
-                <span
-                  style={{
-                    textDecoration: "underline",
-                    cursor: "pointer",
-                    color: utente.stato === "online" ? "#f5a623" : "#888",
-                  }}
-                  title="Vedi profilo utente"
-                  onClick={() => navigate(`/profilo/${utente.id_utente}`)}
-                >
-                  {utente.username}
-                </span>
+                <>
+                  <span
+                    style={{
+                      textDecoration: "underline",
+                      cursor: "pointer",
+                      color: utente.stato === "online" ? "#f5a623" : "#888",
+                    }}
+                    title="Vedi profilo utente"
+                    onClick={() => navigate(`/profilo/${utente.id_utente}`)}
+                  >
+                    {utente.username}
+                  </span>
+                  {utente.stato === "offline" && (
+                    <button
+                      style={{
+                        marginLeft: 8,
+                        background: "#222",
+                        color: "#f55",
+                        border: "1px solid #f55",
+                        borderRadius: 6,
+                        padding: "2px 8px",
+                        fontSize: 13,
+                        cursor: "pointer",
+                      }}
+                      title="Elimina presenza utente offline"
+                      onClick={async (e) => {
+                        e.stopPropagation();
+                        await supabase
+                          .from("baretto_presenze")
+                          .delete()
+                          .eq("id_utente", utente.id_utente)
+                          .eq("stanza", utente.stanza);
+                      }}
+                    >
+                      Elimina
+                    </button>
+                  )}
+                </>
               ) : (
                 <span>{utente.username}</span>
               )}
