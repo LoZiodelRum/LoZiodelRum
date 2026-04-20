@@ -1,3 +1,6 @@
+    import Community from "./pages/Community";
+    {/* COMMUNITY */}
+    <Route path="/community" element={<PageShell><Community /></PageShell>} />
   {/* IL BARETTO - nuova chat */}
   <Route path="/baretto" element={<PageShell><IlBaretto /></PageShell>} />
 import React from "react";

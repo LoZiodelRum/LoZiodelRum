@@ -1,3 +1,6 @@
+      <li>
+        <Link to="/community" className="nav-link">Community</Link>
+      </li>
 import "../App.css";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";

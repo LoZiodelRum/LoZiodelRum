@@ -585,12 +585,10 @@ export default function Home() {
         </p>
       </section>
         <section className="content-section" style={{ padding: "40px 60px", maxWidth: 1400, margin: "0 auto" }}>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-            <div>
-              <h2 style={{ fontSize: "clamp(28px, 5vw, 44px)", marginBottom: 16, fontWeight: 800 }}>Il Baretto</h2>
-              <BarettoPreview />
-            </div>
-            {/* ...altri box... */}
+          <div className="flex justify-center">
+            <Link to="/registrati" className="btn btn-primary text-lg px-8 py-4 rounded-full shadow-md hover:bg-orange-600 transition font-bold" style={{ background: "#FF8800", color: "#fff" }}>
+              Registrati ora
+            </Link>
           </div>
         </section>
 
