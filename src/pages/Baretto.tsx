@@ -92,6 +92,7 @@ export default function Baretto() {
       const { data, error } = await supabase
         .from("baretto_messaggi")
         .select("*")
+        .eq("stanza", stanzaCorrente)
         .order("created_at", { ascending: true });
       if (error) {
         setErroreLetturaMessaggi("Errore lettura messaggi: " + (error.message || JSON.stringify(error)));
@@ -102,7 +103,7 @@ export default function Baretto() {
       }
     }
     fetchMessaggi();
-  }, []);
+  }, [stanzaCorrente]);
 
   // Fix: definizione utentiOnlineUniciMap e now
   const utentiOnlineUniciMap = new Map();
