@@ -119,29 +119,6 @@ function AppContent() {
         <Route path="/mappa" element={<MapPage />} />
         <Route path="/venues" element={<PageShell><Venues /></PageShell>} />
 
-        {/* PUBBLICHE */}
-        <Route
-          path="/community"
-          element={
-            <PageShell>
-              <Protected>
-                <Community />
-              </Protected>
-            </PageShell>
-          }
-        />
-
-        <Route
-          path="/community/baretto"
-          element={
-            <PageShell fullBleed>
-              <Protected>
-                <Baretto />
-              </Protected>
-            </PageShell>
-          }
-        />
-
         <Route
           path="/baretto"
           element={
