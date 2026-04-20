@@ -179,8 +179,16 @@ export default function Baretto() {
           {utenti.length === 0 && (
             <div style={{ color: '#888', fontSize: 14 }}>Nessun utente collegato</div>
           )}
-          {utenti.map(u => {
-            // Considera online se last_active < 30 secondi fa
+          {/* Mostra solo un record per utente (ultimo stato) */}
+          {Object.values(
+            utenti.reduce((acc, u) => {
+              // Se già presente, tieni quello con last_active più recente
+              if (!acc[u.id_utente] || new Date(u.last_active) > new Date(acc[u.id_utente].last_active)) {
+                acc[u.id_utente] = u;
+              }
+              return acc;
+            }, {} as Record<string, typeof utenti[0]>)
+          ).map(u => {
             const last = new Date(u.last_active).getTime();
             const now = Date.now();
             const online = now - last < 30000;
