@@ -122,7 +122,7 @@ export default function UserProfile() {
           <div className="user-profile-mobile-fields">
             {fields.map((field) => (
               <div key={field.name} className="user-profile-mobile-field">
-                <label className="user-profile-mobile-label">
+                <label className="user-profile-label user-profile-mobile-label">
                   {field.label}
                   {field.type === "select" ? (
                     <select
@@ -169,3 +169,4 @@ export default function UserProfile() {
   );
 }
 import "../user-profile-mobile.css";
+import "../user-profile-desktop.css";
