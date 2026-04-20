@@ -92,7 +92,24 @@ export default function Baretto() {
             cursor: "pointer",
             marginBottom: 12
           }}
-          // TODO: implementa creazione tavolo
+          onClick={async () => {
+            const nome = window.prompt("Nome del nuovo tavolo?");
+            if (!nome || nome.trim() === "" || nome === STANZA_DEFAULT) return;
+            const nomePulito = nome.trim();
+            // Verifica che non esista già
+            if (stanze.includes(nomePulito)) {
+              alert("Esiste già un tavolo con questo nome.");
+              return;
+            }
+            // Inserisci su Supabase
+            const { error } = await supabase.from("baretto_stanze").insert([{ nome: nomePulito }]);
+            if (error) {
+              alert("Errore nella creazione del tavolo.");
+              return;
+            }
+            setStanze([...stanze, nomePulito]);
+            setStanzaSelezionata(nomePulito);
+          }}
         >
           Crea un tavolo
         </button>
