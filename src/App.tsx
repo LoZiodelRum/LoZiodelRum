@@ -9,6 +9,7 @@ import Home from "./pages/Home";
 import Auth from "./pages/Auth";
 import Community from "./pages/Community";
 import Baretto from "./pages/Baretto";
+import IlBaretto from "./pages/IlBaretto";
 import Crea from "./pages/Crea";
 import CreaVino from "./pages/CreaVino";
 import Drink from "./pages/Drink";
@@ -137,6 +138,15 @@ function AppContent() {
               <Protected>
                 <Baretto />
               </Protected>
+            </PageShell>
+          }
+        />
+
+        <Route
+          path="/baretto"
+          element={
+            <PageShell>
+              <IlBaretto />
             </PageShell>
           }
         />

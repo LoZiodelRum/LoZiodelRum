@@ -19,5 +19,7 @@ import SignupInviteBox from "../components/SignupInviteBox";
 import BarettoPreview from "../components/BarettoPreview";
 
 export default function Community() {
+  const navigate = useNavigate();
+  useEffect(() => { navigate("/baretto", { replace: true }); }, [navigate]);
   return null;
 }
