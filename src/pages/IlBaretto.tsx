@@ -71,9 +71,26 @@ const Sidebar = ({ open, onClose, tavoli, utenti, onSelectTavolo, onCreaTavolo, 
           ))}
         </ul>
       </div>
-      <div style={{ marginTop: 18, display: "flex", flexDirection: "row", gap: 10 }}>
-        <button onClick={onCreaTavolo} style={{ background: "#FF8800", color: "#000", border: "none", borderRadius: 8, padding: "10px 0", fontWeight: 700, fontSize: 16, cursor: "pointer", flex: 1, maxWidth: '50%' }}>Crea un tavolo</button>
-        <button onClick={onSvuotaChat} style={{ background: "#222", color: "#FF8800", border: "1px solid #FF8800", borderRadius: 8, padding: "10px 0", fontWeight: 700, fontSize: 16, cursor: "pointer", flex: 1, maxWidth: '50%' }}>Svuota chat</button>
+      <div style={{ marginTop: 18, display: "flex", flexDirection: "column", gap: 10 }}>
+        <button onClick={onCreaTavolo} style={{ background: "#FF8800", color: "#000", border: "none", borderRadius: 8, padding: "10px 0", fontWeight: 700, fontSize: 16, cursor: "pointer", width: '100%' }}>Crea un tavolo</button>
+        <button onClick={onSvuotaChat} style={{ background: "#222", color: "#FF8800", border: "1px solid #FF8800", borderRadius: 8, padding: "10px 0", fontWeight: 700, fontSize: 16, cursor: "pointer", width: '100%' }}>Svuota chat</button>
+        <button
+          onClick={() => onEliminaTavolo && tavoloAttivoId !== 1 && onEliminaTavolo()}
+          disabled={tavoloAttivoId === 1}
+          style={{
+            background: tavoloAttivoId === 1 ? '#444' : '#FF2222',
+            color: '#fff',
+            border: 'none',
+            borderRadius: 8,
+            padding: '10px 0',
+            fontWeight: 700,
+            fontSize: 16,
+            cursor: tavoloAttivoId === 1 ? 'not-allowed' : 'pointer',
+            width: '100%',
+            opacity: tavoloAttivoId === 1 ? 0.5 : 1,
+            marginTop: 0
+          }}
+        >Elimina tavolo</button>
       </div>
     </div>
   </div>
