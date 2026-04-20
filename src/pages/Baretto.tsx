@@ -116,6 +116,54 @@ export default function Baretto() {
     }
     fetchMessaggi();
   }, []);
+
+  // Fix: definizione utentiOnlineUniciMap e now
+  const utentiOnlineUniciMap = new Map();
+  utentiOnline.forEach(u => {
+    if (!u.id_utente) return;
+    const esistente = utentiOnlineUniciMap.get(u.id_utente);
+    if (!esistente || new Date(u.last_active).getTime() > new Date(esistente.last_active).getTime()) {
+      utentiOnlineUniciMap.set(u.id_utente, u);
+    }
+  });
+  const now = Date.now();
+  // Stato errori invio messaggio
+  const [erroreInvioMessaggio, setErroreInvioMessaggio] = useState<string | null>(null);
+  // Stato utente offline selezionato
+  const [utenteOfflineSelezionato, setUtenteOfflineSelezionato] = useState<string|null>(null);
+  // Funzione formatta ora
+  function formattaOra(iso: string) {
+    if (!iso) return "";
+    const d = new Date(iso);
+    return d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+  }
+  // Funzione invia messaggio
+  async function inviaMessaggio(e: any) {
+    if (e && e.preventDefault) e.preventDefault();
+    if (!testoNuovo.trim()) return;
+    const nuovo = {
+      testo: testoNuovo,
+      created_at: new Date().toISOString(),
+      id_utente: user?.id,
+      stanza: stanzaCorrente,
+      username: nomeUtenteCorrente,
+    };
+    // Salva su Supabase
+    const { error } = await supabase.from("baretto_messaggi").insert({
+      testo: nuovo.testo,
+      id_utente: nuovo.id_utente,
+      username: nuovo.username,
+      created_at: nuovo.created_at,
+      stanza: nuovo.stanza,
+    });
+    if (error) {
+      setErroreInvioMessaggio("Errore invio messaggio: " + (error.message || JSON.stringify(error)));
+      console.error("ERRORE INVIO MESSAGGIO:", error);
+    } else {
+      setErroreInvioMessaggio(null);
+      setTestoNuovo("");
+    }
+  }
   const utentiOnlineEffettivi = Array.from(utentiOnlineUniciMap.values()).map(u => {
     let stato = "offline";
     if (u.last_active) {
