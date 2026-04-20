@@ -122,76 +122,93 @@ export default function Home() {
     setEditingLocaleId(locale.id);
     setLocaleDraft({
       nome: locale.nome || "",
-      citta: locale.citta || "",
-      descrizione: locale.descrizione || "",
-      descrizione_completa: locale.descrizione_completa || "",
-    });
-  }
-
-  function cancelLocaleEdit() {
-    setEditingLocaleId(null);
-    setLocaleDraft(null);
-  }
-
-  async function saveLocaleEdit(localeId: string) {
-    if (!localeDraft) return;
-
-    const adminPassword =
-      localStorage.getItem("adminPassword") ||
-      import.meta.env.VITE_ADMIN_PASSWORD ||
-      "";
-
-    if (!adminPassword) {
-      alert("Password admin non disponibile. Esci e rientra come admin.");
-      return;
-    }
-
-    const changes = {
-      nome: (localeDraft.nome || "").trim(),
-      citta: (localeDraft.citta || "").trim(),
-      descrizione: (localeDraft.descrizione || "").trim() || null,
-      descrizione_completa: (localeDraft.descrizione_completa || "").trim() || null,
-    };
-
-    if (!changes.nome) {
-      alert("Il nome del locale non puo essere vuoto.");
-      return;
-    }
-
-    setSavingLocaleId(localeId);
-
-    const endpoints = [
-      "/api/admin-save-locale",
-      "/.netlify/functions/admin-save-locale",
-    ];
-
-    let lastMessage = "Salvataggio locale fallito lato server.";
-
-    for (const endpoint of endpoints) {
-      try {
-        const response = await fetch(endpoint, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-admin-password": adminPassword,
-          },
-          body: JSON.stringify({
-            mode: "update",
-            id: localeId,
-            changes,
-          }),
-        });
-
-        const payload = await response.json().catch(() => ({}));
-        if (response.ok && payload?.ok) {
-          lastMessage = "";
-          break;
-        }
-
-        lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
-      } catch (e: any) {
-        lastMessage = e?.message || `Errore di rete su ${endpoint}`;
-      }
+      return (
+        <div style={{
+          minHeight: "100vh",
+          width: "100vw",
+          background: "#0b0b0b",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+        }}>
+          <div style={{
+            background: "#111",
+            borderRadius: 24,
+            padding: "48px 48px 40px 48px",
+            boxShadow: "0 4px 32px #0007",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center",
+            minWidth: 320,
+            maxWidth: 420,
+          }}>
+            <h1 style={{
+              color: "#fff",
+              fontWeight: 800,
+              fontSize: 48,
+              marginBottom: 8,
+              textAlign: "center",
+            }}>Registrati</h1>
+            <div style={{
+              color: "#aaa",
+              fontSize: 22,
+              marginBottom: 32,
+              textAlign: "center",
+            }}>Scegli il tuo ruolo</div>
+            <Link to="/registrazione" style={{
+              background: "#c87a2c",
+              color: "#fff",
+              fontWeight: 700,
+              fontSize: 24,
+              border: "none",
+              borderRadius: 14,
+              padding: "14px 0",
+              marginBottom: 18,
+              textAlign: "center",
+              textDecoration: "none",
+              transition: "background 0.2s",
+              width: 320,
+              maxWidth: "80vw",
+              boxShadow: "0 2px 8px #0003",
+              letterSpacing: 0.2,
+            }}>Utente</Link>
+            <Link to="/registrazione-bartender" style={{
+              background: "#c87a2c",
+              color: "#fff",
+              fontWeight: 700,
+              fontSize: 24,
+              border: "none",
+              borderRadius: 14,
+              padding: "14px 0",
+              marginBottom: 18,
+              textAlign: "center",
+              textDecoration: "none",
+              transition: "background 0.2s",
+              width: 320,
+              maxWidth: "80vw",
+              boxShadow: "0 2px 8px #0003",
+              letterSpacing: 0.2,
+            }}>Bartender</Link>
+            <Link to="/registrazione-owner" style={{
+              background: "#c87a2c",
+              color: "#fff",
+              fontWeight: 700,
+              fontSize: 24,
+              border: "none",
+              borderRadius: 14,
+              padding: "14px 0",
+              marginBottom: 0,
+              textAlign: "center",
+              textDecoration: "none",
+              transition: "background 0.2s",
+              width: 320,
+              maxWidth: "80vw",
+              boxShadow: "0 2px 8px #0003",
+              letterSpacing: 0.2,
+            }}>Proprietario</Link>
+          </div>
+        </div>
+      );
     }
 
     setSavingLocaleId(null);
