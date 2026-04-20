@@ -51,11 +51,12 @@
     min-width: 0;
   }
   .user-profile-mobile-label {
-    color: #fff;
-    font-weight: 500;
+    color: #f5a623;
+    font-weight: 600;
     font-size: 15px;
     margin-bottom: 2px;
     display: block;
+    letter-spacing: 0.01em;
   }
   .user-profile-mobile-input {
     width: 100%;
