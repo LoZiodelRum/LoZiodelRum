@@ -51,12 +51,27 @@ export default function Baretto() {
       </div>
       {isAdmin && stanzaCorrente && (
         <div style={{ display: "flex", gap: 8, marginBottom: 18 }}>
-          <button style={{ padding: "8px 18px", borderRadius: 999, border: "2px solid #f5a623", background: "#181818", color: "#f5a623", fontWeight: 700, cursor: "pointer" }}>
+          <button
+            style={{ padding: "8px 18px", borderRadius: 999, border: "2px solid #f5a623", background: "#181818", color: "#f5a623", fontWeight: 700, cursor: "pointer" }}
+            // TODO: implementa svuota chat se richiesto
+          >
             Svuota chat
           </button>
           {stanzaCorrente !== STANZA_DEFAULT && (
-            <button style={{ padding: "8px 18px", borderRadius: 999, border: "2px solid #f55", background: "#181818", color: "#f55", fontWeight: 700, cursor: "pointer" }}>
-              Elimina stanza
+            <button
+              style={{ padding: "8px 18px", borderRadius: 999, border: "2px solid #f55", background: "#181818", color: "#f55", fontWeight: 700, cursor: "pointer" }}
+              onClick={async () => {
+                if (!window.confirm(`Vuoi davvero eliminare il tavolo "${stanzaCorrente}"? Tutti i messaggi saranno cancellati e il tavolo sarà rimosso.`)) return;
+                // Elimina tutti i messaggi della stanza
+                await supabase.from("baretto_messaggi").delete().eq("stanza", stanzaCorrente);
+                // Elimina la stanza
+                await supabase.from("baretto_stanze").delete().eq("nome", stanzaCorrente);
+                // Aggiorna lista stanze
+                setStanze(stanze.filter(s => s !== stanzaCorrente));
+                setStanzaSelezionata(STANZA_DEFAULT);
+              }}
+            >
+              Elimina tavolo
             </button>
           )}
         </div>
