@@ -57,35 +57,21 @@ export default function Baretto() {
     async function upsertPresenza() {
       const presenza = {
         id_utente,
-        <button
-          onClick={() => setStanzaSelezionata(STANZA_DEFAULT)}
-          style={{
-            width: "100%",
-            padding: typeof window !== "undefined" && window.innerWidth < 800 ? "3px 0" : "13px 0",
-            borderRadius: 999,
-            border:
-              stanzaCorrente === STANZA_DEFAULT
-                ? "2px solid #f5a623"
-                : "1px solid #444",
-            background:
-              stanzaCorrente === STANZA_DEFAULT
-                ? "#f5a623"
-                : "#181818",
-            color:
-              stanzaCorrente === STANZA_DEFAULT
-                ? "#181818"
-                : "#f5a623",
-            fontWeight: 700,
-            fontSize: 22,
-            marginBottom: 16,
-            marginTop: 0,
-            cursor: "pointer",
-            transition: "all 0.2s",
-          }}
-        >
-          Generale
-        </button>
-    // eslint-disable-next-line
+        username,
+        stanza: stanzaCorrente,
+        last_active: new Date().toISOString(),
+      };
+      const { error, data } = await supabase
+        .from("baretto_presenze")
+        .upsert([presenza], { onConflict: "id_utente,stanza" });
+      if (error) {
+        setErrorePresenzaAdmin("Errore presenza: " + (error.message || JSON.stringify(error)));
+        console.error("ERRORE UPSERT PRESENZA:", error);
+      } else {
+        setErrorePresenzaAdmin(null);
+      }
+    }
+  // eslint-disable-next-line
   }, [user, stanzaCorrente]);
 
   // Carica presenze e aggiorna in realtime
@@ -118,78 +104,18 @@ export default function Baretto() {
     async function fetchMessaggi() {
       const { data, error } = await supabase
         .from("baretto_messaggi")
-        <button
-          onClick={async () => {
-            const nome = prompt("Nome del nuovo tavolo?");
-            if (
-              nome &&
-              nome.trim() &&
-              !stanze.includes(nome.trim())
-            ) {
-              // Salva su Supabase
-              const { error } = await supabase.from("baretto_stanze").insert({ nome: nome.trim() });
-              if (!error) {
-                setStanze([...stanze, nome.trim()]);
-                setStanzaSelezionata(nome.trim());
-              } else {
-                alert("Errore creazione tavolo: " + (error.message || JSON.stringify(error)));
-              }
-            }
-          }}
-          style={{
-            width: "100%",
-            padding: typeof window !== "undefined" && window.innerWidth < 800 ? "3px 0" : "13px 0",
-            borderRadius: 999,
-            border: "1.5px solid #444",
-            background: "#181818",
-            color: "#f5a623",
-            fontWeight: 700,
-            fontSize: 22,
-            marginBottom: 16,
-            marginTop: 0,
-            cursor: "pointer",
-            transition: "all 0.2s",
-          }}
-        >
-          Crea un tavolo
-        </button>
-      id_utente: user?.id,
-      stanza: stanzaCorrente,
-      username: nomeUtenteCorrente,
-    };
-    // Salva su Supabase
-    const { error } = await supabase.from("baretto_messaggi").insert({
-      testo: nuovo.testo,
-      id_utente: nuovo.id_utente,
-      username: nuovo.username,
-      created_at: nuovo.created_at,
-      stanza: nuovo.stanza,
-    });
-        <button
-          onClick={async () => {
-            if (window.confirm("Vuoi davvero svuotare completamente la chat di questa stanza?")) {
-              // Elimina tutti i messaggi della stanza selezionata
-              await supabase.from("baretto_messaggi").delete().eq("stanza", stanzaCorrente);
-              setMessaggi(messaggi.filter(m => m.stanza !== stanzaCorrente));
-            }
-          }}
-          style={{
-            width: "100%",
-            padding: typeof window !== "undefined" && window.innerWidth < 800 ? "3px 0" : "13px 0",
-            borderRadius: 999,
-            border: "2px solid #f5a623",
-            background: "#181818",
-            color: "#f5a623",
-            fontWeight: 700,
-            fontSize: 22,
-            marginBottom: 0,
-            marginTop: 0,
-            cursor: "pointer",
-            transition: "all 0.2s",
-          }}
-        >
-          Svuota chat
-        </button>
+        .select("*")
+        .order("created_at", { ascending: true });
+      if (error) {
+        setErroreLetturaMessaggi("Errore lettura messaggi: " + (error.message || JSON.stringify(error)));
+        console.error("ERRORE LETTURA MESSAGGI:", error);
+      } else {
+        setErroreLetturaMessaggi(null);
+        if (data) setMessaggi(data);
+      }
+    }
+    fetchMessaggi();
+  }, []);
   const utentiOnlineEffettivi = Array.from(utentiOnlineUniciMap.values()).map(u => {
     let stato = "offline";
     if (u.last_active) {
