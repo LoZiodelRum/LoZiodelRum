@@ -57,34 +57,34 @@ export default function Baretto() {
     async function upsertPresenza() {
       const presenza = {
         id_utente,
-        username,
-        stanza: stanzaCorrente,
-        last_active: new Date().toISOString(),
-      };
-      console.log("UPD PRESENZA su Supabase:", presenza);
-      const { error, data } = await supabase
-        .from("baretto_presenze")
-        .upsert([presenza], { onConflict: "id_utente,stanza" });
-      if (error) {
-        setErrorePresenzaAdmin("Errore presenza: " + (error.message || JSON.stringify(error)));
-        console.error("ERRORE UPSERT PRESENZA:", error);
-      } else {
-        setErrorePresenzaAdmin(null);
-        console.log("Risposta upsert presenza:", data);
-      }
-    }
-
-    upsertPresenza();
-    const interval = setInterval(() => {
-      if (!stopped) upsertPresenza();
-    }, 20000);
-    return () => {
-      stopped = true;
-      clearInterval(interval);
-      if (id_utente) {
-        supabase.from("baretto_presenze").delete().eq("id_utente", id_utente).eq("stanza", stanzaCorrente);
-      }
-    };
+        <button
+          onClick={() => setStanzaSelezionata(STANZA_DEFAULT)}
+          style={{
+            width: "100%",
+            padding: typeof window !== "undefined" && window.innerWidth < 800 ? "3px 0" : "13px 0",
+            borderRadius: 999,
+            border:
+              stanzaCorrente === STANZA_DEFAULT
+                ? "2px solid #f5a623"
+                : "1px solid #444",
+            background:
+              stanzaCorrente === STANZA_DEFAULT
+                ? "#f5a623"
+                : "#181818",
+            color:
+              stanzaCorrente === STANZA_DEFAULT
+                ? "#181818"
+                : "#f5a623",
+            fontWeight: 700,
+            fontSize: 22,
+            marginBottom: 16,
+            marginTop: 0,
+            cursor: "pointer",
+            transition: "all 0.2s",
+          }}
+        >
+          Generale
+        </button>
     // eslint-disable-next-line
   }, [user, stanzaCorrente]);
 
@@ -118,41 +118,41 @@ export default function Baretto() {
     async function fetchMessaggi() {
       const { data, error } = await supabase
         .from("baretto_messaggi")
-        .select("*")
-        .order("created_at", { ascending: true });
-      if (error) {
-        setErroreLetturaMessaggi("Errore lettura messaggi: " + (error.message || JSON.stringify(error)));
-        console.error("ERRORE LETTURA MESSAGGI:", error);
-      } else {
-        setErroreLetturaMessaggi(null);
-        if (data) setMessaggi(data);
-      }
-    }
-    fetchMessaggi();
-  }, []);
-
-  // Aggiornamento realtime
-  useEffect(() => {
-    const channel = supabase
-      .channel("baretto")
-      .on(
-        "postgres_changes",
-        { event: "INSERT", schema: "public", table: "baretto_messaggi" },
-        (payload) => setMessaggi((prev) => [...prev, payload.new])
-      )
-      .subscribe();
-    return () => {
-      supabase.removeChannel(channel);
-    };
-  }, []);
-
-  const [erroreInvioMessaggio, setErroreInvioMessaggio] = useState<string | null>(null);
-  async function inviaMessaggio(e: any) {
-    e.preventDefault();
-    if (!testoNuovo.trim()) return;
-    const nuovo = {
-      testo: testoNuovo,
-      created_at: new Date().toISOString(),
+        <button
+          onClick={async () => {
+            const nome = prompt("Nome del nuovo tavolo?");
+            if (
+              nome &&
+              nome.trim() &&
+              !stanze.includes(nome.trim())
+            ) {
+              // Salva su Supabase
+              const { error } = await supabase.from("baretto_stanze").insert({ nome: nome.trim() });
+              if (!error) {
+                setStanze([...stanze, nome.trim()]);
+                setStanzaSelezionata(nome.trim());
+              } else {
+                alert("Errore creazione tavolo: " + (error.message || JSON.stringify(error)));
+              }
+            }
+          }}
+          style={{
+            width: "100%",
+            padding: typeof window !== "undefined" && window.innerWidth < 800 ? "3px 0" : "13px 0",
+            borderRadius: 999,
+            border: "1.5px solid #444",
+            background: "#181818",
+            color: "#f5a623",
+            fontWeight: 700,
+            fontSize: 22,
+            marginBottom: 16,
+            marginTop: 0,
+            cursor: "pointer",
+            transition: "all 0.2s",
+          }}
+        >
+          Crea un tavolo
+        </button>
       id_utente: user?.id,
       stanza: stanzaCorrente,
       username: nomeUtenteCorrente,
@@ -165,41 +165,31 @@ export default function Baretto() {
       created_at: nuovo.created_at,
       stanza: nuovo.stanza,
     });
-    if (error) {
-      setErroreInvioMessaggio("Errore invio messaggio: " + (error.message || JSON.stringify(error)));
-      console.error("ERRORE INVIO MESSAGGIO:", error);
-    } else {
-      setErroreInvioMessaggio(null);
-      setTestoNuovo("");
-    }
-  }
-
-  function formattaOra(iso: string) {
-    const d = new Date(iso);
-    return d.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
-  }
-
-  if (!user?.id) {
-    return (
-      <div style={{ color: '#fff', background: '#181818', minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 20, textAlign: 'center' }}>
-        Devi accedere per usare la chat.<br />
-        Effettua il login.
-      </div>
-    );
-  }
-
-  // Mostra tutti gli utenti, ma pallino verde se online (<30s), grigio se "scollegato"
-  const now = Date.now();
-  const [utenteOfflineSelezionato, setUtenteOfflineSelezionato] = useState<string|null>(null);
-  // Mostra ogni utente una sola volta (per id_utente), scegliendo la presenza più recente
-  const utentiOnlineUniciMap = new Map();
-  utentiOnline.forEach(u => {
-    if (!u.id_utente) return;
-    const esistente = utentiOnlineUniciMap.get(u.id_utente);
-    if (!esistente || new Date(u.last_active).getTime() > new Date(esistente.last_active).getTime()) {
-      utentiOnlineUniciMap.set(u.id_utente, u);
-    }
-  });
+        <button
+          onClick={async () => {
+            if (window.confirm("Vuoi davvero svuotare completamente la chat di questa stanza?")) {
+              // Elimina tutti i messaggi della stanza selezionata
+              await supabase.from("baretto_messaggi").delete().eq("stanza", stanzaCorrente);
+              setMessaggi(messaggi.filter(m => m.stanza !== stanzaCorrente));
+            }
+          }}
+          style={{
+            width: "100%",
+            padding: typeof window !== "undefined" && window.innerWidth < 800 ? "3px 0" : "13px 0",
+            borderRadius: 999,
+            border: "2px solid #f5a623",
+            background: "#181818",
+            color: "#f5a623",
+            fontWeight: 700,
+            fontSize: 22,
+            marginBottom: 0,
+            marginTop: 0,
+            cursor: "pointer",
+            transition: "all 0.2s",
+          }}
+        >
+          Svuota chat
+        </button>
   const utentiOnlineEffettivi = Array.from(utentiOnlineUniciMap.values()).map(u => {
     let stato = "offline";
     if (u.last_active) {
