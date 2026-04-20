@@ -1,0 +1,6 @@
+.sidebarOpen {
+  left: 0 !important;
+}
+.sidebarClosed {
+  left: -75vw !important;
+}
