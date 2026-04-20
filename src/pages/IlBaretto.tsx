@@ -286,9 +286,7 @@ const IlBaretto = () => {
   );
 };
 
-export default IlBaretto;
-
-// Funzione admin per creare un tavolo
+  // Funzione admin per creare un tavolo
   async function creaTavolo() {
     const nome = prompt("Nome del nuovo tavolo?");
     if (!nome || !nome.trim()) return;
@@ -298,3 +296,5 @@ export default IlBaretto;
       setTavoloAttivo(data[0]);
     }
   }
+
+export default IlBaretto;
