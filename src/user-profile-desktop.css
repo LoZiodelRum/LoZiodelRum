@@ -16,9 +16,4 @@
   margin-bottom: 12px;
 }
 
-.user-profile-mobile-input {
-  width: 70%;
-  margin-left: 15%;
-  margin-right: 15%;
-  display: block;
-}
+/* Rimosso override larghezza input/select/textarea su desktop: tornano a width 100% */
