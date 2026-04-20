@@ -172,6 +172,11 @@ export default function Home() {
           .hero-mobile-btn {
             width: 52% !important;
             justify-content: flex-start !important;
+          }
+        }
+      `}</style>
+
+// ...rimuovo tutto il codice non valido dopo la chiusura del componente Home
             font-size: 0.7rem !important;
             padding: 8px 16px !important;
             border-radius: 10px !important;
