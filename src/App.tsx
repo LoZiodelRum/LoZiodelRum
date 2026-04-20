@@ -146,6 +146,8 @@ function AppContent() {
           }
         />
 
+        <Route path="/community" element={<PageShell><Community /></PageShell>} />
+
         {/* PROTETTE */}
 
         <Route
