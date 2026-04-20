@@ -192,12 +192,12 @@ const IlBaretto = () => {
               {/* Nome utente con pallino verde se online */}
               <span style={{ display: "flex", alignItems: "center", fontWeight: 700, color: "#FF8800", fontSize: 15, marginRight: 10 }}>
                 <span style={{
-                  width: 10,
-                  height: 10,
+                  width: 14,
+                  height: 14,
                   borderRadius: "50%",
-                  background: utenti.find((u:any) => u.nome === m.user && u.online) ? "#1ED760" : "#888",
+                  background: utenti.find((u:any) => u.nome === m.user && (u.online !== false)) ? "#1ED760" : "#888",
                   display: "inline-block",
-                  marginRight: 6
+                  marginRight: 8
                 }} />
                 {m.user}
               </span>
