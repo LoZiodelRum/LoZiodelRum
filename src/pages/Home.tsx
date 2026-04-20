@@ -75,92 +75,7 @@ export default function Home() {
   // Ritorno del JSX
   return (
     <div style={{ background: "#0b0b0b", minHeight: "100vh", width: "100vw" }}>
-      <div style={{
-        minHeight: "100vh",
-        width: "100vw",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-      }}>
-        <div style={{
-          background: "#111",
-          borderRadius: 24,
-          padding: "48px 48px 40px 48px",
-          boxShadow: "0 4px 32px #0007",
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-          minWidth: 320,
-          maxWidth: 420,
-        }}>
-          <h1 style={{
-            color: "#fff",
-            fontWeight: 800,
-            fontSize: 48,
-            marginBottom: 8,
-            textAlign: "center",
-          }}>Registrati</h1>
-          <div style={{
-            color: "#aaa",
-            fontSize: 22,
-            marginBottom: 32,
-            textAlign: "center",
-          }}>Scegli il tuo ruolo</div>
-          <Link to="/registrazione" style={{
-            background: "#c87a2c",
-            color: "#fff",
-            fontWeight: 700,
-            fontSize: 24,
-            border: "none",
-            borderRadius: 14,
-            padding: "14px 0",
-            marginBottom: 18,
-            textAlign: "center",
-            textDecoration: "none",
-            transition: "background 0.2s",
-            width: 320,
-            maxWidth: "80vw",
-            boxShadow: "0 2px 8px #0003",
-            letterSpacing: 0.2,
-          }}>Utente</Link>
-          <Link to="/registrazione-bartender" style={{
-            background: "#c87a2c",
-            color: "#fff",
-            fontWeight: 700,
-            fontSize: 24,
-            border: "none",
-            borderRadius: 14,
-            padding: "14px 0",
-            marginBottom: 18,
-            textAlign: "center",
-            textDecoration: "none",
-            transition: "background 0.2s",
-            width: 320,
-            maxWidth: "80vw",
-            boxShadow: "0 2px 8px #0003",
-            letterSpacing: 0.2,
-          }}>Bartender</Link>
-          <Link to="/registrazione-owner" style={{
-            background: "#c87a2c",
-            color: "#fff",
-            fontWeight: 700,
-            fontSize: 24,
-            border: "none",
-            borderRadius: 14,
-            padding: "14px 0",
-            marginBottom: 0,
-            textAlign: "center",
-            textDecoration: "none",
-            transition: "background 0.2s",
-            width: 320,
-            maxWidth: "80vw",
-            boxShadow: "0 2px 8px #0003",
-            letterSpacing: 0.2,
-          }}>Proprietario</Link>
-        </div>
-      </div>
-
-      {/* Qui puoi aggiungere altre sezioni della homepage se necessario */}
+      {/* Altri contenuti della homepage qui... */}
 
       <div style={{
         position: "fixed",
@@ -169,25 +84,25 @@ export default function Home() {
         width: "100vw",
         background: "#181818e6",
         boxShadow: "0 -2px 16px #0008",
-        padding: "18px 0 22px 0",
+        padding: "10px 0 12px 0",
         display: "flex",
         flexDirection: "row",
         justifyContent: "center",
-        gap: 18,
+        gap: 10,
         zIndex: 100,
       }}>
         <Link to="/registrazione" style={{
           background: "#c87a2c",
           color: "#fff",
           fontWeight: 700,
-          fontSize: 20,
+          fontSize: 15,
           border: "none",
-          borderRadius: 12,
-          padding: "12px 36px",
+          borderRadius: 8,
+          padding: "7px 18px",
           textAlign: "center",
           textDecoration: "none",
           transition: "background 0.2s",
-          minWidth: 160,
+          minWidth: 80,
           boxShadow: "0 2px 8px #0003",
           letterSpacing: 0.2,
         }}>Utente</Link>
@@ -195,14 +110,14 @@ export default function Home() {
           background: "#c87a2c",
           color: "#fff",
           fontWeight: 700,
-          fontSize: 20,
+          fontSize: 15,
           border: "none",
-          borderRadius: 12,
-          padding: "12px 36px",
+          borderRadius: 8,
+          padding: "7px 18px",
           textAlign: "center",
           textDecoration: "none",
           transition: "background 0.2s",
-          minWidth: 160,
+          minWidth: 80,
           boxShadow: "0 2px 8px #0003",
           letterSpacing: 0.2,
         }}>Bartender</Link>
@@ -210,14 +125,14 @@ export default function Home() {
           background: "#c87a2c",
           color: "#fff",
           fontWeight: 700,
-          fontSize: 20,
+          fontSize: 15,
           border: "none",
-          borderRadius: 12,
-          padding: "12px 36px",
+          borderRadius: 8,
+          padding: "7px 18px",
           textAlign: "center",
           textDecoration: "none",
           transition: "background 0.2s",
-          minWidth: 160,
+          minWidth: 80,
           boxShadow: "0 2px 8px #0003",
           letterSpacing: 0.2,
         }}>Proprietario</Link>
