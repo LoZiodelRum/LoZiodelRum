@@ -129,7 +129,12 @@ const IlBaretto = () => {
     // TODO: invio messaggio a Supabase
     setMessaggi((prev) => [
       ...prev,
-      { id: Date.now(), user: user?.username || "io", testo: input, timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) },
+      {
+        id: Date.now(),
+        user: user?.username || "Lo Zio",
+        testo: input,
+        timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
+      },
     ]);
     setInput("");
   };
@@ -185,8 +190,10 @@ const IlBaretto = () => {
           {messaggi.map((m) => (
             <div key={m.id} style={{ margin: "0 18px 18px 18px", display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
               <span style={{ fontWeight: 700, color: "#FF8800", fontSize: 15 }}>{m.user}</span>
-              <span style={{ color: "#fff", fontSize: 17, margin: "2px 0 2px 0" }}>{m.testo}</span>
-              <span style={{ color: "#888", fontSize: 12, alignSelf: "flex-end" }}>{m.timestamp}</span>
+              <span style={{ color: "#fff", fontSize: 17, margin: "2px 0 2px 0", display: "flex", alignItems: "center" }}>
+                {m.testo}
+                <span style={{ color: "#888", fontSize: 13, marginLeft: 12 }}>- {m.timestamp}</span>
+              </span>
             </div>
           ))}
           <div ref={messagesEndRef} />
@@ -202,7 +209,8 @@ const IlBaretto = () => {
           borderTop: "1px solid #181818",
           padding: "10px 10px 18px 10px",
           display: "flex",
-          alignItems: "center"
+          alignItems: "center",
+          justifyContent: "center"
         }}>
           <input
             value={input}
@@ -210,15 +218,17 @@ const IlBaretto = () => {
             onKeyDown={e => { if (e.key === "Enter") handleSend(); }}
             placeholder="Scrivi un messaggio..."
             style={{
-              flex: 1,
+              width: 320,
+              maxWidth: "80vw",
               background: "#181818",
               color: "#fff",
               border: "none",
               borderRadius: 24,
-              padding: "12px 18px",
-              fontSize: 17,
+              padding: "10px 16px",
+              fontSize: 15,
               outline: "none",
-              marginRight: 10
+              marginRight: 10,
+              textAlign: "left"
             }}
           />
           <button
@@ -228,9 +238,9 @@ const IlBaretto = () => {
               color: "#000",
               border: "none",
               borderRadius: 24,
-              padding: "12px 22px",
+              padding: "10px 18px",
               fontWeight: 700,
-              fontSize: 17,
+              fontSize: 15,
               cursor: "pointer",
               transition: "background 0.2s"
             }}
