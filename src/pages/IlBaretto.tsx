@@ -97,19 +97,9 @@ const IlBaretto = () => {
       { id: 2, nome: "Rum" },
       { id: 3, nome: "Whisky" },
     ]);
-    setUtenti([
-      { id: 1, nome: "marvingregory", online: true },
-      { id: 2, nome: "susie.ramos", online: true },
-      { id: 3, nome: "ray.munoz", online: false },
-      { id: 4, nome: "sylvia", online: false },
-      { id: 5, nome: "mablewest", online: false },
-    ]);
+    setUtenti([]); // Nessun utente fake
     setTavoloAttivo({ id: 1, nome: "Generale" });
-    setMessaggi([
-      { id: 1, user: "marvingregory", testo: "Ciao a tutti!", timestamp: "12:39" },
-      { id: 2, user: "susie.ramos", testo: "Ciao Marvin! 🍹", timestamp: "12:40" },
-      { id: 3, user: "sylvia", testo: "Arrivo tra poco!", timestamp: "12:41" },
-    ]);
+    setMessaggi([]); // Nessun messaggio fake
   }, []);
 
   useEffect(() => {
