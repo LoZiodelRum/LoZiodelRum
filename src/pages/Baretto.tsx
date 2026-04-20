@@ -152,14 +152,13 @@ export default function Baretto() {
       setTestoNuovo("");
     }
   }
-  // Mostra il pallino verde a tutti gli utenti online, indipendentemente dalla stanza
+  // Mostra tutti gli utenti online (sempre collegati, non solo della stanza selezionata)
   const utentiOnlineEffettivi = Array.from(utentiOnlineUniciMap.values()).map(u => {
     let stato = "offline";
     if (u.last_active) {
       const last = new Date(u.last_active).getTime();
       stato = now - last < 30000 ? "online" : "offline";
     }
-    // Forza il pallino verde se online
     return { ...u, stato: stato === "online" ? "online" : "offline" };
   });
 
@@ -183,43 +182,74 @@ export default function Baretto() {
       {/* Bottoni piccoli per tutte le stanze/tavoli sopra la colonna di destra */}
       <div style={{ width: '100%', display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center', marginBottom: 18 }}>
         {stanze.map((nome) => (
-          <button
-            key={nome}
-            onClick={() => setStanzaSelezionata(nome)}
-            style={{
-              padding: '4px 12px',
-              borderRadius: 999,
-              border: stanzaCorrente === nome ? '2px solid #f5a623' : '1px solid #f5a623',
-              background: stanzaCorrente === nome ? '#f5a623' : 'transparent',
-              color: stanzaCorrente === nome ? '#181818' : '#f5a623',
-              fontWeight: 700,
-              fontSize: 14,
-              cursor: 'pointer',
-              transition: 'all 0.2s',
-              marginBottom: 0,
-              marginTop: 0,
-              minWidth: 0,
-              whiteSpace: 'nowrap',
-            }}
-          >
-            {nome}
-          </button>
-        ))}
-      </div>
-      <div style={{ display: "flex", flexDirection: typeof window !== "undefined" && window.innerWidth < 800 ? "column" : "row", minHeight: "100vh", width: "100%", height: "100%" }}>
-        <aside
-          style={{
-          width: typeof window !== "undefined" && window.innerWidth < 800 ? "88vw" : 270, // ancora più stretto
-          background: "rgba(28,25,23,0.5)",
-          border: "1px solid rgba(68,64,60,0.5)",
-          borderRadius: 18,
-          padding: typeof window !== "undefined" && window.innerWidth < 800 ? "10px 0 6px 0" : 18, // padding laterale 0
-          display: "flex",
-          flexDirection: "column",
-          gap: typeof window !== "undefined" && window.innerWidth < 800 ? 6 : 18,
-          minHeight: typeof window !== "undefined" && window.innerWidth < 800 ? undefined : 420,
-          marginBottom: typeof window !== "undefined" && window.innerWidth < 800 ? 6 : 0,
-          overflowX: typeof window !== "undefined" && window.innerWidth < 800 ? "hidden" : undefined,
+          {isAdmin && (
+            <>
+              <button
+                onClick={async () => {
+                  if (!stanzaCorrente) return;
+                  if (window.confirm("Vuoi davvero svuotare completamente la chat di questa stanza?")) {
+                    await supabase.from("baretto_messaggi").delete().eq("stanza", stanzaCorrente);
+                    // Ricarica i messaggi dal DB per assicurare che la chat sia effettivamente vuota
+                    const { data, error } = await supabase
+                      .from("baretto_messaggi")
+                      .select("*")
+                      .eq("stanza", stanzaCorrente)
+                      .order("created_at", { ascending: true });
+                    if (!error && data) {
+                      setMessaggi(data);
+                    } else {
+                      setMessaggi([]);
+                    }
+                  }
+                }}
+                style={{
+                  width: "100%",
+                  padding: typeof window !== "undefined" && window.innerWidth < 800 ? "3px 0" : "13px 0",
+                  borderRadius: 999,
+                  border: "2px solid #f5a623",
+                  background: "#181818",
+                  color: "#f5a623",
+                  fontWeight: 700,
+                  fontSize: typeof window !== "undefined" && window.innerWidth < 800 ? 12 : "1.13rem",
+                  cursor: "pointer",
+                  marginBottom: typeof window !== "undefined" && window.innerWidth < 800 ? 1 : 0,
+                  marginTop: 6,
+                }}
+              >
+                Svuota chat
+              </button>
+              {/* Bottone elimina stanza, solo se non è la Generale */}
+              {stanzaCorrente !== STANZA_DEFAULT && (
+                <button
+                  onClick={async () => {
+                    if (!stanzaCorrente) return;
+                    if (window.confirm(`Vuoi davvero eliminare la stanza "${stanzaCorrente}"? Verrà rimossa e tutti i suoi messaggi saranno cancellati.`)) {
+                      await supabase.from("baretto_messaggi").delete().eq("stanza", stanzaCorrente);
+                      await supabase.from("baretto_stanze").delete().eq("nome", stanzaCorrente);
+                      setStanze(stanze.filter(s => s !== stanzaCorrente));
+                      setStanzaSelezionata(STANZA_DEFAULT);
+                      setMessaggi([]);
+                    }
+                  }}
+                  style={{
+                    width: "100%",
+                    padding: typeof window !== "undefined" && window.innerWidth < 800 ? "3px 0" : "13px 0",
+                    borderRadius: 999,
+                    border: "2px solid #f55",
+                    background: "#181818",
+                    color: "#f55",
+                    fontWeight: 700,
+                    fontSize: typeof window !== "undefined" && window.innerWidth < 800 ? 12 : "1.13rem",
+                    cursor: "pointer",
+                    marginBottom: typeof window !== "undefined" && window.innerWidth < 800 ? 1 : 0,
+                    marginTop: 6,
+                  }}
+                >
+                  Elimina stanza
+                </button>
+              )}
+            </>
+          )}
           marginLeft: typeof window !== "undefined" && window.innerWidth < 800 ? "auto" : undefined, // centra
           marginRight: typeof window !== "undefined" && window.innerWidth < 800 ? "auto" : undefined, // centra
           boxSizing: typeof window !== "undefined" && window.innerWidth < 800 ? "border-box" : undefined,
