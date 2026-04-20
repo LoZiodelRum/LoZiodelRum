@@ -98,7 +98,7 @@ export default function Navbar() {
         <Link to="/drink" style={linkStyle("/drink")}>Drink</Link>
         <Link to="/vini" style={linkStyle("/vini")}>Vini</Link>
         <Link to="/magazine" style={linkStyle("/magazine")}>Magazine</Link>
-        {/* Link Community rimosso */}
+        <Link to="/community" style={linkStyle("/community")}>Community</Link>
         <Link to="/crea" style={linkStyle("/crea")}>Crea</Link>
 
         {/* Mostra il pannello di controllo solo se admin */}
@@ -165,7 +165,7 @@ export default function Navbar() {
         <Link to="/drink" onClick={closeMobileMenu} style={{ ...linkStyle("/drink"), padding: "12px 0", borderBottom: "1px solid #333" }}>Drink</Link>
         <Link to="/vini" onClick={closeMobileMenu} style={{ ...linkStyle("/vini"), padding: "12px 0", borderBottom: "1px solid #333" }}>Vini</Link>
         <Link to="/magazine" onClick={closeMobileMenu} style={{ ...linkStyle("/magazine"), padding: "12px 0", borderBottom: "1px solid #333" }}>Magazine</Link>
-        {/* Link Community rimosso */}
+        <Link to="/community" onClick={closeMobileMenu} style={{ ...linkStyle("/community"), padding: "12px 0", borderBottom: "1px solid #333" }}>Community</Link>
         <Link to="/crea" onClick={closeMobileMenu} style={{ ...linkStyle("/crea"), padding: "12px 0", borderBottom: "1px solid #333" }}>Crea</Link>
 
         {/* Mostra il pannello di controllo solo se admin (mobile) */}
