@@ -57,34 +57,32 @@ export default function Baretto() {
     async function upsertPresenza() {
       const presenza = {
         id_utente,
-        username,
-        stanza: stanzaCorrente,
-        last_active: new Date().toISOString(),
-      };
-      const { error, data } = await supabase
-        .from("baretto_presenze")
-        .upsert([presenza], { onConflict: "id_utente,stanza" });
-      if (error) {
-        setErrorePresenzaAdmin("Errore presenza: " + (error.message || JSON.stringify(error)));
-        console.error("ERRORE UPSERT PRESENZA:", error);
-      } else {
-        setErrorePresenzaAdmin(null);
-      }
-    }
-  // eslint-disable-next-line
-  }, [user, stanzaCorrente]);
-
-  // Carica presenze e aggiorna in realtime
-  useEffect(() => {
-    async function fetchPresenze() {
-      const { data, error } = await supabase
-        .from("baretto_presenze")
-        .select("id_utente, username, stanza, last_active");
-      if (error) console.error("Errore fetch presenze:", error);
-      else console.log("Presenze lette da Supabase:", data);
-      if (data) setUtentiOnline(data);
-    }
-    fetchPresenze();
+        {/* Bottoni piccoli per tutte le stanze/tavoli */}
+        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 12 }}>
+          {stanze.map((nome) => (
+            <button
+              key={nome}
+              onClick={() => setStanzaSelezionata(nome)}
+              style={{
+                padding: '4px 12px',
+                borderRadius: 999,
+                border: stanzaCorrente === nome ? '2px solid #f5a623' : '1px solid #f5a623',
+                background: stanzaCorrente === nome ? '#f5a623' : 'transparent',
+                color: stanzaCorrente === nome ? '#181818' : '#f5a623',
+                fontWeight: 700,
+                fontSize: 14,
+                cursor: 'pointer',
+                transition: 'all 0.2s',
+                marginBottom: 0,
+                marginTop: 0,
+                minWidth: 0,
+                whiteSpace: 'nowrap',
+              }}
+            >
+              {nome}
+            </button>
+          ))}
+        </div>
     const channel = supabase
       .channel("baretto-presenze")
       .on(
