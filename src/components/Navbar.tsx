@@ -96,7 +96,6 @@ export default function Navbar() {
         <Link to="/vini" style={linkStyle("/vini")}>Vini</Link>
         <Link to="/magazine" style={linkStyle("/magazine")}>Magazine</Link>
         <Link to="/community" style={linkStyle("/community")}>Community</Link>
-        <Link to="/baretto" style={linkStyle("/baretto")}>Il Baretto</Link>
         <Link to="/crea" style={linkStyle("/crea")}>Crea</Link>
 
         {/* Mostra il pannello di controllo solo se admin */}
@@ -164,7 +163,6 @@ export default function Navbar() {
         <Link to="/vini" onClick={closeMobileMenu} style={{ ...linkStyle("/vini"), padding: "12px 0", borderBottom: "1px solid #333" }}>Vini</Link>
         <Link to="/magazine" onClick={closeMobileMenu} style={{ ...linkStyle("/magazine"), padding: "12px 0", borderBottom: "1px solid #333" }}>Magazine</Link>
         <Link to="/community" onClick={closeMobileMenu} style={{ ...linkStyle("/community"), padding: "12px 0", borderBottom: "1px solid #333" }}>Community</Link>
-        <Link to="/baretto" onClick={closeMobileMenu} style={{ ...linkStyle("/baretto"), padding: "12px 0", borderBottom: "1px solid #333" }}>Il Baretto</Link>
         <Link to="/crea" onClick={closeMobileMenu} style={{ ...linkStyle("/crea"), padding: "12px 0", borderBottom: "1px solid #333" }}>Crea</Link>
 
         {/* Mostra il pannello di controllo solo se admin (mobile) */}
