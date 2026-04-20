@@ -122,181 +122,96 @@ export default function Home() {
     setEditingLocaleId(locale.id);
     setLocaleDraft({
       nome: locale.nome || "",
-      return (
-        <div style={{
-          minHeight: "100vh",
-          width: "100vw",
-          background: "#0b0b0b",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}>
-          <div style={{
-            background: "#111",
-            borderRadius: 24,
-            padding: "48px 48px 40px 48px",
-            boxShadow: "0 4px 32px #0007",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center",
-            minWidth: 320,
-            maxWidth: 420,
-          }}>
-            <h1 style={{
-              color: "#fff",
-              fontWeight: 800,
-              fontSize: 48,
-              marginBottom: 8,
-              textAlign: "center",
-            }}>Registrati</h1>
-            <div style={{
-              color: "#aaa",
-              fontSize: 22,
-              marginBottom: 32,
-              textAlign: "center",
-            }}>Scegli il tuo ruolo</div>
-            <Link to="/registrazione" style={{
-              background: "#c87a2c",
-              color: "#fff",
-              fontWeight: 700,
-              fontSize: 24,
-              border: "none",
-              borderRadius: 14,
-              padding: "14px 0",
-              marginBottom: 18,
-              textAlign: "center",
-              textDecoration: "none",
-              transition: "background 0.2s",
-              width: 320,
-              maxWidth: "80vw",
-              boxShadow: "0 2px 8px #0003",
-              letterSpacing: 0.2,
-            }}>Utente</Link>
-            <Link to="/registrazione-bartender" style={{
-              background: "#c87a2c",
-              color: "#fff",
-              fontWeight: 700,
-              fontSize: 24,
-              border: "none",
-              borderRadius: 14,
-              padding: "14px 0",
-              marginBottom: 18,
-              textAlign: "center",
-              textDecoration: "none",
-              transition: "background 0.2s",
-              width: 320,
-              maxWidth: "80vw",
-              boxShadow: "0 2px 8px #0003",
-              letterSpacing: 0.2,
-            }}>Bartender</Link>
-            <Link to="/registrazione-owner" style={{
-              background: "#c87a2c",
-              color: "#fff",
-              fontWeight: 700,
-              fontSize: 24,
-              border: "none",
-              borderRadius: 14,
-              padding: "14px 0",
-              marginBottom: 0,
-              textAlign: "center",
-              textDecoration: "none",
-              transition: "background 0.2s",
-              width: 320,
-              maxWidth: "80vw",
-              boxShadow: "0 2px 8px #0003",
-              letterSpacing: 0.2,
-            }}>Proprietario</Link>
-          </div>
-        </div>
-      );
-    }
-
-    setSavingLocaleId(null);
-
-    if (lastMessage) {
-      alert(lastMessage);
-      return;
-    }
-
-    setLocali((prev) =>
-      prev.map((locale) =>
-        locale.id === localeId
-          ? {
-              ...locale,
-              ...changes,
-            }
-          : locale
-      )
-    );
-
-    cancelLocaleEdit();
+      // ...altri campi se necessario
+    });
   }
-
-  async function fetchArticoli() {
-    const { data, error } = await supabase
-      .from("articoli")
-      .select("*")
-      .eq("pubblicato", true)
-      .limit(6);
-
-    if (error) {
-      console.error("Errore articoli:", error);
-      return;
-    }
-
-    setArticoli(data ?? []);
-  }
-
-  const heroVideoSrc = `/home-hero.mp4?v=${HOME_HERO_VIDEO_VERSION}`;
-
   return (
-    <div
-      style={{
-        background: "#0b0b0b",
-        color: "#fff",
-        margin: 0,
-        padding: 0,
-        minHeight: "100vh",
-      }}
-    >
-      <style>{`
-        @media (max-width: 768px) {
-          .hero-section {
-            display: flex !important;
-            min-height: 100svh !important;
-            width: 100% !important;
-            margin-left: 0 !important;
-            margin-right: 0 !important;
-            padding-top: 0 !important;
-            padding-bottom: 72px !important;
-            align-items: flex-end !important;
-          }
-          .hero-mobile-content {
-            margin-top: 0 !important;
-            padding: 0 16px 12px !important;
-            width: 100% !important;
-            max-width: none !important;
-          }
-          .hero-mobile-badge {
-            display: inline-flex !important;
-            align-items: center !important;
-            gap: 8px !important;
-            border: 1px solid rgba(245, 166, 35, 0.35) !important;
-            background: rgba(245, 166, 35, 0.14) !important;
-            color: #f5a623 !important;
-            border-radius: 999px !important;
-            width: fit-content !important;
-            font-size: 12px !important;
-            padding: 6px 10px !important;
-            margin: 0 auto 16px auto !important;
-          }
-          .hero-mobile-title { font-size: clamp(28px, 7.2vw, 38px) !important; line-height: 1.08 !important; }
-          .hero-mobile-title span {
-            font-size: inherit !important;
-            line-height: inherit !important;
-            font-weight: inherit !important;
-          }
-          .hero-mobile-title-line {
+    <div style={{
+      minHeight: "100vh",
+      width: "100vw",
+      background: "#0b0b0b",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+    }}>
+      <div style={{
+        background: "#111",
+        borderRadius: 24,
+        padding: "48px 48px 40px 48px",
+        boxShadow: "0 4px 32px #0007",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        minWidth: 320,
+        maxWidth: 420,
+      }}>
+        <h1 style={{
+          color: "#fff",
+          fontWeight: 800,
+          fontSize: 48,
+          marginBottom: 8,
+          textAlign: "center",
+        }}>Registrati</h1>
+        <div style={{
+          color: "#aaa",
+          fontSize: 22,
+          marginBottom: 32,
+          textAlign: "center",
+        }}>Scegli il tuo ruolo</div>
+        <Link to="/registrazione" style={{
+          background: "#c87a2c",
+          color: "#fff",
+          fontWeight: 700,
+          fontSize: 24,
+          border: "none",
+          borderRadius: 14,
+          padding: "14px 0",
+          marginBottom: 18,
+          textAlign: "center",
+          textDecoration: "none",
+          transition: "background 0.2s",
+          width: 320,
+          maxWidth: "80vw",
+          boxShadow: "0 2px 8px #0003",
+          letterSpacing: 0.2,
+        }}>Utente</Link>
+        <Link to="/registrazione-bartender" style={{
+          background: "#c87a2c",
+          color: "#fff",
+          fontWeight: 700,
+          fontSize: 24,
+          border: "none",
+          borderRadius: 14,
+          padding: "14px 0",
+          marginBottom: 18,
+          textAlign: "center",
+          textDecoration: "none",
+          transition: "background 0.2s",
+          width: 320,
+          maxWidth: "80vw",
+          boxShadow: "0 2px 8px #0003",
+          letterSpacing: 0.2,
+        }}>Bartender</Link>
+        <Link to="/registrazione-owner" style={{
+          background: "#c87a2c",
+          color: "#fff",
+          fontWeight: 700,
+          fontSize: 24,
+          border: "none",
+          borderRadius: 14,
+          padding: "14px 0",
+          marginBottom: 0,
+          textAlign: "center",
+          textDecoration: "none",
+          transition: "background 0.2s",
+          width: 320,
+          maxWidth: "80vw",
+          boxShadow: "0 2px 8px #0003",
+          letterSpacing: 0.2,
+        }}>Proprietario</Link>
+      </div>
+    </div>
+  );
             display: block !important;
             white-space: nowrap !important;
           }
