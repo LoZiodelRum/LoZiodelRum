@@ -7,12 +7,8 @@ import { useUser } from "../context/UserContext";
 const STANZA_DEFAULT = "Generale";
 
 export default function Baretto() {
-  // MOCK utenti online/offline
-  const [utenti, setUtenti] = useState([
-    { username: "Mario", online: true },
-    { username: "Anna", online: false },
-    { username: "Luca", online: true }
-  ]);
+  // Stato utenti online/offline (da popolare con dati reali)
+  const [utenti, setUtenti] = useState<{ username: string; online: boolean }[]>([]);
 
   const { isAdmin } = useUser();
   const [stanze, setStanze] = useState<string[]>([STANZA_DEFAULT]);
@@ -66,6 +62,9 @@ export default function Baretto() {
         {/* Lista utenti online/offline */}
         <div style={{ marginBottom: 16 }}>
           <div style={{ color: '#f5a623', fontWeight: 700, marginBottom: 6, fontSize: 15 }}>Utenti online</div>
+          {utenti.length === 0 && (
+            <div style={{ color: '#888', fontSize: 14 }}>Nessun utente online</div>
+          )}
           {utenti.map(u => (
             <div key={u.username} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
               <span style={{
