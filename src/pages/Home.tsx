@@ -4,6 +4,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, MapPin } from "lucide-react";
 import { supabase } from "../lib/supabaseClient";
 import { useUser } from "../context/UserContext";
+import BarettoPreview from "../components/BarettoPreview";
 
 type Locale = {
   id: string;
@@ -583,6 +584,15 @@ export default function Home() {
           Condividi le tue esperienze, scopri nuovi locali e contribuisci alla cultura del bere consapevole.
         </p>
       </section>
+        <section className="content-section" style={{ padding: "40px 60px", maxWidth: 1400, margin: "0 auto" }}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <div>
+              <h2 style={{ fontSize: "clamp(28px, 5vw, 44px)", marginBottom: 16, fontWeight: 800 }}>Il Baretto</h2>
+              <BarettoPreview />
+            </div>
+            {/* ...altri box... */}
+          </div>
+        </section>
 
       <section style={{ padding: "60px 60px", maxWidth: 1400, margin: "0 auto" }}>
         <div style={{

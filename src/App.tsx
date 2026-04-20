@@ -1,3 +1,5 @@
+  {/* IL BARETTO - nuova chat */}
+  <Route path="/baretto" element={<PageShell><IlBaretto /></PageShell>} />
 import React from "react";
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 import { UserProvider, useUser } from "./context/UserContext";
@@ -7,9 +9,7 @@ import Navbar from "./components/Navbar";
 /* PAGINE */
 import Home from "./pages/Home";
 import Auth from "./pages/Auth";
-import Community from "./pages/Community";
-import Baretto from "./pages/Baretto";
-import IlBaretto from "./pages/IlBaretto";
+// importazioni legacy rimosse
 import Crea from "./pages/Crea";
 import CreaVino from "./pages/CreaVino";
 import Drink from "./pages/Drink";
@@ -31,6 +31,7 @@ import UserProfile from "./pages/UserProfile";
 /* NUOVE PAGINE */
 import InAttesa from "./pages/InAttesaPage";
 import AdminPanel from "./pages/AdminPanel";
+import IlBaretto from "./pages/IlBaretto";
 
 /* REGISTRAZIONI */
 import SceltaRegistrazione from "./pages/SceltaRegistrazione";
@@ -119,14 +120,7 @@ function AppContent() {
         <Route path="/mappa" element={<MapPage />} />
         <Route path="/venues" element={<PageShell><Venues /></PageShell>} />
 
-        <Route
-          path="/baretto"
-          element={
-            <PageShell>
-              <IlBaretto />
-            </PageShell>
-          }
-        />
+        {/* Route /baretto rimossa */}
 
         <Route
           path="/profilo/:id"
@@ -146,7 +140,7 @@ function AppContent() {
           }
         />
 
-        <Route path="/community" element={<PageShell><Community /></PageShell>} />
+        {/* Route /community rimossa */}
 
         {/* PROTETTE */}
 
@@ -228,6 +222,7 @@ function AppContent() {
         {/* FALLBACK */}
         <Route path="*" element={<Navigate to="/" />} />
 
+        {/* Rotte legacy rimosse */}
       </Routes>
     </>
   );
