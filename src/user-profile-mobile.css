@@ -10,14 +10,16 @@
     align-items: flex-start;
   }
   .user-profile-mobile-card {
-    width: calc(100vw - 24px);
+    width: 100%;
     max-width: 420px;
     background: #181818;
     border-radius: 0 0 18px 18px;
     padding: 16px 12px 32px 12px;
     box-shadow: none;
-    margin: 0 auto;
+    margin-left: auto;
+    margin-right: auto;
     color: #fff;
+    box-sizing: border-box;
   }
   .user-profile-mobile-title {
     color: #f5a623;
