@@ -668,9 +668,6 @@ export default function Home() {
       </section>
         <section className="content-section" style={{ padding: "40px 60px", maxWidth: 1400, margin: "0 auto" }}>
           <div className="flex justify-center">
-            <Link to="/registrati" className="btn btn-primary text-lg px-8 py-4 rounded-full shadow-md hover:bg-orange-600 transition font-bold" style={{ background: "#FF8800", color: "#fff" }}>
-              Registrati ora
-            </Link>
           </div>
         </section>
 
@@ -683,38 +680,6 @@ export default function Home() {
           textAlign: "center",
           backdropFilter: "blur(10px)",
         }}>
-          <h3 style={{ fontSize: "clamp(20px, 3.5vw, 28px)", fontWeight: 800, marginBottom: 12, color: "#ffffff" }}>
-            Inizia ora
-          </h3>
-          <p style={{ fontSize: "clamp(13px, 1.8vw, 16px)", color: "#aaa", maxWidth: 500, margin: "0 auto 32px", lineHeight: 1.6 }}>
-            Registrati per scoprire tutti i vantaggi della community e condividere le tue recensioni.
-          </p>
-          <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
-            <button
-              onClick={() => navigate("/registrati")}
-              style={{
-                background: "#f5a623",
-                color: "#0b0b0b",
-                border: "none",
-                padding: "12px 32px",
-                borderRadius: 8,
-                fontWeight: "bold",
-                fontSize: "clamp(13px, 1.5vw, 16px)",
-                cursor: "pointer",
-                transition: "all 0.3s ease",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "#e59400";
-                e.currentTarget.style.transform = "translateY(-2px)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "#f5a623";
-                e.currentTarget.style.transform = "translateY(0)";
-              }}
-            >
-              Registrati
-            </button>
-          </div>
         </div>
       </section>
 
