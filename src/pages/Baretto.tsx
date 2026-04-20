@@ -165,13 +165,20 @@ export default function Baretto() {
         display: "flex",
         flexDirection: typeof window !== "undefined" && window.innerWidth < 800 ? "column" : "row",
         gap: 0,
-        padding: 24,
-        alignItems: "flex-start",
-        minHeight: "70vh"
+        padding: typeof window !== "undefined" && window.innerWidth < 800 ? 10 : 24,
+        alignItems: typeof window !== "undefined" && window.innerWidth < 800 ? "stretch" : "flex-start",
+        minHeight: typeof window !== "undefined" && window.innerWidth < 800 ? "90vh" : "70vh",
+        width: "100%"
       }}
     >
       {/* Colonna sinistra: lista stanze + admin */}
-      <div style={{ minWidth: 160, maxWidth: 200, flex: "0 0 180px", display: 'flex', flexDirection: 'column', alignItems: 'stretch', marginRight: 0 }}>
+      <div style={{
+        minWidth: typeof window !== "undefined" && window.innerWidth < 800 ? "auto" : 160,
+        maxWidth: typeof window !== "undefined" && window.innerWidth < 800 ? "100%" : 200,
+        flex: typeof window !== "undefined" && window.innerWidth < 800 ? "none" : "0 0 180px",
+        display: 'flex', flexDirection: 'column', alignItems: 'stretch', marginRight: 0,
+        marginBottom: typeof window !== "undefined" && window.innerWidth < 800 ? 18 : 0
+      }}>
         {errore && <div style={{ color: "#fff", background: "#f55", padding: 8, borderRadius: 8, marginBottom: 12, fontSize: 14 }}>{errore}</div>}
         {/* Lista utenti online/offline */}
         <div style={{ marginBottom: 40 }}>
@@ -352,11 +359,25 @@ export default function Baretto() {
         )}
       </div>
       {/* Riga gialla verticale tra le colonne */}
-      <div style={{ width: 2, background: '#f5a623', minHeight: '60vh', margin: '0 24px', borderRadius: 2, alignSelf: 'stretch', display: typeof window !== "undefined" && window.innerWidth < 800 ? 'none' : 'block' }} />
+      <div style={{ width: 2, background: '#f5a623', minHeight: '60vh', margin: typeof window !== "undefined" && window.innerWidth < 800 ? '18px 0' : '0 24px', borderRadius: 2, alignSelf: 'stretch', display: typeof window !== "undefined" && window.innerWidth < 800 ? 'none' : 'block' }} />
       {/* Colonna destra: chat */}
-      <div style={{ flex: 1, color: "#fff", marginTop: 0, minHeight: 400, display: "flex", flexDirection: "column", position: "relative" }}>
+      <div style={{
+        flex: 1,
+        color: "#fff",
+        marginTop: 0,
+        minHeight: typeof window !== "undefined" && window.innerWidth < 800 ? 220 : 400,
+        display: "flex",
+        flexDirection: "column",
+        position: "relative",
+        width: typeof window !== "undefined" && window.innerWidth < 800 ? "100%" : undefined,
+      }}>
         {/* Titoli stanze in alto, cliccabili, come box gialli */}
-        <div style={{ display: "flex", gap: 12, marginBottom: 18 }}>
+        <div style={{
+          display: "flex",
+          gap: typeof window !== "undefined" && window.innerWidth < 800 ? 6 : 12,
+          marginBottom: typeof window !== "undefined" && window.innerWidth < 800 ? 10 : 18,
+          flexWrap: typeof window !== "undefined" && window.innerWidth < 800 ? "wrap" : undefined,
+        }}>
           {stanze.map((nome) => (
             <button
               key={nome}
@@ -380,7 +401,13 @@ export default function Baretto() {
           ))}
         </div>
         {/* Lista messaggi */}
-        <div style={{ flex: 1, overflowY: "auto", marginBottom: 80 }}>
+        <div style={{
+          flex: 1,
+          overflowY: "auto",
+          marginBottom: typeof window !== "undefined" && window.innerWidth < 800 ? 70 : 80,
+          padding: typeof window !== "undefined" && window.innerWidth < 800 ? "0 2px" : 0,
+          fontSize: typeof window !== "undefined" && window.innerWidth < 800 ? 15 : 16,
+        }}>
           {messaggi.map(msg => (
             <div key={msg.id} style={{ marginBottom: 12 }}>
               <span style={{ color: "#f5a623", fontWeight: 700 }}>{msg.username}</span>
@@ -396,14 +423,15 @@ export default function Baretto() {
           position: "fixed",
           left: 0,
           right: 0,
-          bottom: 18,
-          background: "transparent",
+          bottom: typeof window !== "undefined" && window.innerWidth < 800 ? 0 : 18,
+          background: typeof window !== "undefined" && window.innerWidth < 800 ? "#181818" : "transparent",
           borderTop: "none",
           display: "flex",
           justifyContent: "center",
-          gap: 8,
-          padding: 0,
-          zIndex: 100
+          gap: typeof window !== "undefined" && window.innerWidth < 800 ? 4 : 8,
+          padding: typeof window !== "undefined" && window.innerWidth < 800 ? "8px 2px 8px 2px" : 0,
+          zIndex: 100,
+          width: "100%"
         }}
       >
         <textarea
@@ -412,22 +440,22 @@ export default function Baretto() {
           rows={1}
           placeholder="Scrivi..."
           style={{
-            width: 420,
-            maxWidth: "98vw",
+            width: typeof window !== "undefined" && window.innerWidth < 800 ? "98vw" : 420,
+            maxWidth: typeof window !== "undefined" && window.innerWidth < 800 ? "98vw" : "98vw",
             borderRadius: 10,
             border: "none",
-            padding: "0 12px",
-            fontSize: 15,
+            padding: typeof window !== "undefined" && window.innerWidth < 800 ? "0 10px" : "0 12px",
+            fontSize: typeof window !== "undefined" && window.innerWidth < 800 ? 17 : 15,
             background: "#222",
             color: "#fff",
-            minHeight: 38,
-            maxHeight: 44,
+            minHeight: typeof window !== "undefined" && window.innerWidth < 800 ? 44 : 38,
+            maxHeight: typeof window !== "undefined" && window.innerWidth < 800 ? 60 : 44,
             resize: "none",
             outline: "none",
             display: "flex",
             alignItems: "center",
             textAlign: "left",
-            lineHeight: "38px"
+            lineHeight: typeof window !== "undefined" && window.innerWidth < 800 ? "44px" : "38px"
           }}
           onKeyDown={e => {
             if (e.key === "Enter" && !e.shiftKey) {
@@ -444,8 +472,8 @@ export default function Baretto() {
             background: "#f5a623",
             color: "#181818",
             fontWeight: 700,
-            fontSize: 17,
-            padding: "10px 22px",
+            fontSize: typeof window !== "undefined" && window.innerWidth < 800 ? 19 : 17,
+            padding: typeof window !== "undefined" && window.innerWidth < 800 ? "12px 18px" : "10px 22px",
             cursor: "pointer"
           }}
         >
