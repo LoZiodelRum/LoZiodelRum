@@ -12,10 +12,10 @@
   }
   .user-profile-mobile-card {
     width: 100%;
-    max-width: 540px;
+    max-width: 98vw;
     background: #181818;
-    border-radius: 22px;
-    padding: 20px 0 36px 0;
+    border-radius: 26px;
+    padding: 24px 0 40px 0;
     box-shadow: 0 2px 16px rgba(0,0,0,0.10);
     margin-left: auto;
     margin-right: auto;
@@ -62,7 +62,9 @@
     letter-spacing: 0.01em;
   }
   .user-profile-mobile-input {
-    width: 100%;
+    width: 92%;
+    margin-left: 4%;
+    margin-right: 4%;
     padding: 10px 12px;
     border-radius: 8px;
     margin-top: 4px;
@@ -71,6 +73,7 @@
     color: #fff;
     border: 1px solid #333;
     box-sizing: border-box;
+    display: block;
   }
   .user-profile-mobile-textarea {
     min-height: 48px;
