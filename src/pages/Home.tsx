@@ -146,38 +146,7 @@ export default function Home() {
       </div>
     </div>
   );
-            display: block !important;
-            white-space: nowrap !important;
-          }
-          .hero-mobile-subtitle {
-            font-size: clamp(14px, 5vw, 20px) !important;
-            line-height: 1.4 !important;
-            max-width: 300px !important;
-            margin-left: auto !important;
-            margin-right: auto !important;
-          }
-          .hero-mobile-buttons {
-            width: 100% !important;
-            display: flex !important;
-            flex-direction: column !important;
-            gap: 12px !important;
-            margin-top: 24px !important;
-            margin-bottom: 0 !important;
-          }
-          .hero-mobile-buttons {
-            flex-direction: column !important;
-            align-items: center !important;
-            width: 100% !important;
-          }
-          .hero-mobile-btn {
-            width: 52% !important;
-            justify-content: flex-start !important;
-          }
-        }
-      `}</style>
-
-// ...rimuovo tutto il codice non valido dopo la chiusura del componente Home
-            font-size: 0.7rem !important;
+}
             padding: 8px 16px !important;
             border-radius: 10px !important;
             display: flex !important;
