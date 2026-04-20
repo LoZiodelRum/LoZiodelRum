@@ -20,11 +20,12 @@ import SignupInviteBox from "../components/SignupInviteBox";
 import BarettoPreview from "../components/BarettoPreview";
 
 export default function Community() {
-  // RIMUOVO IL REDIRECT AUTOMATICO
   return (
     <div className="community-page">
+      {/* Esempio: altri box e componenti della community */}
       <SignupInviteBox />
       <BarettoPreview />
+      {/* ...altri box e componenti... */}
     </div>
   );
 }
