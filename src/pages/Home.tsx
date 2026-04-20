@@ -147,37 +147,6 @@ export default function Home() {
     </div>
   );
 }
-            padding: 8px 16px !important;
-            border-radius: 10px !important;
-            display: flex !important;
-            align-items: center !important;
-            gap: 8px !important;
-          }
-          .content-section {
-            padding: 10px 2px !important;
-            max-width: 100% !important;
-          }
-          .content-section-first { padding-top: 104px !important; margin-top: 76px !important; }
-          .section-grid {
-            grid-template-columns: 1fr !important;
-            gap: 12px !important;
-            padding: 0 2px !important;
-          }
-          .card-box {
-            width: calc(100vw - 8px) !important;
-            max-width: none !important;
-            margin: 0 auto !important;
-            height: auto !important;
-            aspect-ratio: 16 / 10 !important;
-            border-radius: 18px !important;
-          }
-          .section-header { margin-bottom: 16px !important; }
-          .section-title { font-size: clamp(16px, 4.5vw, 20px) !important; line-height: 1.08 !important; }
-          .community-section h2 { font-size: clamp(16px, 4.5vw, 20px) !important; }
-          .community-section p { font-size: clamp(11px, 3vw, 13px) !important; }
-          .section-subtitle { display: block !important; color: #8f8f8f !important; margin-top: 6px !important; font-size: clamp(14px, 3.8vw, 16px) !important; }
-          .section-link { display: none !important; }
-          .card-title { font-size: clamp(11px, 3.2vw, 14px) !important; line-height: 1.15 !important; }
           .card-subtitle { font-size: clamp(10px, 2.8vw, 12px) !important; }
           .card-rating { font-size: clamp(10px, 2.8vw, 12px) !important; padding: 4px 8px !important; top: 8px !important; right: 8px !important; }
           .card-content { padding: 10px !important; }
