@@ -88,13 +88,13 @@ export default function BarettoPreview() {
   return (
     <div
       className="space-y-3 cursor-pointer"
-      onClick={() => navigate("/community/baretto")}
+      onClick={() => navigate("/baretto")}
       role="button"
       tabIndex={0}
       onKeyDown={(event) => {
         if (event.key === "Enter" || event.key === " ") {
           event.preventDefault();
-          navigate("/community/baretto");
+          navigate("/baretto");
         }
       }}
       aria-label="Apri chat Il Baretto"

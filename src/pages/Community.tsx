@@ -20,7 +20,11 @@ import SignupInviteBox from "../components/SignupInviteBox";
 import BarettoPreview from "../components/BarettoPreview";
 
 export default function Community() {
-  const navigate = useNavigate();
-  useEffect(() => { navigate("/baretto", { replace: true }); }, [navigate]);
-  return null;
+  // RIMUOVO IL REDIRECT AUTOMATICO
+  return (
+    <div className="community-page">
+      <SignupInviteBox />
+      <BarettoPreview />
+    </div>
+  );
 }
