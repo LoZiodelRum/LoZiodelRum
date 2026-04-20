@@ -57,32 +57,21 @@ export default function Baretto() {
     async function upsertPresenza() {
       const presenza = {
         id_utente,
-        {/* Bottoni piccoli per tutte le stanze/tavoli */}
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: 6, marginBottom: 12 }}>
-          {stanze.map((nome) => (
-            <button
-              key={nome}
-              onClick={() => setStanzaSelezionata(nome)}
-              style={{
-                padding: '4px 12px',
-                borderRadius: 999,
-                border: stanzaCorrente === nome ? '2px solid #f5a623' : '1px solid #f5a623',
-                background: stanzaCorrente === nome ? '#f5a623' : 'transparent',
-                color: stanzaCorrente === nome ? '#181818' : '#f5a623',
-                fontWeight: 700,
-                fontSize: 14,
-                cursor: 'pointer',
-                transition: 'all 0.2s',
-                marginBottom: 0,
-                marginTop: 0,
-                minWidth: 0,
-                whiteSpace: 'nowrap',
-              }}
-            >
-              {nome}
-            </button>
-          ))}
-        </div>
+        username,
+        stanza: stanzaCorrente,
+        last_active: new Date().toISOString(),
+      };
+      await supabase
+        .from("baretto_presenze")
+        .upsert([presenza], { onConflict: "id_utente,stanza" });
+    }
+    upsertPresenza();
+    const fetchPresenze = async () => {
+      const { data, error } = await supabase
+        .from("baretto_presenze")
+        .select("id_utente, username, stanza, last_active");
+      if (!error && data) setUtentiOnline(data);
+    };
     const channel = supabase
       .channel("baretto-presenze")
       .on(
@@ -94,7 +83,7 @@ export default function Baretto() {
     return () => {
       supabase.removeChannel(channel);
     };
-  }, [stanzaCorrente]);
+  }, [user, stanzaCorrente]);
 
   // Carica messaggi all'avvio
   const [erroreLetturaMessaggi, setErroreLetturaMessaggi] = useState<string | null>(null);
@@ -190,6 +179,32 @@ export default function Baretto() {
           {erroreLetturaMessaggi}
         </div>
       )}
+      {/* Bottoni piccoli per tutte le stanze/tavoli sopra la colonna di destra */}
+      <div style={{ width: '100%', display: 'flex', flexWrap: 'wrap', gap: 8, justifyContent: 'center', marginBottom: 18 }}>
+        {stanze.map((nome) => (
+          <button
+            key={nome}
+            onClick={() => setStanzaSelezionata(nome)}
+            style={{
+              padding: '4px 12px',
+              borderRadius: 999,
+              border: stanzaCorrente === nome ? '2px solid #f5a623' : '1px solid #f5a623',
+              background: stanzaCorrente === nome ? '#f5a623' : 'transparent',
+              color: stanzaCorrente === nome ? '#181818' : '#f5a623',
+              fontWeight: 700,
+              fontSize: 14,
+              cursor: 'pointer',
+              transition: 'all 0.2s',
+              marginBottom: 0,
+              marginTop: 0,
+              minWidth: 0,
+              whiteSpace: 'nowrap',
+            }}
+          >
+            {nome}
+          </button>
+        ))}
+      </div>
       <div style={{ display: "flex", flexDirection: typeof window !== "undefined" && window.innerWidth < 800 ? "column" : "row", minHeight: "100vh", width: "100%", height: "100%" }}>
         <aside
           style={{
