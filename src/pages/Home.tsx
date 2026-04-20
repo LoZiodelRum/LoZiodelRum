@@ -650,22 +650,6 @@ export default function Home() {
           Condividi le tue esperienze, scopri nuovi locali e contribuisci alla cultura del bere consapevole.
         </p>
       </section>
-        <section className="content-section" style={{ padding: "40px 60px", maxWidth: 1400, margin: "0 auto" }}>
-          <div className="flex justify-center">
-          </div>
-        </section>
-
-      <section style={{ padding: "60px 60px", maxWidth: 1400, margin: "0 auto" }}>
-        <div style={{
-          background: "linear-gradient(135deg, rgba(245,166,35,0.12), rgba(245,166,35,0.06))",
-          border: "2px solid rgba(245,166,35,0.3)",
-          borderRadius: 16,
-          padding: "48px 40px",
-          textAlign: "center",
-          backdropFilter: "blur(10px)",
-        }}>
-        </div>
-      </section>
 
       <div style={{ height: 60 }} />
     </div>
