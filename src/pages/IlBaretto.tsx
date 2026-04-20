@@ -283,9 +283,6 @@ const IlBaretto = () => {
         </div>
       </div>
     </div>
-  );
-};
-
   // Funzione admin per creare un tavolo
   async function creaTavolo() {
     const nome = prompt("Nome del nuovo tavolo?");
@@ -296,5 +293,10 @@ const IlBaretto = () => {
       setTavoloAttivo(data[0]);
     }
   }
+
+  return (
+    // ...existing code...
+  );
+};
 
 export default IlBaretto;
