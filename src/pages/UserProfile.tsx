@@ -113,23 +113,23 @@ export default function UserProfile() {
   ];
 
   return (
-    <div className="page fade-in">
-      <div style={card}>
-        <h2 style={{ color: "#f5a623", marginBottom: 20 }}>Profilo Utente</h2>
-        {error && <div style={{ color: "#f55", marginBottom: 10 }}>{error}</div>}
-        {success && <div style={{ color: "#2ecc40", marginBottom: 10 }}>{success}</div>}
+    <div className="page fade-in user-profile-mobile-wrapper">
+      <div className="user-profile-mobile-card">
+        <h2 className="user-profile-mobile-title">Profilo Utente</h2>
+        {error && <div className="user-profile-mobile-error">{error}</div>}
+        {success && <div className="user-profile-mobile-success">{success}</div>}
         <form onSubmit={handleSave}>
-          <div style={{ display: "flex", flexWrap: "wrap", gap: 24 }}>
+          <div className="user-profile-mobile-fields">
             {fields.map((field) => (
-              <div key={field.name} style={{ flex: "1 1 320px", minWidth: 220 }}>
-                <label style={{ color: "#fff", fontWeight: 500 }}>
+              <div key={field.name} className="user-profile-mobile-field">
+                <label className="user-profile-mobile-label">
                   {field.label}
                   {field.type === "select" ? (
                     <select
                       name={field.name}
                       value={form[field.name] || ""}
                       onChange={handleChange}
-                      style={{ width: "100%", padding: 8, borderRadius: 6, marginTop: 4 }}
+                      className="user-profile-mobile-input"
                     >
                       <option value="">Seleziona...</option>
                       {field.options.map((opt: string) => (
@@ -141,7 +141,7 @@ export default function UserProfile() {
                       name={field.name}
                       value={form[field.name] || ""}
                       onChange={handleChange}
-                      style={{ width: "100%", padding: 8, borderRadius: 6, marginTop: 4, minHeight: 60 }}
+                      className="user-profile-mobile-input user-profile-mobile-textarea"
                     />
                   ) : (
                     <input
@@ -149,7 +149,7 @@ export default function UserProfile() {
                       name={field.name}
                       value={form[field.name] || ""}
                       onChange={handleChange}
-                      style={{ width: "100%", padding: 8, borderRadius: 6, marginTop: 4 }}
+                      className="user-profile-mobile-input"
                     />
                   )}
                 </label>
@@ -159,18 +159,7 @@ export default function UserProfile() {
           <button
             type="submit"
             disabled={saving}
-            style={{
-              marginTop: 30,
-              background: "#f5a623",
-              color: "#181818",
-              border: "none",
-              borderRadius: 8,
-              padding: "12px 32px",
-              fontWeight: 700,
-              fontSize: 18,
-              cursor: saving ? "not-allowed" : "pointer",
-              opacity: saving ? 0.7 : 1,
-            }}
+            className="user-profile-mobile-save-btn"
           >
             {saving ? "Salvataggio..." : "Salva"}
           </button>
@@ -179,60 +168,4 @@ export default function UserProfile() {
     </div>
   );
 }
-/* STILI */
-
-const card = {
-  maxWidth: "min(100%, 56rem)",
-  margin: "0 auto",
-  background: "#1A1A1A",
-  padding: 30,
-  borderRadius: 20,
-  color: "white",
-};
-
-const header = {
-  display: "flex",
-  gap: 20,
-  marginBottom: 20,
-};
-
-const avatar: React.CSSProperties = {
-  width: "clamp(4.5rem, 16vw, 6.25rem)",
-  height: "clamp(4.5rem, 16vw, 6.25rem)",
-  borderRadius: "50%",
-  objectFit: "cover",
-};
-
-const name = {
-  fontSize: "clamp(1.5rem, 4.5vw, 1.75rem)",
-  margin: 0,
-};
-
-const username = {
-  opacity: 0.6,
-};
-
-const role = {
-  marginTop: 5,
-  color: "#C47A2C",
-};
-
-const bio = {
-  marginTop: 20,
-  marginBottom: 20,
-  lineHeight: 1.5,
-};
-
-const section = {
-  marginTop: 30,
-};
-
-const sectionTitle = {
-  marginBottom: 10,
-  color: "#C47A2C",
-};
-
-const row = {
-  padding: "6px 0",
-  borderBottom: "1px solid #333",
-};
+import "../user-profile-mobile.css";
