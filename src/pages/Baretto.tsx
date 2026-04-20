@@ -405,7 +405,8 @@ export default function Baretto() {
                   .select("*")
                   .order("created_at", { ascending: true });
                 if (!error && data) {
-                  setMessaggi(data);
+                  // Mostra solo i messaggi della stanza selezionata
+                  setMessaggi(data.filter((m: any) => m.stanza === stanzaCorrente));
                 } else {
                   setMessaggi([]);
                 }
