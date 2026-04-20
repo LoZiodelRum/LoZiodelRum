@@ -102,6 +102,24 @@ const IlBaretto = () => {
     setMessaggi([]); // Nessun messaggio fake
   }, []);
 
+  // Caricamento messaggi reali da Supabase
+  useEffect(() => {
+    async function fetchMessaggi() {
+      const { data, error } = await supabase
+        .from("baretto_messaggi")
+        .select("*")
+        .order("created_at", { ascending: true });
+      if (!error && data) setMessaggi(data);
+    }
+    fetchMessaggi();
+  }, []);
+
+  // Funzione admin per svuotare la chat
+  async function svuotaChat() {
+    await supabase.from("baretto_messaggi").delete().neq("id", 0); // Elimina tutti i messaggi
+    setMessaggi([]);
+  }
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messaggi]);
@@ -126,7 +144,7 @@ const IlBaretto = () => {
         utenti={utenti}
         onSelectTavolo={(t: any) => { setTavoloAttivo(t); setSidebarOpen(false); }}
         onCreaTavolo={() => alert("TODO: crea tavolo")}
-        onSvuotaChat={() => alert("TODO: svuota chat")}
+        onSvuotaChat={svuotaChat}
         tavoloAttivoId={tavoloAttivo?.id}
       />
       {/* Hamburger menu */}
