@@ -140,7 +140,7 @@ const IlBaretto = () => {
   // Funzione admin per eliminare il tavolo attivo (tranne Generale)
   async function eliminaTavolo() {
     if (!tavoloAttivo || tavoloAttivo.id === 1) return;
-    await supabase.from("baretto_tavoli").delete().eq("id", tavoloAttivo.id);
+    await supabase.from("baretto_stanze").delete().eq("id", tavoloAttivo.id);
     setTavoli((prev: any[]) => prev.filter((t) => t.id !== tavoloAttivo.id));
     setTavoloAttivo({ id: 1, nome: "Generale" });
   }
@@ -292,7 +292,7 @@ export default IlBaretto;
   async function creaTavolo() {
     const nome = prompt("Nome del nuovo tavolo?");
     if (!nome || !nome.trim()) return;
-    const { data, error } = await supabase.from("baretto_tavoli").insert({ nome }).select();
+    const { data, error } = await supabase.from("baretto_stanze").insert({ nome }).select();
     if (!error && data && data[0]) {
       setTavoli((prev: any[]) => [...prev, data[0]]);
       setTavoloAttivo(data[0]);
