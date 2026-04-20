@@ -149,8 +149,9 @@ export default function Baretto() {
           background: "transparent",
           borderTop: "none",
           display: "flex",
+          justifyContent: "center",
           gap: 8,
-          padding: "0 24px 0 24px",
+          padding: 0,
           zIndex: 100
         }}
       >
@@ -158,19 +159,23 @@ export default function Baretto() {
           value={testoNuovo}
           onChange={e => setTestoNuovo(e.target.value)}
           rows={1}
-          placeholder={`Scrivi in ${stanzaCorrente}...`}
+          placeholder="Scrivi..."
           style={{
-            flex: 1,
+            width: 320,
+            maxWidth: "90vw",
             borderRadius: 10,
             border: "none",
-            padding: "4px 10px",
+            padding: "0 12px",
             fontSize: 15,
             background: "#222",
             color: "#fff",
             minHeight: 28,
             maxHeight: 38,
             resize: "none",
-            outline: "none"
+            outline: "none",
+            display: "flex",
+            alignItems: "center",
+            textAlign: "left"
           }}
           onKeyDown={e => {
             if (e.key === "Enter" && !e.shiftKey) {
