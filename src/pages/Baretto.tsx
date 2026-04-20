@@ -145,12 +145,12 @@ export default function Baretto() {
           position: "fixed",
           left: 0,
           right: 0,
-          bottom: 0,
-          background: "#181818",
-          borderTop: "1.5px solid #222",
+          bottom: 18,
+          background: "transparent",
+          borderTop: "none",
           display: "flex",
           gap: 8,
-          padding: "12px 24px 12px 24px",
+          padding: "0 24px 0 24px",
           zIndex: 100
         }}
       >
@@ -163,12 +163,12 @@ export default function Baretto() {
             flex: 1,
             borderRadius: 10,
             border: "none",
-            padding: "10px 12px",
-            fontSize: 17,
+            padding: "4px 10px",
+            fontSize: 15,
             background: "#222",
             color: "#fff",
-            minHeight: 38,
-            maxHeight: 60,
+            minHeight: 28,
+            maxHeight: 38,
             resize: "none",
             outline: "none"
           }}
