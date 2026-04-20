@@ -7,6 +7,25 @@ import { useUser } from "../context/UserContext";
 const STANZA_DEFAULT = "Generale";
 
 export default function Baretto() {
+      const creaTavolo = async () => {
+        const nome = nomeNuovoTavolo.trim();
+        if (!nome || nome === STANZA_DEFAULT) return;
+        if (stanze.includes(nome)) {
+          alert("Esiste già un tavolo con questo nome.");
+          return;
+        }
+        const { error } = await supabase.from("baretto_stanze").insert([{ nome }]);
+        if (error) {
+          alert("Errore nella creazione del tavolo.");
+          return;
+        }
+        setStanze([...stanze, nome]);
+        setStanzaSelezionata(nome);
+        setShowCreaTavolo(false);
+      };
+    // Stato modale creazione tavolo
+    const [showCreaTavolo, setShowCreaTavolo] = useState(false);
+    const [nomeNuovoTavolo, setNomeNuovoTavolo] = useState("");
   // Stato utenti online/offline (da popolare con dati reali)
   const [utenti, setUtenti] = useState<{ username: string; online: boolean }[]>([]);
 
@@ -19,15 +38,48 @@ export default function Baretto() {
   const [testoNuovo, setTestoNuovo] = useState("");
   // Carica messaggi della stanza selezionata (svuota placeholder)
   useEffect(() => {
-    setMessaggi([]);
+    async function fetchMessaggi() {
+      if (!stanzaCorrente) return;
+      const { data, error } = await supabase
+        .from("baretto_messaggi")
+        .select("id, testo, username, created_at")
+        .eq("stanza", stanzaCorrente)
+        .order("created_at", { ascending: true });
+      if (!error && data) {
+        setMessaggi(data);
+      } else {
+        setMessaggi([]);
+      }
+    }
+    fetchMessaggi();
   }, [stanzaCorrente]);
 
-  // Invia messaggio (mock, solo aggiunta locale)
-  function inviaMessaggio(e:any) {
+  // Invia messaggio realmente su Supabase
+  async function inviaMessaggio(e:any) {
     e.preventDefault();
     if (!testoNuovo.trim()) return;
-    setMessaggi([...messaggi, {id:Date.now(), testo:testoNuovo, username:"Tu", created_at:new Date().toISOString()}]);
-    setTestoNuovo("");
+    // Recupera username reale
+    const user = supabase.auth.getUser ? (await supabase.auth.getUser()).data.user : null;
+    const username = user?.user_metadata?.username || user?.email || "Anon";
+    const { error } = await supabase.from("baretto_messaggi").insert([
+      {
+        testo: testoNuovo,
+        stanza: stanzaCorrente,
+        username,
+      },
+    ]);
+    if (!error) {
+      // Ricarica messaggi
+      const { data } = await supabase
+        .from("baretto_messaggi")
+        .select("id, testo, username, created_at")
+        .eq("stanza", stanzaCorrente)
+        .order("created_at", { ascending: true });
+      setMessaggi(data || []);
+      setTestoNuovo("");
+    } else {
+      alert("Errore nell'invio del messaggio");
+    }
   }
 
   useEffect(() => {
@@ -92,27 +144,93 @@ export default function Baretto() {
             cursor: "pointer",
             marginBottom: 12
           }}
-          onClick={async () => {
-            const nome = window.prompt("Nome del nuovo tavolo?");
-            if (!nome || nome.trim() === "" || nome === STANZA_DEFAULT) return;
-            const nomePulito = nome.trim();
-            // Verifica che non esista già
-            if (stanze.includes(nomePulito)) {
-              alert("Esiste già un tavolo con questo nome.");
-              return;
-            }
-            // Inserisci su Supabase
-            const { error } = await supabase.from("baretto_stanze").insert([{ nome: nomePulito }]);
-            if (error) {
-              alert("Errore nella creazione del tavolo.");
-              return;
-            }
-            setStanze([...stanze, nomePulito]);
-            setStanzaSelezionata(nomePulito);
+          onClick={() => {
+            setNomeNuovoTavolo("");
+            setShowCreaTavolo(true);
           }}
         >
           Crea un tavolo
         </button>
+              {/* Modale custom per creazione tavolo */}
+              {showCreaTavolo && (
+                <div style={{
+                  position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", background: "rgba(24,18,10,0.92)", zIndex: 1000,
+                  display: "flex", alignItems: "center", justifyContent: "center"
+                }}>
+                  <div style={{
+                    background: "linear-gradient(135deg, #181818 80%, #f5a62322 100%)",
+                    borderRadius: 22,
+                    padding: "44px 36px 32px 36px",
+                    minWidth: 320,
+                    boxShadow: "0 8px 32px #000c, 0 0 0 4px #f5a62355",
+                    border: "3px solid #f5a623",
+                    display: 'flex', flexDirection: 'column', alignItems: 'center',
+                    position: 'relative',
+                  }}>
+                    <div style={{ position: 'absolute', top: 18, left: 18, fontSize: 28, color: '#f5a623', opacity: 0.8 }}>
+                      🥃
+                    </div>
+                    <div style={{ color: "#f5a623", fontWeight: 900, fontSize: 26, marginBottom: 18, fontFamily: 'serif', letterSpacing: 1 }}>
+                      Crea un nuovo tavolo
+                    </div>
+                    <input
+                      autoFocus
+                      value={nomeNuovoTavolo}
+                      onChange={e => setNomeNuovoTavolo(e.target.value)}
+                      placeholder="Nome tavolo..."
+                      style={{
+                        width: 230,
+                        padding: "12px 16px",
+                        borderRadius: 10,
+                        border: "2.5px solid #f5a623",
+                        background: "#222",
+                        color: "#fff",
+                        fontSize: 18,
+                        marginBottom: 22,
+                        outline: "none",
+                        fontFamily: 'inherit',
+                        boxShadow: '0 2px 12px #0007',
+                        textAlign: 'center',
+                        letterSpacing: 0.5,
+                      }}
+                      onKeyDown={e => { if (e.key === 'Enter') creaTavolo(); }}
+                    />
+                    <div style={{ display: 'flex', gap: 18 }}>
+                      <button
+                        style={{
+                          padding: "9px 26px",
+                          borderRadius: 10,
+                          border: "2px solid #f5a623",
+                          background: "#181818",
+                          color: "#f5a623",
+                          fontWeight: 700,
+                          fontSize: 17,
+                          cursor: "pointer",
+                          fontFamily: 'inherit',
+                          transition: 'background 0.2s, color 0.2s',
+                        }}
+                        onClick={() => setShowCreaTavolo(false)}
+                      >Annulla</button>
+                      <button
+                        style={{
+                          padding: "9px 26px",
+                          borderRadius: 10,
+                          border: "none",
+                          background: "#f5a623",
+                          color: "#181818",
+                          fontWeight: 900,
+                          fontSize: 17,
+                          cursor: "pointer",
+                          fontFamily: 'inherit',
+                          boxShadow: '0 2px 8px #f5a62333',
+                          transition: 'background 0.2s, color 0.2s',
+                        }}
+                        onClick={creaTavolo}
+                      >Crea</button>
+                    </div>
+                  </div>
+                </div>
+              )}
         {isAdmin && stanzaCorrente && (
           <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 12 }}>
             <button
@@ -125,13 +243,19 @@ export default function Baretto() {
               <button
                 style={{ padding: "8px 0", borderRadius: 999, border: "2px solid #f55", background: "#181818", color: "#f55", fontWeight: 700, fontSize: 16, cursor: "pointer" }}
                 onClick={async () => {
-                  if (!window.confirm(`Vuoi davvero eliminare il tavolo \"${stanzaCorrente}\"? Tutti i messaggi saranno cancellati e il tavolo sarà rimosso.`)) return;
+                  if (!window.confirm(`Vuoi davvero eliminare il tavolo "${stanzaCorrente}"? Tutti i messaggi saranno cancellati e il tavolo sarà rimosso.`)) return;
                   // Elimina tutti i messaggi della stanza
                   await supabase.from("baretto_messaggi").delete().eq("stanza", stanzaCorrente);
                   // Elimina la stanza
                   await supabase.from("baretto_stanze").delete().eq("nome", stanzaCorrente);
-                  // Aggiorna lista stanze
-                  setStanze(stanze.filter(s => s !== stanzaCorrente));
+                  // Aggiorna lista stanze con fetch reale
+                  const { data, error } = await supabase.from("baretto_stanze").select("nome");
+                  if (!error && data) {
+                    const nomi = data.map((row) => row.nome).filter(Boolean);
+                    setStanze([STANZA_DEFAULT, ...nomi.filter(n => n !== STANZA_DEFAULT)]);
+                  } else {
+                    setStanze(stanze.filter(s => s !== stanzaCorrente));
+                  }
                   setStanzaSelezionata(STANZA_DEFAULT);
                 }}
               >
