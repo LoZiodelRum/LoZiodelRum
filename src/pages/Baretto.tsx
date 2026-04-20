@@ -401,6 +401,44 @@ export default function Baretto() {
         >
           Crea un tavolo
         </button>
+        {isAdmin && (
+          <button
+            onClick={async () => {
+              if (!stanzaCorrente) return;
+              if (stanzaCorrente === STANZA_DEFAULT) {
+                // Solo svuota i messaggi della Generale
+                if (window.confirm("Vuoi davvero cancellare tutti i messaggi della chat Generale?")) {
+                  await supabase.from("baretto_messaggi").delete().eq("stanza", STANZA_DEFAULT);
+                  setMessaggi(messaggi.filter(m => m.stanza !== STANZA_DEFAULT));
+                }
+              } else {
+                // Elimina tavolo e messaggi
+                if (window.confirm(`Vuoi davvero eliminare il tavolo '${stanzaCorrente}' e tutti i suoi messaggi?`)) {
+                  await supabase.from("baretto_messaggi").delete().eq("stanza", stanzaCorrente);
+                  await supabase.from("baretto_presenze").delete().eq("stanza", stanzaCorrente);
+                  setStanze(stanze.filter(s => s !== stanzaCorrente));
+                  setStanzaSelezionata(STANZA_DEFAULT);
+                  setMessaggi(messaggi.filter(m => m.stanza !== stanzaCorrente));
+                }
+              }
+            }}
+            style={{
+              width: "100%",
+              padding: typeof window !== "undefined" && window.innerWidth < 800 ? "3px 0" : "13px 0",
+              borderRadius: 999,
+              border: "1px solid #f55",
+              background: "#181818",
+              color: "#f55",
+              fontWeight: 700,
+              fontSize: typeof window !== "undefined" && window.innerWidth < 800 ? 12 : "1.13rem",
+              cursor: "pointer",
+              marginBottom: typeof window !== "undefined" && window.innerWidth < 800 ? 1 : 0,
+              marginTop: 6,
+            }}
+          >
+            {stanzaCorrente === STANZA_DEFAULT ? "Svuota chat Generale" : `Elimina tavolo e chat`}
+          </button>
+        )}
       </aside>
       <main
         style={{
