@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, useContext } from "react";
-import { UserContext } from "../context/UserContext";
+import { useUser } from "../context/UserContext";
 import { supabase } from "../lib/supabaseClient";
 import "../App.css";
 
@@ -80,7 +80,7 @@ const Sidebar = ({ open, onClose, tavoli, utenti, onSelectTavolo, onCreaTavolo, 
 );
 
 const IlBaretto = () => {
-  const { user } = useContext(UserContext);
+  const { user } = useUser();
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [tavoli, setTavoli] = useState<any[]>([]);
   const [utenti, setUtenti] = useState<any[]>([]);
