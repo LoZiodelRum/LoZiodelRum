@@ -12,7 +12,7 @@ const MenuIcon = ({ onClick }: { onClick: () => void }) => (
   </div>
 );
 
-const Sidebar = ({ open, onClose, tavoli, utenti, onSelectTavolo, onCreaTavolo, onSvuotaChat, tavoloAttivoId }: any) => (
+const Sidebar = ({ open, onClose, tavoli, utenti, onSelectTavolo, onCreaTavolo, onSvuotaChat, onEliminaTavolo, tavoloAttivoId }: any) => (
   <div
     style={{
       position: "fixed",
@@ -137,6 +137,14 @@ const IlBaretto = () => {
     setMessaggi([]);
   }
 
+  // Funzione admin per eliminare il tavolo attivo (tranne Generale)
+  async function eliminaTavolo() {
+    if (!tavoloAttivo || tavoloAttivo.id === 1) return;
+    await supabase.from("baretto_tavoli").delete().eq("id", tavoloAttivo.id);
+    setTavoli((prev: any[]) => prev.filter((t) => t.id !== tavoloAttivo.id));
+    setTavoloAttivo({ id: 1, nome: "Generale" });
+  }
+
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messaggi]);
@@ -165,8 +173,9 @@ const IlBaretto = () => {
         tavoli={tavoli}
         utenti={utenti}
         onSelectTavolo={(t: any) => { setTavoloAttivo(t); setSidebarOpen(false); }}
-        onCreaTavolo={() => alert("TODO: crea tavolo")}
+        onCreaTavolo={creaTavolo}
         onSvuotaChat={svuotaChat}
+        onEliminaTavolo={eliminaTavolo}
         tavoloAttivoId={tavoloAttivo?.id}
       />
       {/* Hamburger menu */}
@@ -278,3 +287,14 @@ const IlBaretto = () => {
 };
 
 export default IlBaretto;
+
+// Funzione admin per creare un tavolo
+  async function creaTavolo() {
+    const nome = prompt("Nome del nuovo tavolo?");
+    if (!nome || !nome.trim()) return;
+    const { data, error } = await supabase.from("baretto_tavoli").insert({ nome }).select();
+    if (!error && data && data[0]) {
+      setTavoli((prev: any[]) => [...prev, data[0]]);
+      setTavoloAttivo(data[0]);
+    }
+  }
