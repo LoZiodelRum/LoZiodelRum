@@ -12,10 +12,10 @@
   }
   .user-profile-mobile-card {
     width: 100%;
-    max-width: 98vw;
+    max-width: 99vw;
     background: #181818;
     border-radius: 26px;
-    padding: 24px 0 40px 0;
+    padding: 24px 24px 40px 24px;
     box-shadow: 0 2px 16px rgba(0,0,0,0.10);
     margin-left: auto;
     margin-right: auto;
