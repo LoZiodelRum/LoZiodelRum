@@ -147,57 +147,6 @@ export default function Home() {
     </div>
   );
 }
-          .card-subtitle { font-size: clamp(10px, 2.8vw, 12px) !important; }
-          .card-rating { font-size: clamp(10px, 2.8vw, 12px) !important; padding: 4px 8px !important; top: 8px !important; right: 8px !important; }
-          .card-content { padding: 10px !important; }
-          .card-title-clamp {
-            display: -webkit-box !important;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-          }
-
-          /* Solo Locali: box piu larghi su mobile, testo invariato */
-          .locali-section {
-            padding-left: 10px !important;
-            padding-right: 10px !important;
-          }
-          .locali-grid {
-            grid-template-columns: 1fr !important;
-            gap: 14px !important;
-          }
-          .locali-card {
-            width: 100% !important;
-            min-height: 220px !important;
-            aspect-ratio: 16 / 10 !important;
-            border-radius: 18px !important;
-          }
-        }
-
-        @media (max-width: 1024px) {
-        }
-
-        @media (min-width: 481px) and (max-width: 768px) {
-          .card-box { border-radius: 20px !important; }
-        }
-
-        @media (min-width: 390px) and (max-width: 430px) {
-          .content-section { padding: 10px 2px !important; }
-          .section-grid { gap: 12px !important; }
-          .section-title { font-size: 18px !important; }
-          .card-box { border-radius: 16px !important; }
-          .card-title { font-size: 13px !important; }
-          .card-subtitle { font-size: 10px !important; }
-          .card-content { padding: 10px !important; }
-          .card-title-clamp {
-            -webkit-line-clamp: 3;
-          }
-        }
-
-        @media (max-width: 380px) {
-          .hero-mobile-title { font-size: 32px !important; }
-          .hero-mobile-btn { font-size: 0.65rem !important; padding: 7px 14px !important; }
-          .content-section { padding: 10px 2px !important; }
           .section-grid { gap: 10px !important; }
           .card-box { border-radius: 14px !important; }
           .card-title { font-size: 11px !important; }
