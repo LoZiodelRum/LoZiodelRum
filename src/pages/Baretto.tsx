@@ -399,7 +399,16 @@ export default function Baretto() {
               if (!stanzaCorrente) return;
               if (window.confirm("Vuoi davvero svuotare completamente la chat di questa stanza?")) {
                 await supabase.from("baretto_messaggi").delete().eq("stanza", stanzaCorrente);
-                setMessaggi(messaggi.filter(m => m.stanza !== stanzaCorrente));
+                // Ricarica i messaggi dal DB per assicurare che la chat sia effettivamente vuota
+                const { data, error } = await supabase
+                  .from("baretto_messaggi")
+                  .select("*")
+                  .order("created_at", { ascending: true });
+                if (!error && data) {
+                  setMessaggi(data);
+                } else {
+                  setMessaggi([]);
+                }
               }
             }}
             style={{
