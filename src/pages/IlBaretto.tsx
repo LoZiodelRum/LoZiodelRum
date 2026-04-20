@@ -188,12 +188,21 @@ const IlBaretto = () => {
         {/* Messaggi */}
         <div style={{ flex: 1, overflowY: "auto", padding: "18px 0 80px 0" }}>
           {messaggi.map((m) => (
-            <div key={m.id} style={{ margin: "0 18px 18px 18px", display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-              <span style={{ fontWeight: 700, color: "#FF8800", fontSize: 15 }}>{m.user}</span>
-              <span style={{ color: "#fff", fontSize: 17, margin: "2px 0 2px 0", display: "flex", alignItems: "center" }}>
-                {m.testo}
-                <span style={{ color: "#888", fontSize: 13, marginLeft: 12 }}>- {m.timestamp}</span>
+            <div key={m.id} style={{ margin: "0 18px 18px 18px", display: "flex", flexDirection: "row", alignItems: "center" }}>
+              {/* Nome utente con pallino verde se online */}
+              <span style={{ display: "flex", alignItems: "center", fontWeight: 700, color: "#FF8800", fontSize: 15, marginRight: 10 }}>
+                <span style={{
+                  width: 10,
+                  height: 10,
+                  borderRadius: "50%",
+                  background: utenti.find((u:any) => u.nome === m.user && u.online) ? "#1ED760" : "#888",
+                  display: "inline-block",
+                  marginRight: 6
+                }} />
+                {m.user}
               </span>
+              <span style={{ color: "#fff", fontSize: 17, marginRight: 10 }}>{m.testo}</span>
+              <span style={{ color: "#888", fontSize: 13, marginLeft: 6 }}>- {m.timestamp}</span>
             </div>
           ))}
           <div ref={messagesEndRef} />
