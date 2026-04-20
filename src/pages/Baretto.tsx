@@ -164,13 +164,15 @@ export default function Baretto() {
       setTestoNuovo("");
     }
   }
+  // Mostra il pallino verde a tutti gli utenti online, indipendentemente dalla stanza
   const utentiOnlineEffettivi = Array.from(utentiOnlineUniciMap.values()).map(u => {
     let stato = "offline";
     if (u.last_active) {
       const last = new Date(u.last_active).getTime();
       stato = now - last < 30000 ? "online" : "offline";
     }
-    return { ...u, stato };
+    // Forza il pallino verde se online
+    return { ...u, stato: stato === "online" ? "online" : "offline" };
   });
 
   return (
