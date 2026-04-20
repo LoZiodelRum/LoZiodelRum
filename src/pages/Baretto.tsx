@@ -7,6 +7,12 @@ import { useUser } from "../context/UserContext";
 const STANZA_DEFAULT = "Generale";
 
 export default function Baretto() {
+  // MOCK utenti online/offline
+  const [utenti, setUtenti] = useState([
+    { username: "Mario", online: true },
+    { username: "Anna", online: false },
+    { username: "Luca", online: true }
+  ]);
 
   const { isAdmin } = useUser();
   const [stanze, setStanze] = useState<string[]>([STANZA_DEFAULT]);
@@ -57,6 +63,23 @@ export default function Baretto() {
       {/* Colonna sinistra: lista stanze + admin */}
       <div style={{ minWidth: 160, maxWidth: 200, flex: "0 0 180px", display: 'flex', flexDirection: 'column', alignItems: 'stretch', marginRight: 0 }}>
         {errore && <div style={{ color: "#fff", background: "#f55", padding: 8, borderRadius: 8, marginBottom: 12, fontSize: 14 }}>{errore}</div>}
+        {/* Lista utenti online/offline */}
+        <div style={{ marginBottom: 16 }}>
+          <div style={{ color: '#f5a623', fontWeight: 700, marginBottom: 6, fontSize: 15 }}>Utenti online</div>
+          {utenti.map(u => (
+            <div key={u.username} style={{ display: 'flex', alignItems: 'center', gap: 8, marginBottom: 4 }}>
+              <span style={{
+                display: 'inline-block',
+                width: 10,
+                height: 10,
+                borderRadius: '50%',
+                background: u.online ? '#2ecc40' : '#888',
+                border: '1.5px solid #222'
+              }} />
+              <span style={{ color: '#fff', fontWeight: 500, fontSize: 15 }}>{u.username}</span>
+            </div>
+          ))}
+        </div>
         <button
           style={{
             width: "100%",
