@@ -45,7 +45,18 @@ const RankingBox = () => (
   </section>
 );
 
+// Box Il Baretto con numero utenti online
+const IlBarettoBox = ({ online = 0 }: { online: number }) => (
+  <section className="community-box" style={{height: 120, background: "#181818", borderRadius: 8, marginBottom: 16, padding: 16, color: "#fff", cursor: "pointer"}} onClick={() => window.location.href = "/baretto"}>
+    <h2 style={{margin:0, fontSize:18, color:'#FFCC48'}}>Il Baretto</h2>
+    <div style={{marginTop:8, color:'#aaa', fontSize: 22, fontWeight: 700}}>{online} utenti online</div>
+  </section>
+);
+
 export default function Community() {
+  // Simulazione utenti online
+  const [utentiOnline] = useState(5); // Sostituire con dato reale se disponibile
+
   return (
     <div style={{
       display: "flex",
@@ -63,7 +74,7 @@ export default function Community() {
       </div>
       {/* Colonna centrale (simile a grid) */}
       <div style={{flex: 1, padding: 24, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "flex-start"}}>
-        <BarettoPreview />
+        <IlBarettoBox online={utentiOnline} />
         <LatestPostsBox />
         <RankingBox />
       </div>
