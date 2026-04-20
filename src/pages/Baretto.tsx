@@ -48,43 +48,43 @@ export default function Baretto() {
       style={{
         display: "flex",
         flexDirection: typeof window !== "undefined" && window.innerWidth < 800 ? "column" : "row",
-        gap: 32,
+        gap: 0,
         padding: 24,
         alignItems: "flex-start",
         minHeight: "70vh"
       }}
     >
       {/* Colonna sinistra: lista stanze + admin */}
-      <div style={{ minWidth: 220, maxWidth: 320, flex: "0 0 260px" }}>
-        {errore && <div style={{ color: "#fff", background: "#f55", padding: 12, borderRadius: 8, marginBottom: 18 }}>{errore}</div>}
+      <div style={{ minWidth: 160, maxWidth: 200, flex: "0 0 180px", display: 'flex', flexDirection: 'column', alignItems: 'stretch', marginRight: 0 }}>
+        {errore && <div style={{ color: "#fff", background: "#f55", padding: 8, borderRadius: 8, marginBottom: 12, fontSize: 14 }}>{errore}</div>}
         <button
           style={{
             width: "100%",
-            padding: "14px 0",
+            padding: "8px 0",
             borderRadius: 999,
             border: "2px solid #f5a623",
             background: "#181818",
             color: "#f5a623",
             fontWeight: 700,
-            fontSize: 20,
+            fontSize: 16,
             cursor: "pointer",
-            marginBottom: 18
+            marginBottom: 12
           }}
           // TODO: implementa creazione tavolo
         >
           Crea un tavolo
         </button>
         {isAdmin && stanzaCorrente && (
-          <div style={{ display: "flex", flexDirection: "column", gap: 8, marginBottom: 18 }}>
+          <div style={{ display: "flex", flexDirection: "column", gap: 6, marginBottom: 12 }}>
             <button
-              style={{ padding: "8px 18px", borderRadius: 999, border: "2px solid #f5a623", background: "#181818", color: "#f5a623", fontWeight: 700, cursor: "pointer" }}
+              style={{ padding: "8px 0", borderRadius: 999, border: "2px solid #f5a623", background: "#181818", color: "#f5a623", fontWeight: 700, fontSize: 16, cursor: "pointer" }}
               // TODO: implementa svuota chat se richiesto
             >
               Svuota chat
             </button>
             {stanzaCorrente !== STANZA_DEFAULT && (
               <button
-                style={{ padding: "8px 18px", borderRadius: 999, border: "2px solid #f55", background: "#181818", color: "#f55", fontWeight: 700, cursor: "pointer" }}
+                style={{ padding: "8px 0", borderRadius: 999, border: "2px solid #f55", background: "#181818", color: "#f55", fontWeight: 700, fontSize: 16, cursor: "pointer" }}
                 onClick={async () => {
                   if (!window.confirm(`Vuoi davvero eliminare il tavolo \"${stanzaCorrente}\"? Tutti i messaggi saranno cancellati e il tavolo sarà rimosso.`)) return;
                   // Elimina tutti i messaggi della stanza
@@ -102,6 +102,8 @@ export default function Baretto() {
           </div>
         )}
       </div>
+      {/* Riga gialla verticale tra le colonne */}
+      <div style={{ width: 2, background: '#f5a623', minHeight: '60vh', margin: '0 24px', borderRadius: 2, alignSelf: 'stretch', display: typeof window !== "undefined" && window.innerWidth < 800 ? 'none' : 'block' }} />
       {/* Colonna destra: chat */}
       <div style={{ flex: 1, color: "#fff", marginTop: 0, minHeight: 400, display: "flex", flexDirection: "column", position: "relative" }}>
         {/* Titoli stanze in alto, cliccabili, come box gialli */}
@@ -161,16 +163,16 @@ export default function Baretto() {
           rows={1}
           placeholder="Scrivi..."
           style={{
-            width: 320,
-            maxWidth: "90vw",
+            width: 420,
+            maxWidth: "98vw",
             borderRadius: 10,
             border: "none",
             padding: "0 12px",
             fontSize: 15,
             background: "#222",
             color: "#fff",
-            minHeight: 28,
-            maxHeight: 38,
+            minHeight: 32,
+            maxHeight: 44,
             resize: "none",
             outline: "none",
             display: "flex",
