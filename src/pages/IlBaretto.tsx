@@ -71,9 +71,9 @@ const Sidebar = ({ open, onClose, tavoli, utenti, onSelectTavolo, onCreaTavolo, 
           ))}
         </ul>
       </div>
-      <div style={{ marginTop: 18, display: "flex", flexDirection: "column", gap: 10 }}>
-        <button onClick={onCreaTavolo} style={{ background: "#FF8800", color: "#000", border: "none", borderRadius: 8, padding: "10px 0", fontWeight: 700, fontSize: 16, cursor: "pointer" }}>Crea un tavolo</button>
-        <button onClick={onSvuotaChat} style={{ background: "#222", color: "#FF8800", border: "1px solid #FF8800", borderRadius: 8, padding: "10px 0", fontWeight: 700, fontSize: 16, cursor: "pointer" }}>Svuota chat</button>
+      <div style={{ marginTop: 18, display: "flex", flexDirection: "row", gap: 10 }}>
+        <button onClick={onCreaTavolo} style={{ background: "#FF8800", color: "#000", border: "none", borderRadius: 8, padding: "10px 0", fontWeight: 700, fontSize: 16, cursor: "pointer", flex: 1, maxWidth: '50%' }}>Crea un tavolo</button>
+        <button onClick={onSvuotaChat} style={{ background: "#222", color: "#FF8800", border: "1px solid #FF8800", borderRadius: 8, padding: "10px 0", fontWeight: 700, fontSize: 16, cursor: "pointer", flex: 1, maxWidth: '50%' }}>Svuota chat</button>
       </div>
     </div>
   </div>
@@ -91,16 +91,16 @@ const IlBaretto = () => {
 
   // Effetti: caricamento tavoli, utenti, messaggi
   useEffect(() => {
-    // TODO: fetch tavoli, utenti, messaggi da Supabase
     setTavoli([
       { id: 1, nome: "Generale" },
       { id: 2, nome: "Rum" },
       { id: 3, nome: "Whisky" },
     ]);
-    setUtenti([]); // Nessun utente fake
+    // Popola utenti collegati con l'utente attuale
+    setUtenti([{ id: user?.id || 1, nome: user?.username || "Lo Zio", online: true }]);
     setTavoloAttivo({ id: 1, nome: "Generale" });
-    setMessaggi([]); // Nessun messaggio fake
-  }, []);
+    // Messaggi caricati da Supabase
+  }, [user]);
 
   // Caricamento messaggi reali da Supabase
   useEffect(() => {
