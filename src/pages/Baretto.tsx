@@ -1,3 +1,4 @@
+
 import { useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
@@ -11,6 +12,18 @@ export default function Baretto() {
 
   const [stanze, setStanze] = useState<string[]>([STANZA_DEFAULT]);
   const [stanzaCorrente, setStanzaSelezionata] = useState<string>(STANZA_DEFAULT);
+
+  // Carica le stanze da Supabase all'avvio
+  useEffect(() => {
+    async function fetchStanze() {
+      const { data, error } = await supabase.from("baretto_stanze").select("nome");
+      if (!error && data) {
+        const nomi = data.map((row: any) => row.nome).filter(Boolean);
+        setStanze([STANZA_DEFAULT, ...nomi.filter(n => n !== STANZA_DEFAULT)]);
+      }
+    }
+    fetchStanze();
+  }, []);
   const [utentiOnline, setUtentiOnline] = useState<any[]>([]);
   const [messaggi, setMessaggi] = useState<any[]>([]);
   const [testoNuovo, setTestoNuovo] = useState<string>("");
@@ -375,15 +388,21 @@ export default function Baretto() {
           Generale
         </button>
         <button
-          onClick={() => {
+          onClick={async () => {
             const nome = prompt("Nome del nuovo tavolo?");
             if (
               nome &&
               nome.trim() &&
               !stanze.includes(nome.trim())
             ) {
-              setStanze([...stanze, nome.trim()]);
-              setStanzaSelezionata(nome.trim());
+              // Salva su Supabase
+              const { error } = await supabase.from("baretto_stanze").insert({ nome: nome.trim() });
+              if (!error) {
+                setStanze([...stanze, nome.trim()]);
+                setStanzaSelezionata(nome.trim());
+              } else {
+                alert("Errore creazione tavolo: " + (error.message || JSON.stringify(error)));
+              }
             }
           }}
           style={{
