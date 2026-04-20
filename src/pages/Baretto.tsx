@@ -60,7 +60,7 @@ export default function Baretto() {
       <div style={{ minWidth: 160, maxWidth: 200, flex: "0 0 180px", display: 'flex', flexDirection: 'column', alignItems: 'stretch', marginRight: 0 }}>
         {errore && <div style={{ color: "#fff", background: "#f55", padding: 8, borderRadius: 8, marginBottom: 12, fontSize: 14 }}>{errore}</div>}
         {/* Lista utenti online/offline */}
-        <div style={{ marginBottom: 16 }}>
+        <div style={{ marginBottom: 40 }}>
           <div style={{ color: '#f5a623', fontWeight: 700, marginBottom: 6, fontSize: 15 }}>Utenti online</div>
           {utenti.length === 0 && (
             <div style={{ color: '#888', fontSize: 14 }}>Nessun utente online</div>
@@ -193,13 +193,14 @@ export default function Baretto() {
             fontSize: 15,
             background: "#222",
             color: "#fff",
-            minHeight: 32,
+            minHeight: 38,
             maxHeight: 44,
             resize: "none",
             outline: "none",
             display: "flex",
             alignItems: "center",
-            textAlign: "left"
+            textAlign: "left",
+            lineHeight: "38px"
           }}
           onKeyDown={e => {
             if (e.key === "Enter" && !e.shiftKey) {
