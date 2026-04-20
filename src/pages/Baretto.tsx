@@ -191,7 +191,16 @@ export default function Baretto() {
   // Mostra tutti gli utenti, ma pallino verde se online (<30s), grigio se "scollegato"
   const now = Date.now();
   const [utenteOfflineSelezionato, setUtenteOfflineSelezionato] = useState<string|null>(null);
-  const utentiOnlineEffettivi = utentiOnline.map(u => {
+  // Mostra ogni utente una sola volta (per id_utente), scegliendo la presenza più recente
+  const utentiOnlineUniciMap = new Map();
+  utentiOnline.forEach(u => {
+    if (!u.id_utente) return;
+    const esistente = utentiOnlineUniciMap.get(u.id_utente);
+    if (!esistente || new Date(u.last_active).getTime() > new Date(esistente.last_active).getTime()) {
+      utentiOnlineUniciMap.set(u.id_utente, u);
+    }
+  });
+  const utentiOnlineEffettivi = Array.from(utentiOnlineUniciMap.values()).map(u => {
     let stato = "offline";
     if (u.last_active) {
       const last = new Date(u.last_active).getTime();
