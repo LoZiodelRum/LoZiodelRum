@@ -4,6 +4,7 @@ import RecommendedVenues from "../components/home/RecommendedVenues";
 import ExploreMapButton from "../components/home/ExploreMapButton";
 import ArticlesList from "../components/home/ArticlesList";
 import AboutSection from "../components/home/AboutSection";
+import BottomNav from "../components/home/BottomNav";
 import { supabase } from "../lib/supabaseClient";
 
 type Venue = {
@@ -73,13 +74,13 @@ export default function Home() {
   }
 
   return (
-    <div className="bg-black min-h-screen w-full">
+    <div className="bg-black min-h-screen w-full relative pb-[80px]">
       <Hero />
       <RecommendedVenues venues={venues} />
       <ExploreMapButton />
       <ArticlesList articles={articles} />
       <AboutSection />
-      {/* Qui andrebbe la bottom navigation, se richiesta */}
+      <BottomNav />
     </div>
   );
 }
