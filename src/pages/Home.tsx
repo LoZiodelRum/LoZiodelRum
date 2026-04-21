@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import { ArrowRight, MapPin } from "lucide-react";
 import Hero from "../components/home/Hero";
 import RecommendedVenues from "../components/home/RecommendedVenues";
 import ExploreMapButton from "../components/home/ExploreMapButton";
@@ -8,15 +10,18 @@ import BottomNav from "../components/home/BottomNav";
 import { supabase } from "../lib/supabaseClient";
 import { useUser } from "../context/UserContext";
 
-type Venue = {
+
+type Locale = {
   id: string;
-  name: string;
-  city: string;
-  image: string;
-  rating: number;
+  nome: string;
+  citta: string;
+  descrizione?: string;
+  descrizione_completa?: string;
+  image_url?: string | null;
+  overall_rating?: number;
 };
 
-type Article = {
+type Articolo = {
   id: string;
   titolo: string;
   immagine: string | null;
@@ -35,13 +40,13 @@ export default function Home() {
 
   useEffect(() => {
     fetchVenues();
-    fetchArticles();
+    fetchArticoli();
   }, []);
 
   async function fetchVenues() {
     const { data, error } = await supabase
       .from("locali")
-      .select("id, nome, citta, image_url, overall_rating")
+      .select("id, nome, citta, image_url, overall_rating, descrizione, descrizione_completa")
       .order("overall_rating", { ascending: false })
       .limit(6);
 
