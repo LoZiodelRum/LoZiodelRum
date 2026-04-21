@@ -1,261 +1,634 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query';
-import { Zap, ArrowRight, Clock, Eye, MapPin } from 'lucide-react';
-import VenueCard from '../components/VenueCard';
+import "../App.css";
+import { useEffect, useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
+import { ArrowRight, MapPin } from "lucide-react";
+import { supabase } from "../lib/supabaseClient";
+import { useUser } from "../context/UserContext";
+
+type Locale = {
+  id: string;
+  nome: string;
+  citta: string;
+  descrizione?: string | null;
+  descrizione_completa?: string | null;
+  image_url: string | null;
+};
+
+type Articolo = {
+  id: string;
+  titolo: string;
+  immagine: string | null;
+};
+
+const HOME_HERO_VIDEO_VERSION = "2026-04-15-07";
 
 export default function Home() {
+  const { isAdmin } = useUser();
+  const [locali, setLocali] = useState<Locale[]>([]);
+  const [articoli, setArticoli] = useState<Articolo[]>([]);
+  const [editingLocaleId, setEditingLocaleId] = useState<string | null>(null);
+  const [localeDraft, setLocaleDraft] = useState<Partial<Locale> | null>(null);
+  const [savingLocaleId, setSavingLocaleId] = useState<string | null>(null);
+  const navigate = useNavigate();
 
-  // ⚠️ DA COLLEGARE A SUPABASE
-  const { data: venues = [] } = useQuery({
-    queryKey: ['venues-home'],
-    queryFn: async () => {
-      return []; // ← placeholder temporaneo
-    },
-  });
+  useEffect(() => {
+    void fetchLocali();
+    void fetchArticoli();
+  }, []);
 
-  const { data: messages = [] } = useQuery({
-    queryKey: ['chat-preview'],
-    queryFn: async () => {
-      return []; // ← placeholder temporaneo
+  async function fetchLocali() {
+    const { data, error } = await supabase
+      .from("Locali")
+      .select("id, nome, citta, descrizione, descrizione_completa, image_url")
+      .eq("status", "approved")
+      .limit(6);
 
-    import { useEffect, useState } from "react";
-    import { Link } from "react-router-dom";
-    import { MapPin, Star, ArrowRight, Menu, Bell, Search } from "lucide-react";
-    import { supabase } from "../lib/supabaseClient";
-
-    type Venue = {
-      id: string;
-      name: string;
-      city: string;
-      image: string;
-      rating: number;
-    };
-
-    type Article = {
-      id: string;
-      image: string;
-      category: string;
-      title: string;
-      time: string;
-      link: string;
-    };
-
-    export default function Home() {
-      const [venues, setVenues] = useState<Venue[]>([]);
-      const [articles, setArticles] = useState<Article[]>([]);
-
-      useEffect(() => {
-        fetchVenues();
-        fetchArticles();
-      }, []);
-
-      async function fetchVenues() {
-        const { data, error } = await supabase
-          .from("locali")
-          .select("id, nome, citta, image_url, overall_rating")
-          .order("overall_rating", { ascending: false })
-          .limit(6);
-        if (!error && data) {
-          setVenues(
-            data.map((l: any) => ({
-              id: l.id,
-              name: l.nome,
-              city: l.citta,
-              image: l.image_url || "/assets/venue1.jpg",
-              rating: l.overall_rating ?? 4.8,
-            }))
-          );
-        }
-      }
-
-      async function fetchArticles() {
-        const { data, error } = await supabase
-          .from("articoli")
-          .select("id, titolo, immagine, categoria, tempo_lettura")
-          .eq("pubblicato", true)
-          .order("created_at", { ascending: false })
-          .limit(6);
-        if (!error && data) {
-          setArticles(
-            data.map((a: any) => ({
-              id: a.id,
-              image: a.immagine || "/assets/article1.jpg",
-              category: a.categoria || "Cultura",
-              title: a.titolo,
-              time: a.tempo_lettura ? String(a.tempo_lettura) : "5",
-              link: `/magazine/${a.id}`,
-            }))
-          );
-        }
-      }
-
-      return (
-        <div className="min-h-screen w-full bg-[#18120b] flex flex-col items-center pb-[80px]">
-          {/* HERO */}
-          <section className="w-full max-w-[390px] mx-auto relative rounded-b-3xl overflow-hidden shadow-xl bg-black">
-            <img src="/assets/hero-bg.jpg" alt="DrinkWise Hero" className="absolute inset-0 w-full h-full object-cover" />
-            <div className="absolute inset-0 bg-gradient-to-b from-black/60 via-black/40 to-black/90" />
-            {/* Top icons */}
-            <div className="absolute top-3 left-3 flex items-center z-20">
-              <button className="w-8 h-8 rounded-lg bg-white flex items-center justify-center shadow-md">
-                <span className="text-xl text-yellow-500">⚡</span>
-              </button>
-            </div>
-            <div className="absolute top-3 right-3 flex items-center gap-2 z-20">
-              <button className="w-8 h-8 rounded-lg bg-black/60 flex items-center justify-center">
-                <Search size={18} className="text-white" />
-              </button>
-              <button className="w-8 h-8 rounded-lg bg-black/60 flex items-center justify-center">
-                <Bell size={18} className="text-white" />
-              </button>
-            </div>
-            {/* Content */}
-            <div className="relative z-10 w-full px-6 pt-24 pb-8 flex flex-col items-start">
-              <h1 className="text-3xl font-extrabold text-white leading-tight mb-1 drop-shadow-lg">DrinkWise</h1>
-              <h2 className="text-lg font-semibold text-yellow-400 italic mb-3 drop-shadow">sul bere consapevole</h2>
-              <p className="text-white/90 text-base mb-6 max-w-xs drop-shadow">Esplora i migliori locali della tua città e scopri l'arte della mixology premium.</p>
-              <button className="bg-yellow-400 hover:bg-yellow-500 text-black font-bold py-3 px-7 rounded-full shadow-xl text-base transition-all w-full max-w-xs">Entra nella community</button>
-            </div>
-          </section>
-
-          {/* LOCALi CONSIGLIATI */}
-          <section className="w-full max-w-[390px] mx-auto bg-black pt-6 pb-2 px-0">
-            <div className="flex items-center justify-between px-5 mb-3">
-              <h3 className="text-white font-bold text-lg">Locali consigliati</h3>
-              <Link to="/venues" className="text-yellow-500 text-base font-semibold">Vedi tutti</Link>
-            </div>
-            <div className="flex gap-4 overflow-x-auto pb-2 hide-scrollbar px-4">
-              {venues.map((venue) => (
-                <div
-                  key={venue.id}
-                  className="min-w-[240px] max-w-[240px] bg-[#18120b] rounded-2xl overflow-hidden shadow-lg relative flex-shrink-0"
-                  style={{ boxShadow: '0 4px 24px 0 rgba(0,0,0,0.18)' }}
-                >
-                  <img
-                    src={venue.image}
-                    alt={venue.name}
-                    className="w-full h-32 object-cover"
-                    style={{ borderBottomLeftRadius: '1.25rem', borderBottomRightRadius: '1.25rem' }}
-                  />
-                  {/* Badge rating */}
-                  <div className="absolute top-3 right-3 bg-yellow-900/90 rounded-full px-3 py-1 flex items-center gap-1 text-base text-yellow-400 font-bold shadow">
-                    <Star size={16} className="text-yellow-400" fill="#FFD600" />
-                    <span>{venue.rating}</span>
-                  </div>
-                  <div className="p-4 pt-3">
-                    <div className="text-white font-extrabold text-base leading-tight mb-1 truncate flex items-center">
-                      {venue.name}
-                    </div>
-                    <div className="flex items-center gap-1 text-yellow-500 text-sm font-medium">
-                      <MapPin size={14} className="text-yellow-500" />
-                      <span className="text-white/80 text-sm font-normal ml-1">{venue.city}</span>
-                    </div>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </section>
-
-          {/* ESPLORA MAPPA */}
-          <section className="w-full max-w-[390px] mx-auto px-4 pt-2 pb-6">
-            <button className="w-full bg-[#3a280e] hover:bg-yellow-900/80 text-white font-bold py-5 rounded-2xl flex items-center gap-4 text-lg shadow-xl transition-all relative border-none" style={{boxShadow: '0 4px 24px 0 rgba(0,0,0,0.18)'}}>
-              <span className="flex items-center justify-center w-10 h-10 bg-[#2a1d0a] rounded-full mr-2">
-                <MapPin size={22} className="text-yellow-400" />
-              </span>
-              <div className="flex flex-col items-start flex-1">
-                <span className="font-extrabold text-white text-base leading-tight">ESPLORA MAPPA</span>
-                <span className="text-white/70 text-sm font-normal mt-0.5">Trova i locali più vicini a te</span>
-              </div>
-              <span className="ml-auto text-yellow-400 text-2xl font-bold"><ArrowRight size={22} /></span>
-            </button>
-          </section>
-
-          {/* ULTIMI ARTICOLI */}
-          <section className="w-full max-w-[390px] mx-auto px-0 pt-2 pb-6">
-            <h3 className="text-white font-bold text-lg mb-4 px-5">Ultimi articoli</h3>
-            <div className="flex flex-col gap-4 px-4">
-              {articles.map((a) => (
-                <Link
-                  href={a.link}
-                  key={a.id}
-                  className="flex gap-4 bg-[#18120b] rounded-2xl p-4 items-center shadow-lg min-h-[90px] max-w-full"
-                  style={{ boxShadow: '0 4px 24px 0 rgba(0,0,0,0.18)' }}
-                >
-                  <img
-                    src={a.image}
-                    alt={a.title}
-                    className="w-16 h-16 rounded-xl object-cover flex-shrink-0"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <div className="inline-block bg-yellow-900/80 text-yellow-400 text-xs font-bold rounded-lg px-3 py-1 mb-2">
-                      {a.category}
-                    </div>
-                    <div className="text-white font-extrabold text-sm leading-tight truncate mb-2">
-                      {a.title}
-                    </div>
-                    <div className="flex items-center gap-3 text-xs text-white/70">
-                      <span className="flex items-center gap-1">
-                        <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path stroke="#FFD600" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M12 8v4l3 1"/></svg>
-                        {a.time} min lettura
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <svg width="14" height="14" fill="none" viewBox="0 0 24 24"><path stroke="#FFD600" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M8 12h8M8 16h8M8 8h8"/></svg>
-                        Approfondisci
-                      </span>
-                    </div>
-                  </div>
-                </Link>
-              ))}
-            </div>
-          </section>
-
-          {/* ABOUT/FOOTER */}
-          <section className="w-full max-w-[390px] mx-auto px-0 pt-8 pb-32 text-center bg-black">
-            <div className="flex flex-col items-center w-full">
-              <div className="w-16 h-1 rounded-full bg-yellow-900/80 mb-6" />
-              <h4 className="text-white font-extrabold text-lg mb-3">Lo Zio del Rum</h4>
-              <p className="text-white/80 text-base mb-6 max-w-md mx-auto">Un viaggio nel mondo degli spiriti pregiati, selezionati con cura per la tua esperienza definitiva.</p>
-              <div className="flex justify-center gap-6 mb-6">
-                <div className="relative">
-                  <img src="/assets/avatar1.png" alt="avatar1" className="w-12 h-12 rounded-full border-4 border-black object-cover" />
-                  <span className="absolute bottom-2 right-2 w-3 h-3 bg-green-400 border-2 border-black rounded-full" />
-                </div>
-                <div className="relative">
-                  <img src="/assets/avatar2.png" alt="avatar2" className="w-12 h-12 rounded-full border-4 border-black object-cover" />
-                  <span className="absolute bottom-2 right-2 w-3 h-3 bg-green-400 border-2 border-black rounded-full" />
-                </div>
-                <div className="relative">
-                  <img src="/assets/avatar3.png" alt="avatar3" className="w-12 h-12 rounded-full border-4 border-black object-cover" />
-                  <span className="absolute bottom-2 right-2 w-3 h-3 bg-yellow-400 border-2 border-black rounded-full" />
-                </div>
-              </div>
-              <div className="text-white/40 text-xs mt-2">
-                © 2024 DRINKWISE APP. TUTTI I DIRITTI RISERVATI.
-              </div>
-            </div>
-          </section>
-
-          {/* BOTTOM NAV */}
-          <nav className="fixed bottom-0 left-0 w-full bg-black border-t border-black/40 z-50 flex justify-around items-center h-[70px] px-2 max-w-[390px] mx-auto" style={{boxShadow: '0 -2px 16px 0 rgba(0,0,0,0.18)'}}>
-            {[
-              { label: "Home", icon: <svg width="28" height="28" fill="none" viewBox="0 0 24 24"><path stroke="#FFD600" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M3 11.5L12 5l9 6.5V19a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-7.5z"/><path stroke="#FFD600" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M9 22V12h6v10"/></svg>, to: "/", active: true },
-              { label: "Mappa", icon: <svg width="28" height="28" fill="none" viewBox="0 0 24 24"><path stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M3 6l7.5-2.5M21 6l-7.5-2.5M3 6v13l7.5 2.5M3 6l7.5 2.5M21 6v13l-7.5 2.5M21 6l-7.5 2.5M12 21v-13"/></svg>, to: "/mappa" },
-              { label: "Crea", icon: <svg width="28" height="28" fill="none" viewBox="0 0 24 24"><path stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M12 5v14m7-7H5"/></svg>, to: "/crea" },
-              { label: "Community", icon: <svg width="28" height="28" fill="none" viewBox="0 0 24 24"><path stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M17 21v-2a4 4 0 0 0-4-4H7a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4" stroke="#fff" strokeWidth="2"/><circle cx="17" cy="11" r="4" stroke="#fff" strokeWidth="2"/></svg>, to: "/community" },
-              { label: "Profilo", icon: <svg width="28" height="28" fill="none" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4" stroke="#fff" strokeWidth="2"/><path stroke="#fff" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M4 20v-1a7 7 0 0 1 14 0v1"/></svg>, to: "/profilo" },
-            ].map((item) => (
-              <Link
-                key={item.label}
-                to={item.to}
-                className={`flex flex-col items-center justify-center flex-1 h-full transition-all ${item.active ? 'text-yellow-400' : 'text-white/70'}`}
-                aria-label={item.label}
-              >
-                <span className="mb-1">{item.icon}</span>
-                <span className={`text-xs font-semibold ${item.active ? 'text-yellow-400' : 'text-white/70'}`}>{item.label}</span>
-              </Link>
-            ))}
-          </nav>
-        </div>
-      );
+    if (error) {
+      console.error("Errore locali:", error);
+      return;
     }
+
+    setLocali(data ?? []);
+  }
+
+  function startLocaleEdit(locale: Locale) {
+    setEditingLocaleId(locale.id);
+    setLocaleDraft({
+      nome: locale.nome || "",
+      citta: locale.citta || "",
+      descrizione: locale.descrizione || "",
+      descrizione_completa: locale.descrizione_completa || "",
+    });
+  }
+
+  function cancelLocaleEdit() {
+    setEditingLocaleId(null);
+    setLocaleDraft(null);
+  }
+
+  async function saveLocaleEdit(localeId: string) {
+    if (!localeDraft) return;
+
+    const adminPassword =
+      localStorage.getItem("adminPassword") ||
+      import.meta.env.VITE_ADMIN_PASSWORD ||
+      "";
+
+    if (!adminPassword) {
+      alert("Password admin non disponibile. Esci e rientra come admin.");
+      return;
+    }
+
+    const changes = {
+      nome: (localeDraft.nome || "").trim(),
+      citta: (localeDraft.citta || "").trim(),
+      descrizione: (localeDraft.descrizione || "").trim() || null,
+      descrizione_completa: (localeDraft.descrizione_completa || "").trim() || null,
+    };
+
+    if (!changes.nome) {
+      alert("Il nome del locale non puo essere vuoto.");
+      return;
+    }
+
+    setSavingLocaleId(localeId);
+
+    const endpoints = [
+      "/api/admin-save-locale",
+      "/.netlify/functions/admin-save-locale",
+    ];
+
+    let lastMessage = "Salvataggio locale fallito lato server.";
+
+    for (const endpoint of endpoints) {
+      try {
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-admin-password": adminPassword,
+          },
+          body: JSON.stringify({
+            mode: "update",
+            id: localeId,
+            changes,
+          }),
+        });
+
+        const payload = await response.json().catch(() => ({}));
+        if (response.ok && payload?.ok) {
+          lastMessage = "";
+          break;
+        }
+
+        lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
+      } catch (e: any) {
+        lastMessage = e?.message || `Errore di rete su ${endpoint}`;
+      }
+    }
+
+    setSavingLocaleId(null);
+
+    if (lastMessage) {
+      alert(lastMessage);
+      return;
+    }
+
+    setLocali((prev) =>
+      prev.map((locale) =>
+        locale.id === localeId
+          ? {
+              ...locale,
+              ...changes,
+            }
+          : locale
+      )
+    );
+
+    cancelLocaleEdit();
+  }
+
+  async function fetchArticoli() {
+    const { data, error } = await supabase
+      .from("articoli")
+      .select("*")
+      .eq("pubblicato", true)
+      .limit(6);
+
+    if (error) {
+      console.error("Errore articoli:", error);
+      return;
+    }
+
+    setArticoli(data ?? []);
+  }
+
+  const heroVideoSrc = `/home-hero.mp4?v=${HOME_HERO_VIDEO_VERSION}`;
+
+  return (
+    <div
+      style={{
+        background: "#0b0b0b",
+        color: "#fff",
+        margin: 0,
+        padding: 0,
+        minHeight: "100vh",
+      }}
+    >
+      <style>{`
+        @media (max-width: 768px) {
+          .hero-section {
+            display: flex !important;
+            min-height: 100svh !important;
+            width: 100% !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            padding-top: 0 !important;
+            padding-bottom: 72px !important;
+            align-items: flex-end !important;
+          }
+          .hero-mobile-content {
+            margin-top: 0 !important;
+            padding: 0 16px 12px !important;
+            width: 100% !important;
+            max-width: none !important;
+          }
+          .hero-mobile-badge {
+            display: inline-flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+            border: 1px solid rgba(245, 166, 35, 0.35) !important;
+            background: rgba(245, 166, 35, 0.14) !important;
+            color: #f5a623 !important;
+            border-radius: 999px !important;
+            width: fit-content !important;
+            font-size: 12px !important;
+            padding: 6px 10px !important;
+            margin: 0 auto 16px auto !important;
+          }
+          .hero-mobile-title { font-size: clamp(28px, 7.2vw, 38px) !important; line-height: 1.08 !important; }
+          .hero-mobile-title span {
+            font-size: inherit !important;
+            line-height: inherit !important;
+            font-weight: inherit !important;
+          }
+          .hero-mobile-title-line {
+            display: block !important;
+            white-space: nowrap !important;
+          }
+          .hero-mobile-subtitle {
+            font-size: clamp(14px, 5vw, 20px) !important;
+            line-height: 1.4 !important;
+            max-width: 300px !important;
+            margin-left: auto !important;
+            margin-right: auto !important;
+          }
+          .hero-mobile-buttons {
+            width: 100% !important;
+            display: flex !important;
+            flex-direction: column !important;
+            gap: 12px !important;
+            margin-top: 24px !important;
+            margin-bottom: 0 !important;
+          }
+          .hero-mobile-buttons {
+            flex-direction: column !important;
+            align-items: center !important;
+            width: 100% !important;
+          }
+          .hero-mobile-btn {
+            width: 52% !important;
+            justify-content: flex-start !important;
+            font-size: 0.7rem !important;
+            padding: 8px 16px !important;
+            border-radius: 10px !important;
+            display: flex !important;
+            align-items: center !important;
+            gap: 8px !important;
+          }
+          .content-section {
+            padding: 10px 2px !important;
+            max-width: 100% !important;
+          }
+          .content-section-first { padding-top: 104px !important; margin-top: 76px !important; }
+          .section-grid {
+            grid-template-columns: 1fr !important;
+            gap: 12px !important;
+            padding: 0 2px !important;
+          }
+          .card-box {
+            width: calc(100vw - 8px) !important;
+            max-width: none !important;
+            margin: 0 auto !important;
+            height: auto !important;
+            aspect-ratio: 16 / 10 !important;
+            border-radius: 18px !important;
+          }
+          .section-header { margin-bottom: 16px !important; }
+          .section-title { font-size: clamp(16px, 4.5vw, 20px) !important; line-height: 1.08 !important; }
+          .community-section h2 { font-size: clamp(16px, 4.5vw, 20px) !important; }
+          .community-section p { font-size: clamp(11px, 3vw, 13px) !important; }
+          .section-subtitle { display: block !important; color: #8f8f8f !important; margin-top: 6px !important; font-size: clamp(14px, 3.8vw, 16px) !important; }
+          .section-link { display: none !important; }
+          .card-title { font-size: clamp(11px, 3.2vw, 14px) !important; line-height: 1.15 !important; }
+          .card-subtitle { font-size: clamp(10px, 2.8vw, 12px) !important; }
+          .card-rating { font-size: clamp(10px, 2.8vw, 12px) !important; padding: 4px 8px !important; top: 8px !important; right: 8px !important; }
+          .card-content { padding: 10px !important; }
+          .card-title-clamp {
+            display: -webkit-box !important;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+          }
+
+          /* Solo Locali: box piu larghi su mobile, testo invariato */
+          .locali-section {
+            padding-left: 10px !important;
+            padding-right: 10px !important;
+          }
+          .locali-grid {
+            grid-template-columns: 1fr !important;
+            gap: 14px !important;
+          }
+          .locali-card {
+            width: 100% !important;
+            min-height: 220px !important;
+            aspect-ratio: 16 / 10 !important;
+            border-radius: 18px !important;
+          }
+        }
+
+        @media (max-width: 1024px) {
+        }
+
+        @media (min-width: 481px) and (max-width: 768px) {
+          .card-box { border-radius: 20px !important; }
+        }
+
+        @media (min-width: 390px) and (max-width: 430px) {
+          .content-section { padding: 10px 2px !important; }
+          .section-grid { gap: 12px !important; }
+          .section-title { font-size: 18px !important; }
+          .card-box { border-radius: 16px !important; }
+          .card-title { font-size: 13px !important; }
+          .card-subtitle { font-size: 10px !important; }
+          .card-content { padding: 10px !important; }
+          .card-title-clamp {
+            -webkit-line-clamp: 3;
+          }
+        }
+
+        @media (max-width: 380px) {
+          .hero-mobile-title { font-size: 32px !important; }
+          .hero-mobile-btn { font-size: 0.65rem !important; padding: 7px 14px !important; }
+          .content-section { padding: 10px 2px !important; }
+          .section-grid { gap: 10px !important; }
+          .card-box { border-radius: 14px !important; }
+          .card-title { font-size: 11px !important; }
+          .card-subtitle { font-size: 10px !important; }
+          .card-content { padding: 8px !important; }
+          .card-rating { font-size: 10px !important; padding: 3px 6px !important; }
+          .card-title-clamp {
+            -webkit-line-clamp: 3;
+          }
+        }
+
+        @media (min-width: 769px) {
+          .content-section { padding: 40px 60px !important; }
+          .content-section-first { margin-top: 68px !important; }
+          .section-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 20px !important; }
+          .card-box { height: 220px !important; aspect-ratio: auto !important; }
+          .hero-section {
+            align-items: flex-end !important;
+            justify-content: center !important;
+            padding: 0 28px 112px !important;
+          }
+          .hero-mobile-content {
+            width: min(100%, 1180px) !important;
+            max-width: 1180px !important;
+            padding: 0 24px !important;
+          }
+          .hero-mobile-buttons {
+            margin-top: 24px !important;
+          }
+        }
+      `}</style>
+
+      <div
+        className="hero-section"
+        style={{
+          height: "100vh",
+          width: "100%",
+          display: "flex",
+          alignItems: "flex-end",
+          justifyContent: "center",
+          textAlign: "center",
+          position: "relative",
+          overflow: "hidden",
+          marginLeft: 0,
+          marginRight: 0,
+          paddingTop: 0,
+          paddingBottom: "clamp(72px, 11vh, 132px)",
+          borderRadius: 0,
+        }}
+      >
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          preload="auto"
+          aria-hidden="true"
+          style={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            zIndex: 0,
+          }}
+        >
+          <source src={heroVideoSrc} type="video/mp4" />
+        </video>
+        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(0,0,0,0.22), rgba(0,0,0,0.38) 45%, rgba(0,0,0,0.86) 100%)", zIndex: 1 }} />
+        <div className="hero-mobile-content" style={{ position: "relative", zIndex: 2, width: "100%", maxWidth: 1180, padding: "0 20px 6px" }}>
+          <p className="hero-mobile-badge" style={{ display: "none" }}>La community del bere consapevole</p>
+          <h1 className="hero-mobile-title" style={{ fontSize: "clamp(28px, 7vw, 48px)", marginBottom: 20, fontWeight: 800, lineHeight: 1.2, display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
+            <span className="hero-mobile-title-line" style={{ color: "#ffffff" }}>Scopri i migliori</span>
+            <span className="hero-mobile-title-line" style={{ color: "#f5a623" }}>locali del mondo</span>
+          </h1>
+          <p className="hero-mobile-subtitle" style={{ opacity: 0.85, marginBottom: 30, fontSize: "clamp(14px, 2.5vw, 18px)" }}>
+            Recensioni autentiche, esperienze uniche, cultura del bere. Trova cocktail bar, rum bar e locali d'eccellenza nella tua citta.
+          </p>
+        </div>
+      </div>
+
+      <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap", padding: "32px 20px 0" }}>
+        <button
+          onClick={() => navigate("/venues")}
+          style={{
+            background: "#f5a623",
+            color: "#0b0b0b",
+            border: "none",
+            padding: "14px 32px",
+            borderRadius: 8,
+            fontWeight: "bold",
+            cursor: "pointer",
+            fontSize: 16,
+            display: "flex",
+            alignItems: "center",
+            gap: 12,
+          }}
+        >
+          <ArrowRight size={20} strokeWidth={2.5} />
+          Esplora Locali
+        </button>
+        <button
+          onClick={() => navigate("/mappa")}
+          style={{
+            background: "#f5a623",
+            color: "#0b0b0b",
+            border: "none",
+            padding: "14px 32px",
+            borderRadius: 8,
+            fontWeight: "bold",
+            cursor: "pointer",
+            fontSize: 16,
+            display: "flex",
+            alignItems: "center",
+            gap: 10,
+          }}
+        >
+          <MapPin size={20} strokeWidth={2.5} />
+          Vedi Mappa
+        </button>
+      </div>
+
+      <section className="content-section content-section-first locali-section" style={{ padding: "40px 60px", maxWidth: 1400, margin: "68px auto 0" }}>
+        <div className="section-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 28 }}>
+          <div>
+            <h2 className="section-title" style={{ fontSize: "clamp(24px, 4vw, 32px)", margin: 0 }}>Locali in evidenza</h2>
+          </div>
+          <Link className="section-link" to="/venues" style={{ color: "#f5a623", textDecoration: "none" }}>Vedi tutti</Link>
+        </div>
+        <div className="section-grid locali-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 20 }}>
+          {locali.map((l) => (
+            <article
+              key={l.id}
+              className="card-box locali-card"
+              style={{
+                position: "relative",
+                borderRadius: 12,
+                overflow: "hidden",
+                textDecoration: "none",
+                height: 220,
+                display: "flex",
+                alignItems: "flex-end",
+                color: "#fff",
+                cursor: "pointer",
+                transition: "transform 0.3s ease, filter 0.3s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "scale(1.02)";
+                e.currentTarget.style.filter = "brightness(1.1)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "scale(1)";
+                e.currentTarget.style.filter = "brightness(1)";
+              }}
+              onClick={() => navigate(`/venue/${l.id}`)}
+            >
+              {editingLocaleId === l.id && localeDraft ? (
+                <>
+                  <img src={l.image_url ?? "https://via.placeholder.com/400x300"} alt={l.nome} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }} />
+                  <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.92), rgba(0,0,0,0.55))", zIndex: 1 }} />
+                  <div style={{ position: "relative", zIndex: 2, width: "100%", padding: 12, display: "grid", gap: 8 }}>
+                    <input
+                      value={localeDraft.nome ?? ""}
+                      onChange={(e) => setLocaleDraft((prev) => ({ ...(prev || {}), nome: e.target.value }))}
+                      placeholder="Nome locale"
+                      style={{ borderRadius: 8, border: "1px solid #334155", background: "rgba(2,6,23,0.72)", color: "#fff", padding: "6px 8px", fontSize: 13 }}
+                    />
+                    <input
+                      value={localeDraft.citta ?? ""}
+                      onChange={(e) => setLocaleDraft((prev) => ({ ...(prev || {}), citta: e.target.value }))}
+                      placeholder="Citta"
+                      style={{ borderRadius: 8, border: "1px solid #334155", background: "rgba(2,6,23,0.72)", color: "#fff", padding: "6px 8px", fontSize: 13 }}
+                    />
+                    <textarea
+                      value={localeDraft.descrizione ?? ""}
+                      onChange={(e) => setLocaleDraft((prev) => ({ ...(prev || {}), descrizione: e.target.value }))}
+                      placeholder="Testo breve"
+                      rows={2}
+                      style={{ borderRadius: 8, border: "1px solid #334155", background: "rgba(2,6,23,0.72)", color: "#fff", padding: "6px 8px", fontSize: 12, resize: "none" }}
+                    />
+                    <div style={{ display: "flex", gap: 8 }}>
+                      <button
+                        type="button"
+                        onClick={() => saveLocaleEdit(l.id)}
+                        disabled={savingLocaleId === l.id}
+                        style={{ border: "none", borderRadius: 8, background: "#16a34a", color: "#fff", fontWeight: 700, fontSize: 12, padding: "6px 10px", cursor: "pointer", opacity: savingLocaleId === l.id ? 0.7 : 1 }}
+                      >
+                        {savingLocaleId === l.id ? "Salvataggio..." : "Salva"}
+                      </button>
+                      <button
+                        type="button"
+                        onClick={cancelLocaleEdit}
+                        style={{ border: "1px solid #64748b", borderRadius: 8, background: "rgba(15,23,42,0.8)", color: "#fff", fontWeight: 600, fontSize: 12, padding: "6px 10px", cursor: "pointer" }}
+                      >
+                        Annulla
+                      </button>
+                    </div>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <img src={l.image_url ?? "https://via.placeholder.com/400x300"} alt={l.nome} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }} />
+                  <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.8), transparent)", zIndex: 2 }} />
+                  {isAdmin && (
+                    <button
+                      type="button"
+                      onClick={() => startLocaleEdit(l)}
+                      style={{ position: "absolute", top: 10, left: 10, zIndex: 3, border: "none", borderRadius: 8, background: "rgba(245,166,35,0.95)", color: "#111", fontWeight: 700, fontSize: 12, padding: "6px 10px", cursor: "pointer" }}
+                    >
+                      Modifica
+                    </button>
+                  )}
+                  <div className="card-content" style={{ position: "relative", zIndex: 3, padding: 16, width: "100%" }}>
+                    <h3 className="card-title" style={{ margin: "0 0 4px 0", fontSize: 18 }}>{l.nome}</h3>
+                    <p className="card-subtitle" style={{ margin: 0, fontSize: 14, opacity: 0.9 }}>{l.citta}</p>
+                  </div>
+                </>
+              )}
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section className="content-section" style={{ padding: "40px 60px", maxWidth: 1400, margin: "0 auto" }}>
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 28 }}>
+          <h2 className="section-title" style={{ fontSize: "clamp(24px, 4vw, 32px)", margin: 0 }}>Ultimi Articoli</h2>
+        </div>
+        <div className="section-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 20 }}>
+          {articoli.map((a) => (
+            <Link
+              key={a.id}
+              to={`/magazine/${a.id}`}
+              className="card-box"
+              style={{
+                position: "relative",
+                borderRadius: 12,
+                overflow: "hidden",
+                cursor: "pointer",
+                textDecoration: "none",
+                height: 220,
+                display: "flex",
+                alignItems: "flex-end",
+                color: "#fff",
+              }}
+            >
+              <img src={a.immagine ?? "https://via.placeholder.com/400x300"} alt={a.titolo} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", transform: "scale(0.9)", transformOrigin: "center", zIndex: 0 }} />
+              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.55) 35%, transparent 65%)", zIndex: 1 }} />
+              <div className="card-content" style={{ position: "relative", zIndex: 2, padding: "16px 16px 8px 16px", width: "100%" }}>
+                <h3 className="card-title card-title-clamp" style={{ margin: 0, fontSize: 16, fontWeight: 600 }}>{a.titolo}</h3>
+              </div>
+            </Link>
+          ))}
+        </div>
+      </section>
+
+      <section className="content-section community-section" style={{ padding: "40px 60px", maxWidth: 1400, margin: "0 auto", textAlign: "center" }}>
+        <h2 style={{ fontSize: "clamp(28px, 5vw, 44px)", marginBottom: 16, fontWeight: 800 }}>Unisciti alla community</h2>
+        <p style={{ fontSize: "clamp(14px, 2vw, 18px)", color: "#aaa", maxWidth: 600, margin: "0 auto 32px", lineHeight: 1.6 }}>
+          Condividi le tue esperienze, scopri nuovi locali e contribuisci alla cultura del bere consapevole.
+        </p>
+      </section>
+
+      <section style={{ padding: "60px 60px", maxWidth: 1400, margin: "0 auto" }}>
+        <div style={{
+          background: "linear-gradient(135deg, rgba(245,166,35,0.12), rgba(245,166,35,0.06))",
+          border: "2px solid rgba(245,166,35,0.3)",
+          borderRadius: 16,
+          padding: "48px 40px",
+          textAlign: "center",
+          backdropFilter: "blur(10px)",
+        }}>
+          <h3 style={{ fontSize: "clamp(20px, 3.5vw, 28px)", fontWeight: 800, marginBottom: 12, color: "#ffffff" }}>
+            Inizia ora
+          </h3>
+          <p style={{ fontSize: "clamp(13px, 1.8vw, 16px)", color: "#aaa", maxWidth: 500, margin: "0 auto 32px", lineHeight: 1.6 }}>
+            Registrati per scoprire tutti i vantaggi della community e condividere le tue recensioni.
+          </p>
+          <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
+            <button
+              onClick={() => navigate("/registrati")}
+              style={{
+                background: "#f5a623",
+                color: "#0b0b0b",
+                border: "none",
+                padding: "12px 32px",
+                borderRadius: 8,
+                fontWeight: "bold",
+                fontSize: "clamp(13px, 1.5vw, 16px)",
+                cursor: "pointer",
+                transition: "all 0.3s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.background = "#e59400";
+                e.currentTarget.style.transform = "translateY(-2px)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.background = "#f5a623";
+                e.currentTarget.style.transform = "translateY(0)";
+              }}
+            >
+              Registrati
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <div style={{ height: 60 }} />
+    </div>
+  );
+}
