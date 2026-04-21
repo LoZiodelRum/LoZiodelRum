@@ -1,5 +1,7 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
+
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import App from "./App";
 import { UserProvider } from "./context/UserContext";
 import "./index.css";
@@ -20,10 +22,15 @@ try {
   // ignore storage access issues
 }
 
+
+const queryClient = new QueryClient();
+
 ReactDOM.createRoot(document.getElementById("root")!).render(
   <React.StrictMode>
-    <UserProvider>
-      <App />
-    </UserProvider>
+    <QueryClientProvider client={queryClient}>
+      <UserProvider>
+        <App />
+      </UserProvider>
+    </QueryClientProvider>
   </React.StrictMode>
 );
