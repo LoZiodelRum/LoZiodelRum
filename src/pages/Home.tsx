@@ -392,69 +392,68 @@ export default function Home() {
         </section>
 
         <div style={{ height: 60 }} />
+        {/* Barra fissa in fondo con i tasti di registrazione */}
+        <div style={{
+          position: "fixed",
+          left: 0,
+          bottom: 0,
+          width: "100vw",
+          background: "#181818e6",
+          boxShadow: "0 -2px 16px #0008",
+          padding: "18px 0 22px 0",
+          display: "flex",
+          flexDirection: "row",
+          justifyContent: "center",
+          gap: 18,
+          zIndex: 100,
+        }}>
+          <Link to="/registrazione" style={{
+            background: "#c87a2c",
+            color: "#fff",
+            fontWeight: 700,
+            fontSize: 20,
+            border: "none",
+            borderRadius: 12,
+            padding: "12px 36px",
+            textAlign: "center",
+            textDecoration: "none",
+            transition: "background 0.2s",
+            minWidth: 160,
+            boxShadow: "0 2px 8px #0003",
+            letterSpacing: 0.2,
+          }}>Utente</Link>
+          <Link to="/registrazione-bartender" style={{
+            background: "#c87a2c",
+            color: "#fff",
+            fontWeight: 700,
+            fontSize: 20,
+            border: "none",
+            borderRadius: 12,
+            padding: "12px 36px",
+            textAlign: "center",
+            textDecoration: "none",
+            transition: "background 0.2s",
+            minWidth: 160,
+            boxShadow: "0 2px 8px #0003",
+            letterSpacing: 0.2,
+          }}>Bartender</Link>
+          <Link to="/registrazione-owner" style={{
+            background: "#c87a2c",
+            color: "#fff",
+            fontWeight: 700,
+            fontSize: 20,
+            border: "none",
+            borderRadius: 12,
+            padding: "12px 36px",
+            textAlign: "center",
+            textDecoration: "none",
+            transition: "background 0.2s",
+            minWidth: 160,
+            boxShadow: "0 2px 8px #0003",
+            letterSpacing: 0.2,
+          }}>Proprietario</Link>
+        </div>
       </div>
-    </div>
-
-    ')' expected./* Barra fissa in fondo con i tasti di registrazione */}
-    <div style={{
-      position: "fixed",
-      left: 0,
-      bottom: 0,
-      width: "100vw",
-      background: "#181818e6",
-      boxShadow: "0 -2px 16px #0008",
-      padding: "18px 0 22px 0",
-      display: "flex",
-      flexDirection: "row",
-      justifyContent: "center",
-      gap: 18,
-      zIndex: 100,
-    }}>
-      <Link to="/registrazione" style={{
-        background: "#c87a2c",
-        color: "#fff",
-        fontWeight: 700,
-        fontSize: 20,
-        border: "none",
-        borderRadius: 12,
-        padding: "12px 36px",
-        textAlign: "center",
-        textDecoration: "none",
-        transition: "background 0.2s",
-        minWidth: 160,
-        boxShadow: "0 2px 8px #0003",
-        letterSpacing: 0.2,
-      }}>Utente</Link>
-      <Link to="/registrazione-bartender" style={{
-        background: "#c87a2c",
-        color: "#fff",
-        fontWeight: 700,
-        fontSize: 20,
-        border: "none",
-        borderRadius: 12,
-        padding: "12px 36px",
-        textAlign: "center",
-        textDecoration: "none",
-        transition: "background 0.2s",
-        minWidth: 160,
-        boxShadow: "0 2px 8px #0003",
-        letterSpacing: 0.2,
-      }}>Bartender</Link>
-      <Link to="/registrazione-owner" style={{
-        background: "#c87a2c",
-        color: "#fff",
-        fontWeight: 700,
-        fontSize: 20,
-        border: "none",
-        borderRadius: 12,
-        padding: "12px 36px",
-        textAlign: "center",
-        textDecoration: "none",
-        transition: "background 0.2s",
-        minWidth: 160,
-        boxShadow: "0 2px 8px #0003",
-        letterSpacing: 0.2,
-      }}>Proprietario</Link>
     </div>
   );
 }
