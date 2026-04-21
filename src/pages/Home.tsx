@@ -1,641 +1,193 @@
-import { useEffect, useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
-import { ArrowRight, MapPin } from "lucide-react";
-import Hero from "../components/home/Hero";
-import RecommendedVenues from "../components/home/RecommendedVenues";
-import ExploreMapButton from "../components/home/ExploreMapButton";
-import ArticlesList from "../components/home/ArticlesList";
-import AboutSection from "../components/home/AboutSection";
-import BottomNav from "../components/home/BottomNav";
-import { supabase } from "../lib/supabaseClient";
-import { useUser } from "../context/UserContext";
-
-
-type Locale = {
-  id: string;
-  nome: string;
-  citta: string;
-  descrizione?: string;
-  descrizione_completa?: string;
-  image_url?: string | null;
-  overall_rating?: number;
-};
-
-type Articolo = {
-  id: string;
-  titolo: string;
-  immagine: string | null;
-};
-
-const HOME_HERO_VIDEO_VERSION = "2026-04-15-07";
+import React from 'react';
+import { Link } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
+import { Zap, ArrowRight, Clock, Eye, MapPin } from 'lucide-react';
+import VenueCard from '../components/VenueCard';
 
 export default function Home() {
-  const { isAdmin } = useUser();
-  const [locali, setLocali] = useState<Locale[]>([]);
-  const [articoli, setArticoli] = useState<Articolo[]>([]);
-  const [editingLocaleId, setEditingLocaleId] = useState<string | null>(null);
-  const [localeDraft, setLocaleDraft] = useState<Partial<Locale> | null>(null);
-  const [savingLocaleId, setSavingLocaleId] = useState<string | null>(null);
-  const navigate = useNavigate();
 
-  useEffect(() => {
-    fetchVenues();
-    fetchArticoli();
-  }, []);
+  // ⚠️ DA COLLEGARE A SUPABASE
+  const { data: venues = [] } = useQuery({
+    queryKey: ['venues-home'],
+    queryFn: async () => {
+      return []; // ← placeholder temporaneo
+    },
+  });
 
-  async function fetchVenues() {
-    const { data, error } = await supabase
-      .from("locali")
-      .select("id, nome, citta, image_url, overall_rating, descrizione, descrizione_completa")
-      .order("overall_rating", { ascending: false })
-      .limit(6);
-
-    if (error) {
-      console.error("Errore locali:", error);
-      return;
-    }
-
-    setLocali(data ?? []);
-  }
-
-  function startLocaleEdit(locale: Locale) {
-    setEditingLocaleId(locale.id);
-    setLocaleDraft({
-      nome: locale.nome || "",
-      citta: locale.citta || "",
-      descrizione: locale.descrizione || "",
-      descrizione_completa: locale.descrizione_completa || "",
-    });
-  }
-
-  function cancelLocaleEdit() {
-    setEditingLocaleId(null);
-    setLocaleDraft(null);
-  }
-
-  async function saveLocaleEdit(localeId: string) {
-    if (!localeDraft) return;
-
-    const adminPassword =
-      localStorage.getItem("adminPassword") ||
-      import.meta.env.VITE_ADMIN_PASSWORD ||
-      "";
-
-    if (!adminPassword) {
-      alert("Password admin non disponibile. Esci e rientra come admin.");
-      return;
-    }
-
-    const changes = {
-      nome: (localeDraft.nome || "").trim(),
-      citta: (localeDraft.citta || "").trim(),
-      descrizione: (localeDraft.descrizione || "").trim() || null,
-      descrizione_completa: (localeDraft.descrizione_completa || "").trim() || null,
-    };
-
-    if (!changes.nome) {
-      alert("Il nome del locale non puo essere vuoto.");
-      return;
-    }
-
-    setSavingLocaleId(localeId);
-
-    const endpoints = [
-      "/api/admin-save-locale",
-      "/.netlify/functions/admin-save-locale",
-    ];
-
-    let lastMessage = "Salvataggio locale fallito lato server.";
-
-    for (const endpoint of endpoints) {
-      try {
-        const response = await fetch(endpoint, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "x-admin-password": adminPassword,
-          },
-          body: JSON.stringify({
-            mode: "update",
-            id: localeId,
-            changes,
-          }),
-        });
-
-        const payload = await response.json().catch(() => ({}));
-        if (response.ok && payload?.ok) {
-          lastMessage = "";
-          break;
-        }
-
-        lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
-      } catch (e: any) {
-        lastMessage = e?.message || `Errore di rete su ${endpoint}`;
-      }
-    }
-
-    setSavingLocaleId(null);
-
-    if (lastMessage) {
-      alert(lastMessage);
-      return;
-    }
-
-    setLocali((prev) =>
-      prev.map((locale) =>
-        locale.id === localeId
-          ? {
-              ...locale,
-              ...changes,
-            }
-          : locale
-      )
-    );
-
-    cancelLocaleEdit();
-  }
-
-  async function fetchArticoli() {
-    const { data, error } = await supabase
-      .from("articoli")
-      .select("*")
-      .eq("pubblicato", true)
-      .limit(6);
-
-    if (error) {
-      console.error("Errore articoli:", error);
-      return;
-    }
-
-    setArticoli(data ?? []);
-  }
-
-  const heroVideoSrc = `/home-hero.mp4?v=${HOME_HERO_VIDEO_VERSION}`;
+  const { data: messages = [] } = useQuery({
+    queryKey: ['chat-preview'],
+    queryFn: async () => {
+      return []; // ← placeholder temporaneo
+    },
+  });
 
   return (
-    <div
-      style={{
-        background: "#0b0b0b",
-        color: "#fff",
-        margin: 0,
-        padding: 0,
-        minHeight: "100vh",
-      }}
-    >
-      <style>{`
-        @media (max-width: 768px) {
-          .hero-section {
-            display: flex !important;
-            min-height: 100svh !important;
-            width: 100% !important;
-            margin-left: 0 !important;
-            margin-right: 0 !important;
-            padding-top: 0 !important;
-            padding-bottom: 72px !important;
-            align-items: flex-end !important;
-          }
-          .hero-mobile-content {
-            margin-top: 0 !important;
-            padding: 0 16px 12px !important;
-            width: 100% !important;
-            max-width: none !important;
-          }
-          .hero-mobile-badge {
-            display: inline-flex !important;
-            align-items: center !important;
-            gap: 8px !important;
-            border: 1px solid rgba(245, 166, 35, 0.35) !important;
-            background: rgba(245, 166, 35, 0.14) !important;
-            color: #f5a623 !important;
-            border-radius: 999px !important;
-            width: fit-content !important;
-            font-size: 12px !important;
-            padding: 6px 10px !important;
-            margin: 0 auto 16px auto !important;
-          }
-          .hero-mobile-title { font-size: clamp(28px, 7.2vw, 38px) !important; line-height: 1.08 !important; }
-          .hero-mobile-title span {
-            font-size: inherit !important;
-            line-height: inherit !important;
-            font-weight: inherit !important;
-          }
-          .hero-mobile-title-line {
-            display: block !important;
-            white-space: nowrap !important;
-          }
-          .hero-mobile-subtitle {
-            font-size: clamp(14px, 5vw, 20px) !important;
-            line-height: 1.4 !important;
-            max-width: 300px !important;
-            margin-left: auto !important;
-            margin-right: auto !important;
-          }
-          .hero-mobile-buttons {
-            width: 100% !important;
-            display: flex !important;
-            flex-direction: column !important;
-            gap: 12px !important;
-            margin-top: 24px !important;
-            margin-bottom: 0 !important;
-          }
-          .hero-mobile-buttons {
-            flex-direction: column !important;
-            align-items: center !important;
-            width: 100% !important;
-          }
-          .hero-mobile-btn {
-            width: 52% !important;
-            justify-content: flex-start !important;
-            font-size: 0.7rem !important;
-            padding: 8px 16px !important;
-            border-radius: 10px !important;
-            display: flex !important;
-            align-items: center !important;
-            gap: 8px !important;
-          }
-          .content-section {
-            padding: 10px 2px !important;
-            max-width: 100% !important;
-          }
-          .content-section-first { padding-top: 104px !important; margin-top: 76px !important; }
-          .section-grid {
-            grid-template-columns: 1fr !important;
-            gap: 12px !important;
-            padding: 0 2px !important;
-          }
-          .card-box {
-            width: calc(100vw - 8px) !important;
-            max-width: none !important;
-            margin: 0 auto !important;
-            height: auto !important;
-            aspect-ratio: 16 / 10 !important;
-            border-radius: 18px !important;
-          }
-          .section-header { margin-bottom: 16px !important; }
-          .section-title { font-size: clamp(16px, 4.5vw, 20px) !important; line-height: 1.08 !important; }
-          .community-section h2 { font-size: clamp(16px, 4.5vw, 20px) !important; }
-          .community-section p { font-size: clamp(11px, 3vw, 13px) !important; }
-          .section-subtitle { display: block !important; color: #8f8f8f !important; margin-top: 6px !important; font-size: clamp(14px, 3.8vw, 16px) !important; }
-          .section-link { display: none !important; }
-          .card-title { font-size: clamp(11px, 3.2vw, 14px) !important; line-height: 1.15 !important; }
-          .card-subtitle { font-size: clamp(10px, 2.8vw, 12px) !important; }
-          .card-rating { font-size: clamp(10px, 2.8vw, 12px) !important; padding: 4px 8px !important; top: 8px !important; right: 8px !important; }
-          .card-content { padding: 10px !important; }
-          .card-title-clamp {
-            display: -webkit-box !important;
-            -webkit-line-clamp: 3;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-          }
+    <div className="min-h-screen bg-background">
+      
+      {/* Hero */}
+      <div className="relative h-[420px] overflow-hidden">
+        <img
+          src="https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=800&q=80"
+          alt="Hero"
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/40 via-black/20 to-background" />
 
-          /* Solo Locali: box piu larghi su mobile, testo invariato */
-          .locali-section {
-            padding-left: 10px !important;
-            padding-right: 10px !important;
-          }
-          .locali-grid {
-            grid-template-columns: 1fr !important;
-            gap: 14px !important;
-          }
-          .locali-card {
-            width: 100% !important;
-            min-height: 220px !important;
-            aspect-ratio: 16 / 10 !important;
-            border-radius: 18px !important;
-          }
-        }
-
-        @media (max-width: 1024px) {
-        }
-
-        @media (min-width: 481px) and (max-width: 768px) {
-          .card-box { border-radius: 20px !important; }
-        }
-
-        @media (min-width: 390px) and (max-width: 430px) {
-          .content-section { padding: 10px 2px !important; }
-          .section-grid { gap: 12px !important; }
-          .section-title { font-size: 18px !important; }
-          .card-box { border-radius: 16px !important; }
-          .card-title { font-size: 13px !important; }
-          .card-subtitle { font-size: 10px !important; }
-          .card-content { padding: 10px !important; }
-          .card-title-clamp {
-            -webkit-line-clamp: 3;
-          }
-        }
-
-        @media (max-width: 380px) {
-          .hero-mobile-title { font-size: 32px !important; }
-          .hero-mobile-btn { font-size: 0.65rem !important; padding: 7px 14px !important; }
-          .content-section { padding: 10px 2px !important; }
-          .section-grid { gap: 10px !important; }
-          .card-box { border-radius: 14px !important; }
-          .card-title { font-size: 11px !important; }
-          .card-subtitle { font-size: 10px !important; }
-          .card-content { padding: 8px !important; }
-          .card-rating { font-size: 10px !important; padding: 3px 6px !important; }
-          .card-title-clamp {
-            -webkit-line-clamp: 3;
-          }
-        }
-
-        @media (min-width: 769px) {
-          .content-section { padding: 40px 60px !important; }
-          .content-section-first { margin-top: 68px !important; }
-          .section-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 20px !important; }
-          .card-box { height: 220px !important; aspect-ratio: auto !important; }
-          .hero-section {
-            align-items: flex-end !important;
-            justify-content: center !important;
-            padding: 0 28px 112px !important;
-          }
-          .hero-mobile-content {
-            width: min(100%, 1180px) !important;
-            max-width: 1180px !important;
-            padding: 0 24px !important;
-          }
-          .hero-mobile-buttons {
-            margin-top: 24px !important;
-          }
-        }
-      `}</style>
-
-      <div
-        className="hero-section"
-        style={{
-          height: "100vh",
-          width: "100%",
-          display: "flex",
-          alignItems: "flex-end",
-          justifyContent: "center",
-          textAlign: "center",
-          position: "relative",
-          overflow: "hidden",
-          marginLeft: 0,
-          marginRight: 0,
-          paddingTop: 0,
-          paddingBottom: "clamp(72px, 11vh, 132px)",
-          borderRadius: 0,
-        }}
-      >
-        <video
-          autoPlay
-          muted
-          loop
-          playsInline
-          preload="auto"
-          aria-hidden="true"
-          style={{
-            position: "absolute",
-            inset: 0,
-            width: "100%",
-            height: "100%",
-            objectFit: "cover",
-            zIndex: 0,
-          }}
-        >
-          <source src={heroVideoSrc} type="video/mp4" />
-        </video>
-        <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(0,0,0,0.22), rgba(0,0,0,0.38) 45%, rgba(0,0,0,0.86) 100%)", zIndex: 1 }} />
-        <div className="hero-mobile-content" style={{ position: "relative", zIndex: 2, width: "100%", maxWidth: 1180, padding: "0 20px 6px" }}>
-          <p className="hero-mobile-badge" style={{ display: "none" }}>La community del bere consapevole</p>
-          <h1 className="hero-mobile-title" style={{ fontSize: "clamp(28px, 7vw, 48px)", marginBottom: 20, fontWeight: 800, lineHeight: 1.2, display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
-            <span className="hero-mobile-title-line" style={{ color: "#ffffff" }}>Scopri i migliori</span>
-            <span className="hero-mobile-title-line" style={{ color: "#f5a623" }}>locali del mondo</span>
-          </h1>
-          <p className="hero-mobile-subtitle" style={{ opacity: 0.85, marginBottom: 30, fontSize: "clamp(14px, 2.5vw, 18px)" }}>
-            Recensioni autentiche, esperienze uniche, cultura del bere. Trova cocktail bar, rum bar e locali d'eccellenza nella tua citta.
-          </p>
-        </div>
-      </div>
-
-      <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap", padding: "32px 20px 0" }}>
-        <button
-          onClick={() => navigate("/venues")}
-          style={{
-            background: "#f5a623",
-            color: "#0b0b0b",
-            border: "none",
-            padding: "14px 32px",
-            borderRadius: 8,
-            fontWeight: "bold",
-            cursor: "pointer",
-            fontSize: 16,
-            display: "flex",
-            alignItems: "center",
-            gap: 12,
-          }}
-        >
-          <ArrowRight size={20} strokeWidth={2.5} />
-          Esplora Locali
-        </button>
-        <button
-          onClick={() => navigate("/mappa")}
-          style={{
-            background: "#f5a623",
-            color: "#0b0b0b",
-            border: "none",
-            padding: "14px 32px",
-            borderRadius: 8,
-            fontWeight: "bold",
-            cursor: "pointer",
-            fontSize: 16,
-            display: "flex",
-            alignItems: "center",
-            gap: 10,
-          }}
-        >
-          <MapPin size={20} strokeWidth={2.5} />
-          Vedi Mappa
-        </button>
-      </div>
-
-      <section className="content-section content-section-first locali-section" style={{ padding: "40px 60px", maxWidth: 1400, margin: "68px auto 0" }}>
-        <div className="section-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 28 }}>
-          <div>
-            <h2 className="section-title" style={{ fontSize: "clamp(24px, 4vw, 32px)", margin: 0 }}>Locali in evidenza</h2>
+        {/* Top bar */}
+        <div className="absolute top-0 left-0 right-0 px-4 py-3 flex items-center justify-between">
+          <div className="w-9 h-9 rounded-lg bg-black/40 backdrop-blur-sm flex items-center justify-center">
+            <Zap className="w-5 h-5 text-primary" />
           </div>
-          <Link className="section-link" to="/venues" style={{ color: "#f5a623", textDecoration: "none" }}>Vedi tutti</Link>
+          <div className="flex items-center gap-2">
+            <div className="w-9 h-9 rounded-full overflow-hidden border-2 border-primary/30">
+              <img
+                src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&q=80"
+                alt="avatar"
+                className="w-full h-full object-cover"
+              />
+            </div>
+          </div>
         </div>
-        <div className="section-grid locali-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 20 }}>
-          {locali.map((l) => (
-            <article
-              key={l.id}
-              className="card-box locali-card"
-              style={{
-                position: "relative",
-                borderRadius: 12,
-                overflow: "hidden",
-                textDecoration: "none",
-                height: 220,
-                display: "flex",
-                alignItems: "flex-end",
-                color: "#fff",
-                cursor: "pointer",
-                transition: "transform 0.3s ease, filter 0.3s ease",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.transform = "scale(1.02)";
-                e.currentTarget.style.filter = "brightness(1.1)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.transform = "scale(1)";
-                e.currentTarget.style.filter = "brightness(1)";
-              }}
-              onClick={() => navigate(`/venue/${l.id}`)}
-            >
-              {editingLocaleId === l.id && localeDraft ? (
-                <>
-                  <img src={l.image_url ?? "https://via.placeholder.com/400x300"} alt={l.nome} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }} />
-                  <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.92), rgba(0,0,0,0.55))", zIndex: 1 }} />
-                  <div style={{ position: "relative", zIndex: 2, width: "100%", padding: 12, display: "grid", gap: 8 }}>
-                    <input
-                      value={localeDraft.nome ?? ""}
-                      onChange={(e) => setLocaleDraft((prev) => ({ ...(prev || {}), nome: e.target.value }))}
-                      placeholder="Nome locale"
-                      style={{ borderRadius: 8, border: "1px solid #334155", background: "rgba(2,6,23,0.72)", color: "#fff", padding: "6px 8px", fontSize: 13 }}
-                    />
-                    <input
-                      value={localeDraft.citta ?? ""}
-                      onChange={(e) => setLocaleDraft((prev) => ({ ...(prev || {}), citta: e.target.value }))}
-                      placeholder="Citta"
-                      style={{ borderRadius: 8, border: "1px solid #334155", background: "rgba(2,6,23,0.72)", color: "#fff", padding: "6px 8px", fontSize: 13 }}
-                    />
-                    <textarea
-                      value={localeDraft.descrizione ?? ""}
-                      onChange={(e) => setLocaleDraft((prev) => ({ ...(prev || {}), descrizione: e.target.value }))}
-                      placeholder="Testo breve"
-                      rows={2}
-                      style={{ borderRadius: 8, border: "1px solid #334155", background: "rgba(2,6,23,0.72)", color: "#fff", padding: "6px 8px", fontSize: 12, resize: "none" }}
-                    />
-                    <div style={{ display: "flex", gap: 8 }}>
-                      <button
-                        type="button"
-                        onClick={() => saveLocaleEdit(l.id)}
-                        disabled={savingLocaleId === l.id}
-                        style={{ border: "none", borderRadius: 8, background: "#16a34a", color: "#fff", fontWeight: 700, fontSize: 12, padding: "6px 10px", cursor: "pointer", opacity: savingLocaleId === l.id ? 0.7 : 1 }}
-                      >
-                        {savingLocaleId === l.id ? "Salvataggio..." : "Salva"}
-                      </button>
-                      <button
-                        type="button"
-                        onClick={cancelLocaleEdit}
-                        style={{ border: "1px solid #64748b", borderRadius: 8, background: "rgba(15,23,42,0.8)", color: "#fff", fontWeight: 600, fontSize: 12, padding: "6px 10px", cursor: "pointer" }}
-                      >
-                        Annulla
-                      </button>
-                    </div>
-                  </div>
-                </>
-              ) : (
-                <>
-                  <img src={l.image_url ?? "https://via.placeholder.com/400x300"} alt={l.nome} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }} />
-                  <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.8), transparent)", zIndex: 2 }} />
-                  {isAdmin && (
-                    <button
-                      type="button"
-                      onClick={() => startLocaleEdit(l)}
-                      style={{ position: "absolute", top: 10, left: 10, zIndex: 3, border: "none", borderRadius: 8, background: "rgba(245,166,35,0.95)", color: "#111", fontWeight: 700, fontSize: 12, padding: "6px 10px", cursor: "pointer" }}
-                    >
-                      Modifica
-                    </button>
-                  )}
-                  <div className="card-content" style={{ position: "relative", zIndex: 3, padding: 16, width: "100%" }}>
-                    <h3 className="card-title" style={{ margin: "0 0 4px 0", fontSize: 18 }}>{l.nome}</h3>
-                    <p className="card-subtitle" style={{ margin: 0, fontSize: 14, opacity: 0.9 }}>{l.citta}</p>
-                  </div>
-                </>
-              )}
-            </article>
-          ))}
-        </div>
-      </section>
 
-      <section className="content-section" style={{ padding: "40px 60px", maxWidth: 1400, margin: "0 auto" }}>
-        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 28 }}>
-          <h2 className="section-title" style={{ fontSize: "clamp(24px, 4vw, 32px)", margin: 0 }}>Ultimi Articoli</h2>
+        {/* Hero text */}
+        <div className="absolute bottom-12 left-5 right-5">
+          <h1 className="text-4xl font-heading font-bold text-white leading-tight">DrinkWise</h1>
+          <p className="text-primary font-heading italic text-lg mt-1">sul bere consapevole</p>
+          <p className="text-white/70 text-sm mt-3 leading-relaxed">
+            Esplora i migliori locali della tua città e scopri l'arte della mixology premium.
+          </p>
+          <Link
+            to="/community"
+            className="inline-flex items-center mt-4 bg-white text-black font-semibold text-sm px-5 py-2.5 rounded-full"
+          >
+            Entra nella community
+          </Link>
         </div>
-        <div className="section-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 20 }}>
-          {articoli.map((a) => (
-            <Link
-              key={a.id}
-              to={`/magazine/${a.id}`}
-              className="card-box"
-              style={{
-                position: "relative",
-                borderRadius: 12,
-                overflow: "hidden",
-                cursor: "pointer",
-                textDecoration: "none",
-                height: 220,
-                display: "flex",
-                alignItems: "flex-end",
-                color: "#fff",
-              }}
-            >
-              <img src={a.immagine ?? "https://via.placeholder.com/400x300"} alt={a.titolo} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", transform: "scale(0.9)", transformOrigin: "center", zIndex: 0 }} />
-              <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.92) 0%, rgba(0,0,0,0.55) 35%, transparent 65%)", zIndex: 1 }} />
-              <div className="card-content" style={{ position: "relative", zIndex: 2, padding: "16px 16px 8px 16px", width: "100%" }}>
-                <h3 className="card-title card-title-clamp" style={{ margin: 0, fontSize: 16, fontWeight: 600 }}>{a.titolo}</h3>
-              </div>
-            </Link>
-          ))}
-        </div>
-      </section>
+      </div>
 
-      <section className="content-section community-section" style={{ padding: "40px 60px", maxWidth: 1400, margin: "0 auto", textAlign: "center" }}>
-        <h2 style={{ fontSize: "clamp(28px, 5vw, 44px)", marginBottom: 16, fontWeight: 800 }}>Unisciti alla community</h2>
-        <p style={{ fontSize: "clamp(14px, 2vw, 18px)", color: "#aaa", maxWidth: 600, margin: "0 auto 32px", lineHeight: 1.6 }}>
-          Condividi le tue esperienze, scopri nuovi locali e contribuisci alla cultura del bere consapevole.
+      {/* Locali consigliati */}
+      <div className="px-4 mt-6">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="font-semibold text-base">Locali consigliati</h2>
+          <Link to="/mappa" className="text-primary text-xs font-medium">Vedi tutti</Link>
+        </div>
+
+        <div className="flex gap-3 overflow-x-auto no-scrollbar pb-2">
+          {venues.length > 0 ? venues.map((venue) => (
+            <VenueCard key={venue.id} venue={venue} />
+          )) : (
+            <>
+              <div className="w-52 h-32 rounded-xl bg-card animate-pulse flex-shrink-0" />
+              <div className="w-52 h-32 rounded-xl bg-card animate-pulse flex-shrink-0" />
+            </>
+          )}
+        </div>
+      </div>
+
+      {/* Esplora Mappa CTA */}
+      <div className="px-4 mt-6">
+        <Link
+          to="/mappa"
+          className="flex items-center justify-between bg-card rounded-xl p-4 border border-border"
+        >
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center">
+              <MapPin className="w-5 h-5 text-primary" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-sm">ESPLORA MAPPA</h3>
+              <p className="text-xs text-muted-foreground">Trova i locali più vicini a te</p>
+            </div>
+          </div>
+          <ArrowRight className="w-5 h-5 text-primary" />
+        </Link>
+      </div>
+
+      {/* Ultimi articoli */}
+      <div className="px-4 mt-6">
+        <h2 className="font-semibold text-base mb-3">Ultimi articoli</h2>
+        <div className="space-y-3">
+          <ArticleCard
+            category="Cultura"
+            title="L'arte dell'invecchiamento del Rum Agricole"
+            readTime="5 min lettura"
+          />
+          <ArticleCard
+            category="Mixology"
+            title="I migliori 5 cocktail a base di Bourbon"
+            readTime="8 min lettura"
+          />
+        </div>
+      </div>
+
+      {/* Il Baretto */}
+      <div className="px-4 mt-8 mb-6 text-center">
+        <h2 className="font-heading text-xl font-bold">Lo Zio del Rum</h2>
+        <p className="text-muted-foreground text-xs mt-2 max-w-[260px] mx-auto">
+          Un viaggio nel mondo degli spiriti pregiati, selezionati con cura per la tua esperienza definitiva.
         </p>
-      </section>
+      </div>
 
-      <section style={{ padding: "60px 60px", maxWidth: 1400, margin: "0 auto" }}>
-        <div style={{
-          background: "linear-gradient(135deg, rgba(245,166,35,0.12), rgba(245,166,35,0.06))",
-          border: "2px solid rgba(245,166,35,0.3)",
-          borderRadius: 16,
-          padding: "48px 40px",
-          textAlign: "center",
-          backdropFilter: "blur(10px)",
-        }}>
-          <h3 style={{ fontSize: "clamp(20px, 3.5vw, 28px)", fontWeight: 800, marginBottom: 12, color: "#ffffff" }}>
-            Inizia ora
-          </h3>
-          <p style={{ fontSize: "clamp(13px, 1.8vw, 16px)", color: "#aaa", maxWidth: 500, margin: "0 auto 32px", lineHeight: 1.6 }}>
-            Registrati per scoprire tutti i vantaggi della community e condividere le tue recensioni.
-          </p>
-          <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
-            <button
-              onClick={() => navigate("/registrati")}
-              style={{
-                background: "#f5a623",
-                color: "#0b0b0b",
-                border: "none",
-                padding: "12px 32px",
-                borderRadius: 8,
-                fontWeight: "bold",
-                fontSize: "clamp(13px, 1.5vw, 16px)",
-                cursor: "pointer",
-                transition: "all 0.3s ease",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "#e59400";
-                e.currentTarget.style.transform = "translateY(-2px)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "#f5a623";
-                e.currentTarget.style.transform = "translateY(0)";
-              }}
-            >
-              Registrati
-            </button>
+      <div className="px-4 mb-6">
+        <Link to="/baretto" className="block bg-card rounded-xl p-4 border border-border">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-lg">
+              💬
+            </div>
+            <div className="flex-1">
+              <h3 className="font-semibold text-sm">Il Baretto</h3>
+              <p className="text-xs text-muted-foreground">Entra nella chat live</p>
+            </div>
+            <ArrowRight className="w-5 h-5 text-primary" />
           </div>
-        </div>
-      </section>
+        </Link>
+      </div>
 
-      <div style={{ height: 60 }} />
+      {/* Catalogo Drink */}
+      <div className="px-4 mb-6">
+        <Link to="/drink" className="block bg-card rounded-xl p-4 border border-border">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-primary/20 flex items-center justify-center text-lg">
+              🍸
+            </div>
+            <div className="flex-1">
+              <h3 className="font-semibold text-sm">Catalogo Drink</h3>
+              <p className="text-xs text-muted-foreground">Esplora tutti i cocktail</p>
+            </div>
+            <ArrowRight className="w-5 h-5 text-primary" />
+          </div>
+        </Link>
+      </div>
+
+      {/* Footer */}
+      <div className="px-4 pb-24 text-center">
+        <p className="text-[10px] text-muted-foreground/60 uppercase tracking-widest">
+          © 2024 DrinkWise App. Tutti i diritti riservati.
+        </p>
+      </div>
+    </div>
+  );
+}
+
+function ArticleCard({ category, title, readTime }) {
+  return (
+    <div className="bg-card rounded-xl p-4 flex items-center gap-3">
+      <div className="w-12 h-12 rounded-lg bg-bark flex-shrink-0 flex items-center justify-center">
+        <span className="text-[10px] text-primary font-semibold bg-primary/20 px-1.5 py-0.5 rounded-full">
+          {category}
+        </span>
+      </div>
+      <div className="flex-1 min-w-0">
+        <h3 className="font-semibold text-sm truncate">{title}</h3>
+        <div className="flex items-center gap-3 mt-1">
+          <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+            <Clock className="w-3 h-3" /> {readTime}
+          </span>
+          <span className="text-[10px] text-muted-foreground flex items-center gap-1">
+            <Eye className="w-3 h-3" /> Approfondisci
+          </span>
+        </div>
+      </div>
     </div>
   );
 }
