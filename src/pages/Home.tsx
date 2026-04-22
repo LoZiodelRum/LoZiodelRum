@@ -2,6 +2,7 @@ import "../App.css";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, MapPin } from "lucide-react";
+import BottomNav from "../components/home/BottomNav";
 import { supabase } from "../lib/supabaseClient";
 import { useUser } from "../context/UserContext";
 
@@ -629,6 +630,7 @@ export default function Home() {
       </section>
 
       <div style={{ height: 60 }} />
+      <BottomNav />
     </div>
   );
 }
