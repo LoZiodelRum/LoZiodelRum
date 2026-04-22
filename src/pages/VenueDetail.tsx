@@ -851,53 +851,7 @@ export default function VenueDetail() {
         </div>
       </div>
 
-      {isAdmin && isEditorOpen && form && (
-        <div
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(2,6,23,0.75)",
-            zIndex: 1200,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            padding: 20,
-          }}
-          onClick={() => setIsEditorOpen(false)}
-        >
-          <div
-            style={{
-              width: "min(760px, 96vw)",
-              maxHeight: "86vh",
-              overflow: "auto",
-              background: "#0b1220",
-              border: "1px solid #334155",
-              borderRadius: 14,
-              padding: 16,
-              display: "grid",
-              gap: 10,
-            }}
-            onClick={(e) => e.stopPropagation()}
-          >
-            <h3 style={{ margin: 0, color: "#f8fafc" }}>Modifica scheda locale</h3>
-
-            <input
-              type="file"
-              onChange={(e) => {
-                if (e.target.files?.[0]) handleImageUpload(e.target.files[0]);
-              }}
-            />
-            {uploading && <p style={{ margin: 0 }}>Upload immagine in corso...</p>}
-
-            <label style={editorLabelStyle}>URL immagine anteprima</label>
-            <input
-              value={form.image_url || form.image || ""}
-              onChange={(e) => setForm({ ...form, image_url: e.target.value, image: e.target.value })}
-              placeholder="https://..."
-              style={editorFieldStyle}
-            />
-
-            <label style={editorLabelStyle}>Nome</label>
+      {/* EDITOR ADMIN RIMOSSO: le modifiche si fanno solo dal pannello di controllo */}
             <input value={form.nome || ""} onChange={(e) => setForm({ ...form, nome: e.target.value })} placeholder="Nome" style={editorFieldStyle} />
             <label style={editorLabelStyle}>Indirizzo</label>
             <input value={form.indirizzo || ""} onChange={(e) => setForm({ ...form, indirizzo: e.target.value })} placeholder="Indirizzo" style={editorFieldStyle} />
