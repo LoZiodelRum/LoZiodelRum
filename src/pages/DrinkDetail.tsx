@@ -1,12 +1,9 @@
 import "../App.css";
 
 
-
 // TODO: Implementazione read-only della pagina DrinkDetail. Rimuovere ogni logica admin/modifica.
-return <div className="page fade-in">Scheda drink non disponibile</div>;
-
-// Pagina solo read-only o placeholder
-// return <div className="page fade-in">Scheda drink non disponibile</div>;
+export default function DrinkDetail() {
+  return <div className="page fade-in">Scheda drink non disponibile</div>;
 }
 
 /* STILI ORIGINALI */
