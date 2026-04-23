@@ -13,6 +13,7 @@ export default function Login() {
   // Registrazione fields
   const [nome, setNome] = useState("");
   const [cognome, setCognome] = useState("");
+  const [email, setEmail] = useState("");
   const [esperienze, setEsperienze] = useState("");
   const [specialita, setSpecialita] = useState("");
   const [citta, setCitta] = useState("");
@@ -52,7 +53,11 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
     setMsg("");
-    const email = `${username}@loziodelrum.it`;
+    if (!email || !email.includes("@")) {
+      setMsg("Inserisci un'email valida");
+      setLoading(false);
+      return;
+    }
     const { data, error } = await supabase.auth.signUp({ email, password });
     if (error) {
       setMsg(error.message);
@@ -188,6 +193,7 @@ export default function Login() {
             <form onSubmit={handleRegister} style={{ width: 320, display: "flex", flexDirection: "column", gap: 12 }}>
               <input placeholder="Nome" value={nome} onChange={e => setNome(e.target.value)} required style={{ padding: 12, borderRadius: 8, border: "none", background: "#222", color: "#fff", fontSize: 17 }} />
               <input placeholder="Cognome" value={cognome} onChange={e => setCognome(e.target.value)} required style={{ padding: 12, borderRadius: 8, border: "none", background: "#222", color: "#fff", fontSize: 17 }} />
+              <input placeholder="Email" value={email} onChange={e => setEmail(e.target.value)} required type="email" style={{ padding: 12, borderRadius: 8, border: "none", background: "#222", color: "#fff", fontSize: 17 }} />
               <input placeholder="Username" value={username} onChange={e => setUsername(e.target.value)} required style={{ padding: 12, borderRadius: 8, border: "none", background: "#222", color: "#fff", fontSize: 17 }} />
               <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required style={{ padding: 12, borderRadius: 8, border: "none", background: "#222", color: "#fff", fontSize: 17 }} />
               {ruoloSelezionato === "bartender" && (
