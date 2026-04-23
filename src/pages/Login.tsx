@@ -107,7 +107,7 @@ export default function Login() {
         <form onSubmit={handleLogin}>
           <div style={{ marginBottom: 16 }}>
             <input
-              style={{ width: "100%", background: "#222", color: "#fff", border: "none", borderRadius: 8, padding: 14, fontSize: 18, marginBottom: 8 }}
+              style={{ width: "100%", background: "#222", color: "#fff", border: "none", borderRadius: 8, padding: 8, fontSize: 15, marginBottom: 8, height: 36 }}
               placeholder="Username"
               value={username}
               onChange={e => setUsername(e.target.value)}
@@ -117,7 +117,7 @@ export default function Login() {
             <div style={{ position: "relative" }}>
               <input
                 type="password"
-                style={{ width: "100%", background: "#222", color: "#fff", border: "none", borderRadius: 8, padding: 14, fontSize: 18 }}
+                style={{ width: "100%", background: "#222", color: "#fff", border: "none", borderRadius: 8, padding: 8, fontSize: 15, height: 36 }}
                 placeholder="Password"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
