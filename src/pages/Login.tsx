@@ -26,14 +26,26 @@ export default function Login() {
     setLoading(true);
     setMsg("");
     const email = `${username}@loziodelrum.it`;
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) {
-      setMsg("Credenziali non valide");
+    try {
+      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+      console.log("Login response:", { data, error });
+      if (error) {
+        setMsg(error.message || "Credenziali non valide");
+        setLoading(false);
+        return;
+      }
+      if (!data || !data.session) {
+        setMsg("Login fallito: nessuna sessione attiva");
+        setLoading(false);
+        return;
+      }
       setLoading(false);
-      return;
+      navigate("/home");
+    } catch (err: any) {
+      setMsg("Errore di rete o server: " + (err?.message || err));
+      setLoading(false);
+      console.error("Login error:", err);
     }
-    setLoading(false);
-    navigate("/home");
   }
 
   async function handleRegister(e: React.FormEvent) {
