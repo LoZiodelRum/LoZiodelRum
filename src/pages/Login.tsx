@@ -98,8 +98,9 @@ export default function Login() {
           <div style={{ marginBottom: 8, display: "flex", alignItems: "center", justifyContent: "center" }}>
             <img src="/logo.png" alt="Lo Zio del Rum" style={{ width: 128, height: 128, objectFit: "contain" }} />
           </div>
-          <div style={{ color: "#ccc", fontStyle: "italic", fontSize: 16, marginBottom: 24 }}>
-            "Lo Zio del Rum approva"
+          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 24 }}>
+            <span style={{ color: "#FFD36A", fontWeight: 700, fontSize: 28, letterSpacing: 1 }}>DrinkWise</span>
+            <span style={{ color: "#fff", fontSize: 16, marginTop: 2 }}>by Lo Zio del Rum</span>
           </div>
         </div>
         <div style={{ color: "#fff", fontWeight: 700, fontSize: 36, marginBottom: 8 }}>Bentornato</div>
