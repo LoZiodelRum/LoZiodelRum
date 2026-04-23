@@ -46,17 +46,20 @@ export default function Navbar() {
     <nav
       className="nav-container"
       style={{
-        position: "sticky",
+        position: "fixed",
         top: 0,
-        background: "rgba(0,0,0,0.9)",
+        left: 0,
+        width: "100vw",
+        background: "rgba(0,0,0,0.97)",
         color: "#fff",
         minHeight: "70px",
         display: "flex",
         alignItems: "center",
         justifyContent: "space-between",
         padding: "12px 20px",
-        zIndex: 1000,
+        zIndex: 9999,
         backdropFilter: "blur(10px)",
+        boxShadow: "0 2px 16px #000a",
       }}
     >
       <div

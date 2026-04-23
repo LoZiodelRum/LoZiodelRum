@@ -251,7 +251,7 @@ export default function Auth() {
   return (
     <>
       <Navbar />
-      <div className="auth-bg" style={{ minHeight: "100vh", background: "#181818", display: "flex", alignItems: "center", justifyContent: "center" }}>
+      <div className="auth-bg" style={{ minHeight: "100vh", background: "#181818", display: "flex", alignItems: "center", justifyContent: "center", overflow: "auto", paddingTop: 90 }}>
         {/* BLOCCO LOGIN PRINCIPALE */}
         <div className="auth-card" style={{ width: 370, background: "#000", borderRadius: 16, boxShadow: "0 4px 32px #0006", padding: 36, display: stepRegistrazione ? "none" : "block" }}>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 24 }}>
