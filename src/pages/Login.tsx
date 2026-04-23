@@ -95,8 +95,8 @@ export default function Login() {
       {/* BLOCCO LOGIN PRINCIPALE */}
       <div className="auth-card" style={{ width: 370, background: "#000", borderRadius: 16, boxShadow: "0 4px 32px #0006", padding: 36, display: stepRegistrazione ? "none" : "block" }}>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 24 }}>
-          <div style={{ background: "#fff", borderRadius: "50%", width: 80, height: 80, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 8, overflow: "hidden" }}>
-            <img src="/logo.png" alt="Lo Zio del Rum" style={{ width: 64, height: 64, objectFit: "contain" }} />
+          <div style={{ marginBottom: 8, display: "flex", alignItems: "center", justifyContent: "center" }}>
+            <img src="/logo.png" alt="Lo Zio del Rum" style={{ width: 128, height: 128, objectFit: "contain" }} />
           </div>
           <div style={{ color: "#ccc", fontStyle: "italic", fontSize: 16, marginBottom: 24 }}>
             "Lo Zio del Rum approva"
