@@ -102,7 +102,7 @@ export default function Login() {
           </div>
         </div>
         <div style={{ color: "#fff", fontWeight: 700, fontSize: 36, marginBottom: 8, textAlign: "center" }}>Bentornato</div>
-        <div style={{ color: "#ccc", fontSize: 18, marginBottom: 24 }}>Accedi per esplorare i migliori locali.</div>
+        <div style={{ color: "#ccc", fontSize: 18, marginBottom: 24, textAlign: "center" }}>Accedi per esplorare i migliori locali.</div>
         <form onSubmit={handleLogin}>
           <div style={{ marginBottom: 16 }}>
             <input
