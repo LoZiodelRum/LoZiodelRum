@@ -126,7 +126,7 @@ export default function Login() {
               />
             </div>
           </div>
-          <button style={{ width: "100%", background: "#FFD36A", color: "#181818", fontWeight: 700, fontSize: 22, border: "none", borderRadius: 12, padding: 16, marginTop: 12, marginBottom: 16, boxShadow: "0 4px 0 #b48a2c" }}>
+          <button style={{ width: "100%", background: "#FFD36A", color: "#181818", fontWeight: 700, fontSize: 18, border: "none", borderRadius: 10, padding: "10px 0", marginTop: 12, marginBottom: 16 }}>
             {loading ? "..." : "Entra nel Club"}
           </button>
         </form>
