@@ -15,4 +15,3 @@ import ProtectedRoute from "./pages/ProtectedRoute";
     </Routes>
   );
 }
-//
