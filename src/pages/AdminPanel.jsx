@@ -149,101 +149,15 @@ export default function AdminPanel() {
               {a.titolo}
             </option>
           ))}
+        </select>
 
-                    <select
-                      style={select}
-                      onChange={(e) => {
-                        const u = utenti.find((x) => String(x.id) === String(e.target.value));
-                        setSelectedUser(u);
-                      }}
-                    >
-                      <option value="">Seleziona utente</option>
-                      {utenti.map((u) => (
-                        <option key={u.id} value={String(u.id)}>
-                          {u.nome || u.email}
-                        </option>
-                      ))}
-                    </select>
-
-                    {selectedUser && (
-                      <UserFullCard user={selectedUser} refresh={fetchAll} />
-                    )}
-                  </div>
-
-                  {/* BARTENDER */}
-                  <div style={section}>
-                    <h2 style={orangeTitle}>Bartender</h2>
-
-                    <select
-                      style={select}
-                      onChange={(e) => {
-                        const u = bartender.find((x) => String(x.id) === String(e.target.value));
-                        setSelectedUser(u);
-                      }}
-                    >
-                      <option value="">Seleziona bartender</option>
-                      {bartender.map((u) => (
-                        <option key={u.id} value={String(u.id)}>
-                          {u.nome || u.email}
-                        </option>
-                      ))}
-                    </select>
-
-                    {selectedUser && (
-                      <UserFullCard user={selectedUser} refresh={fetchAll} />
-                    )}
-                  </div>
-
-                  {/* PROPRIETARI */}
-                  <div style={section}>
-                    <h2 style={orangeTitle}>Proprietari</h2>
-
-                    <select
-                      style={select}
-                      onChange={(e) => {
-                        const u = proprietari.find((x) => String(x.id) === String(e.target.value));
-                        setSelectedUser(u);
-                      }}
-                    >
-                      <option value="">Seleziona proprietario</option>
-                      {proprietari.map((u) => (
-                        <option key={u.id} value={String(u.id)}>
-                          {u.nome || u.email}
-                        </option>
-                      ))}
-                    </select>
-
-                    {selectedUser && (
-                      <UserFullCard user={selectedUser} refresh={fetchAll} />
-                    )}
-                  </div>
-
-                  {/* ARTICOLI */}
-                  <div style={section}>
-                    <h2 style={orangeTitle}>Articoli</h2>
-
-                    <select
-                      style={select}
-                      onChange={(e) => {
-                        const a = articoli.find((x) => String(x.id) === String(e.target.value));
-                        setSelectedArticolo(a);
-                      }}
-                    >
-                      <option value="">Seleziona articolo</option>
-                      {articoli.map((a) => (
-                        <option key={a.id} value={String(a.id)}>
-                          {a.titolo}
-                        </option>
-                      ))}
-                    </select>
-
-                    {selectedArticolo && (
-                      <ArticleFullCard articolo={selectedArticolo} refresh={fetchAll} />
-                    )}
-                  </div>
-                </div>
-              </>
-            );
+        {selectedArticolo && (
+          <ArticleFullCard articolo={selectedArticolo} refresh={fetchAll} />
+        )}
+      </div>
+    </div>
+  );
+}
 
 function ArticoloFullCard({ articolo, refresh }) {
   const [edit, setEdit] = useState(articolo);
