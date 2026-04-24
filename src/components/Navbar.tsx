@@ -81,7 +81,7 @@ export default function Navbar() {
           style={{
             fontWeight: "bold",
             color: "#f5a623",
-            fontSize: "clamp(1rem, 2.6vw, 1.25rem)",
+            fontSize: "clamp(0.85rem, 1.7vw, 1.05rem)",
             whiteSpace: "nowrap",
           }}
         >
