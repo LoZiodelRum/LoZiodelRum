@@ -127,49 +127,118 @@ function Auth() {
   return (
     <>
       <Navbar />
-      <div className="auth-bg" style={{ minHeight: "100vh", background: "#181818", display: "flex", alignItems: "center", justifyContent: "center", overflow: "auto", paddingTop: 90 }}>
-        <div className="auth-card" style={{ width: 320, maxWidth: "90vw", background: "#000", borderRadius: 16, boxShadow: "0 4px 32px #0006", padding: 20 }}>
-          <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 24 }}>
-            <img src="/logo.png" alt="Lo Zio del Rum" style={{ width: 180, height: 180, objectFit: "contain", borderRadius: "50%", background: "none", marginBottom: 8, boxShadow: "0 2px 12px #0007" }} />
-            <div style={{ color: "#ccc", fontStyle: "italic", fontSize: 16, marginBottom: 24, textAlign: "center" }}>
-              "Lo Zio del Rum ti aspetta"
-            </div>
-          </div>
-          <div style={{ color: "#fff", fontWeight: 700, fontSize: 36, marginBottom: 8, textAlign: "center" }}>DrinkWise</div>
-          <div style={{ color: "#ccc", fontSize: 18, marginBottom: 24 }}>Accedi per esplorare i migliori locali.</div>
-          <form onSubmit={handleLogin}>
-            <div style={{ marginBottom: 16 }}>
-              <input
-                style={{ width: "100%", background: "#222", color: "#fff", border: "none", borderRadius: 8, padding: 14, fontSize: 18, marginBottom: 8 }}
-                placeholder="Email o Username"
-                value={username}
-                onChange={e => setUsername(e.target.value)}
-                required
-                autoComplete="username"
-              />
-              <div style={{ position: "relative" }}>
-                <input
-                  type="password"
-                  style={{ width: "100%", background: "#222", color: "#fff", border: "none", borderRadius: 8, padding: 14, fontSize: 18 }}
-                  placeholder="Password"
-                  value={password}
-                  onChange={e => setPassword(e.target.value)}
-                  required
-                  autoComplete="current-password"
-                />
-                <span style={{ position: "absolute", right: 16, top: 16, color: "#888", cursor: "pointer" }} title="Mostra password">👁️</span>
-              </div>
-              <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", marginTop: 4 }}>
-                <span style={{ color: "#FFD36A", fontSize: 15, cursor: "pointer" }}>Dimenticata?</span>
-              </div>
+      <style>{`
+        @media (max-width: 600px) {
+          .login-fullscreen-container {
+            width: 100vw !important;
+            height: 100vh !important;
+            min-height: 100vh !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            background: #000 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            overflow: hidden !important;
+            z-index: 1000 !important;
+          }
+          .login-box {
+            width: 100vw !important;
+            max-width: 100vw !important;
+            height: 100vh !important;
+            min-height: 100vh !important;
+            background: #000 !important;
+            border-radius: 0 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
+            align-items: center !important;
+            padding: 0 8px !important;
+            box-shadow: none !important;
+          }
+        }
+        @media (min-width: 601px) {
+          .login-fullscreen-container {
+            width: 100vw !important;
+            height: 100vh !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            background: #000 !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            overflow: hidden !important;
+            z-index: 1000 !important;
+          }
+          .login-box {
+            width: 100%;
+            max-width: 420px;
+            height: 100vh;
+            background: #000;
+            border-radius: 18px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 0 32px;
+            box-shadow: 0 8px 32px #000a;
+          }
+        }
+      `}</style>
+      <div className="login-fullscreen-container">
+        <div className="login-box">
+          <img src="/logo.png" alt="Lo Zio del Rum" style={{ width: 120, height: 120, objectFit: "contain", borderRadius: "50%", background: "none", marginBottom: 8 }} />
+          <div style={{ color: "#fff", fontWeight: 700, fontSize: 28, marginBottom: 8, textAlign: "center" }}>DrinkWise</div>
+          <div style={{ color: "#ccc", fontSize: 15, marginBottom: 18, textAlign: "center" }}>Accedi per esplorare i migliori locali.</div>
+          <form onSubmit={handleLogin} style={{ width: "100%" }}>
+            <input
+              style={{ width: "100%", background: "#222", color: "#fff", border: "none", borderRadius: 8, padding: 12, fontSize: 16, marginBottom: 10 }}
+              placeholder="Email o Username"
+              value={username}
+              onChange={e => setUsername(e.target.value)}
+              required
+              autoComplete="username"
+            />
+            <input
+              type="password"
+              style={{ width: "100%", background: "#222", color: "#fff", border: "none", borderRadius: 8, padding: 12, fontSize: 16, marginBottom: 10 }}
+              placeholder="Password"
+              value={password}
+              onChange={e => setPassword(e.target.value)}
+              required
+              autoComplete="current-password"
+            />
+            <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", marginBottom: 10 }}>
+              <span style={{ color: "#FFD36A", fontSize: 14, cursor: "pointer" }}>Dimenticata?</span>
             </div>
             {!showRegister && (
-              <button style={{ width: "100%", background: "#FFD36A", color: "#181818", fontWeight: 700, fontSize: 22, border: "none", borderRadius: 12, padding: 16, marginTop: 12, marginBottom: 16, boxShadow: "0 4px 0 #b48a2c" }}>
+              <button
+                style={{
+                  width: "100%",
+                  background: "#FFD36A",
+                  color: "#181818",
+                  fontWeight: 900,
+                  fontSize: 18,
+                  border: "none",
+                  borderRadius: 12,
+                  padding: 16,
+                  marginTop: 8,
+                  marginBottom: 8,
+                  boxShadow: "none",
+                  letterSpacing: 1,
+                  transition: "background 0.2s, color 0.2s",
+                  cursor: loading ? "not-allowed" : "pointer",
+                  opacity: loading ? 0.5 : 1,
+                }}
+                disabled={loading}
+              >
                 {loading ? "..." : "Entra nel Club"}
               </button>
             )}
           </form>
-          <div style={{ textAlign: "center", color: "#fff", fontSize: 17, marginBottom: 8 }}>
+          <div style={{ textAlign: "center", color: "#fff", fontSize: 15, marginBottom: 8 }}>
             Non hai un account?
             <span
               style={{ color: "#FFD36A", fontWeight: 700, marginLeft: 4, cursor: "pointer" }}
@@ -178,10 +247,10 @@ function Auth() {
               Registrati ora
             </span>
           </div>
-          <div style={{ textAlign: "center", color: "#444", fontSize: 13, letterSpacing: 2, marginTop: 24 }}>
+          <div style={{ textAlign: "center", color: "#444", fontSize: 12, letterSpacing: 2, marginTop: 12 }}>
             CRAFTED FOR SPIRITS LOVERS
           </div>
-          {msg && <div style={{ color: "#FFD36A", marginTop: 12, textAlign: "center" }}>{msg}</div>}
+          {msg && <div style={{ color: "#FFD36A", marginTop: 10, textAlign: "center" }}>{msg}</div>}
         </div>
       </div>
       <RegisterModal open={showRegister} onClose={() => setShowRegister(false)} />
