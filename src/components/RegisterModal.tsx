@@ -64,7 +64,7 @@ export default function RegisterModal({ open, onClose }: Props) {
       },
     });
     let userId = authData?.user?.id;
-    if (authError && !authError.message.includes("already registered")) {
+    if (authError && !authError.message.toLowerCase().includes("already registered") && !authError.message.toLowerCase().includes("esiste già")) {
       setMsg(authError?.message || "Errore registrazione");
       setLoading(false);
       return;
@@ -110,7 +110,7 @@ export default function RegisterModal({ open, onClose }: Props) {
       setLoading(false);
       setMsg("");
       onClose();
-      navigate("/");
+      navigate("/home");
     }, 1000);
   }
 
@@ -140,9 +140,9 @@ export default function RegisterModal({ open, onClose }: Props) {
             height: 100vh !important;
             max-height: 100vh !important;
             border-radius: 0 !important;
-            padding: 18px 8px 8px 8px !important;
-            box-shadow: 0 0 0 4px #FFD36A !important;
-            border: 2px solid #FFD36A !important;
+            padding: 12px 4px 4px 4px !important;
+            box-shadow: none !important;
+            border: none !important;
             overflow: hidden !important;
             position: fixed !important;
             top: 0 !important;
@@ -155,13 +155,13 @@ export default function RegisterModal({ open, onClose }: Props) {
         }
         @media (min-width: 601px) {
           .register-modal-box {
-            width: 520px !important;
+            width: 700px !important;
             min-width: 320px !important;
-            max-width: 700px !important;
+            max-width: 900px !important;
             border-radius: 18px !important;
             padding: 40px 40px 32px 40px !important;
-            box-shadow: 0 8px 32px #FFD36A55, 0 0 0 4px #FFD36A !important;
-            border: 2px solid #FFD36A !important;
+            box-shadow: 0 8px 32px #000a !important;
+            border: none !important;
             align-items: center !important;
           }
         }
@@ -173,10 +173,10 @@ export default function RegisterModal({ open, onClose }: Props) {
           borderRadius: 18,
           padding: 24,
           width: "100vw",
-          maxWidth: 700,
+          maxWidth: 900,
           minWidth: 0,
-          boxShadow: "0 8px 32px #FFD36A55, 0 0 0 4px #FFD36A",
-          border: "2px solid #FFD36A",
+          boxShadow: "0 8px 32px #000a",
+          border: "none",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -290,7 +290,7 @@ export default function RegisterModal({ open, onClose }: Props) {
               padding: "14px 0",
               marginTop: 12,
               marginBottom: 8,
-              boxShadow: "0 2px 0 #b48a2c",
+              boxShadow: "none",
               opacity: !validForm || loading ? 0.5 : 1,
               cursor: !validForm || loading ? "not-allowed" : "pointer",
               letterSpacing: 1,
