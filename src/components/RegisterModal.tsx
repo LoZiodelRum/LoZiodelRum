@@ -140,7 +140,7 @@ export default function RegisterModal({ open, onClose }: Props) {
             height: 100vh !important;
             max-height: 100vh !important;
             border-radius: 0 !important;
-            padding: 12px 4px 4px 4px !important;
+            padding: 0 !important;
             box-shadow: none !important;
             border: none !important;
             overflow: hidden !important;
@@ -155,11 +155,11 @@ export default function RegisterModal({ open, onClose }: Props) {
         }
         @media (min-width: 601px) {
           .register-modal-box {
-            width: 700px !important;
+            width: 800px !important;
             min-width: 320px !important;
-            max-width: 900px !important;
+            max-width: 1000px !important;
             border-radius: 18px !important;
-            padding: 40px 40px 32px 40px !important;
+            padding: 48px 48px 32px 48px !important;
             box-shadow: 0 8px 32px #000a !important;
             border: none !important;
             align-items: center !important;
@@ -170,17 +170,19 @@ export default function RegisterModal({ open, onClose }: Props) {
         className="register-modal-box"
         style={{
           background: "#181818",
-          borderRadius: 18,
-          padding: 24,
+          borderRadius: 0,
+          padding: 0,
           width: "100vw",
-          maxWidth: 900,
+          maxWidth: "100vw",
           minWidth: 0,
-          boxShadow: "0 8px 32px #000a",
+          boxShadow: "none",
           border: "none",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
-          position: "relative",
+          position: "fixed",
+          top: 0,
+          left: 0,
           height: "100vh",
           maxHeight: "100vh",
           justifyContent: "center",
