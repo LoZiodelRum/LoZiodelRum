@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
-import Navbar from "../components/Navbar";
+
 import RegisterModal from "../components/RegisterModal";
 
 function Auth() {
@@ -82,7 +82,7 @@ function Auth() {
 
   return (
     <>
-      <Navbar />
+      {/* Navbar rimossa: nessun header/menu nella pagina di accesso */}
       <style>{`
         .login-fullscreen-container {
           width: 100vw !important;
