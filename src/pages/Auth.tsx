@@ -174,14 +174,17 @@ function Auth() {
               <button
                 type="submit"
                 style={{
-                  width: "100%",
+                  minWidth: 120,
+                  maxWidth: 220,
+                  width: "60%",
+                  alignSelf: "center",
                   background: "#FFD36A",
                   color: "#181818",
                   fontWeight: 900,
                   fontSize: 18,
                   border: "none",
                   borderRadius: 12,
-                  padding: 16,
+                  padding: "12px 0",
                   marginTop: 8,
                   marginBottom: 8,
                   boxShadow: "none",
@@ -189,10 +192,11 @@ function Auth() {
                   transition: "background 0.2s, color 0.2s",
                   cursor: loading ? "not-allowed" : "pointer",
                   opacity: loading ? 0.5 : 1,
+                  display: "block",
                 }}
                 disabled={loading}
               >
-                {loading ? "..." : "Entra nel Club"}
+                {loading ? "..." : "Entra"}
               </button>
             )}
           </form>
