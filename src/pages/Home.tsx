@@ -1,4 +1,5 @@
 import "../App.css";
+import Navbar from "../components/Navbar";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, MapPin } from "lucide-react";
@@ -167,15 +168,17 @@ export default function Home() {
   const heroVideoSrc = `/home-hero.mp4?v=${HOME_HERO_VIDEO_VERSION}`;
 
   return (
-    <div
-      style={{
-        background: "#0b0b0b",
-        color: "#fff",
-        margin: 0,
-        padding: 0,
-        minHeight: "100vh",
-      }}
-    >
+    <>
+      <Navbar />
+      <div
+        style={{
+          background: "#0b0b0b",
+          color: "#fff",
+          margin: 0,
+          padding: 0,
+          minHeight: "100vh",
+        }}
+      >
       <style>{`
         @media (max-width: 768px) {
           .hero-section {
@@ -630,6 +633,7 @@ export default function Home() {
       </section>
 
       <div style={{ height: 60 }} />
-    </div>
+      </div>
+    </>
   );
 }
