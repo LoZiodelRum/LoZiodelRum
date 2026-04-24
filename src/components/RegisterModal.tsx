@@ -15,7 +15,8 @@ export default function RegisterModal({ open, onClose }: Props) {
   const [password, setPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [telefono, setTelefono] = useState("");
-  const [dataNascita, setDataNascita] = useState("");
+  // const [dataNascita, setDataNascita] = useState("");
+  const [isMaggiorenne, setIsMaggiorenne] = useState(false);
   const [citta, setCitta] = useState("");
   const [avatar, setAvatar] = useState<File | null>(null);
   const [avatarUrl, setAvatarUrl] = useState<string>("");
@@ -35,7 +36,7 @@ export default function RegisterModal({ open, onClose }: Props) {
     password === confirmPassword &&
     usernameAvailable === true;
 
-  const validStep2 = telefono.trim() && dataNascita && citta.trim();
+  const validStep2 = telefono.trim() && isMaggiorenne && citta.trim();
   const validStep3 = bio.trim().length <= 300;
 
   async function checkUsername(val: string) {
@@ -94,7 +95,7 @@ export default function RegisterModal({ open, onClose }: Props) {
         cognome,
         email,
         telefono,
-        data_nascita: dataNascita,
+        // data_nascita: dataNascita, // campo non più richiesto
         citta,
         avatar_url,
         bio,
@@ -221,10 +222,10 @@ export default function RegisterModal({ open, onClose }: Props) {
               />
               <input
                 type="password"
-                placeholder="Password (min 8 caratteri)"
+                placeholder="Password (min 6 caratteri)"
                 value={password}
                 onChange={e => setPassword(e.target.value)}
-                minLength={8}
+                minLength={6}
                 required
                 style={{ marginBottom: 10 }}
               />
@@ -233,58 +234,63 @@ export default function RegisterModal({ open, onClose }: Props) {
                 placeholder="Conferma password"
                 value={confirmPassword}
                 onChange={e => setConfirmPassword(e.target.value)}
-                minLength={8}
+                minLength={6}
                 required
                 style={{ marginBottom: 10 }}
               />
-              <button
-                type="button"
-                disabled={!validStep1}
-                onClick={() => setStep(2)}
-                style={{
-                  width: "100%",
-                  background: "#FFD36A",
-                  color: "#181818",
-                  fontWeight: 700,
-                  fontSize: 18,
-                  border: "none",
-                  borderRadius: 10,
-                  padding: "12px 0",
-                  marginTop: 8,
-                  marginBottom: 4,
-                  boxShadow: "0 2px 0 #b48a2c",
-                  opacity: !validStep1 ? 0.5 : 1,
-                  cursor: !validStep1 ? "not-allowed" : "pointer",
-                }}
-              >
-                Avanti
-              </button>
-            </>
-          )}
-          {step === 2 && (
-            <>
-              <input
-                placeholder="Telefono"
-                value={telefono}
-                onChange={e => setTelefono(e.target.value)}
-                required
-                style={{ marginBottom: 10 }}
-              />
-              <input
-                type="date"
-                placeholder="Data di nascita"
-                value={dataNascita}
-                onChange={e => setDataNascita(e.target.value)}
-                required
-                style={{ marginBottom: 10 }}
-              />
-              <input
-                placeholder="Città"
-                value={citta}
-                onChange={e => setCitta(e.target.value)}
-                required
-                style={{ marginBottom: 10 }}
-              />
+              {step === 2 && (
+                <>
+                  <input
+                    placeholder="Telefono"
+                    value={telefono}
+                    onChange={e => setTelefono(e.target.value)}
+                    required
+                    style={{ marginBottom: 10 }}
+                  />
+                  <input
+                    placeholder="Città"
+                    value={citta}
+                    onChange={e => setCitta(e.target.value)}
+                    required
+                    style={{ marginBottom: 10 }}
+                  />
+                  <div style={{ display: "flex", alignItems: "center", marginBottom: 10 }}>
+                    <input
+                      type="checkbox"
+                      id="maggiorenne"
+                      checked={isMaggiorenne}
+                      onChange={e => setIsMaggiorenne(e.target.checked)}
+                      required
+                      style={{ marginRight: 8 }}
+                    />
+                    <label htmlFor="maggiorenne" style={{ color: "#FFD36A", fontSize: 15, cursor: "pointer" }}>
+                      Dichiaro di essere maggiorenne
+                    </label>
+                  </div>
+                  <button
+                    type="button"
+                    disabled={!validStep2}
+                    onClick={() => setStep(3)}
+                    style={{
+                      width: "100%",
+                      background: "#FFD36A",
+                      color: "#181818",
+                      fontWeight: 700,
+                      fontSize: 18,
+                      border: "none",
+                      borderRadius: 10,
+                      padding: "12px 0",
+                      marginTop: 8,
+                      marginBottom: 4,
+                      boxShadow: "0 2px 0 #b48a2c",
+                      opacity: !validStep2 ? 0.5 : 1,
+                      cursor: !validStep2 ? "not-allowed" : "pointer",
+                    }}
+                  >
+                    Avanti
+                  </button>
+                </>
+              )}
               <button
                 type="button"
                 disabled={!validStep2}
@@ -297,58 +303,58 @@ export default function RegisterModal({ open, onClose }: Props) {
                   fontSize: 18,
                   border: "none",
                   borderRadius: 10,
-                  padding: "12px 0",
-                  marginTop: 8,
-                  marginBottom: 4,
-                  boxShadow: "0 2px 0 #b48a2c",
-                  opacity: !validStep2 ? 0.5 : 1,
-                  cursor: !validStep2 ? "not-allowed" : "pointer",
-                }}
-              >
-                Avanti
-              </button>
-              <button
-                type="button"
-                onClick={() => setStep(1)}
-                style={{
-                  width: "100%",
-                  background: "none",
-                  color: "#FFD36A",
-                  border: "none",
-                  fontSize: 16,
-                  marginTop: 8,
-                  cursor: "pointer",
-                }}
-              >
-                Indietro
-              </button>
-            </>
-          )}
-          {step === 3 && (
-            <>
-              <div style={{ marginBottom: 10, textAlign: "center" }}>
-                <label style={{ color: "#FFD36A", fontWeight: 600, cursor: "pointer" }}>
-                  {avatarUrl ? (
-                    <img
-                      src={avatarUrl}
-                      alt="Preview avatar"
-                      style={{
-                        width: 80,
-                        height: 80,
-                        borderRadius: "50%",
-                        objectFit: "cover",
-                        marginBottom: 8,
-                        border: "2px solid #FFD36A",
-                      }}
-                    />
-                  ) : (
-                    "Carica avatar"
+                  {step === 3 && (
+                    <>
+                      <div style={{ color: "#FFD36A", fontWeight: 700, marginBottom: 8, marginTop: 8 }}>Carica avatar</div>
+                      <input type="file" accept="image/*" onChange={handleAvatar} style={{ marginBottom: 10 }} />
+                      {avatarUrl && (
+                        <img src={avatarUrl} alt="avatar preview" style={{ width: 80, height: 80, borderRadius: "50%", marginBottom: 10, objectFit: "cover" }} />
+                      )}
+                      <textarea
+                        placeholder="Bio (max 300 caratteri) - facoltativa"
+                        value={bio}
+                        onChange={e => setBio(e.target.value)}
+                        maxLength={300}
+                        style={{ width: "100%", minHeight: 80, marginBottom: 10 }}
+                      />
+                      <button
+                        type="submit"
+                        disabled={!validStep3 || loading}
+                        style={{
+                          width: "100%",
+                          background: "#FFD36A",
+                          color: "#181818",
+                          fontWeight: 700,
+                          fontSize: 18,
+                          border: "none",
+                          borderRadius: 10,
+                          padding: "12px 0",
+                          marginTop: 8,
+                          marginBottom: 4,
+                          boxShadow: "0 2px 0 #b48a2c",
+                          opacity: !validStep3 || loading ? 0.5 : 1,
+                          cursor: !validStep3 || loading ? "not-allowed" : "pointer",
+                        }}
+                      >
+                        Crea il tuo account
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => setStep(2)}
+                        style={{
+                          width: "100%",
+                          background: "none",
+                          color: "#FFD36A",
+                          border: "none",
+                          fontSize: 16,
+                          marginTop: 8,
+                          cursor: "pointer",
+                        }}
+                      >
+                        Indietro
+                      </button>
+                    </>
                   )}
-                  <input
-                    type="file"
-                    accept="image/*"
-                    style={{ display: "none" }}
-                    onChange={handleAvatar}
                   />
                 </label>
               </div>
