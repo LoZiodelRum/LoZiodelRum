@@ -1,128 +1,15 @@
 import Navbar from "../components/Navbar";
 import "../App.css";
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
-import { useUser } from "../context/UserContext";
-import { supabase } from "../lib/supabaseClient";
-import {
-  getCocktailSuggestions,
-  type CocktailPreferences,
-  type SuggestedCocktail,
-} from "../lib/cocktailConfigurator";
-import { AROMATIC_FAMILY_OPTIONS, TASTE_PROFILE_OPTIONS } from "../lib/cocktailOptionSets";
-
 export default function Crea() {
-  const { user } = useUser();
-  const navigate = useNavigate();
-  const [cocktailForm, setCocktailForm] = useState({
-    nome: "",
-    descrizione: "",
-    preparazione: "",
-    ingredienti: "",
-    storia: "",
-    consigli: "",
-    guarnizione: "",
-    intensita_alcolica: "",
-    profilo_gustativo: "",
-    famiglia_aromatica: "",
-    base_alcolica: "",
-    Genere: "",
-  });
-  const [preferences, setPreferences] = useState<CocktailPreferences>({});
-  const [suggestions, setSuggestions] = useState<SuggestedCocktail[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [openGeneratedForms, setOpenGeneratedForms] = useState<Record<string, boolean>>({});
-  const [savingNames, setSavingNames] = useState<Record<string, boolean>>({});
-  const [savedNames, setSavedNames] = useState<Record<string, boolean>>({});
-  const [customGeneratedNames, setCustomGeneratedNames] = useState<Record<string, string>>({});
-  const [generatedImageUrls, setGeneratedImageUrls] = useState<Record<string, string>>({});
-  const [uploadingImageNames, setUploadingImageNames] = useState<Record<string, boolean>>({});
-
-  function updatePreference(key: keyof CocktailPreferences, value: string) {
-    setPreferences((prev) => ({ ...prev, [key]: value }));
-  }
-
-  function serializePreferenceValue(value: string | undefined | null) {
-    return value || null;
-  }
-
-  function getActivePreferenceCount() {
-    return Object.values(preferences).filter((value) => String(value || "").trim().length > 0).length;
-  }
-
-  async function handleSearch() {
-    const activePreferences = getActivePreferenceCount();
-
-    if (activePreferences < 2) {
-      setSuggestions([]);
-      setError("Seleziona almeno 2 preferenze");
-      return;
-    }
-
-    setLoading(true);
-    setError(null);
-
-    const result = await getCocktailSuggestions(preferences);
-
-    if (result.error) {
-      setSuggestions([]);
-      setError(result.error);
-      setLoading(false);
-      return;
-    }
-
-    const generated = result.cocktails.filter((c) => c.source === "generated");
-    const database = result.cocktails.filter((c) => c.source === "database").slice(0, 3);
-    setSuggestions([...generated, ...database]);
-    setLoading(false);
-  }
-
-  function openExistingCocktail(cocktail: SuggestedCocktail) {
-    if (cocktail.source !== "database") return;
-    const cocktailId = cocktail.originalRecord?.id;
-    if (!cocktailId) return;
-    navigate(`/drink/${cocktailId}`);
-  }
-
-  function buildDatabasePreferenceComparison(filters: any, cocktail: any) {
-    const schema = [
-      { label: "Base", filter: filters.p_base, db: cocktail?.base_alcolica },
-      { label: "Profilo", filter: filters.p_profilo, db: cocktail?.profilo_gustativo },
-      { label: "Intensita", filter: filters.p_intensita, db: cocktail?.intensita_alcolica },
-      { label: "Famiglia", filter: filters.p_famiglia, db: cocktail?.famiglia_aromatica },
-      { label: "Genere", filter: filters.p_metodo, db: cocktail?.Genere },
-      { label: "Texture", filter: filters.p_texture, db: cocktail?.texture },
-    ];
-
-    const normalize = (value: string | null | undefined) => String(value || "").trim().toLowerCase();
-    const active = schema.filter((item) => normalize(item.filter).length > 0);
-
-    if (!cocktail || active.length === 0) {
-      return (
-        <>
-          <Navbar />
-          <div className="page fade-in" style={{ padding: 40 }}>
-            {/* ...contenuto... */}
-          </div>
-        </>
-      );
-    }
-
-    const matched = active.filter((item) => normalize(item.filter) === normalize(item.db));
-    const different = active.filter((item) => normalize(item.filter) !== normalize(item.db));
-
-    const affinitaText = matched.length
-      ? matched.map((item) => `${item.label}: ${item.db}`).join(" · ")
-      : "Nessuna affinità diretta";
-
-    const differenzeText = different.length
-      ? different.map((item) => `${item.label} scelto ${item.filter} / cocktail ${item.db || "non definito"}`).join(" · ")
-      : "Nessuna differenza rilevante";
-
-    return {
-      description: `Affinita con le tue scelte: ${affinitaText}. Differenze principali: ${differenzeText}.`,
-      tastingNotes: [
+  return (
+    <>
+      <Navbar />
+      <div className="page fade-in">
+        {/* ...contenuto... */}
+      </div>
+    </>
+  );
+}
         `Affinita ${matched.length}/${active.length}`,
         `Differenze ${different.length}/${active.length}`,
       ],

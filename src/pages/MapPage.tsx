@@ -1,63 +1,16 @@
+import Navbar from "../components/Navbar";
 import "../App.css";
-import { useEffect, useState } from "react";
-import { supabase } from "../lib/supabaseClient";
-import { MapContainer, TileLayer, Marker, Popup, ZoomControl } from "react-leaflet";
-import { useNavigate } from "react-router-dom";
-import L from "leaflet";
-import "leaflet/dist/leaflet.css";
-
-// 🔥 IMPORT DIRETTO FILE
-import markerIcon from "../assets/marker.png";
-
-// 🔥 ICONA SENZA DISTORSIONE
-const customIcon = new L.Icon({
-  iconUrl: markerIcon,
-  iconSize: [60, 60], // 🔥 QUADRATO = NON SCHIACCIA
-  iconAnchor: [30, 60],
-  popupAnchor: [0, -60],
-});
-
-type Locale = {
-  id: string;
-  nome: string;
-  citta: string;
-  image_url?: string | null;
-  latitudine: number | string | null;
-  longitudine: number | string | null;
-};
 
 export default function MapPage() {
-  const [locali, setLocali] = useState<Locale[]>([]);
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    fetchLocali();
-  }, []);
-
-  async function fetchLocali() {
-    const { data } = await supabase
-      .from("Locali")
-      .select("*");
-
-    setLocali(data || []);
-  }
-
-  function getCoords(l: Locale): [number, number] | null {
-    if (l.latitudine === null || l.latitudine === undefined || l.latitudine === "") return null;
-    if (l.longitudine === null || l.longitudine === undefined || l.longitudine === "") return null;
-
-    const latRaw = String(l.latitudine).replace(",", ".").trim();
-    const lngRaw = String(l.longitudine).replace(",", ".").trim();
-
-    const lat = Number(latRaw);
-    const lng = Number(lngRaw);
-
-    if (isNaN(lat) || isNaN(lng)) return null;
-
-    return [lat, lng];
-  }
-
   return (
+    <>
+      <Navbar />
+      <div className="page fade-in">
+        {/* ...contenuto... */}
+      </div>
+    </>
+  );
+}
     <div
       className="fade-in map-fullscreen"
       style={{

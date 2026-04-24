@@ -96,7 +96,7 @@ export default function Navbar() {
           alignItems: "center",
         }}
       >
-        <Link to="/" style={linkStyle("/")}>Home</Link>
+        <Link to="/home" style={linkStyle("/home")}>Home</Link>
         <Link to="/mappa" style={linkStyle("/mappa")}>Mappa</Link>
         <Link to="/drink" style={linkStyle("/drink")}>Drink</Link>
         <Link to="/vini" style={linkStyle("/vini")}>Vini</Link>

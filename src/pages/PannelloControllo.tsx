@@ -74,148 +74,19 @@ export default function PannelloControllo() {
             body: JSON.stringify({}),
           });
 
-          const payload = await response.json().catch(() => ({}));
-          if (response.ok && payload?.ok && Array.isArray(payload?.profiles)) {
-            utentiData = payload.profiles;
-            break;
+          import Navbar from "../components/Navbar";
+          import "../App.css";
+
+          export default function PannelloControllo() {
+            return (
+              <>
+                <Navbar />
+                <div className="page fade-in">
+                  {/* ...contenuto... */}
+                </div>
+              </>
+            );
           }
-
-          if (response.status !== 404 && response.status !== 405) {
-            break;
-          }
-        } catch {
-          // Keep fallback below if the endpoint is not reachable.
-        }
-      }
-    }
-
-    if (!utentiData) {
-      const fallbackUsers = await supabase.from("Profili").select("*");
-      utentiData = (fallbackUsers.data as any[]) || [];
-    }
-
-    const { data: articoliData } = await supabase.from("articoli").select("*");
-    const { data: cocktailData } = await supabase.from("cocktail").select("*");
-    const { data: distillatiData } = await supabase.from("distillati").select("*");
-    let viniData: any[] | null = null;
-    let detectedWineTable = "vini";
-
-    const viniTryLower = await supabase.from("vini").select("*");
-    if (!viniTryLower.error) {
-      viniData = viniTryLower.data || [];
-      detectedWineTable = "vini";
-    } else {
-      const viniTryUpper = await supabase.from("Vini").select("*");
-      if (!viniTryUpper.error) {
-        viniData = viniTryUpper.data || [];
-        detectedWineTable = "Vini";
-      }
-    }
-
-    const normalizeRole = (value: unknown) => String(value || "utente").trim().toLowerCase();
-    const normalizeApproved = (user: any) => {
-      if (typeof user?.approvato === "boolean") return user.approvato;
-      const statusValue = String(user?.status || user?.stato || "").toLowerCase();
-      if (["approved", "approvato", "attivo", "active"].includes(statusValue)) return true;
-      if (["pending", "in_attesa", "in attesa"].includes(statusValue)) return false;
-      return false;
-    };
-
-    const safeUsers = (Array.isArray(utentiData) ? utentiData : []).map((user: any) => ({
-      ...user,
-      ruolo: normalizeRole(user?.ruolo),
-      approvato: normalizeApproved(user),
-    }));
-    const safeCocktail = Array.isArray(cocktailData) ? cocktailData : [];
-
-    setLocali(localiData || []);
-    setUtenti(safeUsers);
-
-    setBartender(safeUsers.filter(u => u?.ruolo === "bartender"));
-    setProprietari(safeUsers.filter(u => u?.ruolo === "proprietario"));
-
-    setArticoli(articoliData || []);
-    setCocktail(safeCocktail);
-    setDistillati(distillatiData || []);
-    setVini(viniData || []);
-    setWineTableName(detectedWineTable);
-
-    setKpi({
-      utenti: safeUsers.length,
-      locali: (localiData || []).length,
-      drink: (safeCocktail.length || 0) + (distillatiData?.length || 0),
-      articoli: (articoliData || []).length,
-    });
-  }
-
-  async function toggleApprovazione(user: any) {
-    await supabase
-      .from("Profili")
-      .update({ approvato: !user.approvato })
-      .eq("id", user.id);
-
-    loadData();
-  }
-
-  async function salvaModifiche() {
-    if (!selectedItem || !selectedTable) return;
-
-    const adminPassword =
-      localStorage.getItem("adminPassword") ||
-      import.meta.env.VITE_ADMIN_PASSWORD ||
-      "";
-
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-
-    const isNetlifyHost = typeof window !== "undefined" && window.location.hostname.includes("netlify");
-
-    const { id, ...dataToUpdate } = selectedItem;
-
-    const normalizeValue = (value: any) => {
-      if (value === "") return null;
-      return value ?? null;
-    };
-
-    const cleanData: any = {};
-    Object.keys(dataToUpdate).forEach(k => {
-      cleanData[k] = normalizeValue(dataToUpdate[k]);
-    });
-
-    if (selectedTable.toLowerCase() === "vini" && cleanData.image !== undefined) {
-      cleanData.immagine = cleanData.immagine ?? cleanData.image;
-      delete cleanData.image;
-    }
-
-    if (selectedTable.toLowerCase() === "vini" && cleanData.name !== undefined) {
-      cleanData.nome = cleanData.nome ?? cleanData.name;
-      delete cleanData.name;
-    }
-
-    if (selectedTable === "Locali") {
-      removedLocaliFields.forEach((field) => {
-        if (field in cleanData) {
-          delete cleanData[field];
-        }
-      });
-    }
-
-    const changedData: any = {};
-    if (!isCreating) {
-      Object.keys(cleanData).forEach((k) => {
-        const current = cleanData[k];
-        const previous = normalizeValue(selectedOriginalItem?.[k]);
-        if (JSON.stringify(current) !== JSON.stringify(previous)) {
-          changedData[k] = current;
-        }
-      });
-
-      if (Object.keys(changedData).length === 0) {
-        setSaveStatus("ok");
-        setTimeout(() => setSaveStatus(null), 2000);
-        return;
-      }
     }
 
     let error: any = null;
