@@ -5,12 +5,24 @@ import { supabase } from "../lib/supabaseClient";
 import Navbar from "../components/Navbar";
 import RegisterModal from "../components/RegisterModal";
 
+function Auth() {
   const navigate = useNavigate();
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState("");
   const [showRegister, setShowRegister] = useState(false);
+  const [stepRegistrazione, setStepRegistrazione] = useState<string|null>(null);
+  const [ruoloSelezionato, setRuoloSelezionato] = useState<string|null>(null);
+  const [nome, setNome] = useState("");
+  const [cognome, setCognome] = useState("");
+  const [esperienze, setEsperienze] = useState("");
+  const [specialita, setSpecialita] = useState("");
+  const [citta, setCitta] = useState("");
+  const [social, setSocial] = useState("");
+  const [nomeLocale, setNomeLocale] = useState("");
+  const [indirizzo, setIndirizzo] = useState("");
+  const [telefono, setTelefono] = useState("");
 
   async function handleLogin(e: any) {
     e.preventDefault();
@@ -108,7 +120,6 @@ import RegisterModal from "../components/RegisterModal";
           recoverCode === "42501" ||
           recoverMessage.includes("permission") ||
           recoverMessage.includes("row-level") ||
-      return (
         if (!recoverBlocked) {
           setMsg("Errore verifica profilo");
           setLoading(false);
@@ -242,8 +253,7 @@ import RegisterModal from "../components/RegisterModal";
     <>
       <Navbar />
       <div className="auth-bg" style={{ minHeight: "100vh", background: "#181818", display: "flex", alignItems: "center", justifyContent: "center", overflow: "auto", paddingTop: 90 }}>
-        {/* BLOCCO LOGIN PRINCIPALE */}
-        <div className="auth-card" style={{ width: 320, maxWidth: "90vw", background: "#000", borderRadius: 16, boxShadow: "0 4px 32px #0006", padding: 20, display: stepRegistrazione ? "none" : "block" }}>
+        <div className="auth-card" style={{ width: 320, maxWidth: "90vw", background: "#000", borderRadius: 16, boxShadow: "0 4px 32px #0006", padding: 20 }}>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 24 }}>
             <img src="/logo.png" alt="Lo Zio del Rum" style={{ width: 180, height: 180, objectFit: "contain", borderRadius: "50%", background: "none", marginBottom: 8, boxShadow: "0 2px 12px #0007" }} />
             <div style={{ color: "#ccc", fontStyle: "italic", fontSize: 16, marginBottom: 24, textAlign: "center" }}>
@@ -284,130 +294,22 @@ import RegisterModal from "../components/RegisterModal";
           </form>
           <div style={{ textAlign: "center", color: "#fff", fontSize: 17, marginBottom: 8 }}>
             Non hai un account?
-             <span
-               style={{ color: "#FFD36A", fontWeight: 700, marginLeft: 4, cursor: "pointer" }}
-               onClick={() => setShowRegister(true)}
-             >
-               Registrati ora
-             </span>
+            <span
+              style={{ color: "#FFD36A", fontWeight: 700, marginLeft: 4, cursor: "pointer" }}
+              onClick={() => setShowRegister(true)}
+            >
+              Registrati ora
+            </span>
           </div>
           <div style={{ textAlign: "center", color: "#444", fontSize: 13, letterSpacing: 2, marginTop: 24 }}>
             CRAFTED FOR SPIRITS LOVERS
           </div>
           {msg && <div style={{ color: "#FFD36A", marginTop: 12, textAlign: "center" }}>{msg}</div>}
         </div>
-
-        {/* POPUP SCELTA RUOLO */}
-        {stepRegistrazione === "scelta" && (
-          <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", background: "#000a", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100 }}>
-            <div style={{ background: "#181818", borderRadius: 18, padding: 18, minWidth: 200, maxWidth: 320, boxShadow: "0 8px 32px #000a", display: "flex", flexDirection: "column", alignItems: "center" }}>
-              <div style={{ color: "#fff", fontWeight: 700, fontSize: 24, marginBottom: 8 }}>Registrati</div>
-              <div style={{ color: "#ccc", fontSize: 16, marginBottom: 20 }}>Scegli il tuo ruolo</div>
-              <div style={{ display: "flex", gap: 12, marginBottom: 18 }}>
-                <button style={{ background: "#FFD36A", color: "#181818", fontWeight: 700, fontSize: 17, border: "none", borderRadius: 10, padding: "10px 18px", boxShadow: "0 2px 0 #b48a2c" }}
-                  onClick={() => { setRuoloSelezionato("utente"); setStepRegistrazione("form"); }}>
-                  Utente
-                </button>
-                <button style={{ background: "#FFD36A", color: "#181818", fontWeight: 700, fontSize: 17, border: "none", borderRadius: 10, padding: "10px 18px", boxShadow: "0 2px 0 #b48a2c" }}
-                  onClick={() => { setRuoloSelezionato("bartender"); setStepRegistrazione("form"); }}>
-                  Bartender
-                </button>
-              </div>
-              <button style={{ background: "none", color: "#FFD36A", border: "none", fontSize: 15, marginTop: 8, cursor: "pointer" }} onClick={() => setStepRegistrazione(null)}>Annulla</button>
-            </div>
-          </div>
-        )}
-
-        {/* FORM REGISTRAZIONE */}
-        {stepRegistrazione === "form" && (
-          <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", background: "#000a", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100 }}>
-            <div style={{ background: "#181818", borderRadius: 18, padding: 36, minWidth: 340, boxShadow: "0 8px 32px #000a", display: "flex", flexDirection: "column", alignItems: "center" }}>
-              <div style={{ color: "#fff", fontWeight: 700, fontSize: 30, marginBottom: 8 }}>Registrazione</div>
-              <form onSubmit={async (e) => {
-                e.preventDefault();
-                setLoading(true);
-                setMsg("");
-                const email = `${username}@loziodelrum.it`;
-                let user: any = null;
-                const { data, error } = await supabase.auth.signUp({ email, password });
-                if (error) {
-                  setMsg(error.message);
-                  setLoading(false);
-                  return;
-                }
-                user = data.user;
-                if (!user) {
-                  setMsg("Errore registrazione");
-                  setLoading(false);
-                  return;
-                }
-                // Salva profilo con ruolo scelto
-                const profilo = {
-                  id: user.id,
-                  nome,
-                  cognome,
-                  username,
-                  email,
-                  ruolo: ruoloSelezionato,
-                  approvato: false,
-                  avatar_url: null,
-                  bio_breve: null,
-                  telefono: ruoloSelezionato === "proprietario" ? telefono : null,
-                  city: null,
-                  level: 1,
-                  points: 0,
-                  badges: [],
-                  esperienze_principali: ruoloSelezionato === "bartender" ? esperienze : null,
-                  specialita: ruoloSelezionato === "bartender" ? specialita : null,
-                  citta_operativa: ruoloSelezionato === "bartender" ? citta : null,
-                  social_links: ruoloSelezionato === "bartender" ? social : null,
-                  nome_locale: ruoloSelezionato === "proprietario" ? nomeLocale : null,
-                  indirizzo: ruoloSelezionato === "proprietario" ? indirizzo : null,
-                  created_at: new Date().toISOString(),
-                };
-                const { error: insertError } = await supabase.from("Profili").insert([profilo]);
-                if (insertError) {
-                  setMsg(insertError.message);
-                  setLoading(false);
-                  return;
-                }
-                setMsg("Registrazione completata! Ora puoi accedere.");
-                setTimeout(() => {
-                  setStepRegistrazione(null);
-                  setRuoloSelezionato(null);
-                }, 1200);
-                setLoading(false);
-              }} style={{ width: 320, display: "flex", flexDirection: "column", gap: 12 }}>
-                <input placeholder="Nome" value={nome} onChange={e => setNome(e.target.value)} required style={{ padding: 12, borderRadius: 8, border: "none", background: "#222", color: "#fff", fontSize: 17 }} />
-                <input placeholder="Cognome" value={cognome} onChange={e => setCognome(e.target.value)} required style={{ padding: 12, borderRadius: 8, border: "none", background: "#222", color: "#fff", fontSize: 17 }} />
-                <input placeholder="Username" value={username} onChange={e => setUsername(e.target.value)} required style={{ padding: 12, borderRadius: 8, border: "none", background: "#222", color: "#fff", fontSize: 17 }} />
-                <input type="password" placeholder="Password" value={password} onChange={e => setPassword(e.target.value)} required style={{ padding: 12, borderRadius: 8, border: "none", background: "#222", color: "#fff", fontSize: 17 }} />
-                {ruoloSelezionato === "bartender" && (
-                  <>
-                    <input placeholder="Esperienze" value={esperienze} onChange={e => setEsperienze(e.target.value)} style={{ padding: 12, borderRadius: 8, border: "none", background: "#222", color: "#fff", fontSize: 17 }} />
-                    <input placeholder="Specialità" value={specialita} onChange={e => setSpecialita(e.target.value)} style={{ padding: 12, borderRadius: 8, border: "none", background: "#222", color: "#fff", fontSize: 17 }} />
-                    <input placeholder="Città" value={citta} onChange={e => setCitta(e.target.value)} style={{ padding: 12, borderRadius: 8, border: "none", background: "#222", color: "#fff", fontSize: 17 }} />
-                    <input placeholder="Social" value={social} onChange={e => setSocial(e.target.value)} style={{ padding: 12, borderRadius: 8, border: "none", background: "#222", color: "#fff", fontSize: 17 }} />
-                  </>
-                )}
-                {ruoloSelezionato === "proprietario" && (
-                  <>
-                    <input placeholder="Nome locale" value={nomeLocale} onChange={e => setNomeLocale(e.target.value)} style={{ padding: 12, borderRadius: 8, border: "none", background: "#222", color: "#fff", fontSize: 17 }} />
-                    <input placeholder="Indirizzo" value={indirizzo} onChange={e => setIndirizzo(e.target.value)} style={{ padding: 12, borderRadius: 8, border: "none", background: "#222", color: "#fff", fontSize: 17 }} />
-                    <input placeholder="Telefono" value={telefono} onChange={e => setTelefono(e.target.value)} style={{ padding: 12, borderRadius: 8, border: "none", background: "#222", color: "#fff", fontSize: 17 }} />
-                  </>
-                )}
-                <button style={{ background: "#FFD36A", color: "#181818", fontWeight: 700, fontSize: 20, border: "none", borderRadius: 10, padding: "14px 0", marginTop: 8, boxShadow: "0 2px 0 #b48a2c" }}>
-                  {loading ? "..." : "Registrati"}
-                </button>
-                <button type="button" style={{ background: "none", color: "#FFD36A", border: "none", fontSize: 16, marginTop: 8, cursor: "pointer" }} onClick={() => { setStepRegistrazione(null); setRuoloSelezionato(null); }}>Annulla</button>
-                 {msg && <div style={{ color: "#FFD36A", marginTop: 12, textAlign: "center" }}>{msg}</div>}
-               </div>
-             </div>
-             <RegisterModal open={showRegister} onClose={() => setShowRegister(false)} />
-           </>
-         );
-        }
+      </div>
+      <RegisterModal open={showRegister} onClose={() => setShowRegister(false)} />
     </>
   );
 }
+
+export default Auth;
