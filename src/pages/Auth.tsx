@@ -119,7 +119,7 @@ function Auth() {
         const recoverBlocked =
           recoverCode === "42501" ||
           recoverMessage.includes("permission") ||
-          recoverMessage.includes("row-level") ||
+          recoverMessage.includes("row-level");
         if (!recoverBlocked) {
           setMsg("Errore verifica profilo");
           setLoading(false);
