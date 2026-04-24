@@ -31,7 +31,7 @@ export default function RegisterModal({ open, onClose }: Props) {
     cognome.trim() &&
     username.trim() &&
     email.trim() &&
-    password.length >= 8 &&
+    password.length >= 6 &&
     password === confirmPassword &&
     usernameAvailable === true;
 
