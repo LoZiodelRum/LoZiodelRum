@@ -151,7 +151,7 @@ function Auth() {
           <div style={{ color: "#ccc", fontSize: 15, marginBottom: 18, textAlign: "center" }}>Accedi per esplorare i migliori locali.</div>
           <form onSubmit={handleLogin} style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
             <input
-              style={{ width: "25%", minWidth: 120, maxWidth: 220, background: "#222", color: "#fff", border: "none", borderRadius: 8, padding: 12, fontSize: 16, marginBottom: 22, marginTop: 0, display: "block", textAlign: "center" }}
+              style={{ width: "100%", maxWidth: 420, background: "#222", color: "#fff", border: "none", borderRadius: 16, padding: 12, fontSize: 18, marginBottom: 22, marginTop: 0, display: "block", textAlign: "center" }}
               placeholder="Email o Username"
               value={username}
               onChange={e => setUsername(e.target.value)}
@@ -160,7 +160,7 @@ function Auth() {
             />
             <input
               type="password"
-              style={{ width: "25%", minWidth: 120, maxWidth: 220, background: "#222", color: "#fff", border: "none", borderRadius: 8, padding: 12, fontSize: 16, marginBottom: 28, display: "block", textAlign: "center" }}
+              style={{ width: "100%", maxWidth: 420, background: "#222", color: "#fff", border: "none", borderRadius: 16, padding: 12, fontSize: 18, marginBottom: 28, display: "block", textAlign: "center" }}
               placeholder="Password"
               value={password}
               onChange={e => setPassword(e.target.value)}
