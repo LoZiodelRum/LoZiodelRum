@@ -1,5 +1,6 @@
 
 
+import Navbar from "../components/Navbar";
 import "../App.css";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
@@ -58,59 +59,62 @@ export default function MapPage() {
   }
 
   return (
-    <div className="fade-in map-fullscreen" style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, height: "100%", width: "100%", padding: 0, margin: 0, border: "none", borderRadius: 0, overflow: "hidden" }}>
-      <MapContainer
-        center={[41.9028, 12.4964]}
-        zoom={6}
-        zoomControl={false}
-        attributionControl={false}
-        style={{ height: "100%", width: "100%", border: "none", borderRadius: 0, margin: 0, padding: 0 }}
-      >
-        <ZoomControl position="bottomleft" />
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        {locali.map((l) => {
-          const coords = getCoords(l);
-          if (!coords) return null;
-          return (
-            <Marker key={l.id} position={coords} icon={markerIcon}>
-              <Popup minWidth={280} maxWidth={340}>
-                <div
-                  onClick={() => navigate(`/venue/${l.id}`)}
-                  style={{
-                    cursor: "pointer",
-                    width: "min(70vw, 18rem)",
-                    background: "transparent",
-                    boxShadow: "none",
-                    border: "none",
-                    padding: 0,
-                  }}
-                >
-                  {l.image_url && (
-                    <img
-                      src={l.image_url}
-                      style={{
-                        width: "100%",
-                        height: "clamp(5.5rem, 16vw, 7.5rem)",
-                        objectFit: "cover",
-                        borderRadius: 16,
-                        marginBottom: 10,
-                        display: "block"
-                      }}
-                    />
-                  )}
-                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
-                    <h3 style={{ margin: 0, color: "#f5a623", fontSize: 20, fontWeight: 700 }}>{l.nome}</h3>
-                    {l.indirizzo && (
-                      <span style={{ color: "#222", fontSize: 15, fontWeight: 500, marginLeft: 8 }}>{l.indirizzo}</span>
+    <div style={{ width: "100vw", height: "100vh", overflow: "hidden", background: "transparent" }}>
+      <Navbar />
+      <div style={{ position: "absolute", top: 70, left: 0, right: 0, height: "calc(100vh - 70px)", width: "100vw", zIndex: 1 }}>
+        <MapContainer
+          center={[41.9028, 12.4964]}
+          zoom={6}
+          zoomControl={false}
+          attributionControl={false}
+          style={{ height: "100%", width: "100%", border: "none", borderRadius: 0, margin: 0, padding: 0 }}
+        >
+          <ZoomControl position="bottomleft" />
+          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+          {locali.map((l) => {
+            const coords = getCoords(l);
+            if (!coords) return null;
+            return (
+              <Marker key={l.id} position={coords} icon={markerIcon}>
+                <Popup minWidth={280} maxWidth={340}>
+                  <div
+                    onClick={() => navigate(`/venue/${l.id}`)}
+                    style={{
+                      cursor: "pointer",
+                      width: "min(70vw, 18rem)",
+                      background: "transparent",
+                      boxShadow: "none",
+                      border: "none",
+                      padding: 0,
+                    }}
+                  >
+                    {l.image_url && (
+                      <img
+                        src={l.image_url}
+                        style={{
+                          width: "100%",
+                          height: "clamp(5.5rem, 16vw, 7.5rem)",
+                          objectFit: "cover",
+                          borderRadius: 16,
+                          marginBottom: 10,
+                          display: "block"
+                        }}
+                      />
                     )}
+                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
+                      <h3 style={{ margin: 0, color: "#f5a623", fontSize: 20, fontWeight: 700 }}>{l.nome}</h3>
+                      {l.indirizzo && (
+                        <span style={{ color: "#222", fontSize: 15, fontWeight: 500, marginLeft: 8 }}>{l.indirizzo}</span>
+                      )}
+                    </div>
+                    <p style={{ margin: 0, color: "#555", fontSize: 15 }}>{l.citta}</p>
                   </div>
-                  <p style={{ margin: 0, color: "#555", fontSize: 15 }}>{l.citta}</p>
-                </div>
-              </Popup>
-            </Marker>
-          );
-        })}
-      </MapContainer>
+                </Popup>
+              </Marker>
+            );
+          })}
+        </MapContainer>
+      </div>
     </div>
   );
 }
