@@ -12,17 +12,7 @@ function Auth() {
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState("");
   const [showRegister, setShowRegister] = useState(false);
-  const [stepRegistrazione, setStepRegistrazione] = useState<string|null>(null);
-  const [ruoloSelezionato, setRuoloSelezionato] = useState<string|null>(null);
-  const [nome, setNome] = useState("");
-  const [cognome, setCognome] = useState("");
-  const [esperienze, setEsperienze] = useState("");
-  const [specialita, setSpecialita] = useState("");
-  const [citta, setCitta] = useState("");
-  const [social, setSocial] = useState("");
-  const [nomeLocale, setNomeLocale] = useState("");
-  const [indirizzo, setIndirizzo] = useState("");
-  const [telefono, setTelefono] = useState("");
+
 
   async function handleLogin(e: any) {
     e.preventDefault();
@@ -132,122 +122,7 @@ function Auth() {
     window.location.reload();
   }
 
-  async function handleRegister(e: any) {
-    e.preventDefault();
-    setLoading(true);
-    setMsg("");
-    const email = `${username}@loziodelrum.it`;
-    let user: any = null;
-    const { data, error } = await supabase.auth.signUp({ email, password });
-    if (error) {
-      if (error.message.includes("already registered")) {
-        const login = await supabase.auth.signInWithPassword({ email, password });
-        if (login.error) {
-          setMsg("Utente già registrato, password errata");
-          setLoading(false);
-          return;
-        }
-        user = login.data.user;
-      } else {
-        setMsg(error.message);
-        setLoading(false);
-        return;
-      }
-    } else {
-      user = data.user;
-    }
-    if (!user) {
-      setMsg("Errore registrazione");
-      setLoading(false);
-      return;
-    }
-    const ruoloFinale = username === "maurizio" ? "admin" : "utente";
-    const { data: existingProfile } = await supabase
-      .from("Profili")
-      .select("id")
-      .eq("id", user.id)
-      .maybeSingle();
-    if (!existingProfile) {
-      const { error: insertError } = await supabase.from("Profili").insert([
-        {
-          id: user.id,
-          nome,
-          cognome,
-          username,
-          email,
-          ruolo: ruoloFinale,
-          approvato: false,
-          avatar_url: null,
-          bio_breve: null,
-          telefono: null,
-          city: null,
-          level: 1,
-          points: 0,
-          badges: [],
-          esperienze_principali: null,
-          specialita: null,
-          citta_operativa: null,
-          social_links: null,
-          nome_locale: null,
-          indirizzo: null,
-          created_at: new Date().toISOString(),
-        },
-      ]);
-      if (insertError) {
-        setMsg(insertError.message);
-        setLoading(false);
-        return;
-      }
-    }
-    setStepRegistrazione("ruolo");
-    setLoading(false);
-  }
 
-  async function handleRuoloSelect(selectedRuolo: string) {
-    setLoading(true);
-    setMsg("");
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-    const user = session?.user;
-    if (!user) {
-      setMsg("Errore recupero utente");
-      setLoading(false);
-      return;
-    }
-    let updateData: any = { ruolo: selectedRuolo };
-    if (selectedRuolo === "bartender") {
-      updateData = {
-        ...updateData,
-        esperienze_principali: esperienze,
-        specialita,
-        citta_operativa: citta,
-        social_links: social,
-      };
-    }
-    if (selectedRuolo === "proprietario") {
-      updateData = {
-        ...updateData,
-        nome_locale: nomeLocale,
-        indirizzo,
-        telefono,
-      };
-    }
-    const { error } = await supabase
-      .from("Profili")
-      .update(updateData)
-      .eq("id", user.id);
-    if (error) {
-      setMsg(error.message);
-      setLoading(false);
-      return;
-    }
-    setMsg("Registrazione completata");
-    setTimeout(() => {
-      navigate("/");
-      window.location.reload();
-    }, 1000);
-  }
 
   return (
     <>
