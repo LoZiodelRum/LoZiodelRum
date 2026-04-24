@@ -8,21 +8,21 @@ import { MapContainer, TileLayer, Marker, Popup, ZoomControl } from "react-leafl
 import { useNavigate } from "react-router-dom";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import orangeMarkerImg from "../assets/orange-marker.png";
 
-// Icona custom (puoi sostituire con la tua se vuoi)
 const markerIcon = new L.Icon({
-  iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
-  iconSize: [25, 41],
-  iconAnchor: [12, 41],
-  popupAnchor: [1, -34],
-  shadowUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-shadow.png",
-  shadowSize: [41, 41],
+  iconUrl: orangeMarkerImg,
+  iconSize: [60, 60],
+  iconAnchor: [30, 60],
+  popupAnchor: [0, -60],
+  className: "custom-orange-marker"
 });
 
 type Locale = {
   id: string;
   nome: string;
   citta: string;
+  indirizzo?: string | null;
   image_url?: string | null;
   latitudine: number | string | null;
   longitudine: number | string | null;
@@ -39,7 +39,7 @@ export default function MapPage() {
   async function fetchLocali() {
     const { data } = await supabase
       .from("Locali")
-      .select("id, nome, citta, image_url, latitudine, longitudine");
+      .select("id, nome, citta, indirizzo, image_url, latitudine, longitudine");
     setLocali(data || []);
   }
 
@@ -91,12 +91,16 @@ export default function MapPage() {
           if (!coords) return null;
           return (
             <Marker key={l.id} position={coords} icon={markerIcon}>
-              <Popup>
+              <Popup minWidth={280} maxWidth={340}>
                 <div
                   onClick={() => navigate(`/venue/${l.id}`)}
                   style={{
                     cursor: "pointer",
-                    width: "min(70vw, 14rem)",
+                    width: "min(70vw, 18rem)",
+                    background: "transparent",
+                    boxShadow: "none",
+                    border: "none",
+                    padding: 0,
                   }}
                 >
                   {l.image_url && (
@@ -106,13 +110,19 @@ export default function MapPage() {
                         width: "100%",
                         height: "clamp(5.5rem, 16vw, 7.5rem)",
                         objectFit: "cover",
-                        borderRadius: 10,
+                        borderRadius: 16,
                         marginBottom: 10,
+                        display: "block"
                       }}
                     />
                   )}
-                  <h3 style={{ margin: 0, color: "#f5a623" }}>{l.nome}</h3>
-                  <p style={{ margin: 0, color: "#fff" }}>{l.citta}</p>
+                  <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
+                    <h3 style={{ margin: 0, color: "#f5a623", fontSize: 20, fontWeight: 700 }}>{l.nome}</h3>
+                    {l.indirizzo && (
+                      <span style={{ color: "#222", fontSize: 15, fontWeight: 500, marginLeft: 8 }}>{l.indirizzo}</span>
+                    )}
+                  </div>
+                  <p style={{ margin: 0, color: "#555", fontSize: 15 }}>{l.citta}</p>
                 </div>
               </Popup>
             </Marker>
