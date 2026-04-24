@@ -84,36 +84,37 @@ function Auth() {
     <>
       <Navbar />
       <style>{`
-      navigate("/home");
-      console.log("Login effettuato con successo, reindirizzando a /home");
-          .login-fullscreen-container {
-            width: 100vw !important;
-            height: 100vh !important;
-            min-height: 100vh !important;
-            position: fixed !important;
-            top: 0 !important;
-            left: 0 !important;
-            background: #000 !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            overflow: hidden !important;
-            z-index: 1000 !important;
-          }
-          .login-box {
-            width: 100vw !important;
-            max-width: 100vw !important;
-            height: 100vh !important;
-            min-height: 100vh !important;
-            background: #000 !important;
-            border-radius: 0 !important;
-            display: flex !important;
-            flex-direction: column !important;
-            justify-content: center !important;
-            align-items: center !important;
-            padding: 0 8px !important;
-            box-shadow: none !important;
-          }
+        .login-fullscreen-container {
+          width: 100vw !important;
+          height: 100vh !important;
+          min-height: 100vh !important;
+          position: fixed !important;
+          top: 0 !important;
+          left: 0 !important;
+          background: #000 !important;
+          display: flex !important;
+          align-items: center !important;
+          justify-content: center !important;
+          overflow: hidden !important;
+          z-index: 1000 !important;
+        }
+        .login-box {
+          width: 100vw !important;
+          max-width: 100vw !important;
+          height: 100vh !important;
+          min-height: 100vh !important;
+          background: #000 !important;
+          border-radius: 0 !important;
+          display: flex !important;
+          flex-direction: column !important;
+          justify-content: center !important;
+          align-items: center !important;
+          padding: 0 8px !important;
+          box-shadow: none !important;
+        }
+        .login-input-mobile {
+          width: 85vw !important;
+          max-width: 420px !important;
         }
         @media (min-width: 601px) {
           .login-fullscreen-container {
@@ -142,6 +143,10 @@ function Auth() {
             padding: 0 32px;
             box-shadow: 0 8px 32px #000a;
           }
+          .login-input-mobile {
+            width: 100% !important;
+            max-width: 420px !important;
+          }
         }
       `}</style>
       <div className="login-fullscreen-container">
@@ -151,7 +156,8 @@ function Auth() {
           <div style={{ color: "#ccc", fontSize: 15, marginBottom: 18, textAlign: "center" }}>Accedi per esplorare i migliori locali.</div>
           <form onSubmit={handleLogin} style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
             <input
-              style={{ width: "100%", maxWidth: 420, background: "#222", color: "#fff", border: "none", borderRadius: 16, padding: 12, fontSize: 18, marginBottom: 22, marginTop: 0, display: "block", textAlign: "center" }}
+              className="login-input-mobile"
+              style={{ background: "#222", color: "#fff", border: "none", borderRadius: 16, padding: 12, fontSize: 18, marginBottom: 22, marginTop: 0, display: "block", textAlign: "center" }}
               placeholder="Email o Username"
               value={username}
               onChange={e => setUsername(e.target.value)}
@@ -160,7 +166,8 @@ function Auth() {
             />
             <input
               type="password"
-              style={{ width: "100%", maxWidth: 420, background: "#222", color: "#fff", border: "none", borderRadius: 16, padding: 12, fontSize: 18, marginBottom: 28, display: "block", textAlign: "center" }}
+              className="login-input-mobile"
+              style={{ background: "#222", color: "#fff", border: "none", borderRadius: 16, padding: 12, fontSize: 18, marginBottom: 28, display: "block", textAlign: "center" }}
               placeholder="Password"
               value={password}
               onChange={e => setPassword(e.target.value)}
