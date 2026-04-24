@@ -255,9 +255,7 @@ export default function Auth() {
         {/* BLOCCO LOGIN PRINCIPALE */}
         <div className="auth-card" style={{ width: 370, background: "#000", borderRadius: 16, boxShadow: "0 4px 32px #0006", padding: 36, display: stepRegistrazione ? "none" : "block" }}>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 24 }}>
-            <div style={{ background: "#fff", borderRadius: "50%", width: 80, height: 80, display: "flex", alignItems: "center", justifyContent: "center", marginBottom: 8 }}>
-              <span style={{ fontSize: 44, color: "#181818" }}>⚡️</span>
-            </div>
+            <img src="/logo.png" alt="Lo Zio del Rum" style={{ width: 90, height: 90, objectFit: "contain", borderRadius: "50%", background: "#fff", marginBottom: 8, boxShadow: "0 2px 12px #0007" }} />
             <div style={{ color: "#ccc", fontStyle: "italic", fontSize: 16, marginBottom: 24 }}>
               "Lo Zio del Rum approva"
             </div>
@@ -286,10 +284,7 @@ export default function Auth() {
                 />
                 <span style={{ position: "absolute", right: 16, top: 16, color: "#888", cursor: "pointer" }} title="Mostra password">👁️</span>
               </div>
-              <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 4 }}>
-                <label style={{ color: "#fff", fontSize: 15 }}>
-                  <input type="checkbox" style={{ marginRight: 6 }} /> Rimani collegato
-                </label>
+              <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", marginTop: 4 }}>
                 <span style={{ color: "#FFD36A", fontSize: 15, cursor: "pointer" }}>Dimenticata?</span>
               </div>
             </div>
@@ -297,19 +292,6 @@ export default function Auth() {
               {loading ? "..." : "Entra nel Club"}
             </button>
           </form>
-          <div style={{ display: "flex", alignItems: "center", margin: "24px 0" }}>
-            <div style={{ flex: 1, height: 1, background: "#333" }} />
-            <span style={{ color: "#888", margin: "0 16px", fontSize: 15 }}>OPPURE CONTINUA CON</span>
-            <div style={{ flex: 1, height: 1, background: "#333" }} />
-          </div>
-          <div style={{ display: "flex", gap: 16, marginBottom: 24 }}>
-            <button style={{ flex: 1, background: "#111", color: "#fff", border: "1px solid #333", borderRadius: 10, padding: 12, fontSize: 18, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-              <span style={{ fontSize: 22 }}>🐱</span> GitHub
-            </button>
-            <button style={{ flex: 1, background: "#111", color: "#fff", border: "1px solid #333", borderRadius: 10, padding: 12, fontSize: 18, display: "flex", alignItems: "center", justifyContent: "center", gap: 8 }}>
-              <span style={{ fontSize: 22 }}>🟡</span> Google
-            </button>
-          </div>
           <div style={{ textAlign: "center", color: "#fff", fontSize: 17, marginBottom: 8 }}>
             Non hai un account?
             <span
