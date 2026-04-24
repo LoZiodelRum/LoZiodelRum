@@ -397,7 +397,7 @@ export default function Home() {
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(0,0,0,0.22), rgba(0,0,0,0.38) 45%, rgba(0,0,0,0.86) 100%)", zIndex: 1 }} />
         <div className="hero-mobile-content" style={{ position: "relative", zIndex: 2, width: "100%", maxWidth: 1180, padding: "0 20px 6px" }}>
           <p className="hero-mobile-badge" style={{ display: "none" }}>La community del bere consapevole</p>
-          <h1 className="hero-mobile-title" style={{ fontSize: "clamp(28px, 7vw, 48px)", marginBottom: 20, fontWeight: 800, lineHeight: 1.2, display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
+          <h1 className="hero-mobile-title" style={{ fontSize: "clamp(20px, 4vw, 32px)", marginBottom: 20, fontWeight: 800, lineHeight: 1.2, display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
             <span className="hero-mobile-title-line" style={{ color: "#ffffff" }}>Scopri i migliori</span>
             <span className="hero-mobile-title-line" style={{ color: "#f5a623" }}>locali del mondo</span>
           </h1>
@@ -588,51 +588,7 @@ export default function Home() {
         </p>
       </section>
 
-      <section style={{ padding: "60px 60px", maxWidth: 1400, margin: "0 auto" }}>
-        <div style={{
-          background: "linear-gradient(135deg, rgba(245,166,35,0.12), rgba(245,166,35,0.06))",
-          border: "2px solid rgba(245,166,35,0.3)",
-          borderRadius: 16,
-          padding: "48px 40px",
-          textAlign: "center",
-          backdropFilter: "blur(10px)",
-        }}>
-          <h3 style={{ fontSize: "clamp(20px, 3.5vw, 28px)", fontWeight: 800, marginBottom: 12, color: "#ffffff" }}>
-            Inizia ora
-          </h3>
-          <p style={{ fontSize: "clamp(13px, 1.8vw, 16px)", color: "#aaa", maxWidth: 500, margin: "0 auto 32px", lineHeight: 1.6 }}>
-            Registrati per scoprire tutti i vantaggi della community e condividere le tue recensioni.
-          </p>
-          <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap" }}>
-            <button
-              onClick={() => navigate("/registrati")}
-              style={{
-                background: "#f5a623",
-                color: "#0b0b0b",
-                border: "none",
-                padding: "12px 32px",
-                borderRadius: 8,
-                fontWeight: "bold",
-                fontSize: "clamp(13px, 1.5vw, 16px)",
-                cursor: "pointer",
-                transition: "all 0.3s ease",
-              }}
-              onMouseEnter={(e) => {
-                e.currentTarget.style.background = "#e59400";
-                e.currentTarget.style.transform = "translateY(-2px)";
-              }}
-              onMouseLeave={(e) => {
-                e.currentTarget.style.background = "#f5a623";
-                e.currentTarget.style.transform = "translateY(0)";
-              }}
-            >
-              Registrati
-            </button>
-          </div>
-        </div>
-      </section>
-
-      <div style={{ height: 60 }} />
+      {/* Blocco "Inizia ora" rimosso su richiesta */}
       </div>
     </>
   );
