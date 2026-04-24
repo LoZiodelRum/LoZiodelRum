@@ -8,7 +8,7 @@ import { MapContainer, TileLayer, Marker, Popup, ZoomControl } from "react-leafl
 import { useNavigate } from "react-router-dom";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import orangeMarkerImg from "../assets/orange-marker.png";
+import orangeMarkerImg from "../assets/orange-marker-no-border.png";
 
 const markerIcon = new L.Icon({
   iconUrl: orangeMarkerImg,
