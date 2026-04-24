@@ -149,9 +149,9 @@ function Auth() {
           <img src="/logo.png" alt="Lo Zio del Rum" style={{ width: 120, height: 120, objectFit: "contain", borderRadius: "50%", background: "none", marginBottom: 8 }} />
           <div style={{ color: "#fff", fontWeight: 700, fontSize: 28, marginBottom: 8, textAlign: "center" }}>DrinkWise</div>
           <div style={{ color: "#ccc", fontSize: 15, marginBottom: 18, textAlign: "center" }}>Accedi per esplorare i migliori locali.</div>
-          <form onSubmit={handleLogin} style={{ width: "100%" }}>
+          <form onSubmit={handleLogin} style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
             <input
-              style={{ width: "100%", background: "#222", color: "#fff", border: "none", borderRadius: 8, padding: 12, fontSize: 16, marginBottom: 10 }}
+              style={{ width: "25%", minWidth: 120, maxWidth: 220, background: "#222", color: "#fff", border: "none", borderRadius: 8, padding: 12, fontSize: 16, marginBottom: 22, marginTop: 0, display: "block", textAlign: "center" }}
               placeholder="Email o Username"
               value={username}
               onChange={e => setUsername(e.target.value)}
@@ -160,23 +160,23 @@ function Auth() {
             />
             <input
               type="password"
-              style={{ width: "100%", background: "#222", color: "#fff", border: "none", borderRadius: 8, padding: 12, fontSize: 16, marginBottom: 10 }}
+              style={{ width: "25%", minWidth: 120, maxWidth: 220, background: "#222", color: "#fff", border: "none", borderRadius: 8, padding: 12, fontSize: 16, marginBottom: 28, display: "block", textAlign: "center" }}
               placeholder="Password"
               value={password}
               onChange={e => setPassword(e.target.value)}
               required
               autoComplete="current-password"
             />
-            <div style={{ display: "flex", justifyContent: "flex-end", alignItems: "center", marginBottom: 10 }}>
+            <div style={{ width: "25%", minWidth: 120, maxWidth: 220, display: "flex", justifyContent: "flex-end", alignItems: "center", marginBottom: 16 }}>
               <span style={{ color: "#FFD36A", fontSize: 14, cursor: "pointer" }}>Dimenticata?</span>
             </div>
             {!showRegister && (
               <button
                 type="submit"
                 style={{
-                  minWidth: 120,
-                  maxWidth: 220,
-                  width: "60%",
+                  minWidth: 90,
+                  maxWidth: 160,
+                  width: "18%",
                   alignSelf: "center",
                   background: "#FFD36A",
                   color: "#181818",
@@ -184,9 +184,9 @@ function Auth() {
                   fontSize: 18,
                   border: "none",
                   borderRadius: 12,
-                  padding: "12px 0",
-                  marginTop: 8,
-                  marginBottom: 8,
+                  padding: "10px 0",
+                  marginTop: 0,
+                  marginBottom: 12,
                   boxShadow: "none",
                   letterSpacing: 1,
                   transition: "background 0.2s, color 0.2s",
