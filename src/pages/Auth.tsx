@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 
 import RegisterModal from "../components/RegisterModal";
+import Navbar from "../components/Navbar";
 
 function Auth() {
   const navigate = useNavigate();
@@ -82,7 +83,7 @@ function Auth() {
 
   return (
     <>
-      {/* Navbar rimossa: nessun header/menu nella pagina di accesso */}
+      <Navbar />
       <style>{`
         .login-fullscreen-container {
           width: 100vw !important;
