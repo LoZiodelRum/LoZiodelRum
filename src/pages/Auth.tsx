@@ -1,26 +1,16 @@
 
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { supabase } from "../lib/supabaseClient.js";
+import { supabase } from "../lib/supabaseClient";
 import Navbar from "../components/Navbar";
+import RegisterModal from "../components/RegisterModal";
 
-export default function Auth() {
   const navigate = useNavigate();
-  const [stepRegistrazione, setStepRegistrazione] = useState<"scelta" | "form" | "ruolo" | null>(null);
-  const [ruoloSelezionato, setRuoloSelezionato] = useState<string | null>(null);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [nome, setNome] = useState("");
-  const [cognome, setCognome] = useState("");
-  const [esperienze, setEsperienze] = useState("");
-  const [specialita, setSpecialita] = useState("");
-  const [citta, setCitta] = useState("");
-  const [social, setSocial] = useState("");
-  const [nomeLocale, setNomeLocale] = useState("");
-  const [indirizzo, setIndirizzo] = useState("");
-  const [telefono, setTelefono] = useState("");
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState("");
+  const [showRegister, setShowRegister] = useState(false);
 
   async function handleLogin(e: any) {
     e.preventDefault();
@@ -294,12 +284,12 @@ export default function Auth() {
           </form>
           <div style={{ textAlign: "center", color: "#fff", fontSize: 17, marginBottom: 8 }}>
             Non hai un account?
-            <span
-              style={{ color: "#FFD36A", fontWeight: 700, marginLeft: 4, cursor: "pointer" }}
-              onClick={() => setStepRegistrazione("scelta")}
-            >
-              Registrati ora
-            </span>
+             <span
+               style={{ color: "#FFD36A", fontWeight: 700, marginLeft: 4, cursor: "pointer" }}
+               onClick={() => setShowRegister(true)}
+             >
+               Registrati ora
+             </span>
           </div>
           <div style={{ textAlign: "center", color: "#444", fontSize: 13, letterSpacing: 2, marginTop: 24 }}>
             CRAFTED FOR SPIRITS LOVERS
@@ -411,12 +401,13 @@ export default function Auth() {
                   {loading ? "..." : "Registrati"}
                 </button>
                 <button type="button" style={{ background: "none", color: "#FFD36A", border: "none", fontSize: 16, marginTop: 8, cursor: "pointer" }} onClick={() => { setStepRegistrazione(null); setRuoloSelezionato(null); }}>Annulla</button>
-                {msg && <div style={{ color: "#FFD36A", marginTop: 8, textAlign: "center" }}>{msg}</div>}
-              </form>
-            </div>
-          </div>
-        )}
-      </div>
+                 {msg && <div style={{ color: "#FFD36A", marginTop: 12, textAlign: "center" }}>{msg}</div>}
+               </div>
+             </div>
+             <RegisterModal open={showRegister} onClose={() => setShowRegister(false)} />
+           </>
+         );
+        }
     </>
   );
 }
