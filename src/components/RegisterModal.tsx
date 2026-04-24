@@ -121,18 +121,24 @@ export default function RegisterModal({ open, onClose }: Props) {
             height: 100vh !important;
             max-height: 100vh !important;
             border-radius: 0 !important;
-            padding: 18px 8px 8px 8px !important;
+            padding: 12px 4px 4px 4px !important;
             box-shadow: none !important;
             overflow: hidden !important;
+            position: fixed !important;
+            top: 0 !important;
+            left: 0 !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: center !important;
           }
         }
         @media (min-width: 601px) {
           .register-modal-box {
-            width: 520px !important;
+            width: 600px !important;
             min-width: 320px !important;
-            max-width: 600px !important;
+            max-width: 700px !important;
             border-radius: 18px !important;
-            padding: 32px 32px 24px 32px !important;
+            padding: 40px 40px 32px 40px !important;
             box-shadow: 0 8px 32px #000a !important;
           }
         }
@@ -143,16 +149,17 @@ export default function RegisterModal({ open, onClose }: Props) {
           background: "#181818",
           borderRadius: 18,
           padding: 24,
-          width: "95vw",
-          maxWidth: 520,
+          width: "100vw",
+          maxWidth: 700,
           minWidth: 0,
-          boxShadow: "0 8px 32px #000a",
+          boxShadow: "none",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           position: "relative",
-          height: "auto",
-          maxHeight: "95vh",
+          height: "100vh",
+          maxHeight: "100vh",
+          justifyContent: "center",
         }}
       >
         <button
@@ -259,7 +266,7 @@ export default function RegisterModal({ open, onClose }: Props) {
               padding: "12px 0",
               marginTop: 8,
               marginBottom: 4,
-              boxShadow: "0 2px 0 #b48a2c",
+              boxShadow: "none",
               opacity: !validForm || loading ? 0.5 : 1,
               cursor: !validForm || loading ? "not-allowed" : "pointer",
             }}
