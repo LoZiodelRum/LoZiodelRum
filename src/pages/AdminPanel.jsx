@@ -145,39 +145,10 @@ export default function AdminPanel() {
         >
           <option value="">Seleziona articolo</option>
           {articoli.map((a) => (
-            return (
-              <>
-                <Navbar />
-                <div className="page fade-in" style={container}>
-                  <h1 style={title}>Pannello di Controllo</h1>
-
-                  {/* LOCALI */}
-                  <div style={section}>
-                    <h2 style={orangeTitle}>Locali</h2>
-
-                    <select
-                      style={select}
-                      onChange={(e) => {
-                        const loc = locali.find((l) => String(l.id) === String(e.target.value));
-                        setSelectedLocale(loc);
-                      }}
-                    >
-                      <option value="">Seleziona locale</option>
-                      {locali.map((l) => (
-                        <option key={l.id} value={String(l.id)}>
-                          {l.nome}
-                        </option>
-                      ))}
-                    </select>
-
-                    {selectedLocale && (
-                      <LocaleFullCard locale={selectedLocale} refresh={fetchAll} />
-                    )}
-                  </div>
-
-                  {/* UTENTI */}
-                  <div style={section}>
-                    <h2 style={orangeTitle}>Utenti</h2>
+            <option key={a.id} value={String(a.id)}>
+              {a.titolo}
+            </option>
+          ))}
 
                     <select
                       style={select}
