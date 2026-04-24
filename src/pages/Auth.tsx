@@ -253,7 +253,7 @@ export default function Auth() {
       <Navbar />
       <div className="auth-bg" style={{ minHeight: "100vh", background: "#181818", display: "flex", alignItems: "center", justifyContent: "center", overflow: "auto", paddingTop: 90 }}>
         {/* BLOCCO LOGIN PRINCIPALE */}
-        <div className="auth-card" style={{ width: 370, background: "#000", borderRadius: 16, boxShadow: "0 4px 32px #0006", padding: 36, display: stepRegistrazione ? "none" : "block" }}>
+        <div className="auth-card" style={{ width: 320, maxWidth: "90vw", background: "#000", borderRadius: 16, boxShadow: "0 4px 32px #0006", padding: 20, display: stepRegistrazione ? "none" : "block" }}>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 24 }}>
             <img src="/logo.png" alt="Lo Zio del Rum" style={{ width: 180, height: 180, objectFit: "contain", borderRadius: "50%", background: "none", marginBottom: 8, boxShadow: "0 2px 12px #0007" }} />
             <div style={{ color: "#ccc", fontStyle: "italic", fontSize: 16, marginBottom: 24, textAlign: "center" }}>
@@ -310,24 +310,20 @@ export default function Auth() {
         {/* POPUP SCELTA RUOLO */}
         {stepRegistrazione === "scelta" && (
           <div style={{ position: "fixed", top: 0, left: 0, width: "100vw", height: "100vh", background: "#000a", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100 }}>
-            <div style={{ background: "#181818", borderRadius: 18, padding: 36, minWidth: 340, boxShadow: "0 8px 32px #000a", display: "flex", flexDirection: "column", alignItems: "center" }}>
-              <div style={{ color: "#fff", fontWeight: 700, fontSize: 30, marginBottom: 8 }}>Registrati</div>
-              <div style={{ color: "#ccc", fontSize: 18, marginBottom: 24 }}>Scegli il tuo ruolo</div>
-              <div style={{ display: "flex", gap: 18, marginBottom: 18 }}>
-                <button style={{ background: "#FFD36A", color: "#181818", fontWeight: 700, fontSize: 20, border: "none", borderRadius: 10, padding: "12px 24px", boxShadow: "0 2px 0 #b48a2c" }}
+            <div style={{ background: "#181818", borderRadius: 18, padding: 18, minWidth: 200, maxWidth: 320, boxShadow: "0 8px 32px #000a", display: "flex", flexDirection: "column", alignItems: "center" }}>
+              <div style={{ color: "#fff", fontWeight: 700, fontSize: 24, marginBottom: 8 }}>Registrati</div>
+              <div style={{ color: "#ccc", fontSize: 16, marginBottom: 20 }}>Scegli il tuo ruolo</div>
+              <div style={{ display: "flex", gap: 12, marginBottom: 18 }}>
+                <button style={{ background: "#FFD36A", color: "#181818", fontWeight: 700, fontSize: 17, border: "none", borderRadius: 10, padding: "10px 18px", boxShadow: "0 2px 0 #b48a2c" }}
                   onClick={() => { setRuoloSelezionato("utente"); setStepRegistrazione("form"); }}>
                   Utente
                 </button>
-                <button style={{ background: "#FFD36A", color: "#181818", fontWeight: 700, fontSize: 20, border: "none", borderRadius: 10, padding: "12px 24px", boxShadow: "0 2px 0 #b48a2c" }}
+                <button style={{ background: "#FFD36A", color: "#181818", fontWeight: 700, fontSize: 17, border: "none", borderRadius: 10, padding: "10px 18px", boxShadow: "0 2px 0 #b48a2c" }}
                   onClick={() => { setRuoloSelezionato("bartender"); setStepRegistrazione("form"); }}>
                   Bartender
                 </button>
-                <button style={{ background: "#FFD36A", color: "#181818", fontWeight: 700, fontSize: 20, border: "none", borderRadius: 10, padding: "12px 24px", boxShadow: "0 2px 0 #b48a2c" }}
-                  onClick={() => { setRuoloSelezionato("proprietario"); setStepRegistrazione("form"); }}>
-                  Proprietario
-                </button>
               </div>
-              <button style={{ background: "none", color: "#FFD36A", border: "none", fontSize: 16, marginTop: 8, cursor: "pointer" }} onClick={() => setStepRegistrazione(null)}>Annulla</button>
+              <button style={{ background: "none", color: "#FFD36A", border: "none", fontSize: 15, marginTop: 8, cursor: "pointer" }} onClick={() => setStepRegistrazione(null)}>Annulla</button>
             </div>
           </div>
         )}
