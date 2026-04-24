@@ -140,8 +140,9 @@ export default function RegisterModal({ open, onClose }: Props) {
             height: 100vh !important;
             max-height: 100vh !important;
             border-radius: 0 !important;
-            padding: 12px 4px 4px 4px !important;
-            box-shadow: none !important;
+            padding: 18px 8px 8px 8px !important;
+            box-shadow: 0 0 0 4px #FFD36A !important;
+            border: 2px solid #FFD36A !important;
             overflow: hidden !important;
             position: fixed !important;
             top: 0 !important;
@@ -149,16 +150,19 @@ export default function RegisterModal({ open, onClose }: Props) {
             display: flex !important;
             flex-direction: column !important;
             justify-content: center !important;
+            align-items: center !important;
           }
         }
         @media (min-width: 601px) {
           .register-modal-box {
-            width: 600px !important;
+            width: 520px !important;
             min-width: 320px !important;
             max-width: 700px !important;
             border-radius: 18px !important;
             padding: 40px 40px 32px 40px !important;
-            box-shadow: 0 8px 32px #000a !important;
+            box-shadow: 0 8px 32px #FFD36A55, 0 0 0 4px #FFD36A !important;
+            border: 2px solid #FFD36A !important;
+            align-items: center !important;
           }
         }
       `}</style>
@@ -171,7 +175,8 @@ export default function RegisterModal({ open, onClose }: Props) {
           width: "100vw",
           maxWidth: 700,
           minWidth: 0,
-          boxShadow: "none",
+          boxShadow: "0 8px 32px #FFD36A55, 0 0 0 4px #FFD36A",
+          border: "2px solid #FFD36A",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
@@ -198,10 +203,10 @@ export default function RegisterModal({ open, onClose }: Props) {
         >
           ×
         </button>
-        <div style={{ color: "#fff", fontWeight: 700, fontSize: 26, marginBottom: 8, textAlign: "center" }}>
+        <div style={{ color: "#FFD36A", fontWeight: 900, fontSize: 28, marginBottom: 8, textAlign: "center", letterSpacing: 1 }}>
           Crea il tuo account
         </div>
-        <form onSubmit={handleSubmit} style={{ width: "100%" }} autoComplete="off">
+        <form onSubmit={handleSubmit} style={{ width: "100%", maxWidth: 420, margin: "0 auto" }} autoComplete="off">
           <input
             placeholder="Nome"
             value={nome}
@@ -278,23 +283,34 @@ export default function RegisterModal({ open, onClose }: Props) {
               width: "100%",
               background: "#FFD36A",
               color: "#181818",
-              fontWeight: 700,
-              fontSize: 18,
+              fontWeight: 900,
+              fontSize: 20,
               border: "none",
-              borderRadius: 10,
-              padding: "12px 0",
-              marginTop: 8,
-              marginBottom: 4,
-              boxShadow: "none",
+              borderRadius: 12,
+              padding: "14px 0",
+              marginTop: 12,
+              marginBottom: 8,
+              boxShadow: "0 2px 0 #b48a2c",
               opacity: !validForm || loading ? 0.5 : 1,
               cursor: !validForm || loading ? "not-allowed" : "pointer",
+              letterSpacing: 1,
+              transition: "background 0.2s, color 0.2s",
             }}
           >
             {loading ? "Registrazione..." : "Crea il tuo account"}
           </button>
         </form>
         {msg && (
-          <div style={{ color: "#FFD36A", marginTop: 16, textAlign: "center" }}>{msg}</div>
+          <div style={{
+            color: msg.toLowerCase().includes("errore") ? "#ff4d4f" : "#FFD36A",
+            marginTop: 16,
+            textAlign: "center",
+            fontWeight: 700,
+            fontSize: 16,
+            background: msg.toLowerCase().includes("errore") ? "#fff2f0" : "none",
+            borderRadius: 8,
+            padding: msg.toLowerCase().includes("errore") ? "8px 0" : 0,
+          }}>{msg}</div>
         )}
       </div>
     </div>
