@@ -108,6 +108,7 @@ export default function RegisterModal({ open, onClose }: Props) {
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
+        overflow: "hidden",
       }}
     >
       <div
@@ -115,16 +116,42 @@ export default function RegisterModal({ open, onClose }: Props) {
           background: "#181818",
           borderRadius: 18,
           padding: 24,
-          minWidth: 320,
-          maxWidth: 380,
-          width: "90vw",
+          width: "95vw",
+          maxWidth: 480,
+          minWidth: 0,
           boxShadow: "0 8px 32px #000a",
           display: "flex",
           flexDirection: "column",
           alignItems: "center",
           position: "relative",
+          height: "auto",
+          maxHeight: "95vh",
         }}
       >
+        <style>{`
+          @media (max-width: 600px) {
+            .register-modal-box {
+              width: 100vw !important;
+              min-width: 0 !important;
+              max-width: 100vw !important;
+              height: 100vh !important;
+              max-height: 100vh !important;
+              border-radius: 0 !important;
+              padding: 18px 8px 8px 8px !important;
+              box-shadow: none !important;
+            }
+          }
+          @media (min-width: 601px) {
+            .register-modal-box {
+              width: 480px !important;
+              min-width: 320px !important;
+              max-width: 540px !important;
+              border-radius: 18px !important;
+              padding: 32px 32px 24px 32px !important;
+            }
+          }
+        `}</style>
+        <div className="register-modal-box" style={{ width: "100%" }}>
         <button
           onClick={onClose}
           style={{
@@ -136,15 +163,16 @@ export default function RegisterModal({ open, onClose }: Props) {
             color: "#FFD36A",
             fontSize: 28,
             cursor: "pointer",
+            zIndex: 10,
           }}
           aria-label="Chiudi"
         >
           ×
         </button>
-        <div style={{ color: "#fff", fontWeight: 700, fontSize: 26, marginBottom: 8 }}>
+        <div style={{ color: "#fff", fontWeight: 700, fontSize: 26, marginBottom: 8, textAlign: "center" }}>
           Crea il tuo account
         </div>
-        <form onSubmit={handleSubmit} style={{ width: "100%" }}>
+        <form onSubmit={handleSubmit} style={{ width: "100%" }} autoComplete="off">
           <input
             placeholder="Nome"
             value={nome}

@@ -163,7 +163,7 @@ function Auth() {
                 <span style={{ color: "#FFD36A", fontSize: 15, cursor: "pointer" }}>Dimenticata?</span>
               </div>
             </div>
-            <button style={{ width: "100%", background: "#FFD36A", color: "#181818", fontWeight: 700, fontSize: 22, border: "none", borderRadius: 12, padding: 16, marginTop: 12, marginBottom: 16, boxShadow: "0 4px 0 #b48a2c" }}>
+            <button style={{ width: "100%", background: "#FFD36A", color: "#181818", fontWeight: 700, fontSize: 22, border: "none", borderRadius: 12, padding: 16, marginTop: 12, marginBottom: 16, boxShadow: "0 4px 0 #b48a2c", display: showRegister ? "none" : undefined }}>
               {loading ? "..." : "Entra nel Club"}
             </button>
           </form>
