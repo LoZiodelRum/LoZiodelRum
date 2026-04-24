@@ -14,22 +14,24 @@ function Auth() {
   const [showRegister, setShowRegister] = useState(false);
 
 
-  async function handleLogin(e: any) {
+  async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
     setMsg("");
     const loginRaw = username.trim();
     const loginValue = loginRaw.toLowerCase();
     const candidateEmails: string[] = [];
+    console.log("Tentativo login con:", loginRaw);
     if (loginValue.includes("@")) {
       candidateEmails.push(loginValue);
     } else {
-    async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
+      // Cerca email per username
+      const { data: profileByUsername, error } = await supabase
         .from("Profili")
         .select("email")
-        .ilike("username", loginRaw)
-      console.log("Tentativo login con:", username);
+        .eq("username", loginRaw)
         .maybeSingle();
+      console.log("Risultato ricerca username:", profileByUsername, error);
       const resolvedEmail = String(profileByUsername?.email || "").trim().toLowerCase();
       if (resolvedEmail) {
         candidateEmails.push(resolvedEmail);
@@ -49,6 +51,7 @@ function Auth() {
       }
       error = attempt.error;
     }
+    console.log("Risposta signInWithPassword:", data, error);
     if (error) {
       const rawError = String(error?.message || "");
       const lowerError = rawError.toLowerCase();
@@ -68,59 +71,11 @@ function Auth() {
       setLoading(false);
       return;
     }
-    const { data: profilo, error: profiloError } = await supabase
-      .from("Profili")
-      .select("ruolo")
-      .eq("id", user.id)
-      .maybeSingle();
-    const profiloErrorMessage = String(profiloError?.message || "").toLowerCase();
-    const profiloErrorCode = String((profiloError as any)?.code || "");
-    const profileReadBlocked =
-      profiloErrorCode === "42501" ||
-      profiloErrorMessage.includes("permission") ||
-      profiloErrorMessage.includes("row-level") ||
-      profiloErrorMessage.includes("violates row-level security");
-    const profileMissing = profiloErrorCode === "PGRST116";
-    if (profiloError && !profileReadBlocked && !profileMissing) {
-      setMsg("Errore verifica profilo");
-      setLoading(false);
-      return;
-    }
-    let effectiveProfile = profilo;
-    if (!effectiveProfile) {
-      const metadata = (user.user_metadata || {}) as Record<string, any>;
-      const fallbackRuolo = String(metadata.ruolo || "utente");
-      const fallbackProfile = {
-        id: user.id,
-        nome: String(metadata.nome || "").trim() || null,
-        cognome: String(metadata.cognome || "").trim() || null,
-        username: String(metadata.username || loginRaw || user.email?.split("@")[0] || "").trim() || null,
-        email: String(user.email || "").trim().toLowerCase() || null,
-        telefono: String(metadata.telefono || "").trim() || null,
-        ruolo: fallbackRuolo,
-      };
-      const { data: recoveredProfile, error: recoverError } = await supabase
-        .from("Profili")
-        .upsert([fallbackProfile], { onConflict: "id" })
-        .select("ruolo")
-        .maybeSingle();
-      if (recoverError) {
-        const recoverMessage = String(recoverError?.message || "").toLowerCase();
-        const recoverCode = String((recoverError as any)?.code || "");
-        const recoverBlocked =
-          recoverCode === "42501" ||
-          recoverMessage.includes("permission") ||
-          recoverMessage.includes("row-level");
-        if (!recoverBlocked) {
-          setMsg("Errore verifica profilo");
-          setLoading(false);
-          return;
-        }
-      }
-      effectiveProfile = recoveredProfile || fallbackProfile;
-    }
-    navigate("/");
-    window.location.reload();
+    // Login riuscito, redirect
+    setLoading(false);
+    setMsg("");
+    navigate("/home");
+    console.log("Login effettuato con successo, reindirizzando a /home");
   }
 
 
@@ -217,13 +172,13 @@ function Auth() {
             </div>
             {!showRegister && (
               <button
+                type="submit"
                 style={{
                   width: "100%",
                   background: "#FFD36A",
                   color: "#181818",
                   fontWeight: 900,
                   fontSize: 18,
-                type="submit"
                   border: "none",
                   borderRadius: 12,
                   padding: 16,
