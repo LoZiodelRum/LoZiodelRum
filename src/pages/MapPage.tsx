@@ -8,14 +8,12 @@ import { MapContainer, TileLayer, Marker, Popup, ZoomControl } from "react-leafl
 import { useNavigate } from "react-router-dom";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
-import orangeMarkerImg from "../assets/orange-marker-no-border.png";
 
-const markerIcon = new L.Icon({
-  iconUrl: orangeMarkerImg,
-  iconSize: [60, 60],
-  iconAnchor: [30, 60],
-  popupAnchor: [0, -60],
-  className: "custom-orange-marker"
+const customIcon = L.icon({
+  iconUrl: "/marker.png",
+  iconSize: [50, 70],
+  iconAnchor: [25, 70],
+  popupAnchor: [0, -70],
 });
 
 type Locale = {
@@ -75,7 +73,7 @@ export default function MapPage() {
             const coords = getCoords(l);
             if (!coords) return null;
             return (
-              <Marker key={l.id} position={coords} icon={markerIcon}>
+              <Marker key={l.id} position={coords} icon={customIcon}>
                 <Popup minWidth={280} maxWidth={340}>
                   <div
                     onClick={() => navigate(`/venue/${l.id}`)}
