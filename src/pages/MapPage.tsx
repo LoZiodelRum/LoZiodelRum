@@ -59,7 +59,7 @@ export default function MapPage() {
   }
 
   return (
-    <div className="fade-in map-fullscreen" style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, height: "100%", width: "100%", padding: 0, margin: 0, border: "none", borderRadius: 0, overflow: "hidden", background: "#fff" }}>
+    <div className="fade-in map-fullscreen" style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, height: "100%", width: "100%", padding: 0, margin: 0, border: "none", borderRadius: 0, overflow: "hidden" }}>
       <MapContainer
         center={[41.9028, 12.4964]}
         zoom={6}
