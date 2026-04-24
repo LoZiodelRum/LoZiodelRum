@@ -256,11 +256,11 @@ export default function Auth() {
         <div className="auth-card" style={{ width: 370, background: "#000", borderRadius: 16, boxShadow: "0 4px 32px #0006", padding: 36, display: stepRegistrazione ? "none" : "block" }}>
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 24 }}>
             <img src="/logo.png" alt="Lo Zio del Rum" style={{ width: 180, height: 180, objectFit: "contain", borderRadius: "50%", background: "none", marginBottom: 8, boxShadow: "0 2px 12px #0007" }} />
-            <div style={{ color: "#ccc", fontStyle: "italic", fontSize: 16, marginBottom: 24 }}>
-              "Lo Zio del Rum approva"
+            <div style={{ color: "#ccc", fontStyle: "italic", fontSize: 16, marginBottom: 24, textAlign: "center" }}>
+              "Lo Zio del Rum ti aspetta"
             </div>
           </div>
-          <div style={{ color: "#fff", fontWeight: 700, fontSize: 36, marginBottom: 8 }}>Bentornato</div>
+          <div style={{ color: "#fff", fontWeight: 700, fontSize: 36, marginBottom: 8, textAlign: "center" }}>DrinkWise</div>
           <div style={{ color: "#ccc", fontSize: 18, marginBottom: 24 }}>Accedi per esplorare i migliori locali.</div>
           <form onSubmit={handleLogin}>
             <div style={{ marginBottom: 16 }}>
