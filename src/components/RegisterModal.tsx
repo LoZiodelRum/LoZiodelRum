@@ -44,13 +44,7 @@ export default function RegisterModal({ open, onClose }: Props) {
     setUsernameAvailable(!data);
   }
 
-  function handleAvatar(e: React.ChangeEvent<HTMLInputElement>) {
-    const file = e.target.files?.[0];
-    if (file) {
-      setAvatar(file);
-      setAvatarUrl(URL.createObjectURL(file));
-    }
-  }
+
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -66,8 +60,6 @@ export default function RegisterModal({ open, onClose }: Props) {
       return;
     }
     const userId = authData.user.id;
-    let avatar_url = "";
-    }
     // ...resto della funzione handleSubmit...
     // (nessun return qui, il return del componente è fuori da handleSubmit)
 }
