@@ -109,15 +109,42 @@ export default function RegisterModal({ open, onClose }: Props) {
         alignItems: "center",
         justifyContent: "center",
         overflow: "hidden",
+        padding: 0,
       }}
     >
+      <style>{`
+        @media (max-width: 600px) {
+          .register-modal-box {
+            width: 100vw !important;
+            min-width: 0 !important;
+            max-width: 100vw !important;
+            height: 100vh !important;
+            max-height: 100vh !important;
+            border-radius: 0 !important;
+            padding: 18px 8px 8px 8px !important;
+            box-shadow: none !important;
+            overflow: hidden !important;
+          }
+        }
+        @media (min-width: 601px) {
+          .register-modal-box {
+            width: 520px !important;
+            min-width: 320px !important;
+            max-width: 600px !important;
+            border-radius: 18px !important;
+            padding: 32px 32px 24px 32px !important;
+            box-shadow: 0 8px 32px #000a !important;
+          }
+        }
+      `}</style>
       <div
+        className="register-modal-box"
         style={{
           background: "#181818",
           borderRadius: 18,
           padding: 24,
           width: "95vw",
-          maxWidth: 480,
+          maxWidth: 520,
           minWidth: 0,
           boxShadow: "0 8px 32px #000a",
           display: "flex",
@@ -128,30 +155,6 @@ export default function RegisterModal({ open, onClose }: Props) {
           maxHeight: "95vh",
         }}
       >
-        <style>{`
-          @media (max-width: 600px) {
-            .register-modal-box {
-              width: 100vw !important;
-              min-width: 0 !important;
-              max-width: 100vw !important;
-              height: 100vh !important;
-              max-height: 100vh !important;
-              border-radius: 0 !important;
-              padding: 18px 8px 8px 8px !important;
-              box-shadow: none !important;
-            }
-          }
-          @media (min-width: 601px) {
-            .register-modal-box {
-              width: 480px !important;
-              min-width: 320px !important;
-              max-width: 540px !important;
-              border-radius: 18px !important;
-              padding: 32px 32px 24px 32px !important;
-            }
-          }
-        `}</style>
-        <div className="register-modal-box" style={{ width: "100%" }}>
         <button
           onClick={onClose}
           style={{
