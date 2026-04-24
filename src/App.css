@@ -59,17 +59,18 @@ a:hover { color: var(--primary); }
    3. LAYOUT E GRID SYSTEM (Righe 46-75)
    ============================================================ */
 
+
 .page {
   padding: 32px;
   width: 100%;
   max-width: 1280px;
   margin: 0 auto;
   min-height: calc(100vh - 80px);
-  padding-top: 90px; /* Spazio per la navbar fissa */
+  padding-top: 120px; /* Spazio aumentato per abbassare le pagine */
 }
 
 .fade-in {
-  padding-top: 90px !important; /* Spazio per la navbar fissa anche su fade-in */
+  padding-top: 120px !important; /* Spazio aumentato anche su fade-in */
 }
 
 .page-full-bleed {
