@@ -1,3 +1,4 @@
+import Navbar from "../components/Navbar";
 import "../App.css";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
@@ -32,49 +33,49 @@ export default function Magazine() {
   }
 
   if (!articles.length) {
-    return <div className="page fade-in" style={{ padding: 40 }}>Nessun articolo</div>;
+    return <><Navbar /><div className="page fade-in" style={{ padding: 40 }}>Nessun articolo</div></>;
   }
 
   const hero = articles.find((a) => (a.titolo || "").trim().length > 0 && (a.descrizione || "").trim().length > 0);
   const others = hero ? articles.filter((a) => a.id !== hero.id) : articles;
 
   return (
-    <div className="page fade-in magazine-page-mobile" style={{ paddingTop: 0 }}>
-
-      {/* HERO */}
-      {hero && (
-        <Link
-          to={`/magazine/${hero.id}`}
-          className="magazine-hero"
-          style={{ backgroundImage: `url(${hero.immagine || fallbackArticleImage})` }}
-        >
-          <div className="magazine-hero-overlay">
-            {hero.categoria && <span className="badge-category">{hero.categoria}</span>}
-            <h1 className="magazine-hero-title-single">{hero.titolo}</h1>
-            <p>{hero.descrizione}</p>
-          </div>
-        </Link>
-      )}
-
-      {/* GRID */}
-      <h2 className="mobile-articles-title">Articoli</h2>
-      <div className="cocktail-grid">
-        {others.map((a) => (
-          <Link key={a.id} to={`/magazine/${a.id}`} className="drink-card">
-            <img
-              src={a.immagine || fallbackArticleImage}
-              alt={a.titolo || "Articolo"}
-              style={{ transform: "scale(0.9)", transformOrigin: "center" }}
-            />
-            <div className="drink-card-overlay">
-              {a.categoria && <span className="badge-category">{a.categoria}</span>}
-              <h3>{a.titolo || "Articolo senza titolo"}</h3>
-              {a.descrizione && <p>{a.descrizione}</p>}
+    <>
+      <Navbar />
+      <div className="page fade-in magazine-page-mobile" style={{ paddingTop: 0 }}>
+        {/* HERO */}
+        {hero && (
+          <Link
+            to={`/magazine/${hero.id}`}
+            className="magazine-hero"
+            style={{ backgroundImage: `url(${hero.immagine || fallbackArticleImage})` }}
+          >
+            <div className="magazine-hero-overlay">
+              {hero.categoria && <span className="badge-category">{hero.categoria}</span>}
+              <h1 className="magazine-hero-title-single">{hero.titolo}</h1>
+              <p>{hero.descrizione}</p>
             </div>
           </Link>
-        ))}
+        )}
+        {/* GRID */}
+        <h2 className="mobile-articles-title">Articoli</h2>
+        <div className="cocktail-grid">
+          {others.map((a) => (
+            <Link key={a.id} to={`/magazine/${a.id}`} className="drink-card">
+              <img
+                src={a.immagine || fallbackArticleImage}
+                alt={a.titolo || "Articolo"}
+                style={{ transform: "scale(0.9)", transformOrigin: "center" }}
+              />
+              <div className="drink-card-overlay">
+                {a.categoria && <span className="badge-category">{a.categoria}</span>}
+                <h3>{a.titolo || "Articolo senza titolo"}</h3>
+                {a.descrizione && <p>{a.descrizione}</p>}
+              </div>
+            </Link>
+          ))}
+        </div>
       </div>
-
-    </div>
+    </>
   );
 }

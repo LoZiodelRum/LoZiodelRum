@@ -1,3 +1,4 @@
+import Navbar from "../components/Navbar";
 // @ts-nocheck
 import "../App.css";
 import { useEffect, useState } from "react";
@@ -144,131 +145,134 @@ export default function AdminPanel() {
         >
           <option value="">Seleziona articolo</option>
           {articoli.map((a) => (
-            <option key={String(a.id)} value={String(a.id)}>
-              {a.titolo || a.slug || "Articolo"}
-            </option>
-          ))}
-        </select>
+            return (
+              <>
+                <Navbar />
+                <div className="page fade-in" style={container}>
+                  <h1 style={title}>Pannello di Controllo</h1>
 
-        {selectedArticolo && (
-          <ArticoloFullCard articolo={selectedArticolo} refresh={fetchAll} />
-        )}
+                  {/* LOCALI */}
+                  <div style={section}>
+                    <h2 style={orangeTitle}>Locali</h2>
 
-        {newArticle && <NuovoArticolo refresh={fetchAll} />}
+                    <select
+                      style={select}
+                      onChange={(e) => {
+                        const loc = locali.find((l) => String(l.id) === String(e.target.value));
+                        setSelectedLocale(loc);
+                      }}
+                    >
+                      <option value="">Seleziona locale</option>
+                      {locali.map((l) => (
+                        <option key={l.id} value={String(l.id)}>
+                          {l.nome}
+                        </option>
+                      ))}
+                    </select>
 
-        <div style={{ marginTop: 15 }}>
-          <button
-            style={orange}
-            onClick={() => {
-              setSelectedArticolo(null);
-              setNewArticle(true);
-            }}
-          >
-            Scrivi Articolo
-          </button>
-        </div>
-      </div>
-    </div>
-  );
-}
+                    {selectedLocale && (
+                      <LocaleFullCard locale={selectedLocale} refresh={fetchAll} />
+                    )}
+                  </div>
 
-/* ================= LOCALE ================= */
+                  {/* UTENTI */}
+                  <div style={section}>
+                    <h2 style={orangeTitle}>Utenti</h2>
 
-function LocaleFullCard({ locale, refresh }) {
-  const [edit, setEdit] = useState(locale);
+                    <select
+                      style={select}
+                      onChange={(e) => {
+                        const u = utenti.find((x) => String(x.id) === String(e.target.value));
+                        setSelectedUser(u);
+                      }}
+                    >
+                      <option value="">Seleziona utente</option>
+                      {utenti.map((u) => (
+                        <option key={u.id} value={String(u.id)}>
+                          {u.nome || u.email}
+                        </option>
+                      ))}
+                    </select>
 
-  function change(e) {
-    setEdit({ ...edit, [e.target.name]: e.target.value });
-  }
+                    {selectedUser && (
+                      <UserFullCard user={selectedUser} refresh={fetchAll} />
+                    )}
+                  </div>
 
-  async function salva() {
-    const { id, ...rest } = edit;
-    const { error } = await supabase.from("Locali").update(rest).eq("id", id);
-    if (error) console.error("Errore update Locale:", error);
-    refresh();
-  }
+                  {/* BARTENDER */}
+                  <div style={section}>
+                    <h2 style={orangeTitle}>Bartender</h2>
 
-  async function approva() {
-    const { error } = await supabase.from("Locali").update({ status: "approved" }).eq("id", edit.id);
-    if (error) console.error("Errore approva Locale:", error);
-    refresh();
-  }
+                    <select
+                      style={select}
+                      onChange={(e) => {
+                        const u = bartender.find((x) => String(x.id) === String(e.target.value));
+                        setSelectedUser(u);
+                      }}
+                    >
+                      <option value="">Seleziona bartender</option>
+                      {bartender.map((u) => (
+                        <option key={u.id} value={String(u.id)}>
+                          {u.nome || u.email}
+                        </option>
+                      ))}
+                    </select>
 
-  async function elimina() {
-    if (!confirm("Eliminare locale?")) return;
-    const { error } = await supabase.from("Locali").delete().eq("id", edit.id);
-    if (error) console.error("Errore elimina Locale:", error);
-    refresh();
-  }
+                    {selectedUser && (
+                      <UserFullCard user={selectedUser} refresh={fetchAll} />
+                    )}
+                  </div>
 
-  return (
-    <div style={card}>
-      <h3>Informazioni Locale</h3>
+                  {/* PROPRIETARI */}
+                  <div style={section}>
+                    <h2 style={orangeTitle}>Proprietari</h2>
 
-      <input name="nome" value={edit.nome || ""} onChange={change} placeholder="Nome locale" style={input} />
-      <input name="indirizzo" value={edit.indirizzo || ""} onChange={change} placeholder="Indirizzo" style={input} />
-      <input name="citta" value={edit.citta || ""} onChange={change} placeholder="Città" style={input} />
-      <input name="telefono" value={edit.telefono || ""} onChange={change} placeholder="Telefono" style={input} />
-      <input name="email" value={edit.email || ""} onChange={change} placeholder="Email locale" style={input} />
+                    <select
+                      style={select}
+                      onChange={(e) => {
+                        const u = proprietari.find((x) => String(x.id) === String(e.target.value));
+                        setSelectedUser(u);
+                      }}
+                    >
+                      <option value="">Seleziona proprietario</option>
+                      {proprietari.map((u) => (
+                        <option key={u.id} value={String(u.id)}>
+                          {u.nome || u.email}
+                        </option>
+                      ))}
+                    </select>
 
-      <textarea name="descrizione" value={edit.descrizione || ""} onChange={change} placeholder="Descrizione breve" style={textarea} />
-      <textarea name="recensioni" value={edit.recensioni || ""} onChange={change} placeholder="Recensioni" style={textarea} />
+                    {selectedUser && (
+                      <UserFullCard user={selectedUser} refresh={fetchAll} />
+                    )}
+                  </div>
 
-      <input name="slug" value={edit.slug || ""} onChange={change} placeholder="Slug URL" style={input} />
-      <input name="price_range" value={edit.price_range || ""} onChange={change} placeholder="Fascia prezzo (€ / €€ / €€€)" style={input} />
-      <input name="latitudine" value={edit.latitudine || ""} onChange={change} placeholder="Latitudine" style={input} />
-      <input name="longitudine" value={edit.longitudine || ""} onChange={change} placeholder="Longitudine" style={input} />
-      <input name="video_url" value={edit.video_url || ""} onChange={change} placeholder="URL Video" style={input} />
-      <input name="image_url" value={edit.image_url || ""} onChange={change} placeholder="URL Immagine" style={input} />
-      <input name="provincia" value={edit.provincia || ""} onChange={change} placeholder="Provincia" style={input} />
-      <input name="paese" value={edit.paese || ""} onChange={change} placeholder="Paese" style={input} />
-      <input name="sito" value={edit.sito || ""} onChange={change} placeholder="Sito Web" style={input} />
-      <input name="instagram" value={edit.instagram || ""} onChange={change} placeholder="Instagram" style={input} />
+                  {/* ARTICOLI */}
+                  <div style={section}>
+                    <h2 style={orangeTitle}>Articoli</h2>
 
-      <textarea name="orari" value={edit.orari || ""} onChange={change} placeholder="Orari apertura" style={textarea} />
-      <textarea name="descrizione_completa" value={edit.descrizione_completa || ""} onChange={change} placeholder="Descrizione completa" style={textarea} />
+                    <select
+                      style={select}
+                      onChange={(e) => {
+                        const a = articoli.find((x) => String(x.id) === String(e.target.value));
+                        setSelectedArticolo(a);
+                      }}
+                    >
+                      <option value="">Seleziona articolo</option>
+                      {articoli.map((a) => (
+                        <option key={a.id} value={String(a.id)}>
+                          {a.titolo}
+                        </option>
+                      ))}
+                    </select>
 
-      <h3 style={{ marginTop: 16, marginBottom: 8, color: "#f97316" }}>Dati Tecnici</h3>
-      <input name="qualita_drink" value={edit.qualita_drink || ""} onChange={change} placeholder="Qualità Drink (es. Eccellente)" style={input} />
-      <input name="competenza_staff" value={edit.competenza_staff || ""} onChange={change} placeholder="Competenza Staff (es. Alta)" style={input} />
-      <input name="atmosfera" value={edit.atmosfera || ""} onChange={change} placeholder="Atmosfera (es. Sofisticata)" style={input} />
-      <input name="qualita_prezzo" value={edit.qualita_prezzo || ""} onChange={change} placeholder="Qualità/Prezzo (es. Buono)" style={input} />
-
-      <div style={{ display: "flex", gap: 24, marginBottom: 8 }}>
-        <label style={{ display: "flex", alignItems: "center", gap: 8, color: "#ccc" }}>
-          <input
-            type="checkbox"
-            checked={!!edit.verificato}
-            onChange={(e) => setEdit({ ...edit, verificato: e.target.checked })}
-          />
-          Verificato
-        </label>
-        <label style={{ display: "flex", alignItems: "center", gap: 8, color: "#ccc" }}>
-          <input
-            type="checkbox"
-            checked={!!edit.in_evidenza}
-            onChange={(e) => setEdit({ ...edit, in_evidenza: e.target.checked })}
-          />
-          In Evidenza
-        </label>
-      </div>
-
-      <select name="status" value={edit.status || ""} onChange={change} style={select}>
-        <option value="pending">In attesa</option>
-        <option value="approved">Approvato</option>
-        <option value="rejected">Rifiutato</option>
-      </select>
-
-      <div style={actions}>
-        <button style={green} onClick={approva}>Approva</button>
-        <button style={blue} onClick={salva}>Salva</button>
-        <button style={red} onClick={elimina}>Cancella</button>
-      </div>
-    </div>
-  );
-}
-
-/* ================= ARTICOLO ================= */
+                    {selectedArticolo && (
+                      <ArticleFullCard articolo={selectedArticolo} refresh={fetchAll} />
+                    )}
+                  </div>
+                </div>
+              </>
+            );
 
 function ArticoloFullCard({ articolo, refresh }) {
   const [edit, setEdit] = useState(articolo);

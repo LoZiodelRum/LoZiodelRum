@@ -1,3 +1,4 @@
+import Navbar from "../components/Navbar";
 import "../App.css";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
@@ -182,11 +183,14 @@ export default function Drink() {
   }
 
   return (
-    <div className="fade-in drink-page-white">
-      {renderSection("Cocktail", cocktail, "cocktail")}
-      {renderSection("Rum", rum, "rum")}
-      {renderSection("Whisky", whisky, "whisky")}
-      {renderSection("Altri distillati", altri, "altri")}
-    </div>
+    <>
+      <Navbar />
+      <div className="fade-in drink-page-white">
+        {renderSection("Cocktail", cocktail, "cocktail")}
+        {renderSection("Rum", rum, "rum")}
+        {renderSection("Whisky", whisky, "whisky")}
+        {renderSection("Altri distillati", altri, "altri")}
+      </div>
+    </>
   );
 }

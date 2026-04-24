@@ -1,3 +1,4 @@
+import Navbar from "../components/Navbar";
 import "../App.css";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -98,11 +99,14 @@ export default function Crea() {
     const active = schema.filter((item) => normalize(item.filter).length > 0);
 
     if (!cocktail || active.length === 0) {
-      return {
-        description: "Dettagli comparativi non disponibili per questo cocktail del database.",
-        tastingNotes: ["Confronto non disponibile"],
-        balance: "Nessun confronto applicato rispetto alle preferenze selezionate.",
-      };
+      return (
+        <>
+          <Navbar />
+          <div className="page fade-in" style={{ padding: 40 }}>
+            {/* ...contenuto... */}
+          </div>
+        </>
+      );
     }
 
     const matched = active.filter((item) => normalize(item.filter) === normalize(item.db));

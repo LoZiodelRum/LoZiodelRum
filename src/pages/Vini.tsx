@@ -1,3 +1,4 @@
+import Navbar from "../components/Navbar";
 import "../App.css";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
@@ -276,75 +277,78 @@ export default function Vini() {
   }
 
   return (
-    <div
-      className="fade-in drink-page-white vini-preview-page"
-      style={{
-        background: "#0b0b0b",
-      }}
-    >
-      <style>{`
-        .vini-preview-page .drink-section-white {
-          background: transparent;
-        }
-
-        .vini-preview-page .drink-section-title {
-          color: #f5a623 !important;
-        }
-
-        .vini-grid {
-          grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-        }
-
-        .vini-preview-page .drink-card-uniform {
-          aspect-ratio: 1 / 1.46 !important;
-        }
-
-        .vini-preview-page .drink-card-caption h3 {
-          font-size: 15px;
-          line-height: 1.15;
-          display: -webkit-box;
-          -webkit-line-clamp: 2;
-          -webkit-box-orient: vertical;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          word-break: break-word;
-        }
-
-        .vini-preview-page .drink-card-uniform img {
-          width: 100% !important;
-          height: calc(100% - 40px) !important;
-          object-fit: contain !important;
-          object-position: center bottom !important;
-          background: #fff !important;
-        }
-
-        @media (max-width: 768px) {
-          .vini-preview-page .drink-card-uniform {
-            aspect-ratio: 1 / 1.52 !important;
+    <>
+      <Navbar />
+      <div
+        className="fade-in drink-page-white vini-preview-page"
+        style={{
+          background: "#0b0b0b",
+        }}
+      >
+        <style>{`
+          .vini-preview-page .drink-section-white {
+            background: transparent;
           }
 
-          .vini-preview-page .drink-card-caption {
-            min-height: 34px !important;
-            height: 34px !important;
-            padding: 0 8px !important;
+          .vini-preview-page .drink-section-title {
+            color: #f5a623 !important;
+          }
+
+          .vini-grid {
+            grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+          }
+
+          .vini-preview-page .drink-card-uniform {
+            aspect-ratio: 1 / 1.46 !important;
+          }
+
+          .vini-preview-page .drink-card-caption h3 {
+            font-size: 15px;
+            line-height: 1.15;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            word-break: break-word;
           }
 
           .vini-preview-page .drink-card-uniform img {
-            height: calc(100% - 34px) !important;
+            width: 100% !important;
+            height: calc(100% - 40px) !important;
+            object-fit: contain !important;
+            object-position: center bottom !important;
+            background: #fff !important;
           }
-        }
-      `}</style>
-      {categoria && categoryConfig[categoria]
-        ? renderSection(categoryConfig[categoria].title, categoryConfig[categoria].items, categoria, false)
-        : (
-          <>
-            {renderSection("Rossi", rossi, "rossi")}
-            {renderSection("Bianchi", bianchi, "bianchi")}
-            {renderSection("Rosati", rosati, "rosati")}
-            {renderSection("Bollicine", bollicine, "bollicine")}
-            {renderSection("Altri vini", altri, "altri-vini")}
-          </>
-        )}
-    </div>
+
+          @media (max-width: 768px) {
+            .vini-preview-page .drink-card-uniform {
+              aspect-ratio: 1 / 1.52 !important;
+            }
+
+            .vini-preview-page .drink-card-caption {
+              min-height: 34px !important;
+              height: 34px !important;
+              padding: 0 8px !important;
+            }
+
+            .vini-preview-page .drink-card-uniform img {
+              height: calc(100% - 34px) !important;
+            }
+          }
+        `}</style>
+        {categoria && categoryConfig[categoria]
+          ? renderSection(categoryConfig[categoria].title, categoryConfig[categoria].items, categoria, false)
+          : (
+            <>
+              {renderSection("Rossi", rossi, "rossi")}
+              {renderSection("Bianchi", bianchi, "bianchi")}
+              {renderSection("Rosati", rosati, "rosati")}
+              {renderSection("Bollicine", bollicine, "bollicine")}
+              {renderSection("Altri vini", altri, "altri-vini")}
+            </>
+          )}
+      </div>
+    </>
   );
 }
