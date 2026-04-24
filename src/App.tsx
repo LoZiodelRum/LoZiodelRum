@@ -1,15 +1,29 @@
+
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 import Auth from "./pages/Auth";
 import ProtectedRoute from "./pages/ProtectedRoute";
+import MapPage from "./pages/MapPage";
+import Drink from "./pages/Drink";
+import Vini from "./pages/Vini";
+import Magazine from "./pages/Magazine";
+import Community from "./pages/Community";
+import Crea from "./pages/Crea";
+import AdminPanel from "./pages/AdminPanel.jsx";
 
 export default function App() {
   return (
     <Routes>
       <Route path="/" element={<Auth />} />
       <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
-      {/* altre rotte protette: <Route path="/altra" element={<ProtectedRoute><Altra /></ProtectedRoute>} /> */}
+      <Route path="/mappa" element={<ProtectedRoute><MapPage /></ProtectedRoute>} />
+      <Route path="/drink" element={<ProtectedRoute><Drink /></ProtectedRoute>} />
+      <Route path="/vini" element={<ProtectedRoute><Vini /></ProtectedRoute>} />
+      <Route path="/magazine" element={<ProtectedRoute><Magazine /></ProtectedRoute>} />
+      <Route path="/community" element={<ProtectedRoute><Community /></ProtectedRoute>} />
+      <Route path="/crea" element={<ProtectedRoute><Crea /></ProtectedRoute>} />
+      <Route path="/admin" element={<ProtectedRoute><AdminPanel /></ProtectedRoute>} />
     </Routes>
   );
 }
