@@ -24,10 +24,11 @@ function Auth() {
     if (loginValue.includes("@")) {
       candidateEmails.push(loginValue);
     } else {
-      const { data: profileByUsername } = await supabase
+    async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
         .from("Profili")
         .select("email")
         .ilike("username", loginRaw)
+      console.log("Tentativo login con:", username);
         .maybeSingle();
       const resolvedEmail = String(profileByUsername?.email || "").trim().toLowerCase();
       if (resolvedEmail) {
@@ -128,7 +129,8 @@ function Auth() {
     <>
       <Navbar />
       <style>{`
-        @media (max-width: 600px) {
+      navigate("/home");
+      console.log("Login effettuato con successo, reindirizzando a /home");
           .login-fullscreen-container {
             width: 100vw !important;
             height: 100vh !important;
@@ -221,6 +223,7 @@ function Auth() {
                   color: "#181818",
                   fontWeight: 900,
                   fontSize: 18,
+                type="submit"
                   border: "none",
                   borderRadius: 12,
                   padding: 16,
