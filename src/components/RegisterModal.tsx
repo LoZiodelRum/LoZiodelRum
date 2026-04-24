@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { supabase } from "../lib/supabaseClient";
+import { useNavigate } from "react-router-dom";
 
 type Props = {
   open: boolean;
@@ -7,6 +8,7 @@ type Props = {
 };
 
 export default function RegisterModal({ open, onClose }: Props) {
+  const navigate = useNavigate();
   const [nome, setNome] = useState("");
   const [cognome, setCognome] = useState("");
   const [username, setUsername] = useState("");
@@ -48,7 +50,7 @@ export default function RegisterModal({ open, onClose }: Props) {
     e.preventDefault();
     setLoading(true);
     setMsg("");
-    // 1. Registrazione utente su Supabase Auth
+    // 1. Prova registrazione utente su Supabase Auth
     const { data: authData, error: authError } = await supabase.auth.signUp({
       email,
       password,
@@ -61,14 +63,24 @@ export default function RegisterModal({ open, onClose }: Props) {
         },
       },
     });
-    if (authError || !authData.user) {
+    let userId = authData?.user?.id;
+    if (authError && !authError.message.includes("already registered")) {
       setMsg(authError?.message || "Errore registrazione");
       setLoading(false);
       return;
     }
-    const userId = authData.user.id;
-    // 2. Inserimento nella tabella Profili
-    const { error: profiliError } = await supabase.from("Profili").insert([
+    // Se già registrato, recupera userId tramite login
+    if (!userId) {
+      const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({ email, password });
+      if (loginError || !loginData.user) {
+        setMsg(loginError?.message || "Errore login");
+        setLoading(false);
+        return;
+      }
+      userId = loginData.user.id;
+    }
+    // 2. Inserimento/upsert nella tabella Profili
+    const { error: profiliError } = await supabase.from("Profili").upsert([
       {
         id: userId,
         nome,
@@ -80,19 +92,26 @@ export default function RegisterModal({ open, onClose }: Props) {
         status: "attivo",
         created_at: new Date().toISOString(),
       },
-    ]);
+    ], { onConflict: "id" });
     if (profiliError) {
       setMsg(profiliError.message || "Errore creazione profilo");
       setLoading(false);
       return;
     }
-    setMsg("Registrazione completata! Reindirizzamento in corso...");
+    // Login automatico
+    const { error: loginError } = await supabase.auth.signInWithPassword({ email, password });
+    if (loginError) {
+      setMsg(loginError.message || "Errore login automatico");
+      setLoading(false);
+      return;
+    }
+    setMsg("Registrazione completata! Accesso in corso...");
     setTimeout(() => {
       setLoading(false);
       setMsg("");
       onClose();
-      window.location.reload();
-    }, 1200);
+      navigate("/");
+    }, 1000);
   }
 
   return (
