@@ -118,7 +118,7 @@ export default function Auth() {
           recoverCode === "42501" ||
           recoverMessage.includes("permission") ||
           recoverMessage.includes("row-level") ||
-          recoverMessage.includes("violates row-level security");
+      return (
         if (!recoverBlocked) {
           setMsg("Errore verifica profilo");
           setLoading(false);
