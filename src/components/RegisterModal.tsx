@@ -270,8 +270,7 @@ export default function RegisterModal({ open, onClose }: Props) {
         {msg && (
           <div style={{ color: "#FFD36A", marginTop: 16, textAlign: "center" }}>{msg}</div>
         )}
-        </div> {/* chiusura .register-modal-box */}
-      </div> {/* chiusura box centrale */}
+      </div>
     </div>
   );
 }
