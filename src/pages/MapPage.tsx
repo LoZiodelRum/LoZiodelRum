@@ -1,6 +1,5 @@
 
 
-import Navbar from "../components/Navbar";
 import "../App.css";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
