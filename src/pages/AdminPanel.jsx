@@ -40,9 +40,9 @@ export default function AdminPanel() {
       setProprietari(prRes.data || []);
       setLocali(loRes.data || []);
       setArticoli(arRes.data || []);
-      setCocktail(coRes.data || []);
-      setDistillati(diRes.data || []);
-      setVini(viRes.data || []);
+      setCocktail((coRes.data || []).slice().sort((a, b) => (a.nome || '').localeCompare(b.nome || '')));
+      setDistillati((diRes.data || []).slice().sort((a, b) => (a.nome || '').localeCompare(b.nome || '')));
+      setVini((viRes.data || []).slice().sort((a, b) => (a.nome || '').localeCompare(b.nome || '')));
     }
     fetchAll();
   }, []);
