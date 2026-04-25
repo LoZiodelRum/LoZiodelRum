@@ -251,78 +251,7 @@ export default function ArticleDetail() {
         }
       `}</style>
 
-      {/* 🔧 EDITOR ADMIN */}
-      {isAdmin && form && (
-        <div style={{ padding: 20, background: "#111", marginBottom: 40 }}>
-          <h2 style={{ color: "#fff" }}>Editor Articolo</h2>
 
-          {/* IMMAGINE */}
-          <input
-            type="file"
-            onChange={(e) => {
-              if (e.target.files?.[0]) {
-                handleImageUpload(e.target.files[0]);
-              }
-            }}
-          />
-
-          {uploading && <p style={{ color: "#fff" }}>Upload...</p>}
-
-          {/* CAMPI */}
-          <input
-            value={form.titolo || ""}
-            onChange={(e) =>
-              setForm({ ...form, titolo: e.target.value })
-            }
-            placeholder="Titolo"
-            style={{ width: "100%", marginTop: 10 }}
-          />
-
-          <input
-            value={form.descrizione || ""}
-            onChange={(e) =>
-              setForm({ ...form, descrizione: e.target.value })
-            }
-            placeholder="Descrizione"
-            style={{ width: "100%", marginTop: 10 }}
-          />
-
-          <input
-            value={form.categoria || ""}
-            onChange={(e) =>
-              setForm({ ...form, categoria: e.target.value })
-            }
-            placeholder="Categoria"
-            style={{ width: "100%", marginTop: 10 }}
-          />
-
-          <textarea
-            value={form.contenuto || ""}
-            onChange={(e) =>
-              setForm({ ...form, contenuto: e.target.value })
-            }
-            placeholder="Contenuto articolo"
-            style={{ width: "100%", height: 200, marginTop: 10 }}
-          />
-
-          {/* BOTTONI */}
-          <div style={{ marginTop: 15 }}>
-            <button
-              onClick={handleSave}
-              style={{ background: "green", color: "#fff", marginRight: 10 }}
-            >
-              Salva
-            </button>
-
-            <button
-              onClick={handleDelete}
-              style={{ background: "red", color: "#fff" }}
-            >
-              Elimina
-            </button>
-          </div>
-        </div>
-      )}
 
       {/* HERO */}
       <div
