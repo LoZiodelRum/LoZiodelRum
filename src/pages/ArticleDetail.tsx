@@ -43,8 +43,9 @@ function renderInlineLinks(text: string, keyBase: string) {
 
 function renderArticleContent(raw: string) {
   const content = raw || "";
-  // Capture the full URL on the same line to support URLs containing parentheses.
-  const imageRegex = /!\[([^\]]*)\]\((https?:\/\/[^\n]+)\)/g;
+  // Regex per immagini markdown e link diretti a immagini
+  const imageMarkdownRegex = /!\[([^\]]*)\]\((https?:\/\/[^\n]+)\)/g;
+  const directImageRegex = /(https?:\/\/(?:[^\s]+)\.(?:jpg|jpeg|png|gif|webp|avif|svg))/gi;
   const nodes: React.ReactNode[] = [];
 
   let lastIndex = 0;
@@ -55,13 +56,47 @@ function renderArticleContent(raw: string) {
     const trimmed = chunk.trim();
     if (!trimmed) return;
 
-    const paragraphs = trimmed.split(/\n{2,}/);
+    // Sostituisci i link diretti a immagini con un tag <img>
+    let imgIndex = 0;
+    const replaced = trimmed.replace(directImageRegex, (url) => {
+      imgIndex++;
+      return `[[IMG-${blockIndex}-${imgIndex}:${url}]]`;
+    });
+
+    const paragraphs = replaced.split(/\n{2,}/);
     paragraphs.forEach((paragraph) => {
       const lines = paragraph.split("\n");
       const lineNodes: React.ReactNode[] = [];
 
       lines.forEach((line, idx) => {
-        lineNodes.push(...renderInlineLinks(line, `p-${blockIndex}-${idx}`));
+        // Sostituisci i placeholder con <img>
+        const imgPlaceholderRegex = /\[\[IMG-(\d+)-(\d+):([^\]]+)\]\]/g;
+        let lastImgIdx = 0;
+        let imgMatch: RegExpExecArray | null;
+        let acc: React.ReactNode[] = [];
+        while ((imgMatch = imgPlaceholderRegex.exec(line)) !== null) {
+          if (imgMatch.index > lastImgIdx) {
+            acc.push(line.slice(lastImgIdx, imgMatch.index));
+          }
+          acc.push(
+            <img
+              key={`img-inline-${blockIndex}-${idx}-${imgMatch[2]}`}
+              src={imgMatch[3]}
+              alt="Immagine"
+              style={{ maxWidth: "100%", maxHeight: 320, borderRadius: 10, margin: "10px 0", display: "block" }}
+              loading="lazy"
+            />
+          );
+          lastImgIdx = imgMatch.index + imgMatch[0].length;
+        }
+        if (lastImgIdx < line.length) {
+          acc.push(line.slice(lastImgIdx));
+        }
+        if (acc.length > 0) {
+          lineNodes.push(...acc);
+        } else {
+          lineNodes.push(...renderInlineLinks(line, `p-${blockIndex}-${idx}`));
+        }
         if (idx < lines.length - 1) lineNodes.push(<br key={`br-${blockIndex}-${idx}`} />);
       });
 
@@ -74,7 +109,8 @@ function renderArticleContent(raw: string) {
     });
   };
 
-  while ((m = imageRegex.exec(content)) !== null) {
+  // Prima gestisci le immagini markdown
+  while ((m = imageMarkdownRegex.exec(content)) !== null) {
     const before = content.slice(lastIndex, m.index);
     pushTextChunk(before);
 
@@ -99,10 +135,10 @@ function renderArticleContent(raw: string) {
       );
     }
     blockIndex += 1;
-
     lastIndex = m.index + m[0].length;
   }
 
+  // Gestisci il testo rimanente (inclusi link diretti a immagini)
   pushTextChunk(content.slice(lastIndex));
   return nodes;
 }
