@@ -8,6 +8,7 @@ import Drink from "./pages/Drink";
 import DrinkDetail from "./pages/DrinkDetail";
 import Vini from "./pages/Vini";
 import Magazine from "./pages/Magazine";
+import CategoryVini from "./pages/CategoryVini";
 import ArticleDetail from "./pages/ArticleDetail";
 import Community from "./pages/Community";
 import Crea from "./pages/Crea";
@@ -25,6 +26,7 @@ export default function App() {
       <Route path="/vini" element={<ProtectedRoute><Vini /></ProtectedRoute>} />
       <Route path="/magazine" element={<ProtectedRoute><Magazine /></ProtectedRoute>} />
       <Route path="/magazine/:id" element={<ProtectedRoute><ArticleDetail /></ProtectedRoute>} />
+      <Route path="/vini/categoria/:categoria" element={<ProtectedRoute><CategoryVini /></ProtectedRoute>} />
       <Route path="/community" element={<ProtectedRoute><Community /></ProtectedRoute>} />
       <Route path="/crea" element={<ProtectedRoute><Crea /></ProtectedRoute>} />
       <Route path="/admin" element={<ProtectedRoute><AdminPanel /></ProtectedRoute>} />
