@@ -95,7 +95,7 @@ export default function AdminPanel() {
 
         {/* LOCALI E MENU DRINK */}
         <div className="admin-section" style={section}>
-          <h2 style={orangeTitle}>Locali</h2>
+          {!(isMobile) && <h2 style={orangeTitle}>Locali</h2>}
           <select
             className="admin-select"
             style={isMobile ? mobileSelect : select}
@@ -116,7 +116,7 @@ export default function AdminPanel() {
           )}
 
           {/* COCKTAIL */}
-          <h2 style={{...orangeTitle, marginTop: 32}}>Cocktail</h2>
+          {!(isMobile) && <h2 style={{...orangeTitle, marginTop: 32}}>Cocktail</h2>}
           <select
             className="admin-select"
             style={isMobile ? mobileSelect : select}
@@ -129,7 +129,7 @@ export default function AdminPanel() {
           </select>
 
           {/* DISTILLATI */}
-          <h2 style={{...orangeTitle, marginTop: 32}}>Distillati</h2>
+          {!(isMobile) && <h2 style={{...orangeTitle, marginTop: 32}}>Distillati</h2>}
           <select
             className="admin-select"
             style={isMobile ? mobileSelect : select}
@@ -142,7 +142,7 @@ export default function AdminPanel() {
           </select>
 
           {/* VINI */}
-          <h2 style={{...orangeTitle, marginTop: 32}}>Vini</h2>
+          {!(isMobile) && <h2 style={{...orangeTitle, marginTop: 32}}>Vini</h2>}
           <select
             className="admin-select"
             style={isMobile ? mobileSelect : select}
