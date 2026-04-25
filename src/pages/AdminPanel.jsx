@@ -50,13 +50,14 @@ export default function AdminPanel() {
   // Stili responsive per select
   const mobileSelect = {
     ...select,
-    width: "100%",
-    maxWidth: "100vw",
+    width: "110px", // larghezza minima per la parola 'Seleziona'
+    maxWidth: "110px",
+    minWidth: "110px",
     marginLeft: 0,
     marginRight: 0,
     display: "block",
     fontSize: 18,
-    padding: 16,
+    padding: "12px 8px",
   };
 
   // Rileva mobile
@@ -71,15 +72,18 @@ export default function AdminPanel() {
             margin-bottom: 40px !important;
             margin-left: 0 !important;
             padding-left: 0 !important;
+            align-items: flex-start !important;
           }
           .admin-select {
-            width: 100vw !important;
-            max-width: 100vw !important;
+            width: 110px !important;
+            max-width: 110px !important;
+            min-width: 110px !important;
             margin-left: 0 !important;
             margin-right: 0 !important;
             display: block !important;
             font-size: 18px !important;
-            padding: 16px !important;
+            padding: 12px 8px !important;
+            text-align: left !important;
           }
         }
       `}</style>
