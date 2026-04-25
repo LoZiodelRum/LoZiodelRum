@@ -115,45 +115,6 @@ export default function AdminPanel() {
       </div>
     </>
   );
-      {/* PROPRIETARI */}
-      <div style={section}>
-        <h2 style={orangeTitle}>Proprietari</h2>
-        <select style={select}>
-          <option>Seleziona proprietario</option>
-          {proprietari.map((p) => (
-            <option key={p.id}>{p.nome}</option>
-          ))}
-        </select>
-      </div>
-
-      {/* ARTICOLI */}
-      <div style={section}>
-        <h2 style={orangeTitle}>Articoli</h2>
-
-        <select
-          style={select}
-          value={selectedArticolo ? String(selectedArticolo.id) : ""}
-          onChange={(e) => {
-            const value = e.target.value;
-            const art = articoli.find((a) => String(a.id) === String(value));
-            setSelectedArticolo(art);
-            setNewArticle(false);
-          }}
-        >
-          <option value="">Seleziona articolo</option>
-          {articoli.map((a) => (
-            <option key={a.id} value={String(a.id)}>
-              {a.titolo}
-            </option>
-          ))}
-        </select>
-
-        {selectedArticolo && (
-          <ArticleFullCard articolo={selectedArticolo} refresh={fetchAll} />
-        )}
-      </div>
-    </div>
-  );
 }
 
 function ArticoloFullCard({ articolo, refresh }) {
