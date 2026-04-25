@@ -128,18 +128,37 @@ export default function MapPage() {
             key={venue.id}
             position={[venue.latitudine, venue.longitudine]}
             icon={customIcon}
-            eventHandlers={{
-              click: () => setSelectedVenue(venue),
-            }}
           >
-            <Popup>
-              <div>
-                <strong>{venue.nome}</strong>
-                <div>
-                  {venue.indirizzo}, {venue.citta}
-                </div>
+            <div
+              style={{
+                position: "absolute",
+                left: "50%",
+                top: -120,
+                transform: "translateX(-50%)",
+                width: 220,
+                background: "#000",
+                color: "#fff",
+                padding: 10,
+                borderRadius: 10,
+                zIndex: 1200,
+                boxShadow: "0 2px 12px #000a",
+                cursor: "pointer",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center"
+              }}
+              onClick={() => window.location.href = `/locale/${venue.id}`}
+            >
+              <img
+                src={venue.image_url || "/fallback.jpg"}
+                alt={venue.nome}
+                style={{ width: "100%", height: 70, objectFit: "cover", borderRadius: 6, marginBottom: 8 }}
+              />
+              <div style={{ fontWeight: 700, fontSize: 17, marginBottom: 2 }}>{venue.nome}</div>
+              <div style={{ fontSize: 13, opacity: 0.8, textAlign: "center" }}>
+                {venue.indirizzo}, {venue.citta}
               </div>
-            </Popup>
+            </div>
           </Marker>
         ))}
       </MapContainer>
@@ -158,63 +177,7 @@ export default function MapPage() {
         {filteredVenues.length} locali
       </div>
 
-      {/* CARD DETTAGLIO (popup custom centrato sopra il marker selezionato) */}
-      {selectedVenue && (
-        <div style={{
-          position: "absolute",
-          left: "50%",
-          top: 90, // poco sopra il marker
-          transform: "translateX(-50%)",
-          width: 320,
-          background: "#000",
-          color: "#fff",
-          padding: 15,
-          borderRadius: 12,
-          zIndex: 1000,
-          boxShadow: "0 4px 24px #000a"
-        }}>
-          <button onClick={() => setSelectedVenue(null)} style={{
-            position: "absolute",
-            top: 10,
-            right: 10,
-            background: "#f5a623",
-            border: "none",
-            borderRadius: 6,
-            color: "#fff",
-            width: 32,
-            height: 32,
-            fontSize: 20,
-            cursor: "pointer"
-          }}>
-            <X />
-          </button>
-
-          <img
-            src={selectedVenue.image_url || "/fallback.jpg"}
-            style={{ width: "100%", height: 140, objectFit: "cover", borderRadius: 8 }}
-          />
-
-          <h3 style={{ margin: "16px 0 4px 0" }}>{selectedVenue.nome}</h3>
-
-          <p style={{ margin: 0, fontSize: 15 }}>
-            {selectedVenue.indirizzo}, {selectedVenue.citta}
-          </p>
-
-          <Link to={`/locale/${selectedVenue.id}`}>
-            <button style={{
-              marginTop: 16,
-              background: "#f5a623",
-              color: "#fff",
-              border: "none",
-              borderRadius: 6,
-              padding: "10px 18px",
-              fontWeight: 700,
-              fontSize: 16,
-              cursor: "pointer"
-            }}>Apri scheda</button>
-          </Link>
-        </div>
-      )}
+      {/* CARD DETTAGLIO rimossa: anteprima ora direttamente sopra ogni marker, cliccabile */}
     </div>
   );
 }
