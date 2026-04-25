@@ -94,8 +94,8 @@ export default function AdminPanel() {
         <h1 style={title}>Pannello di Controllo</h1>
 
         {/* LOCALI E MENU DRINK */}
-        <div className="admin-section" style={section}>
-          {!(isMobile) && <h2 style={orangeTitle}>Locali</h2>}
+        <div className="admin-section" style={{...section, alignItems: 'flex-start', marginLeft: 0, paddingLeft: 0}}>
+          <h2 style={orangeTitle}>Locali</h2>
           <select
             className="admin-select"
             style={isMobile ? mobileSelect : select}
@@ -114,6 +114,43 @@ export default function AdminPanel() {
           {selectedLocale && (
             <LocaleFullCard locale={selectedLocale} refresh={() => {}} />
           )}
+
+          <h2 style={{...orangeTitle, marginTop: 32}}>Cocktail</h2>
+          <select
+            className="admin-select"
+            style={isMobile ? mobileSelect : select}
+            onChange={e => setSelectedCocktail(cocktail.find(c => String(c.id) === String(e.target.value)))}
+          >
+            <option value="">Seleziona</option>
+            {cocktail.map(c => (
+              <option key={c.id} value={String(c.id)}>{c.nome}</option>
+            ))}
+          </select>
+
+          <h2 style={{...orangeTitle, marginTop: 32}}>Distillati</h2>
+          <select
+            className="admin-select"
+            style={isMobile ? mobileSelect : select}
+            onChange={e => setSelectedDistillato(distillati.find(d => String(d.id) === String(e.target.value)))}
+          >
+            <option value="">Seleziona</option>
+            {distillati.map(d => (
+              <option key={d.id} value={String(d.id)}>{d.nome}</option>
+            ))}
+          </select>
+
+          <h2 style={{...orangeTitle, marginTop: 32}}>Vini</h2>
+          <select
+            className="admin-select"
+            style={isMobile ? mobileSelect : select}
+            onChange={e => setSelectedVino(vini.find(v => String(v.id) === String(e.target.value)))}
+          >
+            <option value="">Seleziona</option>
+            {vini.map(v => (
+              <option key={v.id} value={String(v.id)}>{v.nome}</option>
+            ))}
+          </select>
+        </div>
 
           {/* COCKTAIL */}
           {!(isMobile) && <h2 style={{...orangeTitle, marginTop: 32}}>Cocktail</h2>}
@@ -156,7 +193,7 @@ export default function AdminPanel() {
         </div>
 
         {/* UTENTI */}
-        <div className="admin-section" style={section}>
+        <div className="admin-section" style={{...section, alignItems: 'flex-start', marginLeft: 0, paddingLeft: 0}}>
           <h2 style={orangeTitle}>Utenti</h2>
           <select
             className="admin-select"
@@ -166,7 +203,7 @@ export default function AdminPanel() {
               setSelectedUser(u);
             }}
           >
-            <option value="">Seleziona utente</option>
+            <option value="">Seleziona</option>
             {utenti.map((u) => (
               <option key={u.id} value={String(u.id)}>
                 {u.nome || u.email}
@@ -179,13 +216,13 @@ export default function AdminPanel() {
         </div>
 
         {/* BARTENDER */}
-        <div className="admin-section" style={section}>
+        <div className="admin-section" style={{...section, alignItems: 'flex-start', marginLeft: 0, paddingLeft: 0}}>
           <h2 style={orangeTitle}>Bartender</h2>
           <select
             className="admin-select"
             style={isMobile ? mobileSelect : select}
           >
-            <option>Seleziona bartender</option>
+            <option>Seleziona</option>
             {bartender.map((b) => (
               <option key={b.id}>{b.nome}</option>
             ))}
@@ -193,13 +230,13 @@ export default function AdminPanel() {
         </div>
 
         {/* PROPRIETARI */}
-        <div className="admin-section" style={section}>
+        <div className="admin-section" style={{...section, alignItems: 'flex-start', marginLeft: 0, paddingLeft: 0}}>
           <h2 style={orangeTitle}>Proprietari</h2>
           <select
             className="admin-select"
             style={isMobile ? mobileSelect : select}
           >
-            <option>Seleziona proprietario</option>
+            <option>Seleziona</option>
             {proprietari.map((p) => (
               <option key={p.id}>{p.nome}</option>
             ))}
@@ -207,7 +244,7 @@ export default function AdminPanel() {
         </div>
 
         {/* ARTICOLI */}
-        <div className="admin-section" style={section}>
+        <div className="admin-section" style={{...section, alignItems: 'flex-start', marginLeft: 0, paddingLeft: 0}}>
           <h2 style={orangeTitle}>Articoli</h2>
           <select
             className="admin-select"
@@ -220,7 +257,7 @@ export default function AdminPanel() {
               setNewArticle(false);
             }}
           >
-            <option value="">Seleziona articolo</option>
+            <option value="">Seleziona</option>
             {articoli.map((a) => (
               <option key={a.id} value={String(a.id)}>
                 {a.titolo}
