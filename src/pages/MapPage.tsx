@@ -13,9 +13,9 @@ delete (L.Icon.Default.prototype as any)._getIconUrl;
 // ✅ MARKER PERSONALIZZATO
 const customIcon = L.icon({
   iconUrl: "/marker.png",
-  iconSize: [40, 50],
-  iconAnchor: [20, 50],
-  popupAnchor: [0, -40]
+  iconSize: [48, 48], // proporzione perfetta per PNG 1024x1024
+  iconAnchor: [24, 48], // centro base
+  popupAnchor: [0, -48] // popup centrato sopra
 });
 
 type Venue = {
@@ -158,36 +158,60 @@ export default function MapPage() {
         {filteredVenues.length} locali
       </div>
 
-      {/* CARD DETTAGLIO */}
+      {/* CARD DETTAGLIO (popup custom centrato sopra il marker selezionato) */}
       {selectedVenue && (
         <div style={{
           position: "absolute",
-          bottom: 20,
-          right: 20,
-          width: 300,
+          left: "50%",
+          top: 90, // poco sopra il marker
+          transform: "translateX(-50%)",
+          width: 320,
           background: "#000",
           color: "#fff",
           padding: 15,
-          borderRadius: 10,
-          zIndex: 1000
+          borderRadius: 12,
+          zIndex: 1000,
+          boxShadow: "0 4px 24px #000a"
         }}>
-          <button onClick={() => setSelectedVenue(null)}>
+          <button onClick={() => setSelectedVenue(null)} style={{
+            position: "absolute",
+            top: 10,
+            right: 10,
+            background: "#f5a623",
+            border: "none",
+            borderRadius: 6,
+            color: "#fff",
+            width: 32,
+            height: 32,
+            fontSize: 20,
+            cursor: "pointer"
+          }}>
             <X />
           </button>
 
           <img
             src={selectedVenue.image_url || "/fallback.jpg"}
-            style={{ width: "100%", height: 120, objectFit: "cover" }}
+            style={{ width: "100%", height: 140, objectFit: "cover", borderRadius: 8 }}
           />
 
-          <h3>{selectedVenue.nome}</h3>
+          <h3 style={{ margin: "16px 0 4px 0" }}>{selectedVenue.nome}</h3>
 
-          <p>
+          <p style={{ margin: 0, fontSize: 15 }}>
             {selectedVenue.indirizzo}, {selectedVenue.citta}
           </p>
 
           <Link to={`/locale/${selectedVenue.id}`}>
-            <button>Apri scheda</button>
+            <button style={{
+              marginTop: 16,
+              background: "#f5a623",
+              color: "#fff",
+              border: "none",
+              borderRadius: 6,
+              padding: "10px 18px",
+              fontWeight: 700,
+              fontSize: 16,
+              cursor: "pointer"
+            }}>Apri scheda</button>
           </Link>
         </div>
       )}
