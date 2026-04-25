@@ -1,9 +1,102 @@
+
 import "../App.css";
+import { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { supabase } from "../lib/supabaseClient";
 
+type Drink = {
+  id: string;
+  nome: string;
+  descrizione?: string;
+  immagine?: string;
+  marca?: string;
+  categoria?: string;
+  gradazione?: string;
+  ingredienti?: string;
+  ricetta?: string;
+  [key: string]: any;
+};
 
-// TODO: Implementazione read-only della pagina DrinkDetail. Rimuovere ogni logica admin/modifica.
 export default function DrinkDetail() {
-  return <div className="page fade-in">Scheda drink non disponibile</div>;
+  const { id } = useParams();
+  const navigate = useNavigate();
+  const [drink, setDrink] = useState<Drink | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+
+  useEffect(() => {
+    async function fetchDrink() {
+      setLoading(true);
+      // Cerca prima nei cocktail
+      let { data, error } = await supabase.from("cocktail").select("*").eq("id", id).single();
+      if (!data || error) {
+        // Se non trovato, cerca nei distillati
+        let { data: distillato, error: err2 } = await supabase.from("distillati").select("*").eq("id", id).single();
+        if (!distillato || err2) {
+          setNotFound(true);
+          setLoading(false);
+          return;
+        } else {
+          setDrink(distillato);
+        }
+      } else {
+        setDrink(data);
+      }
+      setLoading(false);
+    }
+    fetchDrink();
+  }, [id]);
+
+  if (loading) return <div className="page fade-in">Caricamento...</div>;
+  if (notFound || !drink) return <div className="page fade-in">Drink non trovato</div>;
+
+  return (
+    <div className="page fade-in" style={{ maxWidth: 800, margin: "0 auto", padding: 20 }}>
+      <button className="btn-primary" style={{ marginBottom: 20 }} onClick={() => navigate(-1)}>
+        ← Torna indietro
+      </button>
+      <div style={{ display: "flex", flexWrap: "wrap", gap: 40 }}>
+        <div style={{ flex: 1, minWidth: 260 }}>
+          {drink.immagine ? (
+            <img src={drink.immagine} alt={drink.nome} style={{ width: "100%", borderRadius: 16, marginBottom: 20 }} />
+          ) : (
+            <div className="no-img-placeholder" style={{ marginBottom: 20 }}>NO IMG</div>
+          )}
+        </div>
+        <div style={{ flex: 2, minWidth: 260 }}>
+          <h1 style={{ fontSize: "2rem", color: "#4b2e1f", marginBottom: 10 }}>{drink.nome}</h1>
+          {drink.marca && <div style={{ color: "#666", marginBottom: 10 }}><b>Marca:</b> {drink.marca}</div>}
+          {drink.categoria && <div style={{ color: "#666", marginBottom: 10 }}><b>Categoria:</b> {drink.categoria}</div>}
+          {drink.gradazione && <div style={{ color: "#666", marginBottom: 10 }}><b>Gradazione:</b> {drink.gradazione}</div>}
+          {drink.descrizione && <div style={{ marginBottom: 16 }}>{drink.descrizione}</div>}
+          {drink.ingredienti && (
+            <div style={{ marginBottom: 16 }}>
+              <b>Ingredienti:</b>
+              <div>{drink.ingredienti}</div>
+            </div>
+          )}
+          {drink.ricetta && (
+            <div style={{ marginBottom: 16 }}>
+              <b>Ricetta:</b>
+              <div>{drink.ricetta}</div>
+            </div>
+          )}
+          {/* Mostra tutti gli altri campi utili */}
+          {Object.entries(drink)
+            .filter(
+              ([k, v]) =>
+                !["id", "nome", "immagine", "marca", "categoria", "gradazione", "descrizione", "ingredienti", "ricetta", "created_at", "updated_at"].includes(k) &&
+                v && String(v).trim().length > 0
+            )
+            .map(([k, v]) => (
+              <div key={k} style={{ marginBottom: 10 }}>
+                <b>{k.charAt(0).toUpperCase() + k.slice(1)}:</b> {String(v)}
+              </div>
+            ))}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 /* STILI ORIGINALI */
