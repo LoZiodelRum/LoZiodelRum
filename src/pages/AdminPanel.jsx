@@ -51,9 +51,9 @@ export default function AdminPanel() {
   const mobileSelect = {
     ...select,
     width: "100%",
-    maxWidth: 420,
+    maxWidth: "100vw",
     marginLeft: 0,
-    marginRight: "auto",
+    marginRight: 0,
     display: "block",
     fontSize: 18,
     padding: 16,
@@ -69,12 +69,14 @@ export default function AdminPanel() {
         @media (max-width: 600px) {
           .admin-section {
             margin-bottom: 40px !important;
+            margin-left: 0 !important;
+            padding-left: 0 !important;
           }
           .admin-select {
-            width: 100% !important;
-            max-width: 420px !important;
+            width: 100vw !important;
+            max-width: 100vw !important;
             margin-left: 0 !important;
-            margin-right: auto !important;
+            margin-right: 0 !important;
             display: block !important;
             font-size: 18px !important;
             padding: 16px !important;
@@ -95,7 +97,7 @@ export default function AdminPanel() {
               setSelectedLocale(loc);
             }}
           >
-            <option value="">Seleziona locale</option>
+            <option value="">Seleziona</option>
             {locali.map((l) => (
               <option key={l.id} value={String(l.id)}>
                 {l.nome}
@@ -113,7 +115,7 @@ export default function AdminPanel() {
             style={isMobile ? mobileSelect : select}
             onChange={e => setSelectedCocktail(cocktail.find(c => String(c.id) === String(e.target.value)))}
           >
-            <option value="">Seleziona cocktail</option>
+            <option value="">Seleziona</option>
             {cocktail.map(c => (
               <option key={c.id} value={String(c.id)}>{c.nome}</option>
             ))}
@@ -126,7 +128,7 @@ export default function AdminPanel() {
             style={isMobile ? mobileSelect : select}
             onChange={e => setSelectedDistillato(distillati.find(d => String(d.id) === String(e.target.value)))}
           >
-            <option value="">Seleziona distillato</option>
+            <option value="">Seleziona</option>
             {distillati.map(d => (
               <option key={d.id} value={String(d.id)}>{d.nome}</option>
             ))}
@@ -139,7 +141,7 @@ export default function AdminPanel() {
             style={isMobile ? mobileSelect : select}
             onChange={e => setSelectedVino(vini.find(v => String(v.id) === String(e.target.value)))}
           >
-            <option value="">Seleziona vino</option>
+            <option value="">Seleziona</option>
             {vini.map(v => (
               <option key={v.id} value={String(v.id)}>{v.nome}</option>
             ))}
