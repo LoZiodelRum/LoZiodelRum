@@ -1,4 +1,3 @@
-
 import React from "react";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
@@ -11,6 +10,7 @@ import Magazine from "./pages/Magazine";
 import Community from "./pages/Community";
 import Crea from "./pages/Crea";
 import AdminPanel from "./pages/AdminPanel.jsx";
+import VenueDetail from "./pages/VenueDetail";
 
 export default function App() {
   return (
@@ -24,6 +24,7 @@ export default function App() {
       <Route path="/community" element={<ProtectedRoute><Community /></ProtectedRoute>} />
       <Route path="/crea" element={<ProtectedRoute><Crea /></ProtectedRoute>} />
       <Route path="/admin" element={<ProtectedRoute><AdminPanel /></ProtectedRoute>} />
+      <Route path="/venue/:id" element={<ProtectedRoute><VenueDetail /></ProtectedRoute>} />
     </Routes>
   );
 }
