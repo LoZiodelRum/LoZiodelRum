@@ -1377,3 +1377,7 @@ body:has(.crea-page) {
   background-attachment: fixed;
   background-repeat: no-repeat;
 }
+.leaflet-marker-icon {
+  background: transparent !important;
+  border: none !important;
+}
