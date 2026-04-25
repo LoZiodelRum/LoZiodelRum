@@ -1,5 +1,6 @@
 
 
+
 import Navbar from "../components/Navbar";
 import "../App.css";
 import { useEffect, useState } from "react";
@@ -9,11 +10,21 @@ import { useNavigate } from "react-router-dom";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
+// Custom marker icon
 const customIcon = L.icon({
   iconUrl: "/marker.png",
-  iconSize: [55, 75],
-  iconAnchor: [27, 75],
-  popupAnchor: [0, -70],
+  iconRetinaUrl: "/marker.png",
+  iconSize: [50, 50],
+  iconAnchor: [25, 50],
+  popupAnchor: [0, -45],
+});
+
+// Disable default Leaflet icon
+delete (L.Icon.Default.prototype as any)._getIconUrl;
+L.Icon.Default.mergeOptions({
+  iconUrl: "/marker.png",
+  iconRetinaUrl: "/marker.png",
+  shadowUrl: "",
 });
 
 type Locale = {
@@ -69,17 +80,17 @@ export default function MapPage() {
         >
           <ZoomControl position="bottomleft" />
           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-          {locali.map((l) => {
-            const coords = getCoords(l);
+          {locali.map((locale) => {
+            const coords = getCoords(locale);
             if (!coords) return null;
             return (
-              <Marker key={l.id} position={coords} icon={customIcon}>
+              <Marker key={locale.id} position={coords} icon={customIcon}>
                 <Popup>
-                  <div style={{ minWidth: "200px" }}>
-                    <h3 style={{ marginBottom: "6px" }}>{l.nome}</h3>
-                    <p style={{ margin: 0, fontSize: "14px" }}>
-                      {l.indirizzo}{l.indirizzo && l.citta ? ", " : ""}{l.citta}
-                    </p>
+                  <div style={{ minWidth: 200 }}>
+                    <strong>{locale.nome}</strong>
+                    <div style={{ fontSize: 13, marginTop: 4 }}>
+                      {locale.indirizzo}, {locale.citta}
+                    </div>
                   </div>
                 </Popup>
               </Marker>
