@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+import Navbar from "../components/Navbar";
 import { supabase } from "../lib/supabaseClient";
 
 type Utente = {
@@ -55,6 +56,8 @@ export default function PannelloControllo() {
   }
 
   return (
+    <>
+      <Navbar />
     <div style={{ padding: 40 }}>
       <h1>Pannello di Controllo - Utenti</h1>
       {error && <div style={{ color: "red", marginBottom: 16 }}>{error}</div>}
@@ -115,5 +118,6 @@ export default function PannelloControllo() {
         </tbody>
       </table>
     </div>
+    </>
   );
 }

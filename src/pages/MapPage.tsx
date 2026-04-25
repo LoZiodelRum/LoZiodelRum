@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import Navbar from "../components/Navbar";
 import { MapContainer, TileLayer, Marker, ZoomControl } from "react-leaflet";
 import { X } from "lucide-react";
 import { supabase } from "../lib/supabaseClient";
@@ -65,6 +66,8 @@ export default function MapPage() {
   }
 
   return (
+    <>
+      <Navbar />
     <div style={{ height: "100vh", position: "relative" }}>
       <MapContainer
         center={mapCenter}
@@ -141,5 +144,6 @@ export default function MapPage() {
         )}
       </MapContainer>
     </div>
+    </>
   );
 }
