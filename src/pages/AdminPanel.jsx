@@ -56,8 +56,10 @@ export default function AdminPanel() {
   }
 
   return (
-    <div className="page fade-in" style={container}>
-      <h1 style={title}>Pannello di Controllo</h1>
+    <>
+      <Navbar />
+      <div className="page fade-in" style={container}>
+        <h1 style={title}>Pannello di Controllo</h1>
 
       {/* LOCALI */}
       <div style={section}>
