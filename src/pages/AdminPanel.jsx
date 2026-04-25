@@ -38,7 +38,7 @@ export default function AdminPanel() {
       setUtenti(utRes.data || []);
       setBartender(baRes.data || []);
       setProprietari(prRes.data || []);
-      setLocali(loRes.data || []);
+      setLocali((loRes.data || []).slice().sort((a, b) => (a.nome || '').localeCompare(b.nome || '')));
       setArticoli(arRes.data || []);
       setCocktail((coRes.data || []).slice().sort((a, b) => (a.nome || '').localeCompare(b.nome || '')));
       setDistillati((diRes.data || []).slice().sort((a, b) => (a.nome || '').localeCompare(b.nome || '')));
