@@ -12,11 +12,34 @@ export default function CategoryVini() {
   useEffect(() => {
     async function load() {
       setLoading(true);
-      const { data } = await supabase
-        .from("vini")
-        .select("*")
-        .ilike("categoria", `%${categoria || ""}%`);
-      setVini(data || []);
+      // Mappa i parametri url ai valori reali del db
+      let dbCategoria = categoria;
+      if (categoria) {
+        if (categoria.toLowerCase() === "rossi") dbCategoria = "Rosso";
+        else if (categoria.toLowerCase() === "bianchi") dbCategoria = "Bianco";
+        else if (categoria.toLowerCase() === "rosati") dbCategoria = "Rosato";
+        else if (categoria.toLowerCase() === "bollicine") dbCategoria = "Bollicine";
+        else if (categoria.toLowerCase() === "altri-vini") dbCategoria = null; // gestito sotto
+      }
+      let data = [];
+      if (dbCategoria) {
+        const res = await supabase
+          .from("vini")
+          .select("*")
+          .ilike("categoria", `%${dbCategoria}%`);
+        data = res.data || [];
+      } else if (categoria && categoria.toLowerCase() === "altri-vini") {
+        // Escludi tutte le categorie principali
+        const res = await supabase
+          .from("vini")
+          .select("*")
+          .not("categoria", "ilike", "%Rosso%")
+          .not("categoria", "ilike", "%Bianco%")
+          .not("categoria", "ilike", "%Rosato%")
+          .not("categoria", "ilike", "%Bollicine%")
+        data = res.data || [];
+      }
+      setVini(data);
       setLoading(false);
     }
     load();
