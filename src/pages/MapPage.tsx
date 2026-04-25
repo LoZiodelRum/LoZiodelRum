@@ -11,8 +11,8 @@ import "leaflet/dist/leaflet.css";
 
 const customIcon = L.icon({
   iconUrl: "/marker.png",
-  iconSize: [50, 70],
-  iconAnchor: [25, 70],
+  iconSize: [55, 75],
+  iconAnchor: [27, 75],
   popupAnchor: [0, -70],
 });
 
@@ -74,38 +74,12 @@ export default function MapPage() {
             if (!coords) return null;
             return (
               <Marker key={l.id} position={coords} icon={customIcon}>
-                <Popup minWidth={280} maxWidth={340}>
-                  <div
-                    onClick={() => navigate(`/venue/${l.id}`)}
-                    style={{
-                      cursor: "pointer",
-                      width: "min(70vw, 18rem)",
-                      background: "transparent",
-                      boxShadow: "none",
-                      border: "none",
-                      padding: 0,
-                    }}
-                  >
-                    {l.image_url && (
-                      <img
-                        src={l.image_url}
-                        style={{
-                          width: "100%",
-                          height: "clamp(5.5rem, 16vw, 7.5rem)",
-                          objectFit: "cover",
-                          borderRadius: 16,
-                          marginBottom: 10,
-                          display: "block"
-                        }}
-                      />
-                    )}
-                    <div style={{ display: "flex", alignItems: "center", gap: 8, marginBottom: 2 }}>
-                      <h3 style={{ margin: 0, color: "#f5a623", fontSize: 20, fontWeight: 700 }}>{l.nome}</h3>
-                      {l.indirizzo && (
-                        <span style={{ color: "#222", fontSize: 15, fontWeight: 500, marginLeft: 8 }}>{l.indirizzo}</span>
-                      )}
-                    </div>
-                    <p style={{ margin: 0, color: "#555", fontSize: 15 }}>{l.citta}</p>
+                <Popup>
+                  <div style={{ minWidth: "200px" }}>
+                    <h3 style={{ marginBottom: "6px" }}>{l.nome}</h3>
+                    <p style={{ margin: 0, fontSize: "14px" }}>
+                      {l.indirizzo}{l.indirizzo && l.citta ? ", " : ""}{l.citta}
+                    </p>
                   </div>
                 </Popup>
               </Marker>
