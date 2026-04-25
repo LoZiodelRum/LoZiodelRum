@@ -15,8 +15,7 @@ const customIcon = L.icon({
   iconUrl: "/marker.png",
   iconSize: [40, 50],
   iconAnchor: [20, 50],
-  popupAnchor: [0, -45],
-  className: "custom-marker"
+  popupAnchor: [0, -45]
 });
 
 // Fix Leaflet default icon
