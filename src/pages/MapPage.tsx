@@ -75,60 +75,23 @@ export default function MapPage() {
 
   return (
     <div style={{ height: "100vh", position: "relative" }}>
-
-      {/* SEARCH */}
-      <div style={{
-        position: "absolute",
-        top: 20,
-        left: 20,
-        right: 20,
-        zIndex: 1000,
-        display: "flex",
-        gap: 10
-      }}>
-        <input
-          placeholder="Cerca città o locale..."
-          value={searchQuery}
-          onChange={(e) => setSearchQuery(e.target.value)}
-          style={{
-            flex: 1,
-            padding: "10px",
-            borderRadius: "8px",
-            border: "1px solid #333",
-            background: "#111",
-            color: "#fff"
-          }}
-        />
-
-        <button
-          onClick={() => setSearchQuery("")}
-          style={{
-            padding: "10px",
-            borderRadius: "8px",
-            background: "#222",
-            color: "#fff",
-            border: "none",
-            cursor: "pointer"
-          }}
-        >
-          Reset
-        </button>
-      </div>
-
-      {/* MAPPA */}
       <MapContainer
         center={mapCenter}
         zoom={6}
         style={{ height: "100%", width: "100%" }}
+        zoomControl={false}
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-
-        {filteredVenues.map((venue) => (
+        {venues.map((venue) => (
           <Marker
             key={venue.id}
             position={[venue.latitudine, venue.longitudine]}
             icon={customIcon}
+            eventHandlers={{
+              click: () => window.location.href = `/locale/${venue.id}`
+            }}
           >
+            {/* Anteprima sopra il marker */}
             <div
               style={{
                 position: "absolute",
@@ -161,23 +124,9 @@ export default function MapPage() {
             </div>
           </Marker>
         ))}
+        {/* Zoom control in basso a sinistra */}
+        <ZoomControl position="bottomleft" />
       </MapContainer>
-
-      {/* CONTATORE */}
-      <div style={{
-        position: "absolute",
-        bottom: 20,
-        left: 20,
-        background: "#000",
-        padding: "10px",
-        borderRadius: "8px",
-        color: "#fff",
-        zIndex: 1000
-      }}>
-        {filteredVenues.length} locali
-      </div>
-
-      {/* CARD DETTAGLIO rimossa: anteprima ora direttamente sopra ogni marker, cliccabile */}
     </div>
   );
 }
