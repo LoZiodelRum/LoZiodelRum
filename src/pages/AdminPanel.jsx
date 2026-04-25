@@ -14,19 +14,70 @@ export default function AdminPanel() {
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedLocale, setSelectedLocale] = useState(null);
   const [selectedArticolo, setSelectedArticolo] = useState(null);
-
   const [newArticle, setNewArticle] = useState(false);
+
+  // Carica dati menu a tendina
+  useEffect(() => {
+    async function fetchAll() {
+      const [utRes, baRes, prRes, loRes, arRes] = await Promise.all([
+        supabase.from("Profili").select("*"),
+        supabase.from("Profili").select("*").ilike("ruolo", "%bartender%"),
+        supabase.from("Profili").select("*").ilike("ruolo", "%proprietario%"),
+        supabase.from("Locali").select("*"),
+        supabase.from("articoli").select("*"),
+      ]);
+      setUtenti(utRes.data || []);
+      setBartender(baRes.data || []);
+      setProprietari(prRes.data || []);
+      setLocali(loRes.data || []);
+      setArticoli(arRes.data || []);
+    }
+    fetchAll();
+  }, []);
+
+  // Stili responsive per select
+  const mobileSelect = {
+    ...select,
+    width: "100%",
+    maxWidth: 420,
+    marginLeft: 0,
+    marginRight: "auto",
+    display: "block",
+    fontSize: 18,
+    padding: 16,
+  };
+
+  // Rileva mobile
+  const isMobile = window.innerWidth <= 600;
+
   return (
     <>
       <Navbar />
+      <style>{`
+        @media (max-width: 600px) {
+          .admin-section {
+            margin-bottom: 40px !important;
+          }
+          .admin-select {
+            width: 100% !important;
+            max-width: 420px !important;
+            margin-left: 0 !important;
+            margin-right: auto !important;
+            display: block !important;
+            font-size: 18px !important;
+            padding: 16px !important;
+          }
+        }
+      `}</style>
       <div className="page fade-in" style={container}>
         <h1 style={title}>Pannello di Controllo</h1>
 
         {/* LOCALI */}
-        <div style={section}>
+        <div className="admin-section" style={section}>
           <h2 style={orangeTitle}>Locali</h2>
           <select
-            style={select}
+            className="admin-select"
+            style={isMobile ? mobileSelect : select}
             onChange={(e) => {
               const loc = locali.find((l) => String(l.id) === String(e.target.value));
               setSelectedLocale(loc);
@@ -40,15 +91,16 @@ export default function AdminPanel() {
             ))}
           </select>
           {selectedLocale && (
-            <LocaleFullCard locale={selectedLocale} refresh={fetchAll} />
+            <LocaleFullCard locale={selectedLocale} refresh={() => {}} />
           )}
         </div>
 
         {/* UTENTI */}
-        <div style={section}>
+        <div className="admin-section" style={section}>
           <h2 style={orangeTitle}>Utenti</h2>
           <select
-            style={select}
+            className="admin-select"
+            style={isMobile ? mobileSelect : select}
             onChange={(e) => {
               const u = utenti.find((x) => String(x.id) === String(e.target.value));
               setSelectedUser(u);
@@ -62,14 +114,17 @@ export default function AdminPanel() {
             ))}
           </select>
           {selectedUser && (
-            <UserFullCard user={selectedUser} refresh={fetchAll} />
+            <UserFullCard user={selectedUser} refresh={() => {}} />
           )}
         </div>
 
         {/* BARTENDER */}
-        <div style={section}>
+        <div className="admin-section" style={section}>
           <h2 style={orangeTitle}>Bartender</h2>
-          <select style={select}>
+          <select
+            className="admin-select"
+            style={isMobile ? mobileSelect : select}
+          >
             <option>Seleziona bartender</option>
             {bartender.map((b) => (
               <option key={b.id}>{b.nome}</option>
@@ -78,9 +133,12 @@ export default function AdminPanel() {
         </div>
 
         {/* PROPRIETARI */}
-        <div style={section}>
+        <div className="admin-section" style={section}>
           <h2 style={orangeTitle}>Proprietari</h2>
-          <select style={select}>
+          <select
+            className="admin-select"
+            style={isMobile ? mobileSelect : select}
+          >
             <option>Seleziona proprietario</option>
             {proprietari.map((p) => (
               <option key={p.id}>{p.nome}</option>
@@ -89,10 +147,11 @@ export default function AdminPanel() {
         </div>
 
         {/* ARTICOLI */}
-        <div style={section}>
+        <div className="admin-section" style={section}>
           <h2 style={orangeTitle}>Articoli</h2>
           <select
-            style={select}
+            className="admin-select"
+            style={isMobile ? mobileSelect : select}
             value={selectedArticolo ? String(selectedArticolo.id) : ""}
             onChange={(e) => {
               const value = e.target.value;
@@ -109,7 +168,7 @@ export default function AdminPanel() {
             ))}
           </select>
           {selectedArticolo && (
-            <ArticleFullCard articolo={selectedArticolo} refresh={fetchAll} />
+            <ArticleFullCard articolo={selectedArticolo} refresh={() => {}} />
           )}
         </div>
       </div>
