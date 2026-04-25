@@ -5,6 +5,7 @@ import Auth from "./pages/Auth";
 import ProtectedRoute from "./pages/ProtectedRoute";
 import MapPage from "./pages/MapPage";
 import Drink from "./pages/Drink";
+import DrinkDetail from "./pages/DrinkDetail";
 import Vini from "./pages/Vini";
 import Magazine from "./pages/Magazine";
 import Community from "./pages/Community";
@@ -19,6 +20,7 @@ export default function App() {
       <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
       <Route path="/mappa" element={<ProtectedRoute><MapPage /></ProtectedRoute>} />
       <Route path="/drink" element={<ProtectedRoute><Drink /></ProtectedRoute>} />
+      <Route path="/drink/:id" element={<ProtectedRoute><DrinkDetail /></ProtectedRoute>} />
       <Route path="/vini" element={<ProtectedRoute><Vini /></ProtectedRoute>} />
       <Route path="/magazine" element={<ProtectedRoute><Magazine /></ProtectedRoute>} />
       <Route path="/community" element={<ProtectedRoute><Community /></ProtectedRoute>} />
