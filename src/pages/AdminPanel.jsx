@@ -10,6 +10,12 @@ export default function AdminPanel() {
   const [proprietari, setProprietari] = useState([]);
   const [locali, setLocali] = useState([]);
   const [articoli, setArticoli] = useState([]);
+  const [cocktail, setCocktail] = useState([]);
+  const [distillati, setDistillati] = useState([]);
+  const [vini, setVini] = useState([]);
+  const [selectedCocktail, setSelectedCocktail] = useState(null);
+  const [selectedDistillato, setSelectedDistillato] = useState(null);
+  const [selectedVino, setSelectedVino] = useState(null);
 
   const [selectedUser, setSelectedUser] = useState(null);
   const [selectedLocale, setSelectedLocale] = useState(null);
@@ -19,18 +25,24 @@ export default function AdminPanel() {
   // Carica dati menu a tendina
   useEffect(() => {
     async function fetchAll() {
-      const [utRes, baRes, prRes, loRes, arRes] = await Promise.all([
+      const [utRes, baRes, prRes, loRes, arRes, coRes, diRes, viRes] = await Promise.all([
         supabase.from("Profili").select("*"),
         supabase.from("Profili").select("*").ilike("ruolo", "%bartender%"),
         supabase.from("Profili").select("*").ilike("ruolo", "%proprietario%"),
         supabase.from("Locali").select("*"),
         supabase.from("articoli").select("*"),
+        supabase.from("cocktail").select("*"),
+        supabase.from("distillati").select("*"),
+        supabase.from("vini").select("*"),
       ]);
       setUtenti(utRes.data || []);
       setBartender(baRes.data || []);
       setProprietari(prRes.data || []);
       setLocali(loRes.data || []);
       setArticoli(arRes.data || []);
+      setCocktail(coRes.data || []);
+      setDistillati(diRes.data || []);
+      setVini(viRes.data || []);
     }
     fetchAll();
   }, []);
@@ -72,7 +84,7 @@ export default function AdminPanel() {
       <div className="page fade-in" style={container}>
         <h1 style={title}>Pannello di Controllo</h1>
 
-        {/* LOCALI */}
+        {/* LOCALI E MENU DRINK */}
         <div className="admin-section" style={section}>
           <h2 style={orangeTitle}>Locali</h2>
           <select
@@ -93,6 +105,45 @@ export default function AdminPanel() {
           {selectedLocale && (
             <LocaleFullCard locale={selectedLocale} refresh={() => {}} />
           )}
+
+          {/* COCKTAIL */}
+          <h2 style={{...orangeTitle, marginTop: 32}}>Cocktail</h2>
+          <select
+            className="admin-select"
+            style={isMobile ? mobileSelect : select}
+            onChange={e => setSelectedCocktail(cocktail.find(c => String(c.id) === String(e.target.value)))}
+          >
+            <option value="">Seleziona cocktail</option>
+            {cocktail.map(c => (
+              <option key={c.id} value={String(c.id)}>{c.nome}</option>
+            ))}
+          </select>
+
+          {/* DISTILLATI */}
+          <h2 style={{...orangeTitle, marginTop: 32}}>Distillati</h2>
+          <select
+            className="admin-select"
+            style={isMobile ? mobileSelect : select}
+            onChange={e => setSelectedDistillato(distillati.find(d => String(d.id) === String(e.target.value)))}
+          >
+            <option value="">Seleziona distillato</option>
+            {distillati.map(d => (
+              <option key={d.id} value={String(d.id)}>{d.nome}</option>
+            ))}
+          </select>
+
+          {/* VINI */}
+          <h2 style={{...orangeTitle, marginTop: 32}}>Vini</h2>
+          <select
+            className="admin-select"
+            style={isMobile ? mobileSelect : select}
+            onChange={e => setSelectedVino(vini.find(v => String(v.id) === String(e.target.value)))}
+          >
+            <option value="">Seleziona vino</option>
+            {vini.map(v => (
+              <option key={v.id} value={String(v.id)}>{v.nome}</option>
+            ))}
+          </select>
         </div>
 
         {/* UTENTI */}
