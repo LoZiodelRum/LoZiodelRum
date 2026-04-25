@@ -1,7 +1,3 @@
-      <li>
-        <Link to="/community" className="nav-link">Community</Link>
-      </li>
-
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import { supabase } from "../lib/supabaseClient";
@@ -22,12 +18,13 @@ export default function Navbar() {
     return location.pathname.startsWith(path);
   }
 
+
   function linkStyle(path: string) {
     return {
       color: isActive(path) ? "#f5a623" : "#fff",
       textDecoration: "none",
       fontWeight: isActive(path) ? 700 : 400,
-    } as const;
+    }
   }
 
   async function handleLogout() {
@@ -72,7 +69,12 @@ export default function Navbar() {
           navigate("/");
         }}
       >
-        <img src="/logo.png" alt="Logo" className="logo" style={{ height: 38, width: 38, objectFit: "contain" }} />
+        <img
+          src="/logo.png"
+          alt="Logo"
+          className="logo"
+          style={{ height: 38, width: 38, objectFit: "contain" }}
+        />
         <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.1 }}>
           <span style={{ fontWeight: 700, fontSize: 23 }}>DrinkWise</span>
           <span style={{ fontSize: 11, opacity: 0.7 }}>by</span>
@@ -80,7 +82,7 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* BLOCCO DESTRA: LINK */}
+      {/* BLOCCO DESTRA */}
       <div
         style={{
           display: "flex",
@@ -96,9 +98,13 @@ export default function Navbar() {
         <Link to="/magazine" style={linkStyle("/magazine")}>Magazine</Link>
         <Link to="/community" style={linkStyle("/community")}>Community</Link>
         <Link to="/crea" style={linkStyle("/crea")}>Crea</Link>
+
         {isAdmin && (
-          <Link to="/admin" style={linkStyle("/admin")}>Pannello di Controllo</Link>
+          <Link to="/admin" style={linkStyle("/admin")}>
+            Pannello di Controllo
+          </Link>
         )}
+
         {user && (
           <button
             onClick={handleLogout}
@@ -114,26 +120,34 @@ export default function Navbar() {
             Logout
           </button>
         )}
+
+        {/* MENU HAMBURGER */}
+        <button
+          onClick={() => setMenuOpen((prev) => !prev)}
+          aria-label="Apri menu"
+          style={{
+            background: "none",
+            border: "none",
+            color: "#f5a623",
+            fontSize: "28px",
+            cursor: "pointer",
+            padding: 0,
+            marginLeft: 10,
+          }}
+        >
+          ☰
+        </button>
       </div>
-    </nav>
-  );
-}
-        onClick={() => setMenuOpen((prev) => !prev)}
-        aria-label="Apri menu"
-        style={{
-          background: "none",
-          border: "none",
-          color: "#f5a623",
-          fontSize: "28px",
-          cursor: "pointer",
-          padding: 0,
-        }}
-      >
-        ☰
-      </button>
 
-      {menuOpen && <div className="mobile-menu-overlay" onClick={closeMobileMenu} />}
+      {/* OVERLAY */}
+      {menuOpen && (
+        <div
+          className="mobile-menu-overlay"
+          onClick={closeMobileMenu}
+        />
+      )}
 
+      {/* MOBILE MENU */}
       <div
         className="mobile-menu"
         style={{
@@ -146,7 +160,6 @@ export default function Navbar() {
           background: "rgba(0,0,0,0.97)",
           display: "flex",
           flexDirection: "column",
-          gap: 0,
           padding: "18px",
           zIndex: 1100,
           transition: "right 0.3s ease",
@@ -154,7 +167,7 @@ export default function Navbar() {
           borderLeft: "1px solid #333",
         }}
       >
-        <Link to="/" onClick={closeMobileMenu} style={{ ...linkStyle("/"), padding: "12px 0", borderBottom: "1px solid #333" }}>Home</Link>
+        <Link to="/home" onClick={closeMobileMenu} style={{ ...linkStyle("/home"), padding: "12px 0", borderBottom: "1px solid #333" }}>Home</Link>
         <Link to="/mappa" onClick={closeMobileMenu} style={{ ...linkStyle("/mappa"), padding: "12px 0", borderBottom: "1px solid #333" }}>Mappa</Link>
         <Link to="/drink" onClick={closeMobileMenu} style={{ ...linkStyle("/drink"), padding: "12px 0", borderBottom: "1px solid #333" }}>Drink</Link>
         <Link to="/vini" onClick={closeMobileMenu} style={{ ...linkStyle("/vini"), padding: "12px 0", borderBottom: "1px solid #333" }}>Vini</Link>
@@ -162,9 +175,10 @@ export default function Navbar() {
         <Link to="/community" onClick={closeMobileMenu} style={{ ...linkStyle("/community"), padding: "12px 0", borderBottom: "1px solid #333" }}>Community</Link>
         <Link to="/crea" onClick={closeMobileMenu} style={{ ...linkStyle("/crea"), padding: "12px 0", borderBottom: "1px solid #333" }}>Crea</Link>
 
-        {/* Mostra il pannello di controllo solo se admin (mobile) */}
         {isAdmin && (
-          <Link to="/admin" onClick={closeMobileMenu} style={{ ...linkStyle("/admin"), padding: "12px 0", borderBottom: "1px solid #333" }}>Pannello di Controllo</Link>
+          <Link to="/admin" onClick={closeMobileMenu} style={{ ...linkStyle("/admin"), padding: "12px 0", borderBottom: "1px solid #333" }}>
+            Pannello di Controllo
+          </Link>
         )}
 
         {user && (
@@ -184,8 +198,6 @@ export default function Navbar() {
           </button>
         )}
       </div>
-
-      {/* ...modale admin rimossa... */}
     </nav>
   );
 }
