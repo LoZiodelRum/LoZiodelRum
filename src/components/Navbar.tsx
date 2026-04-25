@@ -1,7 +1,7 @@
       <li>
         <Link to="/community" className="nav-link">Community</Link>
       </li>
-import "../App.css";
+
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import { supabase } from "../lib/supabaseClient";
@@ -11,9 +11,6 @@ export default function Navbar() {
   const { user, isAdmin } = useUser();
   const navigate = useNavigate();
   const location = useLocation();
-
-  const [showAdmin, setShowAdmin] = useState(false);
-  const [adminPass, setAdminPass] = useState("");
   const [menuOpen, setMenuOpen] = useState(false);
 
   function closeMobileMenu() {
@@ -40,8 +37,6 @@ export default function Navbar() {
     window.location.reload();
   }
 
-  // Funzioni admin rimosse definitivamente
-
   return (
     <nav
       className="nav-container"
@@ -54,46 +49,44 @@ export default function Navbar() {
         color: "#fff",
         minHeight: "70px",
         display: "flex",
-        alignItems: "center",
         justifyContent: "space-between",
+        alignItems: "center",
         padding: "12px 20px",
         zIndex: 9999,
         backdropFilter: "blur(10px)",
         boxShadow: "0 2px 16px #000a",
       }}
     >
+      {/* BLOCCO SINISTRO */}
       <div
-        className="nav-logo"
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+          marginRight: 40,
+          cursor: "pointer",
+          flexShrink: 0,
+        }}
         onClick={() => {
           closeMobileMenu();
           navigate("/");
         }}
-        style={{
-          display: "flex",
-          alignItems: "center",
-          gap: "0",
-          cursor: "pointer",
-          flexShrink: 0,
-        }}
       >
-        <img src="/logo.png" alt="Logo" className="logo" />
-        <span
-          style={{
-            fontWeight: "bold",
-            color: "#f5a623",
-            fontSize: "clamp(0.85rem, 1.7vw, 1.05rem)",
-            whiteSpace: "nowrap",
-          }}
-        >
-          DrinkWise <span style={{ color: "#fff" }}>by</span> Lo Zio del Rum
-        </span>
+        <img src="/logo.png" alt="Logo" className="logo" style={{ height: 38, width: 38, objectFit: "contain" }} />
+        <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.1 }}>
+          <span style={{ fontWeight: 700, fontSize: 23 }}>DrinkWise</span>
+          <span style={{ fontSize: 11, opacity: 0.7 }}>by</span>
+          <span style={{ fontWeight: 500, fontSize: 15 }}>Lo Zio del Rum</span>
+        </div>
       </div>
 
+      {/* BLOCCO DESTRA: LINK */}
       <div
-        className="nav-menu-desktop"
         style={{
-          gap: "20px",
+          display: "flex",
+          gap: 22,
           alignItems: "center",
+          marginLeft: "auto",
         }}
       >
         <Link to="/home" style={linkStyle("/home")}>Home</Link>
@@ -103,12 +96,9 @@ export default function Navbar() {
         <Link to="/magazine" style={linkStyle("/magazine")}>Magazine</Link>
         <Link to="/community" style={linkStyle("/community")}>Community</Link>
         <Link to="/crea" style={linkStyle("/crea")}>Crea</Link>
-
-        {/* Mostra il pannello di controllo solo se admin */}
         {isAdmin && (
           <Link to="/admin" style={linkStyle("/admin")}>Pannello di Controllo</Link>
         )}
-
         {user && (
           <button
             onClick={handleLogout}
@@ -118,15 +108,16 @@ export default function Navbar() {
               color: "#fff",
               cursor: "pointer",
               padding: 0,
+              font: "inherit",
             }}
           >
             Logout
           </button>
         )}
       </div>
-
-      <button
-        className="hamburger-btn"
+    </nav>
+  );
+}
         onClick={() => setMenuOpen((prev) => !prev)}
         aria-label="Apri menu"
         style={{
