@@ -10,21 +10,21 @@ import { useNavigate } from "react-router-dom";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 
-// Custom marker icon
+// Custom marker icon (sostituito come richiesto)
 const customIcon = L.icon({
   iconUrl: "/marker.png",
-  iconRetinaUrl: "/marker.png",
-  iconSize: [50, 50],
-  iconAnchor: [25, 50],
+  iconSize: [40, 50],
+  iconAnchor: [20, 50],
   popupAnchor: [0, -45],
+  className: "custom-marker"
 });
 
-// Disable default Leaflet icon
+// Fix Leaflet default icon
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 L.Icon.Default.mergeOptions({
   iconUrl: "/marker.png",
   iconRetinaUrl: "/marker.png",
-  shadowUrl: "",
+  shadowUrl: ""
 });
 
 type Locale = {
@@ -81,10 +81,19 @@ export default function MapPage() {
           <ZoomControl position="bottomleft" />
           <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
           {locali.map((locale) => {
-            const coords = getCoords(locale);
-            if (!coords) return null;
+            // FIX posizione marker: usa lat/lng come richiesto
+            const latRaw = locale.latitudine;
+            const lngRaw = locale.longitudine;
+            if (!latRaw || !lngRaw) return null;
+            const lat = Number(String(latRaw).replace(",", ".").trim());
+            const lng = Number(String(lngRaw).replace(",", ".").trim());
+            if (isNaN(lat) || isNaN(lng)) return null;
             return (
-              <Marker key={locale.id} position={coords} icon={customIcon}>
+              <Marker
+                key={locale.id}
+                position={[lat, lng]}
+                icon={customIcon}
+              >
                 <Popup>
                   <div style={{ minWidth: 200 }}>
                     <strong>{locale.nome}</strong>
