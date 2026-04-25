@@ -84,6 +84,7 @@ export default function Navbar() {
 
       {/* BLOCCO DESTRA */}
       <div
+        className="navbar-links-desktop"
         style={{
           display: "flex",
           gap: 22,
@@ -100,7 +101,7 @@ export default function Navbar() {
         <Link to="/crea" style={linkStyle("/crea")}>Crea</Link>
 
         {isAdmin && (
-          <Link to="/admin" style={linkStyle("/admin")}>
+          <Link to="/admin" style={linkStyle("/admin")}> 
             Pannello di Controllo
           </Link>
         )}
@@ -120,24 +121,26 @@ export default function Navbar() {
             Logout
           </button>
         )}
-
-        {/* MENU HAMBURGER */}
-        <button
-          onClick={() => setMenuOpen((prev) => !prev)}
-          aria-label="Apri menu"
-          style={{
-            background: "none",
-            border: "none",
-            color: "#f5a623",
-            fontSize: "28px",
-            cursor: "pointer",
-            padding: 0,
-            marginLeft: 10,
-          }}
-        >
-          ☰
-        </button>
       </div>
+
+      {/* MENU HAMBURGER SOLO MOBILE */}
+      <button
+        className="navbar-hamburger-mobile"
+        onClick={() => setMenuOpen((prev) => !prev)}
+        aria-label="Apri menu"
+        style={{
+          background: "none",
+          border: "none",
+          color: "#f5a623",
+          fontSize: "28px",
+          cursor: "pointer",
+          padding: 0,
+          marginLeft: 10,
+          display: "none"
+        }}
+      >
+        ☰
+      </button>
 
       {/* OVERLAY */}
       {menuOpen && (
@@ -147,7 +150,7 @@ export default function Navbar() {
         />
       )}
 
-      {/* MOBILE MENU */}
+      {/* MOBILE MENU SOLO MOBILE */}
       <div
         className="mobile-menu"
         style={{
@@ -158,7 +161,7 @@ export default function Navbar() {
           maxWidth: "320px",
           height: "calc(100vh - 70px)",
           background: "rgba(0,0,0,0.97)",
-          display: "flex",
+          display: "none",
           flexDirection: "column",
           padding: "18px",
           zIndex: 1100,
@@ -198,6 +201,20 @@ export default function Navbar() {
           </button>
         )}
       </div>
+
+      {/* STYLE RESPONSIVE */}
+      <style>{`
+        @media (max-width: 900px) {
+          .navbar-links-desktop { display: none !important; }
+          .navbar-hamburger-mobile { display: block !important; }
+          .mobile-menu { display: flex !important; }
+        }
+        @media (min-width: 901px) {
+          .navbar-links-desktop { display: flex !important; }
+          .navbar-hamburger-mobile { display: none !important; }
+          .mobile-menu { display: none !important; }
+        }
+      `}</style>
     </nav>
   );
 }
