@@ -16,110 +16,105 @@ export default function AdminPanel() {
   const [selectedArticolo, setSelectedArticolo] = useState(null);
 
   const [newArticle, setNewArticle] = useState(false);
-
-  useEffect(() => {
-    fetchAll();
-  }, []);
-
-  async function fetchAll() {
-    try {
-      const { data: profili, error: profiliError } = await supabase.from("Profili").select("*");
-      if (profiliError) console.error("Errore Profili:", profiliError);
-      else console.log("Profili:", profili);
-
-      if (profili) {
-        setUtenti(profili.filter((u) => u.ruolo === "utente"));
-        setBartender(profili.filter((u) => u.ruolo === "bartender"));
-        setProprietari(profili.filter((u) => u.ruolo === "proprietario"));
-      }
-
-      const { data: localiData, error: localiError } = await supabase
-        .from("Locali")
-        .select("*")
-        .order("nome", { ascending: true });
-      if (localiError) console.error("Errore Locali:", localiError);
-      else console.log("Locali:", localiData);
-
-      if (localiData) setLocali(localiData);
-
-      const { data: articoliData, error: articoliError } = await supabase
-        .from("articoli")
-        .select("*")
-        .order("data_creazione", { ascending: false });
-      if (articoliError) console.error("Errore Articoli:", articoliError);
-      else console.log("Articoli:", articoliData);
-
-      if (articoliData) setArticoli(articoliData);
-    } catch (err) {
-      console.error("Errore fetchAll:", err);
-    }
-  }
-
   return (
     <>
       <Navbar />
       <div className="page fade-in" style={container}>
         <h1 style={title}>Pannello di Controllo</h1>
 
-      {/* LOCALI */}
-      <div style={section}>
-        <h2 style={orangeTitle}>Locali</h2>
+        {/* LOCALI */}
+        <div style={section}>
+          <h2 style={orangeTitle}>Locali</h2>
+          <select
+            style={select}
+            onChange={(e) => {
+              const loc = locali.find((l) => String(l.id) === String(e.target.value));
+              setSelectedLocale(loc);
+            }}
+          >
+            <option value="">Seleziona locale</option>
+            {locali.map((l) => (
+              <option key={l.id} value={String(l.id)}>
+                {l.nome}
+              </option>
+            ))}
+          </select>
+          {selectedLocale && (
+            <LocaleFullCard locale={selectedLocale} refresh={fetchAll} />
+          )}
+        </div>
 
-        <select
-          style={select}
-          onChange={(e) => {
-            const loc = locali.find((l) => String(l.id) === String(e.target.value));
-            setSelectedLocale(loc);
-          }}
-        >
-          <option value="">Seleziona locale</option>
-          {locali.map((l) => (
-            <option key={l.id} value={String(l.id)}>
-              {l.nome}
-            </option>
-          ))}
-        </select>
+        {/* UTENTI */}
+        <div style={section}>
+          <h2 style={orangeTitle}>Utenti</h2>
+          <select
+            style={select}
+            onChange={(e) => {
+              const u = utenti.find((x) => String(x.id) === String(e.target.value));
+              setSelectedUser(u);
+            }}
+          >
+            <option value="">Seleziona utente</option>
+            {utenti.map((u) => (
+              <option key={u.id} value={String(u.id)}>
+                {u.nome || u.email}
+              </option>
+            ))}
+          </select>
+          {selectedUser && (
+            <UserFullCard user={selectedUser} refresh={fetchAll} />
+          )}
+        </div>
 
-        {selectedLocale && (
-          <LocaleFullCard locale={selectedLocale} refresh={fetchAll} />
-        )}
+        {/* BARTENDER */}
+        <div style={section}>
+          <h2 style={orangeTitle}>Bartender</h2>
+          <select style={select}>
+            <option>Seleziona bartender</option>
+            {bartender.map((b) => (
+              <option key={b.id}>{b.nome}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* PROPRIETARI */}
+        <div style={section}>
+          <h2 style={orangeTitle}>Proprietari</h2>
+          <select style={select}>
+            <option>Seleziona proprietario</option>
+            {proprietari.map((p) => (
+              <option key={p.id}>{p.nome}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* ARTICOLI */}
+        <div style={section}>
+          <h2 style={orangeTitle}>Articoli</h2>
+          <select
+            style={select}
+            value={selectedArticolo ? String(selectedArticolo.id) : ""}
+            onChange={(e) => {
+              const value = e.target.value;
+              const art = articoli.find((a) => String(a.id) === String(value));
+              setSelectedArticolo(art);
+              setNewArticle(false);
+            }}
+          >
+            <option value="">Seleziona articolo</option>
+            {articoli.map((a) => (
+              <option key={a.id} value={String(a.id)}>
+                {a.titolo}
+              </option>
+            ))}
+          </select>
+          {selectedArticolo && (
+            <ArticleFullCard articolo={selectedArticolo} refresh={fetchAll} />
+          )}
+        </div>
       </div>
-
-      {/* UTENTI */}
-      <div style={section}>
-        <h2 style={orangeTitle}>Utenti</h2>
-
-        <select
-          style={select}
-          onChange={(e) => {
-            const u = utenti.find((x) => String(x.id) === String(e.target.value));
-            setSelectedUser(u);
-          }}
-        >
-          <option value="">Seleziona utente</option>
-          {utenti.map((u) => (
-            <option key={u.id} value={String(u.id)}>
-              {u.nome || u.email}
-            </option>
-          ))}
-        </select>
-
-        {selectedUser && (
-          <UserFullCard user={selectedUser} refresh={fetchAll} />
-        )}
-      </div>
-
-      {/* BARTENDER */}
-      <div style={section}>
-        <h2 style={orangeTitle}>Bartender</h2>
-        <select style={select}>
-          <option>Seleziona bartender</option>
-          {bartender.map((b) => (
-            <option key={b.id}>{b.nome}</option>
-          ))}
-        </select>
-      </div>
-
+    </>
+  );
       {/* PROPRIETARI */}
       <div style={section}>
         <h2 style={orangeTitle}>Proprietari</h2>
