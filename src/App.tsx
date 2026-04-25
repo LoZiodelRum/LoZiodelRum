@@ -7,6 +7,7 @@ import MapPage from "./pages/MapPage";
 import Drink from "./pages/Drink";
 import DrinkDetail from "./pages/DrinkDetail";
 import Vini from "./pages/Vini";
+import VinoDetail from "./pages/VinoDetail";
 import Magazine from "./pages/Magazine";
 import CategoryVini from "./pages/CategoryVini";
 import Category from "./pages/Category";
@@ -25,6 +26,7 @@ export default function App() {
       <Route path="/drink" element={<ProtectedRoute><Drink /></ProtectedRoute>} />
       <Route path="/drink/:id" element={<ProtectedRoute><DrinkDetail /></ProtectedRoute>} />
       <Route path="/vini" element={<ProtectedRoute><Vini /></ProtectedRoute>} />
+      <Route path="/vini/:id" element={<ProtectedRoute><VinoDetail /></ProtectedRoute>} />
       <Route path="/magazine" element={<ProtectedRoute><Magazine /></ProtectedRoute>} />
       <Route path="/magazine/:id" element={<ProtectedRoute><ArticleDetail /></ProtectedRoute>} />
       <Route path="/categoria/:categoria" element={<ProtectedRoute><Category /></ProtectedRoute>} />
