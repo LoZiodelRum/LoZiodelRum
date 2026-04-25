@@ -152,46 +152,6 @@ export default function AdminPanel() {
           </select>
         </div>
 
-          {/* COCKTAIL */}
-          {!(isMobile) && <h2 style={{...orangeTitle, marginTop: 32}}>Cocktail</h2>}
-          <select
-            className="admin-select"
-            style={isMobile ? mobileSelect : select}
-            onChange={e => setSelectedCocktail(cocktail.find(c => String(c.id) === String(e.target.value)))}
-          >
-            <option value="">Seleziona</option>
-            {cocktail.map(c => (
-              <option key={c.id} value={String(c.id)}>{c.nome}</option>
-            ))}
-          </select>
-
-          {/* DISTILLATI */}
-          {!(isMobile) && <h2 style={{...orangeTitle, marginTop: 32}}>Distillati</h2>}
-          <select
-            className="admin-select"
-            style={isMobile ? mobileSelect : select}
-            onChange={e => setSelectedDistillato(distillati.find(d => String(d.id) === String(e.target.value)))}
-          >
-            <option value="">Seleziona</option>
-            {distillati.map(d => (
-              <option key={d.id} value={String(d.id)}>{d.nome}</option>
-            ))}
-          </select>
-
-          {/* VINI */}
-          {!(isMobile) && <h2 style={{...orangeTitle, marginTop: 32}}>Vini</h2>}
-          <select
-            className="admin-select"
-            style={isMobile ? mobileSelect : select}
-            onChange={e => setSelectedVino(vini.find(v => String(v.id) === String(e.target.value)))}
-          >
-            <option value="">Seleziona</option>
-            {vini.map(v => (
-              <option key={v.id} value={String(v.id)}>{v.nome}</option>
-            ))}
-          </select>
-        </div>
-
         {/* UTENTI */}
         <div className="admin-section" style={{...section, alignItems: 'flex-start', marginLeft: 0, paddingLeft: 0}}>
           <h2 style={orangeTitle}>Utenti</h2>
