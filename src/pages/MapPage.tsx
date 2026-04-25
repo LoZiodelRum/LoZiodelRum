@@ -107,7 +107,7 @@ export default function MapPage() {
               flexDirection: "column",
               alignItems: "center"
             }}
-            onClick={() => window.location.href = `/locale/${selectedVenue.id}`}
+            onClick={() => window.location.href = `/venue/${selectedVenue.id}`}
           >
             <button
               onClick={e => { e.stopPropagation(); setSelectedVenue(null); }}
