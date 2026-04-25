@@ -8,6 +8,7 @@ import Drink from "./pages/Drink";
 import DrinkDetail from "./pages/DrinkDetail";
 import Vini from "./pages/Vini";
 import Magazine from "./pages/Magazine";
+import ArticleDetail from "./pages/ArticleDetail";
 import Community from "./pages/Community";
 import Crea from "./pages/Crea";
 import AdminPanel from "./pages/AdminPanel.jsx";
@@ -23,6 +24,7 @@ export default function App() {
       <Route path="/drink/:id" element={<ProtectedRoute><DrinkDetail /></ProtectedRoute>} />
       <Route path="/vini" element={<ProtectedRoute><Vini /></ProtectedRoute>} />
       <Route path="/magazine" element={<ProtectedRoute><Magazine /></ProtectedRoute>} />
+      <Route path="/magazine/:id" element={<ProtectedRoute><ArticleDetail /></ProtectedRoute>} />
       <Route path="/community" element={<ProtectedRoute><Community /></ProtectedRoute>} />
       <Route path="/crea" element={<ProtectedRoute><Crea /></ProtectedRoute>} />
       <Route path="/admin" element={<ProtectedRoute><AdminPanel /></ProtectedRoute>} />
