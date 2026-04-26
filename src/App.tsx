@@ -1,5 +1,6 @@
 import React from "react";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
+
 import Home from "./pages/Home";
 import Auth from "./pages/Auth";
 import ProtectedRoute from "./pages/ProtectedRoute";
@@ -17,24 +18,91 @@ import Crea from "./pages/Crea";
 import AdminPanel from "./pages/AdminPanel.jsx";
 import VenueDetail from "./pages/VenueDetail";
 
+// 🔥 BARETTO
+import Baretto from "./pages/Baretto";
+import BarettoMobile from "./pages/BarettoMobile";
+import BarettoChat from "./pages/BarettoChat";
+
 export default function App() {
+
+  // 🔥 FIX SSR / VERCEL
+  const [isMobile, setIsMobile] = React.useState(false);
+
+  React.useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    handleResize(); // 🔥 FONDAMENTALE
+
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
   return (
     <Routes>
+
+      {/* AUTH */}
       <Route path="/" element={<Auth />} />
+
+      {/* MAIN */}
       <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
       <Route path="/mappa" element={<ProtectedRoute><MapPage /></ProtectedRoute>} />
+
+      {/* DRINK */}
       <Route path="/drink" element={<ProtectedRoute><Drink /></ProtectedRoute>} />
       <Route path="/drink/:id" element={<ProtectedRoute><DrinkDetail /></ProtectedRoute>} />
+
+      {/* VINI */}
       <Route path="/vini" element={<ProtectedRoute><Vini /></ProtectedRoute>} />
       <Route path="/vini/:id" element={<ProtectedRoute><VinoDetail /></ProtectedRoute>} />
+      <Route path="/vini/categoria/:categoria" element={<ProtectedRoute><CategoryVini /></ProtectedRoute>} />
+
+      {/* MAGAZINE */}
       <Route path="/magazine" element={<ProtectedRoute><Magazine /></ProtectedRoute>} />
       <Route path="/magazine/:id" element={<ProtectedRoute><ArticleDetail /></ProtectedRoute>} />
+
+      {/* CATEGORIE */}
       <Route path="/categoria/:categoria" element={<ProtectedRoute><Category /></ProtectedRoute>} />
-      <Route path="/vini/categoria/:categoria" element={<ProtectedRoute><CategoryVini /></ProtectedRoute>} />
+
+      {/* COMMUNITY */}
       <Route path="/community" element={<ProtectedRoute><Community /></ProtectedRoute>} />
+
+      {/* 🔥 BARETTO SWITCH */}
+      <Route
+        path="/baretto"
+        element={
+          <ProtectedRoute>
+            {isMobile ? <BarettoMobile /> : <Baretto />}
+          </ProtectedRoute>
+        }
+      />
+
+      {/* 🔥 CHAT */}
+      <Route
+        path="/baretto/chat/:room"
+        element={
+          <ProtectedRoute>
+            <BarettoChat />
+          </ProtectedRoute>
+        }
+      />
+
+      {/* 🔥 FALLBACK BARETTO */}
+      <Route
+        path="/baretto/*"
+        element={
+          <ProtectedRoute>
+            {isMobile ? <BarettoMobile /> : <Baretto />}
+          </ProtectedRoute>
+        }
+      />
+
+      {/* ALTRO */}
       <Route path="/crea" element={<ProtectedRoute><Crea /></ProtectedRoute>} />
       <Route path="/admin" element={<ProtectedRoute><AdminPanel /></ProtectedRoute>} />
       <Route path="/venue/:id" element={<ProtectedRoute><VenueDetail /></ProtectedRoute>} />
+
     </Routes>
   );
 }
