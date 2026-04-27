@@ -122,117 +122,119 @@ export default function Crea() {
               width: "100%",
             }}
           >
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-              gap: 16,
-            }}
-          >
-            {Object.entries(preferenceOptions).map(([key, options]) => (
-              <div key={key}>
-                <label
-                  style={{
-                    color: "#f5a623",
-                    fontWeight: 600,
-                    fontSize: 14,
-                    marginBottom: 6,
-                    display: "block",
-                  }}
-                >
-                  {key.replace(/_/g, " ")}
-                </label>
+            <div
+              style={{
+                display: "grid",
+                gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
+                gap: 16,
+              }}
+            >
+              {Object.entries(preferenceOptions).map(([key, options]) => (
+                <div key={key}>
+                  <label
+                    style={{
+                      color: "#f5a623",
+                      fontWeight: 600,
+                      fontSize: 14,
+                      marginBottom: 6,
+                      display: "block",
+                    }}
+                  >
+                    {key.replace(/_/g, " ")}
+                  </label>
 
-                <select
-                  name={key}
-                  value={preferences[key as keyof CocktailPreferences] || ""}
-                  onChange={handleChange}
-                  style={{
-                    width: "100%",
-                    background: "#0f0f10",
-                    color: "#f5f5f5",
-                    borderRadius: 8,
-                    padding: "10px 12px",
-                  }}
-                >
-                  <option value="">Scegli...</option>
-                  {options.map((option) => (
-                    <option key={option} value={option}>
-                      {option}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            ))}
-          </div>
-
-          <button
-            className="btn-primary"
-            type="submit"
-            disabled={loading}
-            style={{ marginTop: 24, width: 200 }}
-          >
-            {loading ? "Caricamento..." : "Trova Cocktail"}
-          </button>
-        </form>
-
-        {error && (
-          <div style={{ color: "#f87171", marginBottom: 18 }}>
-            {error}
-          </div>
-        )}
-
-        {showResults && suggestions.length > 0 && (
-          <div style={{ marginTop: 24 }}>
-            <h2 style={{ color: "#f5a623", marginBottom: 12 }}>
-              Suggerimenti
-            </h2>
-
-            <div style={{ display: "grid", gap: 24 }}>
-              {suggestions.map((cocktail, idx) => (
-                <div
-                  key={cocktail.name + idx}
-                  style={{
-                    background: "#232323",
-                    borderRadius: 14,
-                    padding: 18,
-                  }}
-                >
-                  <h3 style={{ color: "#f5a623", margin: 0 }}>
-                    {cocktail.name}
-                  </h3>
-
-                  <div style={{ color: "#e2e8f0", marginTop: 8 }}>
-                    <b>Base:</b> {cocktail.base_spirit} |{" "}
-                    <b>Bicchiere:</b> {cocktail.glass} |{" "}
-                    <b>Tecnica:</b> {cocktail.technique}
-                  </div>
-
-                  <ul style={{ marginTop: 10 }}>
-                    {cocktail.ingredients.map((ing, i) => (
-                      <li key={i}>
-                        {ing}{" "}
-                        {cocktail.doses[i] && (
-                          <span style={{ color: "#a3e635" }}>
-                            ({cocktail.doses[i]})
-                          </span>
-                        )}
-                      </li>
+                  <select
+                    name={key}
+                    value={preferences[key as keyof CocktailPreferences] || ""}
+                    onChange={handleChange}
+                    style={{
+                      width: "100%",
+                      background: "#0f0f10",
+                      color: "#f5f5f5",
+                      borderRadius: 8,
+                      padding: "10px 12px",
+                    }}
+                  >
+                    <option value="">Scegli...</option>
+                    {options.map((option) => (
+                      <option key={option} value={option}>
+                        {option}
+                      </option>
                     ))}
-                  </ul>
-
-                  <div style={{ color: "#fbbf24" }}>
-                    <b>Guarnizione:</b> {cocktail.garnish}
-                  </div>
-
-                  <div style={{ color: "#94a3b8", fontSize: 12 }}>
-                    Fonte: {cocktail.source}
-                  </div>
+                  </select>
                 </div>
               ))}
             </div>
-          </div>
-        )}
+
+            <button
+              className="btn-primary"
+              type="submit"
+              disabled={loading}
+              style={{ marginTop: 24, width: 200 }}
+            >
+              {loading ? "Caricamento..." : "Trova Cocktail"}
+            </button>
+          </form>
+
+          {error && (
+            <div style={{ color: "#f87171", marginBottom: 18 }}>
+              {error}
+            </div>
+          )}
+
+          {showResults && suggestions.length > 0 && (
+            <div style={{ marginTop: 24 }}>
+              <h2 style={{ color: "#f5a623", marginBottom: 12 }}>
+                Suggerimenti
+              </h2>
+
+              <div style={{ display: "grid", gap: 24 }}>
+                {suggestions.map((cocktail, idx) => (
+                  <div
+                    key={cocktail.name + idx}
+                    style={{
+                      background: "#232323",
+                      borderRadius: 14,
+                      padding: 18,
+                    }}
+                  >
+                    <h3 style={{ color: "#f5a623", margin: 0 }}>
+                      {cocktail.name}
+                    </h3>
+
+                    <div style={{ color: "#e2e8f0", marginTop: 8 }}>
+                      <b>Base:</b> {cocktail.base_spirit} |{" "}
+                      <b>Bicchiere:</b> {cocktail.glass} |{" "}
+                      <b>Tecnica:</b> {cocktail.technique}
+                    </div>
+
+                    <ul style={{ marginTop: 10 }}>
+                      {cocktail.ingredients.map((ing, i) => (
+                        <li key={i}>
+                          {ing}{" "}
+                          {cocktail.doses[i] && (
+                            <span style={{ color: "#a3e635" }}>
+                              ({cocktail.doses[i]})
+                            </span>
+                          )}
+                        </li>
+                      ))}
+                    </ul>
+
+                    <div style={{ color: "#fbbf24" }}>
+                      <b>Guarnizione:</b> {cocktail.garnish}
+                    </div>
+
+                    <div style={{ color: "#94a3b8", fontSize: 12 }}>
+                      Fonte: {cocktail.source}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
+
+        </div>
       </div>
     </div>
   );
