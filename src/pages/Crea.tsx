@@ -63,7 +63,7 @@ export default function Crea() {
       style={{
         minHeight: "100vh",
         width: "100vw",
-        background: "url('/assets/sfondo_crea.png') center center / cover no-repeat fixed, #0f0f0f",
+        background: "url('/assets/sfondo_crea.png') center center / cover no-repeat fixed",
         display: "flex",
         flexDirection: "column",
       }}
@@ -89,8 +89,8 @@ export default function Crea() {
         <form
           onSubmit={handleSubmit}
           style={{
-            background: "#171717cc",
-            border: "1px solid #3f3f46",
+            background: "rgba(23,23,23,0.85)",
+            border: "none",
             borderRadius: 16,
             padding: 18,
             marginBottom: 24,
@@ -108,7 +108,7 @@ export default function Crea() {
                   name={key}
                   value={preferences[key as keyof CocktailPreferences] || ""}
                   onChange={handleChange}
-                  style={{ width: "100%", background: "#0f0f10", color: "#f5f5f5", border: "1px solid #3f3f46", borderRadius: 8, padding: "10px 12px" }}
+                  style={{ width: "100%", background: "#0f0f10", color: "#f5f5f5", border: "none", borderRadius: 8, padding: "10px 12px" }}
                 >
                   <option value="">Scegli...</option>
                   {options.map((option) => (
@@ -133,7 +133,7 @@ export default function Crea() {
             <h2 style={{ color: "#f5a623", marginBottom: 12 }}>Suggerimenti</h2>
             <div style={{ display: "grid", gap: 24 }}>
               {suggestions.map((cocktail, idx) => (
-                <div key={cocktail.name + idx} style={{ background: "#232323", borderRadius: 14, padding: 18, border: "1px solid #444" }}>
+                <div key={cocktail.name + idx} style={{ background: "#232323", borderRadius: 14, padding: 18 }}>
                   <h3 style={{ color: "#f5a623", margin: 0 }}>{cocktail.name}</h3>
                   <div style={{ color: "#e2e8f0", margin: "8px 0 0 0" }}>
                     <b>Base:</b> {cocktail.base_spirit} &nbsp;|&nbsp; <b>Bicchiere:</b> {cocktail.glass} &nbsp;|&nbsp; <b>Tecnica:</b> {cocktail.technique}
