@@ -73,7 +73,7 @@ function renderArticleContent(raw: string) {
         const imgPlaceholderRegex = /\[\[IMG-(\d+)-(\d+):([^\]]+)\]\]/g;
         let lastImgIdx = 0;
         let imgMatch: RegExpExecArray | null;
-        let acc: React.ReactNode[] = [];
+        const acc: React.ReactNode[] = [];
         while ((imgMatch = imgPlaceholderRegex.exec(line)) !== null) {
           if (imgMatch.index > lastImgIdx) {
             acc.push(line.slice(lastImgIdx, imgMatch.index));

@@ -28,10 +28,10 @@ export default function DrinkDetail() {
     async function fetchDrink() {
       setLoading(true);
       // Cerca prima nei cocktail
-      let { data, error } = await supabase.from("cocktail").select("*").eq("id", id).single();
+      const { data, error } = await supabase.from("cocktail").select("*").eq("id", id).single();
       if (!data || error) {
         // Se non trovato, cerca nei distillati
-        let { data: distillato, error: err2 } = await supabase.from("distillati").select("*").eq("id", id).single();
+        const { data: distillato, error: err2 } = await supabase.from("distillati").select("*").eq("id", id).single();
         if (!distillato || err2) {
           setNotFound(true);
           setLoading(false);

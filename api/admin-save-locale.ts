@@ -77,7 +77,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
 
   for (const tableName of tableCandidates) {
     try {
-      let safeChanges = mode === "delete" ? null : { ...changes };
+      const safeChanges = mode === "delete" ? null : { ...changes };
       if (mode === "create") {
         while (true) {
           const { data, error } = await supabaseAdmin.from(tableName).insert([safeChanges]).select("id");
