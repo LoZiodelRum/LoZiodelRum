@@ -151,7 +151,7 @@ function Auth() {
       `}</style>
       <div className="login-fullscreen-container">
         <div className="login-box">
-          <img src="/logo.png" alt="Lo Zio del Rum" style={{ width: 120, height: 120, objectFit: "contain", borderRadius: "50%", background: "none", marginBottom: 8 }} />
+          <img src="/logo-clean.png" alt="Lo Zio del Rum" style={{ width: 120, height: 120, objectFit: "contain", borderRadius: "50%", background: "none", marginBottom: 8 }} />
           <div style={{ color: "#fff", fontWeight: 700, fontSize: 28, marginBottom: 8, textAlign: "center" }}>DrinkWise</div>
           <div style={{ color: "#ccc", fontSize: 15, marginBottom: 18, textAlign: "center" }}>Accedi per esplorare i migliori locali.</div>
           <form onSubmit={handleLogin} style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
