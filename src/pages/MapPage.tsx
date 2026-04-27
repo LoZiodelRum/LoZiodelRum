@@ -28,6 +28,8 @@ type Venue = {
 };
 
 // ✅ PREVIEW (UNA SOLA VOLTA, FUORI)
+import { useState as useReactState, useLayoutEffect } from "react";
+
 function VenuePreview({
   venue,
   map,
@@ -37,10 +39,24 @@ function VenuePreview({
   map: L.Map;
   onClose: () => void;
 }) {
-  const point = map.latLngToContainerPoint([
+  const [point, setPoint] = useReactState(() => map.latLngToContainerPoint([
     venue.latitudine,
     venue.longitudine
-  ]);
+  ]));
+
+  useLayoutEffect(() => {
+    function update() {
+      setPoint(map.latLngToContainerPoint([
+        venue.latitudine,
+        venue.longitudine
+      ]));
+    }
+    map.on("move zoom resize", update);
+    update();
+    return () => {
+      map.off("move zoom resize", update);
+    };
+  }, [map, venue.latitudine, venue.longitudine]);
 
   return (
     <div
