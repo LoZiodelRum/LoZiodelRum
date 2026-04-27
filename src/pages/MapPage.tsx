@@ -154,7 +154,7 @@ export default function MapPage() {
     <>
       <Navbar />
 
-      <div style={{ height: "100vh", position: "relative" }}>
+      <div style={{ height: "100vh", position: "relative", paddingTop: 70 }}>
         <MapContainer
           center={mapCenter}
           zoom={6}
@@ -170,7 +170,19 @@ export default function MapPage() {
               position={[venue.latitudine, venue.longitudine]}
               icon={customIcon}
               eventHandlers={{
-                click: () => setSelectedVenue(venue)
+                click: () => {
+                  setSelectedVenue(venue);
+                  // Centra la mappa sul marker selezionato, ma più in basso per lasciare spazio all'anteprima
+                  if (mapRef.current) {
+                    const map = mapRef.current;
+                    const markerLatLng = L.latLng(venue.latitudine, venue.longitudine);
+                    // Calcola offset in pixel (navbar + anteprima)
+                    const offsetY = 110; // 70px navbar + 40px extra
+                    const targetPoint = map.project(markerLatLng, map.getZoom()).subtract([0, offsetY]);
+                    const targetLatLng = map.unproject(targetPoint, map.getZoom());
+                    map.setView(targetLatLng, map.getZoom(), { animate: true });
+                  }
+                }
               }}
             />
           ))}
