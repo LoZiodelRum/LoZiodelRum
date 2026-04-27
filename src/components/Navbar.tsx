@@ -44,11 +44,11 @@ export default function Navbar() {
         width: "100vw",
         background: "rgba(0,0,0,0.97)",
         color: "#fff",
-        minHeight: "70px",
+        minHeight: "35px", // dimezza l'altezza
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        padding: "12px 20px",
+        padding: "6px 20px", // dimezza il padding verticale
         zIndex: 9999,
         backdropFilter: "blur(10px)",
         boxShadow: "0 2px 16px #000a",
@@ -73,7 +73,7 @@ export default function Navbar() {
           src="/logo.png"
           alt="Lo Zio del Rum logo"
           className="logo"
-          style={{ height: 38, width: 38, objectFit: "contain" }}
+          style={{ height: 76, width: 76, objectFit: "contain" }} // raddoppia la dimensione
         />
         <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.1 }}>
           <span style={{ fontWeight: 700, fontSize: 23 }}>DrinkWise</span>
