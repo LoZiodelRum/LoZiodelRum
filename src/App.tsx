@@ -52,11 +52,10 @@ export default function App() {
     <>
       <ScrollToTop />
       <Routes>
-        {/* Tutte le pagine sono wrappate da Layout che contiene la Navbar */}
+        {/* AUTH SENZA NAVBAR */}
+        <Route path="/" element={<Auth />} />
+        {/* Tutte le altre pagine wrappate da Layout che contiene la Navbar */}
         <Route element={<Layout />}>
-          {/* AUTH */}
-          <Route path="/" element={<Auth />} />
-
           {/* MAIN */}
           <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
           <Route path="/mappa" element={<ProtectedRoute><MapPage /></ProtectedRoute>} />
