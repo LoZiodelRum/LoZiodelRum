@@ -95,21 +95,22 @@ function VenuePreview({
           border: "none",
           borderRadius: 6,
           color: "#111",
-          width: 28,
-          height: 28,
-          fontSize: 16,
+          width: 32,
+          height: 32,
+          fontSize: 18,
           cursor: "pointer",
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          boxShadow: "0 1px 4px #0006"
+          boxShadow: "0 1px 4px #0006",
+          padding: 0
         }}
         aria-label="Chiudi anteprima"
       >
-        {/* X nera SVG per compatibilità e visibilità */}
-        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <line x1="4.5" y1="4.5" x2="13.5" y2="13.5" stroke="#111" strokeWidth="2" strokeLinecap="round" />
-          <line x1="13.5" y1="4.5" x2="4.5" y2="13.5" stroke="#111" strokeWidth="2" strokeLinecap="round" />
+        {/* X nera SVG più grande e centrata */}
+        <svg width="22" height="22" viewBox="0 0 22 22" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="6" y1="6" x2="16" y2="16" stroke="#111" strokeWidth="2.5" strokeLinecap="round" />
+          <line x1="16" y1="6" x2="6" y2="16" stroke="#111" strokeWidth="2.5" strokeLinecap="round" />
         </svg>
       </button>
 
