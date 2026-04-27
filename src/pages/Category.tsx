@@ -1,4 +1,5 @@
 import "../App.css";
+import Navbar from "../components/Navbar";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useParams, useNavigate } from "react-router-dom";
@@ -219,39 +220,32 @@ export default function Category() {
   }
 
   return (
-    <div className="fade-in drink-page-white">
-      <section className="drink-section-white">
-        {selectedType === "cocktail" ? (
-          <h1 className="drink-page-heading" style={{ marginBottom: 14 }}>Coktail</h1>
-        ) : (
-          <div className="drink-top-bar">
-            <button className="drink-back-btn" onClick={() => navigate(-1)} aria-label="Torna indietro">
-              ←
-            </button>
-            <h1 className="drink-page-heading">{getTitle(selectedType)}</h1>
+    <>
+      <Navbar />
+      <div className="fade-in drink-page-white">
+        <section className="drink-section-white">
+          <h1 className="drink-page-heading" style={{ marginBottom: 14 }}>{getTitle(selectedType)}</h1>
+          <div className="drink-grid-uniform">
+            {items.map((item) => (
+              <article
+                key={item.id}
+                className="drink-card-uniform"
+                onClick={() => navigate(`/drink/${item.id}`)}
+              >
+                {item.immagine ? (
+                  <img src={item.immagine} alt={item.nome} />
+                ) : (
+                  <div className="no-img-placeholder">NO IMG</div>
+                )}
+                <div className="drink-card-caption">
+                  <h3 translate="no">{item.nome}</h3>
+                </div>
+              </article>
+            ))}
           </div>
-        )}
-
-        <div className="drink-grid-uniform">
-          {items.map((item) => (
-            <article
-              key={item.id}
-              className="drink-card-uniform"
-              onClick={() => navigate(`/drink/${item.id}`)}
-            >
-              {item.immagine ? (
-                <img src={item.immagine} alt={item.nome} />
-              ) : (
-                <div className="no-img-placeholder">NO IMG</div>
-              )}
-              <div className="drink-card-caption">
-                <h3 translate="no">{item.nome}</h3>
-              </div>
-            </article>
-          ))}
-        </div>
-      </section>
-    </div>
+        </section>
+      </div>
+    </>
   );
 }
 
