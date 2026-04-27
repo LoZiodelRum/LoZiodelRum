@@ -11,45 +11,14 @@
   --primary: #c47a2c;
   --bg-dark: #0b0b0b;
   --bg-card: #1a1a1a;
-  --text-main: #ffffff;
-  --text-muted: #cccccc;
-  --border: #333333;
-}
 
-html, body, #root {
-  height: 100%;
-  max-width: 100vw;
-  overflow-x: hidden;
-}
 
-body {
-  /* background-color rimosso per mostrare solo lo sfondo PNG */
-  color: var(--text-main);
-  font-family: 'Inter', system-ui, -apple-system, sans-serif;
-  line-height: 1.6;
-  -webkit-font-smoothing: antialiased;
-}
-
-/* ============================================================
-   2. TIPOGRAFIA E LINK (Righe 21-45)
-   ============================================================ */
-h1, h2, h3, h4, h5, h6 { 
-  color: var(--text-main); 
-  line-height: 1.2;
-}
-
-p, span { color: var(--text-muted); }
-
-a { 
-  color: var(--text-main); 
-
-  display: grid;
     color: var(--text-main); 
     text-decoration: none; 
     transition: color 0.3s ease;
   }
 
-  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  .fade-in {
 
   /* Hero articolo con angoli smussati */
   .magazine-hero {
@@ -95,9 +64,33 @@ a {
     margin-bottom: 40px; 
     width: 100%;
   }
-  gap: 24px;
-  width: 100%;
-}
+    animation: fadeIn 0.4s ease-in;
+  }
+
+  .drink-card {
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    border-radius: 18px;
+    overflow: hidden;
+    position: relative;
+    background: #111;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .drink-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 18px;
+  }
+
+  .section { 
+    margin-bottom: 40px; 
+    width: 100%;
+  }
 
 /* Flex utility per allineamenti rapidi */
 .flex-between {
