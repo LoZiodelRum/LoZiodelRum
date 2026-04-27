@@ -43,6 +43,9 @@ function VenuePreview({
     venue.latitudine,
     venue.longitudine
   ]));
+    const markerIconHeight = 48; // stessa altezza di iconSize
+    const markerIconAnchorY = 48; // stessa di iconAnchor
+    const previewMargin = 8; // spazio tra marker e preview
 
   useLayoutEffect(() => {
     function update() {
@@ -63,7 +66,7 @@ function VenuePreview({
       style={{
         position: "absolute",
         left: point.x,
-        top: point.y - 90,
+        top: point.y - markerIconAnchorY - previewMargin,
         transform: "translate(-50%, -100%)",
         width: 220,
         background: "#000",
