@@ -70,7 +70,7 @@ export default function Navbar() {
         }}
       >
         <img
-          src="/logo-clean.png"
+          src="/logo.png"
           alt="Lo Zio del Rum logo"
           className="logo"
           style={{ height: 38, width: 38, objectFit: "contain" }}

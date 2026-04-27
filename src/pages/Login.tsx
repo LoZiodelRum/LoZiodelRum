@@ -97,7 +97,7 @@ export default function Login() {
       {/* BLOCCO LOGIN PRINCIPALE */}
       <div className="auth-card" style={{ width: "100%", maxWidth: 370, background: "#000", borderRadius: 16, boxShadow: "0 4px 32px #0006", padding: "24px 12px 32px 12px", margin: 8 }}>
         <div style={{ display: "flex", flexDirection: "column", alignItems: "center", marginBottom: 24 }}>
-          <img src="/logo-clean.png" alt="Lo Zio del Rum" style={{ width: 128, height: 128, objectFit: "contain", marginBottom: 12 }} />
+          <img src="/logo.png" alt="Lo Zio del Rum" style={{ width: 128, height: 128, objectFit: "contain", marginBottom: 12 }} />
           <span style={{ color: "#FFD36A", fontWeight: 700, fontSize: 28, letterSpacing: 1, marginBottom: 2 }}>DrinkWise</span>
           <span style={{ color: "#fff", fontSize: 16 }}>by Lo Zio del Rum</span>
         </div>
