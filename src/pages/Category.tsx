@@ -222,7 +222,7 @@ export default function Category() {
   return (
     <>
       <Navbar />
-      <div className="fade-in drink-page-white">
+      <div className="fade-in drink-page-white" style={{ marginTop: 32 }}>
         <section className="drink-section-white">
           <h1 className="drink-page-heading" style={{ marginBottom: 14 }}>{getTitle(selectedType)}</h1>
           <div className="drink-grid-uniform">
