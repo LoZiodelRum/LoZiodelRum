@@ -5,10 +5,10 @@ export default function Community() {
 
   const COLORS = {
     bg: "#05080c",
-    gradient: "linear-gradient(135deg, #0b0f14, #101826)",
+    gradient: "linear-gradient(135deg, #0b0f14, #182232)",
 
     card: "#0f1722",
-    border: "#1f2a36",
+    border: "#263241",
 
     gold: "#f5c76b",
     goldSoft: "#e0b15f",
@@ -16,7 +16,7 @@ export default function Community() {
     text: "#ffffff",
     textSoft: "#94a3b8",
 
-    bubbleLeft: "#1b2532",
+    bubbleLeft: "#1e2a38",
     bubbleRight: "#f5c76b",
   };
 
@@ -75,48 +75,48 @@ export default function Community() {
     baretto: {
       background: COLORS.gradient,
       borderRadius: "18px",
-      padding: "25px",
+      padding: "22px",
       border: `1px solid ${COLORS.border}`,
-      boxShadow: "0 10px 40px rgba(0,0,0,0.5)",
+      boxShadow: "0 15px 50px rgba(0,0,0,0.6)",
     },
 
     barettoHeader: {
       display: "flex",
       justifyContent: "space-between",
       alignItems: "center",
-      marginBottom: "20px",
+      marginBottom: "18px",
     },
 
     chatPreview: {
       display: "flex",
       flexDirection: "column",
-      gap: "12px",
+      gap: "10px",
     },
 
     msgLeft: {
       background: COLORS.bubbleLeft,
       color: COLORS.text,
-      padding: "12px 16px",
-      borderRadius: "12px",
-      maxWidth: "60%",
-      fontSize: "14px",
+      padding: "10px 14px",
+      borderRadius: "10px",
+      maxWidth: "55%",
+      fontSize: "13px",
     },
 
     msgRight: {
       background: COLORS.bubbleRight,
       color: "#000",
-      padding: "12px 16px",
-      borderRadius: "12px",
-      maxWidth: "60%",
-      fontSize: "14px",
+      padding: "10px 14px",
+      borderRadius: "10px",
+      maxWidth: "55%",
+      fontSize: "13px",
       marginLeft: "auto",
       fontWeight: "500",
     },
 
     barettoButtons: {
-      marginTop: "20px",
+      marginTop: "18px",
       display: "flex",
-      gap: "12px",
+      gap: "10px",
       flexWrap: "wrap",
     },
 
@@ -125,6 +125,8 @@ export default function Community() {
       border: `1px solid ${COLORS.border}`,
       borderRadius: "14px",
       padding: "18px",
+      cursor: "pointer",
+      transition: "0.2s",
     },
 
     mapBox: {
@@ -141,6 +143,8 @@ export default function Community() {
       padding: "50px",
       textAlign: "center",
       border: `1px solid ${COLORS.border}`,
+      cursor: "pointer",
+      transition: "0.2s",
     },
   };
 
@@ -248,7 +252,16 @@ export default function Community() {
           </div>
 
           {/* CTA */}
-          <div style={styles.cta}>
+          <div
+            style={styles.cta}
+            onClick={() => navigate("/crea")}
+            onMouseEnter={(e: any) =>
+              (e.currentTarget.style.transform = "scale(1.02)")
+            }
+            onMouseLeave={(e: any) =>
+              (e.currentTarget.style.transform = "scale(1)")
+            }
+          >
             <h2 style={{ color: COLORS.text }}>
               Crea il tuo cocktail
             </h2>
@@ -257,10 +270,7 @@ export default function Community() {
               Sfida la community e fatti votare
             </p>
 
-            <button
-              className="btn-gold"
-              onClick={() => navigate("/crea")}
-            >
+            <button className="btn-gold">
               Crea il tuo drink
             </button>
           </div>
@@ -268,7 +278,16 @@ export default function Community() {
 
         {/* RIGHT */}
         <div style={styles.right}>
-          <div style={styles.card}>
+          <div
+            style={styles.card}
+            onClick={() => navigate("/drink")}
+            onMouseEnter={(e: any) =>
+              (e.currentTarget.style.transform = "translateY(-4px)")
+            }
+            onMouseLeave={(e: any) =>
+              (e.currentTarget.style.transform = "translateY(0)")
+            }
+          >
             <h3 style={{ color: COLORS.text }}>
               Consigli dello Zio
             </h3>
@@ -282,7 +301,16 @@ export default function Community() {
             </p>
           </div>
 
-          <div style={styles.card}>
+          <div
+            style={styles.card}
+            onClick={() => navigate("/eventi")}
+            onMouseEnter={(e: any) =>
+              (e.currentTarget.style.transform = "translateY(-4px)")
+            }
+            onMouseLeave={(e: any) =>
+              (e.currentTarget.style.transform = "translateY(0)")
+            }
+          >
             <h3 style={{ color: COLORS.text }}>
               Eventi & Annunci
             </h3>

@@ -26,7 +26,6 @@ const HOME_HERO_VIDEO_VERSION = "2026-04-15-07";
 
 export default function Home() {
   const { isAdmin } = useUser();
-  const { isAdmin } = useUser();
   const [locali, setLocali] = useState<Locale[]>([]);
   const [articoli, setArticoli] = useState<Articolo[]>([]);
   const [editingLocaleId, setEditingLocaleId] = useState<string | null>(null);
