@@ -76,7 +76,7 @@ export default function Navbar() {
           style={{ height: 76, width: 76, objectFit: "contain" }} // raddoppia la dimensione
         />
         <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.1 }}>
-          <span style={{ fontWeight: 700, fontSize: 23 }}>DrinkWise</span>
+          <span style={{ fontWeight: 700, fontSize: 23, color: "#FFD36A" }}>DrinkWise</span>
           <span style={{ fontSize: 11, opacity: 0.7 }}>by</span>
           <span style={{ fontWeight: 500, fontSize: 15 }}>Lo Zio del Rum</span>
         </div>
