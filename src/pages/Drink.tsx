@@ -185,7 +185,7 @@ export default function Drink() {
   return (
     <>
       <Navbar />
-      <div className="fade-in drink-page-white">
+      <div className="fade-in drink-page-white" style={{ marginTop: 32 }}>
         {renderSection("Cocktail", cocktail, "cocktail")}
         {renderSection("Rum", rum, "rum")}
         {renderSection("Whisky", whisky, "whisky")}
