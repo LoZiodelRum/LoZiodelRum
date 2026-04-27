@@ -106,7 +106,11 @@ function VenuePreview({
         }}
         aria-label="Chiudi anteprima"
       >
-        <X size={18} color="#111" />
+        {/* X nera SVG per compatibilità e visibilità */}
+        <svg width="18" height="18" viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <line x1="4.5" y1="4.5" x2="13.5" y2="13.5" stroke="#111" strokeWidth="2" strokeLinecap="round" />
+          <line x1="13.5" y1="4.5" x2="4.5" y2="13.5" stroke="#111" strokeWidth="2" strokeLinecap="round" />
+        </svg>
       </button>
 
       <img
