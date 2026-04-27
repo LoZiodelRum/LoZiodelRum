@@ -42,67 +42,59 @@ p, span { color: var(--text-muted); }
 
 a { 
   color: var(--text-main); 
-  text-decoration: none; 
-/* Hero articolo con angoli smussati */
-.magazine-hero {
-  width: 100%;
-  height: 220px;
-  background-size: cover;
-  background-position: center;
-  position: relative;
-  display: flex;
-  align-items: flex-end;
-  border-radius: 18px;
-  margin-bottom: 18px;
-  overflow: hidden;
-  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
-  transition: box-shadow 0.2s;
-}
-   ============================================================ */
 
-
-.page {
-  padding: 32px;
-  width: 100%;
-  max-width: 1280px;
-  margin: 0 auto;
-  min-height: calc(100vh - 80px);
-  padding-top: 120px; /* Spazio aumentato per abbassare le pagine */
-}
-
-.fade-in {
-.drink-card {
-  width: 100%;
-  aspect-ratio: 3 / 2;
-  border-radius: 18px;
-  overflow: hidden;
-  position: relative;
-  background: #111;
-  cursor: pointer;
-  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
-  transition: transform 0.25s ease, box-shadow 0.25s ease;
-}
-}
-
-.page-full-bleed {
-  max-width: 100%;
-  padding: 0;
-}
-
-.section { 
-.drink-card img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  display: block;
-  border-radius: 18px;
-}
-  width: 100%;
-}
-
-.grid-wrapper {
   display: grid;
+    color: var(--text-main); 
+    text-decoration: none; 
+    transition: color 0.3s ease;
+  }
+
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+
+  /* Hero articolo con angoli smussati */
+  .magazine-hero {
+    width: 100%;
+    height: 220px;
+    background-size: cover;
+    background-position: center;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    border-radius: 18px;
+    margin-bottom: 18px;
+    overflow: hidden;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+    transition: box-shadow 0.2s;
+  }
+
+  .fade-in {
+    animation: fadeIn 0.4s ease-in;
+  }
+
+  .drink-card {
+    width: 100%;
+    aspect-ratio: 3 / 2;
+    border-radius: 18px;
+    overflow: hidden;
+    position: relative;
+    background: #111;
+    cursor: pointer;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    transition: transform 0.25s ease, box-shadow 0.25s ease;
+  }
+
+  .drink-card img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    border-radius: 18px;
+  }
+
+  .section { 
+    margin-bottom: 40px; 
+    width: 100%;
+  }
   gap: 24px;
   width: 100%;
 }
