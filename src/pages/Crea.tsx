@@ -84,29 +84,44 @@ export default function Crea() {
           padding: 24,
         }}
       >
-        <h1 style={{ color: "#f5a623", marginBottom: 18 }}>
-          Crea il tuo Cocktail
-        </h1>
-
-        {!isAuthenticated && (
-          <div style={{ color: "#f87171", marginBottom: 18, fontWeight: 500 }}>
-            Effettua il login per salvare le tue creazioni e vedere suggerimenti personalizzati.
-          </div>
-        )}
-
-        <form
-          onSubmit={handleSubmit}
+        <div
           style={{
-            background: "rgba(23,23,23,0.85)",
-            borderRadius: 16,
-            padding: 18,
+            background: "rgba(245,166,35,0.85)",
+            borderRadius: 28,
+            padding: 36,
             marginBottom: 24,
             boxShadow: "0 8px 32px #000a",
-            minWidth: 320,
-            maxWidth: 700,
+            minWidth: 340,
+            maxWidth: 800,
             width: "100%",
+            display: "flex",
+            flexDirection: "column",
+            alignItems: "center"
           }}
         >
+          <h1 style={{ color: "#111", marginBottom: 18, fontWeight: 900, fontSize: 38, textAlign: "center", textShadow: "0 2px 8px #fff8" }}>
+            Crea il tuo Cocktail
+          </h1>
+
+          {!isAuthenticated && (
+            <div style={{ color: "#b91c1c", marginBottom: 18, fontWeight: 500 }}>
+              Effettua il login per salvare le tue creazioni e vedere suggerimenti personalizzati.
+            </div>
+          )}
+
+          <form
+            onSubmit={handleSubmit}
+            style={{
+              background: "rgba(23,23,23,0.85)",
+              borderRadius: 16,
+              padding: 18,
+              marginBottom: 0,
+              boxShadow: "0 8px 32px #000a",
+              minWidth: 320,
+              maxWidth: 700,
+              width: "100%",
+            }}
+          >
           <div
             style={{
               display: "grid",
