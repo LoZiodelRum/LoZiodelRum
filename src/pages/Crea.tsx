@@ -1,3 +1,4 @@
+
 import Navbar from "../components/Navbar";
 import "../App.css";
 import { useState } from "react";
@@ -90,7 +91,6 @@ export default function Crea() {
           onSubmit={handleSubmit}
           style={{
             background: "rgba(23,23,23,0.85)",
-            border: "none",
             borderRadius: 16,
             padding: 18,
             marginBottom: 24,
@@ -108,7 +108,7 @@ export default function Crea() {
                   name={key}
                   value={preferences[key as keyof CocktailPreferences] || ""}
                   onChange={handleChange}
-                  style={{ width: "100%", background: "#0f0f10", color: "#f5f5f5", border: "none", borderRadius: 8, padding: "10px 12px" }}
+                  style={{ width: "100%", background: "#0f0f10", color: "#f5f5f5", borderRadius: 8, padding: "10px 12px" }}
                 >
                   <option value="">Scegli...</option>
                   {options.map((option) => (
