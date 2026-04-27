@@ -42,7 +42,7 @@ export default function Magazine() {
   return (
     <>
       <Navbar />
-      <div className="page fade-in magazine-page-mobile" style={{ paddingTop: 0 }}>
+      <div className="page fade-in magazine-page-mobile" style={{ paddingTop: 32 }}>
         {/* HERO */}
         {hero && (
           <Link
