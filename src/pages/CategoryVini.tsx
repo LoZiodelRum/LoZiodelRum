@@ -56,6 +56,12 @@ export default function CategoryVini() {
           </button>
           <h1 className="drink-page-heading">{categoria ? categoria.charAt(0).toUpperCase() + categoria.slice(1) : "Vini"}</h1>
         </div>
+        <div className="drink-section-header" style={{ justifyContent: 'flex-end', marginBottom: 18 }}>
+          <h2 className="drink-section-title" style={{ marginRight: 'auto' }}>Vini</h2>
+          <button className="btn-primary btn-small" style={{ marginLeft: 'auto' }} onClick={() => navigate('/vini')}>
+            Vedi tutti
+          </button>
+        </div>
         <div className="drink-grid-uniform vini-grid">
           {vini.length === 0 ? (
             <p style={{ color: "#cbd5e1", marginTop: 8 }}>Nessun vino disponibile in questa categoria.</p>

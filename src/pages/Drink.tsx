@@ -153,9 +153,9 @@ export default function Drink() {
   function renderSection(title: string, list: any[], tipo: string) {
     return (
       <section className="drink-section-white">
-        <div className="drink-section-header">
-          <h2 className="drink-section-title">{title}</h2>
-          <button className="btn-primary btn-small" onClick={() => navigate(`/categoria/${tipo}`)}>
+        <div className="drink-section-header" style={{ justifyContent: 'flex-end' }}>
+          <h2 className="drink-section-title" style={{ marginRight: 'auto' }}>{title}</h2>
+          <button className="btn-primary btn-small" style={{ marginLeft: 'auto' }} onClick={() => navigate(`/categoria/${tipo}`)}>
             Vedi tutti
           </button>
         </div>
