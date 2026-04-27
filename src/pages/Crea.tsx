@@ -63,7 +63,7 @@ export default function Crea() {
       style={{
         minHeight: "100vh",
         width: "100vw",
-        background: "url('/assets/crea-bg.jpg') center center / cover no-repeat fixed, #0f0f0f",
+        background: "url('/src/assets/sfondo_crea.png') center center / cover no-repeat fixed, #0f0f0f",
         display: "flex",
         flexDirection: "column",
       }}
