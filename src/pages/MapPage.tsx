@@ -91,10 +91,10 @@ function VenuePreview({
           position: "absolute",
           top: 8,
           right: 8,
-          background: "#111",
+          background: "#f5a623",
           border: "none",
           borderRadius: 6,
-          color: "#fff",
+          color: "#111",
           width: 28,
           height: 28,
           fontSize: 16,
@@ -106,7 +106,7 @@ function VenuePreview({
         }}
         aria-label="Chiudi anteprima"
       >
-        <X size={18} color="#fff" />
+        <X size={18} color="#111" />
       </button>
 
       <img
