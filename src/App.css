@@ -43,20 +43,21 @@ p, span { color: var(--text-muted); }
 a { 
   color: var(--text-main); 
   text-decoration: none; 
-  transition: color 0.3s ease;
+/* Hero articolo con angoli smussati */
+.magazine-hero {
+  width: 100%;
+  height: 220px;
+  background-size: cover;
+  background-position: center;
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  border-radius: 18px;
+  margin-bottom: 18px;
+  overflow: hidden;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.18);
+  transition: box-shadow 0.2s;
 }
-
-a:hover { color: var(--primary); }
-
-.page-title {
-  font-size: 32px;
-  font-weight: 700;
-  margin-bottom: 24px;
-  word-wrap: break-word;
-}
-
-/* ============================================================
-   3. LAYOUT E GRID SYSTEM (Righe 46-75)
    ============================================================ */
 
 
@@ -70,7 +71,17 @@ a:hover { color: var(--primary); }
 }
 
 .fade-in {
-  padding-top: 120px !important; /* Spazio aumentato anche su fade-in */
+.drink-card {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  border-radius: 18px;
+  overflow: hidden;
+  position: relative;
+  background: #111;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
 }
 
 .page-full-bleed {
@@ -79,7 +90,13 @@ a:hover { color: var(--primary); }
 }
 
 .section { 
-  margin-bottom: 40px; 
+.drink-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  border-radius: 18px;
+}
   width: 100%;
 }
 
