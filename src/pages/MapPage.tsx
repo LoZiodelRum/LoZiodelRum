@@ -1,3 +1,58 @@
+// Componente per l'anteprima sopra il marker
+function VenuePreview({ venue, map, onClose }: { venue: Venue, map: L.Map, onClose: () => void }) {
+  const point = map.latLngToContainerPoint([venue.latitudine, venue.longitudine]);
+  return (
+    <div
+      style={{
+        position: "absolute",
+        left: point.x,
+        top: point.y - 90, // 90px sopra il marker
+        transform: "translate(-50%, -100%)",
+        width: 220,
+        background: "#000",
+        color: "#fff",
+        padding: 10,
+        borderRadius: 10,
+        zIndex: 1200,
+        boxShadow: "0 2px 12px #000a",
+        cursor: "pointer",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center"
+      }}
+      onClick={() => window.location.href = `/venue/${venue.id}`}
+    >
+      <button
+        onClick={e => { e.stopPropagation(); onClose(); }}
+        style={{
+          position: "absolute",
+          top: 8,
+          right: 8,
+          background: "#f5a623",
+          border: "none",
+          borderRadius: 6,
+          color: "#fff",
+          width: 28,
+          height: 28,
+          fontSize: 16,
+          cursor: "pointer"
+        }}
+        title="Chiudi"
+      >
+        <X size={18} />
+      </button>
+      <img
+        src={venue.image_url || "/fallback.jpg"}
+        alt={venue.nome}
+        style={{ width: "100%", height: 70, objectFit: "cover", borderRadius: 6, marginBottom: 8 }}
+      />
+      <div style={{ fontWeight: 700, fontSize: 17, marginBottom: 2 }}>{venue.nome}</div>
+      <div style={{ fontSize: 13, opacity: 0.8, textAlign: "center" }}>
+        {venue.indirizzo}, {venue.citta}
+      </div>
+    </div>
+  );
+}
 import { useState, useEffect } from "react";
 import Navbar from "../components/Navbar";
 import { MapContainer, TileLayer, Marker, ZoomControl } from "react-leaflet";
@@ -29,6 +84,7 @@ type Venue = {
 };
 
 export default function MapPage() {
+  const mapRef = useRef<L.Map>(null);
   const [venues, setVenues] = useState<Venue[]>([]);
   const [mapCenter, setMapCenter] = useState<[number, number]>([41.9028, 12.4964]);
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
@@ -149,56 +205,8 @@ function VenuePreview({ venue, map, onClose }: { venue: Venue, map: L.Map, onClo
         {/* ✅ Zoom control corretto */}
         <ZoomControl position="bottomleft" />
         {/* Anteprima compatta sopra il marker selezionato */}
-        {selectedVenue && (
-          <div
-            style={{
-              position: "absolute",
-              left: "50%",
-              top: 90,
-              transform: "translateX(-50%)",
-              width: 220,
-              background: "#000",
-              color: "#fff",
-              padding: 10,
-              borderRadius: 10,
-              zIndex: 1200,
-              boxShadow: "0 2px 12px #000a",
-              cursor: "pointer",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center"
-            }}
-            onClick={() => window.location.href = `/venue/${selectedVenue.id}`}
-          >
-            <button
-              onClick={e => { e.stopPropagation(); setSelectedVenue(null); }}
-              style={{
-                position: "absolute",
-                top: 8,
-                right: 8,
-                background: "#f5a623",
-                border: "none",
-                borderRadius: 6,
-                color: "#fff",
-                width: 28,
-                height: 28,
-                fontSize: 16,
-                cursor: "pointer"
-              }}
-              title="Chiudi"
-            >
-              <X size={18} />
-            </button>
-            <img
-              src={selectedVenue.image_url || "/fallback.jpg"}
-              alt={selectedVenue.nome}
-              style={{ width: "100%", height: 70, objectFit: "cover", borderRadius: 6, marginBottom: 8 }}
-            />
-            <div style={{ fontWeight: 700, fontSize: 17, marginBottom: 2 }}>{selectedVenue.nome}</div>
-            <div style={{ fontSize: 13, opacity: 0.8, textAlign: "center" }}>
-              {selectedVenue.indirizzo}, {selectedVenue.citta}
-            </div>
-          </div>
+        {selectedVenue && mapRef.current && (
+          <VenuePreview venue={selectedVenue} map={mapRef.current} onClose={() => setSelectedVenue(null)} />
         )}
       </MapContainer>
     </div>
