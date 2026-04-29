@@ -585,10 +585,13 @@ export async function getCocktailSuggestions(preferences: CocktailPreferences) {
   }
 
   const catalog = await fetchCatalog();
-  const databaseSuggestions = filterCocktails(catalog, preferences);
 
+  // Prendi solo i 3 più simili dal database
+  const databaseSuggestions = filterCocktails(catalog, preferences).slice(0, 3);
+  // Genera sempre 2 cocktail artificiali
   const generatedSuggestions = [generateCocktail(preferences, 0), generateCocktail(preferences, 1)];
-  const cocktails = [...databaseSuggestions, ...generatedSuggestions];
+  // Prima i generati, poi i 3 simili dal database
+  const cocktails = [...generatedSuggestions, ...databaseSuggestions];
 
   console.info("[Lo Zio Configurator] suggestions", {
     preferences,
