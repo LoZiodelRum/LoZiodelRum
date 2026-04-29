@@ -1,3 +1,33 @@
+/* --- COMMUNITY DESKTOP UNIFORM BACKGROUND --- */
+.community-dark-bg {
+  background: linear-gradient(135deg,#3a2a00,#5a3e00) !important;
+  color: #fff !important;
+}
+@media (min-width: 701px) {
+  .community-cta-box {
+    background: linear-gradient(135deg,#3a2a00,#5a3e00);
+    color: #fff;
+    border-radius: 30px;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .community-btn-black {
+    background: #fff;
+    color: #000;
+    font-weight: bold;
+    border-radius: 30px;
+    padding: 12px 20px;
+    border: none;
+    cursor: pointer;
+    align-self: center;
+    margin-top: 18px;
+    font-size: 1.1rem;
+    transition: background 0.18s;
+  }
+}
 /* --- COMMUNITY MOBILE OPTIMIZATION --- */
 @media (max-width: 700px) {
   .community-root {
