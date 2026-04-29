@@ -4,12 +4,7 @@ export default function Community() {
   const navigate = useNavigate();
 
   return (
-    <div style={{
-      background: "#05080c",
-      minHeight: "100vh",
-      color: "#fff",
-      padding: 20
-    }}>
+    <div className="community-root">
 
       {/* HEADER */}
       <h1 style={{ fontSize: 32, fontWeight: 700 }}>
@@ -21,19 +16,10 @@ export default function Community() {
       </p>
 
       {/* BARETTO + CTA */}
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "1fr 1fr",
-        gap: 20,
-        marginBottom: 40
-      }}>
+      <div className="community-topgrid">
 
         {/* BARETTO */}
-        <div style={{
-          background: "linear-gradient(135deg,#3a2a00,#5a3e00)",
-          borderRadius: 20,
-          padding: 20
-        }}>
+        <div className="community-baretto-box">
 
           <div style={{ color: "#f5c76b", marginBottom: 10 }}>
             IN EVIDENZA
@@ -69,31 +55,14 @@ export default function Community() {
 
           <button
             onClick={() => navigate("/baretto")}
-            style={{
-              marginTop: 20,
-              width: "100%",
-              background: "#f5a623",
-              border: "none",
-              padding: 14,
-              borderRadius: 12,
-              fontWeight: "bold",
-              cursor: "pointer"
-            }}
+            className="community-btn community-btn-yellow"
           >
             Accedi alla chat
           </button>
         </div>
 
         {/* CTA DESTRA */}
-        <div style={{
-          background: "linear-gradient(135deg,#3a2a00,#5a3e00)",
-          borderRadius: 30,
-          padding: 30,
-          color: "#fff",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center"
-        }}>
+        <div className="community-cta-box">
           <h2 style={{
             fontSize: 22,
             fontWeight: 700,
@@ -113,16 +82,7 @@ export default function Community() {
 
           <button
             onClick={() => navigate("/crea")}
-            style={{
-              background: "#000",
-              color: "#fff",
-              padding: "12px 20px",
-              borderRadius: 30,
-              border: "none",
-              cursor: "pointer",
-              alignSelf: "center",
-              fontWeight: "bold"
-            }}
+            className="community-btn community-btn-black"
           >
             Crea il tuo cocktail
           </button>
@@ -130,32 +90,12 @@ export default function Community() {
       </div>
 
       {/* CREA POST */}
-      <div style={{
-        background: "#111",
-        borderRadius: 20,
-        padding: 15,
-        marginBottom: 30
-      }}>
-        <div style={{
-          background: "#1a1f25",
-          padding: 12,
-          borderRadius: 30,
-          marginBottom: 10,
-          color: "#888"
-        }}>
+      <div className="community-post-box">
+        <div className="community-post-placeholder">
           A cosa stai pensando?
         </div>
 
-        <button style={{
-          background: "#f5a623",
-          border: "none",
-          padding: "10px 20px",
-          borderRadius: 20,
-          fontWeight: "bold",
-          cursor: "pointer"
-        }}>
-          Pubblica
-        </button>
+        <button className="community-btn community-btn-yellow">Pubblica</button>
       </div>
 
       {/* COMMUNITY GRID */}
@@ -163,11 +103,7 @@ export default function Community() {
         Dalla Community
       </h2>
 
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "1fr 1fr",
-        gap: 15
-      }}>
+      <div className="community-grid">
 
         <div style={{ background: "#111", borderRadius: 20, overflow: "hidden" }}>
           <img src="https://images.unsplash.com/photo-1582571352035-9c9b1e8d9b1c" style={{ width: "100%" }} />
