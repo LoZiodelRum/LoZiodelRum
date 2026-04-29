@@ -88,7 +88,7 @@ export default function Crea() {
           onSubmit={handleSubmit}
           className="crea-cocktail-form-rect"
         >
-          <h1 style={{ color: "#f5a623", marginBottom: 28, fontWeight: 900, fontSize: 38, textAlign: "center", textShadow: "0 2px 8px #fff8" }}>
+          <h1 className="crea-cocktail-title" style={{ marginBottom: 28 }}>
             Crea il tuo Cocktail
           </h1>
 
