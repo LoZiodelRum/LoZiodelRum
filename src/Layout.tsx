@@ -24,7 +24,7 @@ export default function Layout() {
       }}
     >
       {/* NAVBAR */}
-      {!location.pathname.includes("/venues") && (
+      {(!location.pathname.includes("/venues")) && (
         <div
           style={{
             position: "fixed",
@@ -137,7 +137,8 @@ export default function Layout() {
         >
           ☰
         </button>
-      </div>
+        </div>
+      )}
 
       {/* MOBILE MENU OVERLAY */}
       {menuOpen && (
