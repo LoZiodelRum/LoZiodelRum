@@ -85,7 +85,7 @@ export default function Community() {
         </div>
 
         {/* CTA DESTRA */}
-        <div className="community-cta-box-mobile">
+        <div className="community-cta-box">
           <h2 style={{
             fontSize: 22,
             fontWeight: 700,

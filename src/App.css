@@ -1,12 +1,17 @@
+/* Box CTA Community: desktop arancione, mobile scuro */
+.community-cta-box {
+  background: #f5a623;
+  border-radius: 30px;
+  padding: 30px;
+  color: #000;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
 @media (max-width: 900px) {
-  .community-cta-box-mobile {
+  .community-cta-box {
     background: linear-gradient(135deg,#3a2a00,#5a3e00) !important;
     color: #fff !important;
-    border-radius: 30px;
-    padding: 30px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
   }
 }
 
