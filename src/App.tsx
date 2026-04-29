@@ -26,6 +26,7 @@ import Community from "./pages/Community";
 import Crea from "./pages/Crea";
 import AdminPanel from "./pages/AdminPanel.jsx";
 import VenueDetail from "./pages/VenueDetail";
+import Venues from "./pages/Venues";
 
 // 🔥 BARETTO
 import Baretto from "./pages/Baretto";
