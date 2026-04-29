@@ -21,7 +21,7 @@ export default function Community() {
       </p>
 
       {/* BARETTO + CTA */}
-      <div style={{
+      <div className="community-mobile-stack" style={{
         display: "grid",
         gridTemplateColumns: "1fr 1fr",
         gap: 20,
@@ -29,7 +29,7 @@ export default function Community() {
       }}>
 
         {/* BARETTO */}
-        <div style={{
+        <div className="community-mobile-box" style={{
           background: "linear-gradient(135deg,#3a2a00,#5a3e00)",
           borderRadius: 20,
           padding: 20
@@ -85,7 +85,7 @@ export default function Community() {
         </div>
 
         {/* CTA DESTRA */}
-        <div style={{
+        <div className="community-mobile-box" style={{
           background: "linear-gradient(135deg,#3a2a00,#5a3e00)",
           borderRadius: 30,
           padding: 30,
@@ -163,7 +163,7 @@ export default function Community() {
         Dalla Community
       </h2>
 
-      <div style={{
+      <div className="community-mobile-grid" style={{
         display: "grid",
         gridTemplateColumns: "1fr 1fr",
         gap: 15
