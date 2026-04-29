@@ -146,8 +146,9 @@ export default function Crea() {
 
               <div style={{ display: "grid", gap: 24 }}>
                 {suggestions.map((cocktail, idx) => {
-                  // Usa id se presente, altrimenti fallback su nome (da normalizzare per url)
-                  const cocktailId = cocktail.id || cocktail.name?.replace(/\s+/g, "-").toLowerCase();
+                  // Usa id da originalRecord se presente, altrimenti fallback su nome normalizzato
+                  const cocktailId = (cocktail.originalRecord && (cocktail.originalRecord.id || cocktail.originalRecord.ID))
+                    || cocktail.name?.replace(/\s+/g, "-").toLowerCase();
                   return (
                     <div
                       key={cocktail.name + idx}
