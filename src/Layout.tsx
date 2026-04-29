@@ -1,8 +1,9 @@
-import { useNavigate, Outlet } from "react-router-dom";
+import { useNavigate, Outlet, useLocation } from "react-router-dom";
 import { useUser } from "./context/UserContext";
 import { useState } from "react";
 
 export default function Layout() {
+  const location = useLocation();
   const navigate = useNavigate();
   const { user, role, loading } = useUser();
   const [menuOpen, setMenuOpen] = useState(false);
@@ -23,21 +24,22 @@ export default function Layout() {
       }}
     >
       {/* NAVBAR */}
-      <div
-        style={{
-          position: "fixed",
-          top: 0,
-          width: "100%",
-          height: 70,
-          background: "rgba(0,0,0,0.85)",
-          backdropFilter: "blur(10px)",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "space-between",
-          padding: "0 20px",
-          zIndex: 9999,
-        }}
-      >
+      {!location.pathname.includes("/venues") && (
+        <div
+          style={{
+            position: "fixed",
+            top: 0,
+            width: "100%",
+            height: 70,
+            background: "rgba(0,0,0,0.85)",
+            backdropFilter: "blur(10px)",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            padding: "0 20px",
+            zIndex: 9999,
+          }}
+        >
         {/* LOGO - Responsive */}
         <div
           style={{
