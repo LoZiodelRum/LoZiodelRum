@@ -86,19 +86,7 @@ export default function Crea() {
       >
         <form
           onSubmit={handleSubmit}
-          style={{
-            background: "rgba(23,23,23,0.85)",
-            borderRadius: 16,
-            padding: 32,
-            marginBottom: 0,
-            boxShadow: "0 8px 32px #000a",
-            minWidth: 320,
-            maxWidth: 700,
-            width: "100%",
-            display: "flex",
-            flexDirection: "column",
-            alignItems: "center"
-          }}
+          className="crea-cocktail-form-rect"
         >
           <h1 style={{ color: "#f5a623", marginBottom: 28, fontWeight: 900, fontSize: 38, textAlign: "center", textShadow: "0 2px 8px #fff8" }}>
             Crea il tuo Cocktail
@@ -109,38 +97,17 @@ export default function Crea() {
               Effettua il login per salvare le tue creazioni e vedere suggerimenti personalizzati.
             </div>
           )}
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))",
-                gap: 16,
-              }}
-            >
+            <div className="crea-cocktail-grid">
               {Object.entries(preferenceOptions).map(([key, options]) => (
-                <div key={key}>
-                  <label
-                    style={{
-                      color: "#f5a623",
-                      fontWeight: 600,
-                      fontSize: 14,
-                      marginBottom: 6,
-                      display: "block",
-                    }}
-                  >
+                <div key={key} className="crea-cocktail-field">
+                  <label className="crea-cocktail-label">
                     {key.replace(/_/g, " ")}
                   </label>
-
                   <select
                     name={key}
                     value={preferences[key as keyof CocktailPreferences] || ""}
                     onChange={handleChange}
-                    style={{
-                      width: "100%",
-                      background: "#0f0f10",
-                      color: "#f5f5f5",
-                      borderRadius: 8,
-                      padding: "10px 12px",
-                    }}
+                    className="crea-cocktail-select"
                   >
                     <option value="">Scegli...</option>
                     {options.map((option) => (
