@@ -1,6 +1,7 @@
 import Navbar from "../components/Navbar";
 import "../App.css";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { getCocktailSuggestions, CocktailPreferences, SuggestedCocktail } from "../lib/cocktailConfigurator";
 import { useUser } from "../context/UserContext";
 
@@ -29,6 +30,7 @@ export default function Crea() {
   const [suggestions, setSuggestions] = useState<SuggestedCocktail[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [showResults, setShowResults] = useState(false);
+  const navigate = useNavigate();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -143,47 +145,59 @@ export default function Crea() {
               </h2>
 
               <div style={{ display: "grid", gap: 24 }}>
-                {suggestions.map((cocktail, idx) => (
-                  <div
-                    key={cocktail.name + idx}
-                    style={{
-                      background: "#232323",
-                      borderRadius: 14,
-                      padding: 18,
-                    }}
-                  >
-                    <h3 style={{ color: "#f5a623", margin: 0 }}>
-                      {cocktail.name}
-                    </h3>
+                {suggestions.map((cocktail, idx) => {
+                  // Usa id se presente, altrimenti fallback su nome (da normalizzare per url)
+                  const cocktailId = cocktail.id || cocktail.name?.replace(/\s+/g, "-").toLowerCase();
+                  return (
+                    <div
+                      key={cocktail.name + idx}
+                      style={{
+                        background: "#232323",
+                        borderRadius: 14,
+                        padding: 18,
+                        cursor: "pointer",
+                        transition: "box-shadow 0.2s, transform 0.2s",
+                        boxShadow: "0 2px 8px #0005",
+                      }}
+                      onClick={() => navigate(`/drink/${cocktailId}`)}
+                      tabIndex={0}
+                      onKeyDown={e => { if (e.key === "Enter" || e.key === " ") navigate(`/drink/${cocktailId}`); }}
+                      role="button"
+                      aria-label={`Apri scheda di ${cocktail.name}`}
+                    >
+                      <h3 style={{ color: "#f5a623", margin: 0, textDecoration: "underline dotted #f5a62333" }}>
+                        {cocktail.name}
+                      </h3>
 
-                    <div style={{ color: "#e2e8f0", marginTop: 8 }}>
-                      <b>Base:</b> {cocktail.base_spirit} |{" "}
-                      <b>Bicchiere:</b> {cocktail.glass} |{" "}
-                      <b>Tecnica:</b> {cocktail.technique}
+                      <div style={{ color: "#e2e8f0", marginTop: 8 }}>
+                        <b>Base:</b> {cocktail.base_spirit} |{" "}
+                        <b>Bicchiere:</b> {cocktail.glass} |{" "}
+                        <b>Tecnica:</b> {cocktail.technique}
+                      </div>
+
+                      <ul style={{ marginTop: 10 }}>
+                        {cocktail.ingredients.map((ing, i) => (
+                          <li key={i}>
+                            {ing}{" "}
+                            {cocktail.doses[i] && (
+                              <span style={{ color: "#a3e635" }}>
+                                ({cocktail.doses[i]})
+                              </span>
+                            )}
+                          </li>
+                        ))}
+                      </ul>
+
+                      <div style={{ color: "#fbbf24" }}>
+                        <b>Guarnizione:</b> {cocktail.garnish}
+                      </div>
+
+                      <div style={{ color: "#94a3b8", fontSize: 12 }}>
+                        Fonte: {cocktail.source}
+                      </div>
                     </div>
-
-                    <ul style={{ marginTop: 10 }}>
-                      {cocktail.ingredients.map((ing, i) => (
-                        <li key={i}>
-                          {ing}{" "}
-                          {cocktail.doses[i] && (
-                            <span style={{ color: "#a3e635" }}>
-                              ({cocktail.doses[i]})
-                            </span>
-                          )}
-                        </li>
-                      ))}
-                    </ul>
-
-                    <div style={{ color: "#fbbf24" }}>
-                      <b>Guarnizione:</b> {cocktail.garnish}
-                    </div>
-
-                    <div style={{ color: "#94a3b8", fontSize: 12 }}>
-                      Fonte: {cocktail.source}
-                    </div>
-                  </div>
-                ))}
+                  );
+                })}
               </div>
             </div>
           )}
