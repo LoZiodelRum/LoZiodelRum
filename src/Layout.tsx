@@ -24,7 +24,7 @@ export default function Layout() {
       }}
     >
       {/* NAVBAR */}
-      {(!location.pathname.includes("/venues")) && (
+      {(!location.pathname.includes("/venues") && !location.pathname.startsWith("/venue/")) && (
         <div
           style={{
             position: "fixed",
