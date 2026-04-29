@@ -1,15 +1,18 @@
 import { useNavigate } from "react-router-dom";
+import Navbar from "../components/Navbar";
 
 export default function Community() {
   const navigate = useNavigate();
 
   return (
-    <div style={{
-      background: "#05080c",
-      minHeight: "100vh",
-      color: "#fff",
-      padding: 20
-    }}>
+    <>
+      <Navbar />
+      <div style={{
+        background: "#05080c",
+        minHeight: "100vh",
+        color: "#fff",
+        padding: 20
+      }}>
 
       {/* HEADER */}
       <h1 style={{ fontSize: 32, fontWeight: 700 }}>
