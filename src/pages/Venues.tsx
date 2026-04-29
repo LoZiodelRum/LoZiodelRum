@@ -82,7 +82,17 @@ export default function Venues() {
         <p style={{ margin: 0, color: "#94a3b8", fontSize: 14 }}>{venues.length} risultati</p>
       </div>
 
-      <div className="venues-grid">
+      <div
+        className="venues-grid"
+        style={{
+          display: "grid",
+          gap: 14,
+          gridTemplateColumns: "repeat(auto-fit, minmax(300px, 1fr))",
+          padding: "0 40px",
+          maxWidth: 1400,
+          margin: "0 auto",
+        }}
+      >
         {venues.map((venue) => {
           const image = venue.image_url || venue.image || "https://via.placeholder.com/900x600?text=Locale";
           const subtitle = [venue.citta, venue.indirizzo].filter(Boolean).join(" - ");
@@ -93,14 +103,15 @@ export default function Venues() {
               to={`/venue/${venue.id}`}
               className="venue-card"
               style={{
-                position: "relative",
-                overflow: "hidden",
-                borderRadius: 12,
-                color: "#fff",
-                textDecoration: "none",
-                display: "flex",
-                alignItems: "flex-end",
-              }}
+                  position: "relative",
+                  overflow: "hidden",
+                  borderRadius: 12,
+                  color: "#fff",
+                  textDecoration: "none",
+                  display: "flex",
+                  alignItems: "flex-end",
+                  maxWidth: 420,
+                }}
             >
               <img
                 src={image}
