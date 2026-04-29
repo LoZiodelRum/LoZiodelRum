@@ -39,7 +39,7 @@ export default function Venues() {
   }
 
   return (
-    <div className="page fade-in venues-page" style={{ maxWidth: 1100, marginTop: 40, marginLeft: "auto", marginRight: "auto" }}>
+    <div className="page fade-in venues-page" style={{ maxWidth: 1100, marginLeft: "auto", marginRight: "auto" }}>
         <style>{`
         .venues-grid {
           display: grid;
