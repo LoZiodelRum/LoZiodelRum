@@ -145,6 +145,5 @@ export default function Venues() {
         })}
       </div>
     </div>
-    </>
   );
 }
