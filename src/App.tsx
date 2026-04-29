@@ -110,6 +110,7 @@ export default function App() {
           />
 
           {/* ALTRO */}
+          <Route path="/venues" element={<ProtectedRoute><Venues /></ProtectedRoute>} />
           <Route path="/crea" element={<ProtectedRoute><Crea /></ProtectedRoute>} />
           <Route path="/admin" element={<ProtectedRoute><AdminPanel /></ProtectedRoute>} />
           <Route path="/venue/:id" element={<ProtectedRoute><VenueDetail /></ProtectedRoute>} />
