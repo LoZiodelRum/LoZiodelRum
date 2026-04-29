@@ -66,7 +66,7 @@ export default function Community() {
         </div>
 
         {/* CTA DESTRA */}
-        <div className="community-cta-box">
+        <div className="community-cta-box" style={{ background: "linear-gradient(135deg,#3a2a00,#5a3e00)", color: "#fff" }}>
           <h2 style={{
             fontSize: 22,
             fontWeight: 700,
