@@ -510,7 +510,7 @@ export default function VenueDetail() {
   return (
     <>
       <Navbar />
-      <div className="fade-in venue-detail-page" style={{ color: "white" }}>
+      <div className="fade-in venue-detail-page" style={{ color: "white", marginTop: 86 }}>
         <style>{`
           .venue-review-box {
             background: #f2f3f2;
@@ -703,7 +703,7 @@ export default function VenueDetail() {
         {/* VALUTAZIONI */}
         <div className="content-wrapper venue-section">
           <h2 className="section-title" style={sectionTitleStyle}>Valutazioni</h2>
-          <div className="grid-wrapper" style={{ gap: 20, marginTop: 12 }}>
+          <div className="grid-wrapper" style={{ gap: 20, marginTop: 32 }}>
             {[
               { label: "Qualità Drink", value: locale.qualita_drink },
               { label: "Competenza Staff", value: locale.competenza_staff },
@@ -736,7 +736,7 @@ export default function VenueDetail() {
 
           {media.length === 0 && <p>Nessun contenuto disponibile</p>}
 
-          <div className="grid-wrapper" style={{ gap: 10, marginTop: 20 }}>
+          <div className="grid-wrapper" style={{ gap: 10, marginTop: 40 }}>
             {media.map((m) => {
               if (m.tipo === "foto") {
                 return (
