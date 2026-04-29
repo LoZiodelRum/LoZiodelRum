@@ -2,6 +2,7 @@ import "../App.css";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
+import Navbar from "../components/Navbar";
 
 type Venue = {
   id: string;
@@ -39,7 +40,9 @@ export default function Venues() {
   }
 
   return (
-    <div className="page fade-in venues-page" style={{ maxWidth: 1100, marginLeft: "auto", marginRight: "auto" }}>
+    <>
+      <Navbar />
+      <div className="page fade-in venues-page" style={{ maxWidth: 1100, marginLeft: "auto", marginRight: "auto" }}>
         <style>{`
         .venues-grid {
           display: grid;
@@ -155,6 +158,6 @@ export default function Venues() {
           );
         })}
       </div>
-    </div>
+    </>
   );
 }
