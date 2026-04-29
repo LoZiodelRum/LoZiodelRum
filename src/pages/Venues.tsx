@@ -13,6 +13,8 @@ type Venue = {
   image?: string | null;
 };
 
+import Navbar from "../components/Navbar";
+
 export default function Venues() {
   const [venues, setVenues] = useState<Venue[]>([]);
 
@@ -37,7 +39,9 @@ export default function Venues() {
   }
 
   return (
-    <div className="page fade-in venues-page" style={{ maxWidth: 1400 }}>
+    <>
+      <Navbar />
+      <div className="page fade-in venues-page" style={{ maxWidth: 1400, marginTop: 70 }}>
       <style>{`
         .venues-grid {
           display: grid;
