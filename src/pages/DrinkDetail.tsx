@@ -1,5 +1,6 @@
 
 import "../App.css";
+import Navbar from "../components/Navbar";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
@@ -51,7 +52,9 @@ export default function DrinkDetail() {
   if (notFound || !drink) return <div className="page fade-in">Drink non trovato</div>;
 
   return (
-    <div className="page fade-in" style={{ maxWidth: 800, margin: "0 auto", padding: 20 }}>
+    <>
+      <Navbar />
+      <div className="page fade-in" style={{ maxWidth: 800, margin: "0 auto", padding: 20, paddingTop: 86 }}>
       <button className="btn-primary" style={{ marginBottom: 20 }} onClick={() => navigate(-1)}>
         ← Torna indietro
       </button>
@@ -95,7 +98,8 @@ export default function DrinkDetail() {
             ))}
         </div>
       </div>
-    </div>
+      </div>
+    </>
   );
 }
 
