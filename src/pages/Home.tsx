@@ -529,15 +529,7 @@ export default function Home() {
                 <>
                   <img src={l.image_url ?? "https://via.placeholder.com/400x300"} alt={l.nome} style={{ position: "absolute", inset: 0, width: "100%", height: "100%", objectFit: "cover", zIndex: 0 }} />
                   <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to top, rgba(0,0,0,0.8), transparent)", zIndex: 2 }} />
-                  {isAdmin && (
-                    <button
-                      type="button"
-                      onClick={() => startLocaleEdit(l)}
-                      style={{ position: "absolute", top: 10, left: 10, zIndex: 3, border: "none", borderRadius: 8, background: "rgba(245,166,35,0.95)", color: "#111", fontWeight: 700, fontSize: 12, padding: "6px 10px", cursor: "pointer" }}
-                    >
-                      Modifica
-                    </button>
-                  )}
+                  {/* Modifica rimossa su richiesta */}
                   <div className="card-content" style={{ position: "relative", zIndex: 3, padding: 16, width: "100%" }}>
                     <h3 className="card-title" style={{ margin: "0 0 4px 0", fontSize: 18 }}>{l.nome}</h3>
                     <p className="card-subtitle" style={{ margin: 0, fontSize: 14, opacity: 0.9 }}>{l.citta}</p>
