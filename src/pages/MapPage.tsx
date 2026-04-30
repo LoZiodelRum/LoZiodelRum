@@ -65,7 +65,9 @@ export default function MapPage() {
   }
 
   return (
-    <div style={{ height: "100vh", position: "relative" }}>
+      <>
+        <Navbar />
+        <div style={{ height: "100vh", position: "relative" }}>
       <MapContainer
         center={mapCenter}
         zoom={6}
@@ -141,5 +143,6 @@ export default function MapPage() {
         )}
       </MapContainer>
     </div>
+      </>
   );
 }
