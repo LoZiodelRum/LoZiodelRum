@@ -172,13 +172,14 @@ export default function Community() {
         gap: 15
       }}>
 
+
         <div style={{ background: "#111", borderRadius: 20, overflow: "hidden" }}>
-          <img src="https://images.unsplash.com/photo-1582571352035-9c9b1e8d9b1c" style={{ width: "100%" }} />
+          <img src="https://images.unsplash.com/photo-1582571352035-9c9b1e8d9b1c" style={{ width: "100%", borderRadius: 20 }} />
           <div style={{ padding: 12 }}>Old Fashioned affumicato</div>
         </div>
 
         <div style={{ background: "#111", borderRadius: 20, overflow: "hidden" }}>
-          <img src="https://images.unsplash.com/photo-1564758564027-6a3e8a8c3c1c" style={{ width: "100%" }} />
+          <img src="https://images.unsplash.com/photo-1564758564027-6a3e8a8c3c1c" style={{ width: "100%", borderRadius: 20 }} />
           <div style={{ padding: 12 }}>Gin Tonic botanico</div>
         </div>
 
