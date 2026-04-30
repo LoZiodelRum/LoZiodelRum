@@ -98,6 +98,7 @@ export default function PannelloControllo() {
           </select>
         )}
       </div>
+      {/* Schede di inserimento/modifica per ogni sezione */}
       {menuSelezionato === 'utenti' && (
         <>
           <h1>Pannello di Controllo - Utenti</h1>
@@ -159,6 +160,30 @@ export default function PannelloControllo() {
             </tbody>
           </table>
         </>
+      )}
+      {menuSelezionato === 'locali' && (
+        <div style={{ marginTop: 32, background: '#181818', borderRadius: 12, padding: 32, color: '#fff', maxWidth: 600 }}>
+          <h2 style={{ color: '#f5a623' }}>Gestione Locali</h2>
+          <p>Qui apparirà la scheda di inserimento/modifica per i Locali.</p>
+        </div>
+      )}
+      {menuSelezionato === 'cocktail' && (
+        <div style={{ marginTop: 32, background: '#181818', borderRadius: 12, padding: 32, color: '#fff', maxWidth: 600 }}>
+          <h2 style={{ color: '#f5a623' }}>Gestione Cocktail</h2>
+          <p>Qui apparirà la scheda di inserimento/modifica per i Cocktail.</p>
+        </div>
+      )}
+      {menuSelezionato === 'distillati' && (
+        <div style={{ marginTop: 32, background: '#181818', borderRadius: 12, padding: 32, color: '#fff', maxWidth: 600 }}>
+          <h2 style={{ color: '#f5a623' }}>Gestione Distillati</h2>
+          <p>Qui apparirà la scheda di inserimento/modifica per i Distillati.</p>
+        </div>
+      )}
+      {menuSelezionato === 'vini' && (
+        <div style={{ marginTop: 32, background: '#181818', borderRadius: 12, padding: 32, color: '#fff', maxWidth: 600 }}>
+          <h2 style={{ color: '#f5a623' }}>Gestione Vini</h2>
+          <p>Qui apparirà la scheda di inserimento/modifica per i Vini.</p>
+        </div>
       )}
     </div>
     </>
