@@ -67,7 +67,7 @@ export default function DrinkDetail() {
           )}
         </div>
         <div style={{ flex: 2, minWidth: 260 }}>
-          <h1 style={{ fontSize: "2rem", color: "#4b2e1f", marginBottom: 10 }}>{drink.nome}</h1>
+          <h1 style={{ fontSize: "2rem", color: "#f5a623", marginBottom: 10 }}>{drink.nome}</h1>
           {drink.marca && <div style={{ color: "#666", marginBottom: 10 }}><b>Marca:</b> {drink.marca}</div>}
           {drink.categoria && <div style={{ color: "#666", marginBottom: 10 }}><b>Categoria:</b> {drink.categoria}</div>}
           {drink.gradazione && <div style={{ color: "#666", marginBottom: 10 }}><b>Gradazione:</b> {drink.gradazione}</div>}
