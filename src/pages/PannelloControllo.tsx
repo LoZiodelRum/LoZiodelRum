@@ -18,6 +18,8 @@ export default function PannelloControllo() {
   const [loading, setLoading] = useState(false);
   const [savingId, setSavingId] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [menuSelezionato, setMenuSelezionato] = useState<string>('');
+  const [sottoMenuSelezionato, setSottoMenuSelezionato] = useState<string>('');
 
   useEffect(() => {
     fetchUsers();
@@ -59,6 +61,43 @@ export default function PannelloControllo() {
     <>
       <Navbar />
     <div style={{ padding: 40 }}>
+      <div style={{ display: 'flex', alignItems: 'center', gap: 16, marginBottom: 24 }}>
+        <h1 style={{ margin: 0 }}>Pannello di Controllo</h1>
+        <select
+          style={{ fontSize: 18, padding: '6px 16px', borderRadius: 8, background: '#111', color: '#f5a623', border: '1px solid #f5a623', fontWeight: 700 }}
+          value={menuSelezionato}
+          onChange={e => {
+            setMenuSelezionato(e.target.value);
+            setSottoMenuSelezionato('');
+          }}
+        >
+          <option value="">Seleziona sezione...</option>
+          <option value="locali">Locali</option>
+          <option value="cocktail">Cocktail</option>
+          <option value="distillati">Distillati</option>
+          <option value="vini">Vini</option>
+          <option value="utenti">Utenti</option>
+        </select>
+        {menuSelezionato && (
+          <select
+            style={{ fontSize: 16, padding: '6px 12px', borderRadius: 8, background: '#222', color: '#fff', border: '1px solid #444' }}
+            value={sottoMenuSelezionato}
+            onChange={e => {
+              setSottoMenuSelezionato(e.target.value);
+              // Qui puoi aggiungere la logica per mostrare la scheda di inserimento/modifica
+            }}
+          >
+            <option value="">Seleziona...</option>
+            {/* Qui puoi popolare dinamicamente le opzioni in base al menuSelezionato */}
+            {/* Esempio statico: */}
+            {menuSelezionato === 'locali' && <option value="nuovo-locale">Nuovo Locale</option>}
+            {menuSelezionato === 'cocktail' && <option value="nuovo-cocktail">Nuovo Cocktail</option>}
+            {menuSelezionato === 'distillati' && <option value="nuovo-distillato">Nuovo Distillato</option>}
+            {menuSelezionato === 'vini' && <option value="nuovo-vino">Nuovo Vino</option>}
+            {menuSelezionato === 'utenti' && <option value="gestione-utenti">Gestione Utenti</option>}
+          </select>
+        )}
+      </div>
       <h1>Pannello di Controllo - Utenti</h1>
       {error && <div style={{ color: "red", marginBottom: 16 }}>{error}</div>}
       <button onClick={fetchUsers} disabled={loading} style={{ marginBottom: 20 }}>
