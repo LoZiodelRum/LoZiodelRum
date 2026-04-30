@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { MapContainer, TileLayer, Marker, ZoomControl } from "react-leaflet";
 import { X } from "lucide-react";
 import { supabase } from "../lib/supabaseClient";
+import Navbar from "../components/Navbar";
 import "leaflet/dist/leaflet.css";
 import L from "leaflet";
 
