@@ -1,7 +1,12 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 
 export default function AdminPanel() {
   const [loading, setLoading] = useState(false);
+
+  // Funzione mock: cambio ruolo (solo alert)
+  function handleRoleChange(e) {
+    alert(`Ruolo selezionato: ${e.target.value}`);
+  }
 
   return (
     <div style={{ color: "white", padding: 20, minHeight: "100vh", background: "#0f0f0f" }}>
@@ -82,7 +87,10 @@ export default function AdminPanel() {
           </div>
           <div style={{ marginBottom: 14 }}>
             <label style={{ color: "#f5a623", display: "block", marginBottom: 4 }}>Ruolo</label>
-            <select style={{ width: "100%", padding: 10, borderRadius: 6, border: "1px solid #444", background: "#222", color: "#fff" }}>
+            <select
+              style={{ width: "100%", padding: 10, borderRadius: 6, border: "1px solid #444", background: "#222", color: "#fff" }}
+              onChange={handleRoleChange}
+            >
               <option>utente</option>
               <option>bartender</option>
               <option>proprietario</option>
