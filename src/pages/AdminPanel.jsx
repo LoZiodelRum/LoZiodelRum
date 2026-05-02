@@ -4,6 +4,12 @@ export default AdminPanel;
 function AdminPanel(props) {
   // Tutta la logica, funzioni, variabili, hook, e return JSX qui dentro
 
+  // STEP 2: FIX selectedTable undefined
+  const [selectedTable, setSelectedTable] = React.useState("locali");
+
+  // STEP 4: FAILSAFE anti pagina nera
+  if (!selectedTable) return null;
+
   // --- INIZIO LOGICA E RENDERING ---
 
   // (Tutto il codice letto dal file, dalle funzioni, variabili, hook, return JSX, ecc. fino alla riga prima degli stili)
