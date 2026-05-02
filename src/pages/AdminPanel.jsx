@@ -1,7 +1,30 @@
 import React, { useState } from "react";
+import { supabase } from "../lib/supabaseClient";
 
 export default function AdminPanel() {
   const [loading, setLoading] = useState(false);
+
+
+  // Stato lista utenti (mock)
+  const [utenti, setUtenti] = useState([
+    { id: 1, nome: "Mario", cognome: "Rossi", email: "mario@email.it", username: "mariorossi", ruolo: "admin" },
+    { id: 2, nome: "Giulia", cognome: "Bianchi", email: "giulia@email.it", username: "giuliab", ruolo: "utente" },
+  ]);
+  const [loadingUtenti, setLoadingUtenti] = useState(false);
+
+  // Funzione mock: fetch utenti (simula chiamata async)
+  async function fetchUtenti() {
+    setLoadingUtenti(true);
+    // Simula delay e dati
+    setTimeout(() => {
+      setUtenti([
+        { id: 1, nome: "Mario", cognome: "Rossi", email: "mario@email.it", username: "mariorossi", ruolo: "admin" },
+        { id: 2, nome: "Giulia", cognome: "Bianchi", email: "giulia@email.it", username: "giuliab", ruolo: "utente" },
+        { id: 3, nome: "Luca", cognome: "Verdi", email: "luca@email.it", username: "lucav", ruolo: "bartender" },
+      ]);
+      setLoadingUtenti(false);
+    }, 1000);
+  }
 
   // Funzione mock: cambio ruolo (solo alert)
   function handleRoleChange(e) {
@@ -34,9 +57,15 @@ export default function AdminPanel() {
         </div>
       </div>
 
-      {/* LISTA DATI - TABELLA UTENTI STATICO */}
+
+      {/* LISTA DATI - TABELLA UTENTI (mock) */}
       <div style={{ background: "#181818", borderRadius: 16, padding: 24, marginBottom: 32, boxShadow: "0 2px 8px rgba(0,0,0,0.10)", maxWidth: 900 }}>
-        <h2 style={{ color: "#f5a623", fontSize: "1.2rem", marginBottom: 18 }}>Utenti</h2>
+        <h2 style={{ color: "#f5a623", fontSize: "1.2rem", marginBottom: 18, display: "flex", alignItems: "center", gap: 16 }}>
+          Utenti
+          <button onClick={fetchUtenti} disabled={loadingUtenti} style={{ background: "#f5a623", color: "#181818", border: 0, borderRadius: 6, padding: "6px 14px", fontWeight: 700, cursor: "pointer", fontSize: 14 }}>
+            {loadingUtenti ? "Aggiorna..." : "Aggiorna"}
+          </button>
+        </h2>
         <table style={{ width: "100%", borderCollapse: "collapse", color: "#fff" }}>
           <thead>
             <tr style={{ background: "#222", color: "#fff" }}>
@@ -49,22 +78,18 @@ export default function AdminPanel() {
             </tr>
           </thead>
           <tbody>
-            <tr>
-              <td style={{ padding: 8, border: "1px solid #333" }}>Mario</td>
-              <td style={{ padding: 8, border: "1px solid #333" }}>Rossi</td>
-              <td style={{ padding: 8, border: "1px solid #333" }}>mario@email.it</td>
-              <td style={{ padding: 8, border: "1px solid #333" }}>mariorossi</td>
-              <td style={{ padding: 8, border: "1px solid #333" }}>admin</td>
-              <td style={{ padding: 8, border: "1px solid #333" }}><button style={{ background: "#f5a623", color: "#181818", border: 0, borderRadius: 6, padding: "6px 14px", fontWeight: 700, cursor: "pointer" }}>Modifica</button></td>
-            </tr>
-            <tr>
-              <td style={{ padding: 8, border: "1px solid #333" }}>Giulia</td>
-              <td style={{ padding: 8, border: "1px solid #333" }}>Bianchi</td>
-              <td style={{ padding: 8, border: "1px solid #333" }}>giulia@email.it</td>
-              <td style={{ padding: 8, border: "1px solid #333" }}>giuliab</td>
-              <td style={{ padding: 8, border: "1px solid #333" }}>utente</td>
-              <td style={{ padding: 8, border: "1px solid #333" }}><button style={{ background: "#f5a623", color: "#181818", border: 0, borderRadius: 6, padding: "6px 14px", fontWeight: 700, cursor: "pointer" }}>Modifica</button></td>
-            </tr>
+            {utenti.map((utente) => (
+              <tr key={utente.id}>
+                <td style={{ padding: 8, border: "1px solid #333" }}>{utente.nome}</td>
+                <td style={{ padding: 8, border: "1px solid #333" }}>{utente.cognome}</td>
+                <td style={{ padding: 8, border: "1px solid #333" }}>{utente.email}</td>
+                <td style={{ padding: 8, border: "1px solid #333" }}>{utente.username}</td>
+                <td style={{ padding: 8, border: "1px solid #333" }}>{utente.ruolo}</td>
+                <td style={{ padding: 8, border: "1px solid #333" }}>
+                  <button style={{ background: "#f5a623", color: "#181818", border: 0, borderRadius: 6, padding: "6px 14px", fontWeight: 700, cursor: "pointer" }}>Modifica</button>
+                </td>
+              </tr>
+            ))}
           </tbody>
         </table>
       </div>
