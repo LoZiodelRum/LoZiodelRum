@@ -26,98 +26,192 @@ const TABLE_MAP = {
   articoli: { table: "articoli", label: "titolo" },
 };
 
+
 export default function AdminPanel() {
-  const [selectedType, setSelectedType] = useState("locali");
-  const [items, setItems] = useState([]);
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [loading, setLoading] = useState(false);
+  // ...existing code...
+}
 
-  useEffect(() => {
-    async function fetchData() {
-      setLoading(true);
-      setSelectedItem(null);
-      const config = TABLE_MAP[selectedType];
-      let query = supabase.from(config.table).select("*");
-      if (selectedType === "proprietari" || selectedType === "bartender") {
-        query = query.eq("ruolo", config.filter.ruolo);
-      }
-      const { data, error } = await query;
-      setItems(data || []);
-      setLoading(false);
-    }
-    fetchData();
-  }, [selectedType]);
+function AdminPanelLegacyWrapper() {
+  // Stili responsive per select
+  const mobileSelect = {
+    ...select,
+    width: "140px", // leggermente più largo
+    maxWidth: "140px",
+    minWidth: "140px",
+    marginLeft: 0,
+    marginRight: 0,
+    display: "block",
+    fontSize: 18,
+    padding: "12px 8px",
+    alignSelf: "flex-start",
+  };
 
-  // Mapping per apertura schede esistenti
-  function renderDetail() {
-    if (!selectedItem) return null;
-    switch (selectedType) {
-      case "locali":
-        return <LocaleFullCard locale={selectedItem} refresh={() => setSelectedItem(null)} />;
-      case "cocktail":
-        return <CocktailFullCard cocktail={selectedItem} refresh={() => setSelectedItem(null)} />;
-      case "distillati":
-        return <DistillatoFullCard distillato={selectedItem} refresh={() => setSelectedItem(null)} />;
-      case "vini":
-        return <VinoFullCard vino={selectedItem} refresh={() => setSelectedItem(null)} />;
-      case "utenti":
-      case "proprietari":
-      case "bartender":
-        return <UserFullCard user={selectedItem} refresh={() => setSelectedItem(null)} />;
-      case "articoli":
-        return <ArticleFullCard articolo={selectedItem} refresh={() => setSelectedItem(null)} />;
-      default:
-        return null;
-    }
-  }
+  // Rileva mobile
+  const isMobile = window.innerWidth <= 600;
 
   return (
     <>
       <Navbar />
+      <style>{`
+        @media (max-width: 600px) {
+          .admin-section {
+            margin-bottom: 40px !important;
+            margin-left: 0 !important;
+            padding-left: 0 !important;
+            align-items: flex-start !important;
+          }
+          .admin-select {
+            width: 140px !important;
+            max-width: 140px !important;
+            min-width: 140px !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            display: block !important;
+            font-size: 18px !important;
+            padding: 12px 8px !important;
+            text-align: left !important;
+            left: 0 !important;
+            position: relative !important;
+          }
+        }
+      `}</style>
       <div className="page fade-in" style={container}>
         <h1 style={title}>Pannello di Controllo</h1>
-        <div style={{ marginBottom: 32 }}>
-          <label htmlFor="main-menu" style={{ color: "#f5a623", fontWeight: 700, fontSize: 20, marginRight: 16 }}>Gestione contenuti</label>
+
+        {/* LOCALI E MENU DRINK */}
+        <div className="admin-section" style={{...section, alignItems: 'flex-start', marginLeft: 0, paddingLeft: 0}}>
+          <h2 style={orangeTitle}>Locali</h2>
           <select
-            id="main-menu"
-            value={selectedType}
-            onChange={e => setSelectedType(e.target.value)}
-            style={{ ...select, fontSize: 18, minWidth: 180 }}
+            className="admin-select"
+            style={isMobile ? mobileSelect : select}
+            onChange={(e) => {
+              const loc = locali.find((l) => String(l.id) === String(e.target.value));
+              setSelectedLocale(loc);
+            }}
           >
-            {MENU_OPTIONS.map(opt => (
-              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            <option value="">Seleziona</option>
+            {locali.map((l) => (
+              <option key={l.id} value={String(l.id)}>
+                {l.nome}
+              </option>
+            ))}
+          </select>
+          {selectedLocale && (
+            <LocaleFullCard locale={selectedLocale} refresh={() => {}} />
+          )}
+
+          <h2 style={{...orangeTitle, marginTop: 32}}>Cocktail</h2>
+          <select
+            className="admin-select"
+            style={isMobile ? mobileSelect : select}
+            onChange={e => setSelectedCocktail(cocktail.find(c => String(c.id) === String(e.target.value)))}
+          >
+            <option value="">Seleziona</option>
+            {cocktail.map(c => (
+              <option key={c.id} value={String(c.id)}>{c.nome}</option>
+            ))}
+          </select>
+
+          <h2 style={{...orangeTitle, marginTop: 32}}>Distillati</h2>
+          <select
+            className="admin-select"
+            style={isMobile ? mobileSelect : select}
+            onChange={e => setSelectedDistillato(distillati.find(d => String(d.id) === String(e.target.value)))}
+          >
+            <option value="">Seleziona</option>
+            {distillati.map(d => (
+              <option key={d.id} value={String(d.id)}>{d.nome}</option>
+            ))}
+          </select>
+
+          <h2 style={{...orangeTitle, marginTop: 32}}>Vini</h2>
+          <select
+            className="admin-select"
+            style={isMobile ? mobileSelect : select}
+            onChange={e => setSelectedVino(vini.find(v => String(v.id) === String(e.target.value)))}
+          >
+            <option value="">Seleziona</option>
+            {vini.map(v => (
+              <option key={v.id} value={String(v.id)}>{v.nome}</option>
             ))}
           </select>
         </div>
-        <div style={{ minHeight: 300, background: "#181818", borderRadius: 16, padding: 24, boxShadow: "0 2px 12px #000a" }}>
-          {loading ? (
-            <div style={{ color: "#f5a623", fontSize: 20, textAlign: "center", padding: 40 }}>Caricamento…</div>
-          ) : (
-            <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
-              {items.map((item, idx) => (
-                <li
-                  key={item.id || idx}
-                  onClick={() => setSelectedItem(item)}
-                  style={{
-                    padding: "16px 18px",
-                    borderRadius: 10,
-                    marginBottom: 10,
-                    background: selectedItem && selectedItem.id === item.id ? "#f5a623" : "#232323",
-                    color: selectedItem && selectedItem.id === item.id ? "#111" : "#fff",
-                    fontWeight: selectedItem && selectedItem.id === item.id ? 700 : 400,
-                    cursor: "pointer",
-                    transition: "background 0.2s, color 0.2s"
-                  }}
-                >
-                  {item[TABLE_MAP[selectedType].label] || item.username || item.email || item.id}
-                </li>
-              ))}
-              {items.length === 0 && <li style={{ color: "#fff", opacity: 0.7, textAlign: "center", padding: 40 }}>Nessun dato disponibile</li>}
-            </ul>
+
+        {/* UTENTI */}
+        <div className="admin-section" style={{...section, alignItems: 'flex-start', marginLeft: 0, paddingLeft: 0}}>
+          <h2 style={orangeTitle}>Utenti</h2>
+          <select
+            className="admin-select"
+            style={isMobile ? mobileSelect : select}
+            onChange={(e) => {
+              const u = utenti.find((x) => String(x.id) === String(e.target.value));
+              setSelectedUser(u);
+            }}
+          >
+            <option value="">Seleziona</option>
+            {utenti.map((u) => (
+              <option key={u.id} value={String(u.id)}>
+                {u.nome || u.email}
+              </option>
+            ))}
+          </select>
+          {selectedUser && (
+            <UserFullCard user={selectedUser} refresh={() => {}} />
           )}
         </div>
-        <div style={{ marginTop: 32 }}>
-          {renderDetail()}
+
+        {/* BARTENDER */}
+        <div className="admin-section" style={{...section, alignItems: 'flex-start', marginLeft: 0, paddingLeft: 0}}>
+          <h2 style={orangeTitle}>Bartender</h2>
+          <select
+            className="admin-select"
+            style={isMobile ? mobileSelect : select}
+          >
+            <option>Seleziona</option>
+            {bartender.map((b) => (
+              <option key={b.id}>{b.nome}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* PROPRIETARI */}
+        <div className="admin-section" style={{...section, alignItems: 'flex-start', marginLeft: 0, paddingLeft: 0}}>
+          <h2 style={orangeTitle}>Proprietari</h2>
+          <select
+            className="admin-select"
+            style={isMobile ? mobileSelect : select}
+          >
+            <option>Seleziona</option>
+            {proprietari.map((p) => (
+              <option key={p.id}>{p.nome}</option>
+            ))}
+          </select>
+        </div>
+
+        {/* ARTICOLI */}
+        <div className="admin-section" style={{...section, alignItems: 'flex-start', marginLeft: 0, paddingLeft: 0}}>
+          <h2 style={orangeTitle}>Articoli</h2>
+          <select
+            className="admin-select"
+            style={isMobile ? mobileSelect : select}
+            value={selectedArticolo ? String(selectedArticolo.id) : ""}
+            onChange={(e) => {
+              const value = e.target.value;
+              const art = articoli.find((a) => String(a.id) === String(value));
+              setSelectedArticolo(art);
+              setNewArticle(false);
+            }}
+          >
+            <option value="">Seleziona</option>
+            {articoli.map((a) => (
+              <option key={a.id} value={String(a.id)}>
+                {a.titolo}
+              </option>
+            ))}
+          </select>
+          {selectedArticolo && (
+            <ArticleFullCard articolo={selectedArticolo} refresh={() => {}} />
+          )}
         </div>
       </div>
     </>
