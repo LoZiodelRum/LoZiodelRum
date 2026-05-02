@@ -33,10 +33,7 @@ export default function AdminPanel() {
 
 function AdminPanelLegacyWrapper() {
   // Tutto il codice legacy inizia qui
-
-function AdminPanelLegacyWrapper() {
-
-// Tutto il codice legacy termina qui
+  // ...tutto il codice legacy...
 }
 
   // Stili responsive per select
