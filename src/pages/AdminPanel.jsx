@@ -64,6 +64,37 @@ export default function AdminPanel() {
         </table>
       </div>
 
+      {/* FORM STATICO - CREA/MODIFICA UTENTE */}
+      <div style={{ background: "#181818", borderRadius: 16, padding: 24, maxWidth: 500, marginBottom: 32, boxShadow: "0 2px 8px rgba(0,0,0,0.10)" }}>
+        <h2 style={{ color: "#f5a623", fontSize: "1.2rem", marginBottom: 18 }}>Crea / Modifica Utente</h2>
+        <form>
+          <div style={{ marginBottom: 14 }}>
+            <label style={{ color: "#f5a623", display: "block", marginBottom: 4 }}>Nome</label>
+            <input type="text" style={{ width: "100%", padding: 10, borderRadius: 6, border: "1px solid #444", background: "#222", color: "#fff" }} placeholder="Nome" />
+          </div>
+          <div style={{ marginBottom: 14 }}>
+            <label style={{ color: "#f5a623", display: "block", marginBottom: 4 }}>Cognome</label>
+            <input type="text" style={{ width: "100%", padding: 10, borderRadius: 6, border: "1px solid #444", background: "#222", color: "#fff" }} placeholder="Cognome" />
+          </div>
+          <div style={{ marginBottom: 14 }}>
+            <label style={{ color: "#f5a623", display: "block", marginBottom: 4 }}>Email</label>
+            <input type="email" style={{ width: "100%", padding: 10, borderRadius: 6, border: "1px solid #444", background: "#222", color: "#fff" }} placeholder="Email" />
+          </div>
+          <div style={{ marginBottom: 14 }}>
+            <label style={{ color: "#f5a623", display: "block", marginBottom: 4 }}>Ruolo</label>
+            <select style={{ width: "100%", padding: 10, borderRadius: 6, border: "1px solid #444", background: "#222", color: "#fff" }}>
+              <option>utente</option>
+              <option>bartender</option>
+              <option>proprietario</option>
+              <option>admin</option>
+            </select>
+          </div>
+          <button type="submit" style={{ background: "#f5a623", color: "#181818", border: 0, borderRadius: 6, padding: "10px 24px", fontWeight: 700, cursor: "pointer", marginTop: 10 }}>
+            Salva
+          </button>
+        </form>
+      </div>
+
       <p>Versione stabile attiva</p>
     </div>
   );
