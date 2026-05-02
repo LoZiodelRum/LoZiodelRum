@@ -26,29 +26,13 @@ const TABLE_MAP = {
   articoli: { table: "articoli", label: "titolo" },
 };
 
-
 export default function AdminPanel() {
   // ...existing code...
-}
 
-function AdminPanelLegacyWrapper() {
-  // Tutto il codice legacy inizia qui
-  // ...tutto il codice legacy...
-}
 
-  // Stili responsive per select
-  const mobileSelect = {
-    ...select,
-    width: "140px", // leggermente più largo
-    maxWidth: "140px",
-    minWidth: "140px",
-    marginLeft: 0,
-    marginRight: 0,
-    display: "block",
-    fontSize: 18,
-    padding: "12px 8px",
-    alignSelf: "flex-start",
-  };
+
+
+
 
   // Rileva mobile
 function AdminPanelLegacy() {
@@ -358,10 +342,12 @@ function UserFullCard({ user, refresh }) {
         <button style={red} onClick={elimina}>Cancella</button>
       </div>
     </div>
+
   );
 }
 
 /* ================= STILI ================= */
+
 
 const container = {
   padding: "60px 120px",
@@ -374,42 +360,8 @@ const title = {
   fontSize: 32,
   marginBottom: 40,
 };
-
 const orangeTitle = {
   color: "#f5a623",
-};
-
-const section = {
-  marginBottom: 60,
-};
-
-const card = {
-  background: "#0f172a",
-  padding: 30,
-  borderRadius: 20,
-  marginTop: 20,
-  width: "min(100%, 500px)",
-  display: "flex",
-  flexDirection: "column",
-  gap: 15,
-};
-
-const input = {
-  padding: 12,
-  borderRadius: 10,
-  border: "1px solid #333",
-  background: "#020617",
-  color: "white",
-};
-
-const textarea = {
-  ...input,
-  minHeight: 100,
-};
-
-const select = {
-  ...input,
-  width: "min(100%, 260px)",
 };
 
 const actions = {
@@ -421,5 +373,6 @@ const actions = {
 const green = { background: "#16a34a", padding: "10px 14px", borderRadius: 8 };
 const blue = { background: "#2563eb", padding: "10px 14px", borderRadius: 8 };
 const red = { background: "#dc2626", padding: "10px 14px", borderRadius: 8 };
-const orange = { background: "#f5a623", padding: "10px 14px", borderRadius: 8 };
+// CHIUSURA CORRETTA DELLA FUNZIONE PRINCIPALE
+}
 }
