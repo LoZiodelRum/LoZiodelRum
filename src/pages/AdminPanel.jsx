@@ -1912,111 +1912,181 @@ export default function PannelloControllo() {
     setImagePreviewError(false);
   }, [selectedItem?.id, selectedItem?.immagine, selectedTable]);
 
+  // Responsive state for sidebar drawer
+  const [isSidebarOpen, setIsSidebarOpen] = React.useState(false);
+
+  // Detect if mobile/tablet (max-width: 1024px)
+  const [isMobile, setIsMobile] = React.useState(false);
+  React.useEffect(() => {
+    function handleResize() {
+      setIsMobile(window.innerWidth <= 1024);
+    }
+    handleResize();
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
+  }, []);
+
+  // Close sidebar on route/content change (mobile)
+  React.useEffect(() => {
+    if (!isMobile) setIsSidebarOpen(false);
+  }, [isMobile, selectedItem, selectedTable]);
+
   return (
-    <div className="page page-full-bleed fade-in" style={layoutStyle}>
-      <div style={sidebarStyle}>
-        <h2 style={{ color: "#f59e0b", marginBottom: 20, fontSize: "1.2rem" }}>Pannello di Controllo</h2>
+    <>
+      <div className="page page-full-bleed fade-in" style={layoutStyle}>
+        {/* Hamburger for mobile/tablet */}
+        {isMobile && (
+          <button
+            aria-label="Apri menu"
+            style={hamburgerBtnStyle}
+            onClick={() => setIsSidebarOpen((v) => !v)}
+          >
+            <span style={hamburgerIconBar}></span>
+            <span style={hamburgerIconBar}></span>
+            <span style={hamburgerIconBar}></span>
+          </button>
+        )}
 
-        <div style={{ marginTop: 20 }}>
-          {Sidebar("Locali", locali, "Locali", "nome")}
+        <div
+          style={{
+            ...sidebarStyle,
+            ...(isMobile
+              ? {
+                  position: "fixed",
+                  top: 0,
+                  left: isSidebarOpen ? 0 : "-110vw",
+                  zIndex: 100,
+                  height: "100vh",
+                  background: "#0f172a",
+                  transition: "left 0.3s cubic-bezier(.4,0,.2,1)",
+                  boxShadow: isSidebarOpen ? "2px 0 16px #0008" : undefined,
+                  overflowY: "auto",
+                  width: "80vw",
+                  maxWidth: 320,
+                }
+              : {}),
+          }}
+        >
+          <h2 style={{ color: "#f59e0b", marginBottom: 20, fontSize: "1.2rem" }}>Pannello di Controllo</h2>
+
+          <div style={{ marginTop: 20 }}>
+            {Sidebar("Locali", locali, "Locali", "nome")}
+          </div>
+
+          {Sidebar("Utenti", utenti, "profili", "username")}
+          {Sidebar("Bartender", bartender, "profili", "username")}
+          {Sidebar("Proprietari", proprietari, "profili", "username")}
+          {Sidebar("Cocktail", cocktail, "cocktail", "nome")}
+          {Sidebar("Distillati", distillati, "distillati", "nome")}
+          {Sidebar("Vini", vini, wineTableName, "nome")}
+          {Sidebar("Articoli", articoli, "articoli", "titolo")}
         </div>
 
-        {Sidebar("Utenti", utenti, "profili", "username")}
-        {Sidebar("Bartender", bartender, "profili", "username")}
-        {Sidebar("Proprietari", proprietari, "profili", "username")}
-        {Sidebar("Cocktail", cocktail, "cocktail", "nome")}
-        {Sidebar("Distillati", distillati, "distillati", "nome")}
-        {Sidebar("Vini", vini, wineTableName, "nome")}
-        {Sidebar("Articoli", articoli, "articoli", "titolo")}
-      </div>
-
-      <div style={contentStyle}>
-        <div style={kpiGridStyle}>
-          <div style={kpiCardStyle}><span style={kpiLabelStyle}>Utenti</span> <strong>{kpi.utenti}</strong></div>
-          <div style={kpiCardStyle}><span style={kpiLabelStyle}>Locali</span> <strong>{kpi.locali}</strong></div>
-          <div style={kpiCardStyle}><span style={kpiLabelStyle}>Drink</span> <strong>{kpi.drink}</strong></div>
-          <div style={kpiCardStyle}><span style={kpiLabelStyle}>Articoli</span> <strong>{kpi.articoli}</strong></div>
+        {/* Overlay to close sidebar on mobile */}
+        {isMobile && isSidebarOpen && (
+          <div
+            onClick={() => setIsSidebarOpen(false)}
+            style={{
+              position: "fixed",
+              top: 0,
+              left: 0,
+              width: "100vw",
+              height: "100vh",
+              background: "rgba(0,0,0,0.35)",
+              zIndex: 99,
+            }}
+          />
+        )}
         </div>
 
-        <div style={approvalBoxStyle}>
-          <h3 style={{ fontSize: "1rem", color: "#f59e0b", marginBottom: 10 }}>Approvazioni pendenti</h3>
-          {utenti.filter(u => !u.approvato).map(u => (
-            <div key={u.id} style={approvalRowStyle}>
-              <span style={{ fontSize: "0.9rem" }}>{u.username} ({u.ruolo})</span>
-              <button style={btnApproveStyle} onClick={() => toggleApprovazione(u)}>
-                Approva
+        <div
+          style={{
+            ...contentStyle,
+            ...(isMobile
+              ? { marginLeft: 0, width: "100%", maxWidth: "100vw", padding: "16px 4vw 120px" }
+              : {}),
+          }}
+        >
+          <div style={kpiGridStyle}>
+            <div style={kpiCardStyle}><span style={kpiLabelStyle}>Utenti</span> <strong>{kpi.utenti}</strong></div>
+            <div style={kpiCardStyle}><span style={kpiLabelStyle}>Locali</span> <strong>{kpi.locali}</strong></div>
+            <div style={kpiCardStyle}><span style={kpiLabelStyle}>Drink</span> <strong>{kpi.drink}</strong></div>
+            <div style={kpiCardStyle}><span style={kpiLabelStyle}>Articoli</span> <strong>{kpi.articoli}</strong></div>
+          </div>
+
+          <div style={approvalBoxStyle}>
+            <h3 style={{ fontSize: "1rem", color: "#f59e0b", marginBottom: 10 }}>Approvazioni pendenti</h3>
+            {utenti.filter(u => !u.approvato).map(u => (
+              <div key={u.id} style={approvalRowStyle}>
+                <span style={{ fontSize: "0.9rem" }}>{u.username} ({u.ruolo})</span>
+                <button style={btnApproveStyle} onClick={() => toggleApprovazione(u)}>
+                  Approva
+                </button>
+              </div>
+            ))}
+            {utenti.filter(u => !u.approvato).length === 0 && (
+              <p style={{ fontSize: "0.8rem", color: "#666" }}>Nessun utente da approvare.</p>
+            )}
+          </div>
+
+          <div style={quickActionGridStyle}>
+            <div style={quickActionCardStyle}>
+              <h3 style={quickActionTitleStyle}>Aggiunta Cocktail</h3>
+              <button style={quickActionBtnStyle} onClick={() => openCreateEditor("cocktail", cocktail)}>
+                modifica cocktail
               </button>
             </div>
-          ))}
-          {utenti.filter(u => !u.approvato).length === 0 && (
-            <p style={{ fontSize: "0.8rem", color: "#666" }}>Nessun utente da approvare.</p>
-          )}
-        </div>
 
-        <div style={quickActionGridStyle}>
-          <div style={quickActionCardStyle}>
-            <h3 style={quickActionTitleStyle}>Aggiunta Cocktail</h3>
-            <button style={quickActionBtnStyle} onClick={() => openCreateEditor("cocktail", cocktail)}>
-              modifica cocktail
-            </button>
+            <div style={quickActionCardStyle}>
+              <h3 style={quickActionTitleStyle}>Aggiunta Distillati</h3>
+              <button style={quickActionBtnStyle} onClick={() => openCreateEditor("distillati", distillati)}>
+                modifica distillati
+              </button>
+            </div>
+
+            <div style={quickActionCardStyle}>
+              <h3 style={quickActionTitleStyle}>Aggiunta Vini</h3>
+              <button style={quickActionBtnStyle} onClick={() => openCreateEditor(wineTableName, vini)}>
+                modifica vini
+              </button>
+            </div>
+
+            <div style={quickActionCardStyle}>
+              <h3 style={quickActionTitleStyle}>Aggiunta Locali</h3>
+              <button style={quickActionBtnStyle} onClick={() => openCreateEditor("Locali", locali)}>
+                modifica locali
+              </button>
+            </div>
+
+            <div style={quickActionCardStyle}>
+              <h3 style={quickActionTitleStyle}>Aggiunta Bartender</h3>
+              <button style={quickActionBtnStyle} onClick={() => openCreateEditor("profili", bartender, "bartender")}>modifica bartender</button>
+            </div>
+
+            <div style={quickActionCardStyle}>
+              <h3 style={quickActionTitleStyle}>Aggiunta Proprietari</h3>
+              <button style={quickActionBtnStyle} onClick={() => openCreateEditor("profili", proprietari, "proprietario")}>modifica proprietari</button>
+            </div>
           </div>
 
-          <div style={quickActionCardStyle}>
-            <h3 style={quickActionTitleStyle}>Aggiunta Distillati</h3>
-            <button style={quickActionBtnStyle} onClick={() => openCreateEditor("distillati", distillati)}>
-              modifica distillati
-            </button>
-          </div>
+          {selectedItem && (
+            <div
+              style={{
+                ...cardStyle,
+                ...(isMobile ? { width: "100vw", maxWidth: "100vw", marginLeft: "-4vw", borderRadius: 0, marginTop: 18, marginBottom: 40, padding: "18px 4vw 36px" } : {}),
+              }}
+            >
+              <h2 style={{ fontSize: "1.1rem", marginBottom: 15 }}>
+                {isCreating ? "Nuovo elemento" : (selectedItem.nome || selectedItem.titolo || selectedItem.username)}
+              </h2>
 
-          <div style={quickActionCardStyle}>
-            <h3 style={quickActionTitleStyle}>Aggiunta Vini</h3>
-            <button style={quickActionBtnStyle} onClick={() => openCreateEditor(wineTableName, vini)}>
-              modifica vini
-            </button>
-          </div>
+              {saveStatus === "ok" && <div style={badgeOkStyle}>Modifica salvata</div>}
+              {saveStatus === "error" && <div style={badgeErrorStyle}>Modifica non salvata</div>}
 
-          <div style={quickActionCardStyle}>
-            <h3 style={quickActionTitleStyle}>Aggiunta Locali</h3>
-            <button style={quickActionBtnStyle} onClick={() => openCreateEditor("Locali", locali)}>
-              modifica locali
-            </button>
-          </div>
-
-          <div style={quickActionCardStyle}>
-            <h3 style={quickActionTitleStyle}>Aggiunta Bartender</h3>
-            <button style={quickActionBtnStyle} onClick={() => openCreateEditor("profili", bartender, "bartender")}>
-              modifica bartender
-            </button>
-          </div>
-
-          <div style={quickActionCardStyle}>
-            <h3 style={quickActionTitleStyle}>Aggiunta Proprietari</h3>
-            <button style={quickActionBtnStyle} onClick={() => openCreateEditor("profili", proprietari, "proprietario")}>
-              modifica proprietari
-            </button>
-          </div>
-        </div>
-
-        {selectedItem && (
-          <div style={cardStyle}>
-            <h2 style={{ fontSize: "1.1rem", marginBottom: 15 }}>
-              {isCreating
-                ? "Nuovo elemento"
-                : (selectedItem.nome || selectedItem.titolo || selectedItem.username)}
-            </h2>
-
-            {saveStatus === "ok" && (
-              <div style={badgeOkStyle}>Modifica salvata</div>
-            )}
-
-            {saveStatus === "error" && (
-              <div style={badgeErrorStyle}>Modifica non salvata</div>
-            )}
-
-            {isImageSidebarTable ? (
-              <div style={{ display: "flex", gap: 20, alignItems: "flex-start" }}>
-                <div style={{ flex: 1, display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", gap: 15 }}>
-                  {editorKeys.map(key => {
+              {isImageSidebarTable ? (
+                <div style={{ display: isMobile ? "block" : "flex", gap: 20, alignItems: "flex-start" }}>
+                  <div style={{ flex: 1, display: "grid", gridTemplateColumns: isMobile ? "1fr" : "repeat(auto-fill, minmax(200px, 1fr))", gap: 15 }}>
+                    {editorKeys.map(key => {
                     if ((key === "id" && selectedTable !== "profili") || (selectedTable === "cocktail" && (key === "data_creazione" || key === "created_at" || key === "texture")) || key === "immagine") return null;
                     if (selectedTable === "Locali" && removedLocaliFields.has(key)) return null;
                     return (
@@ -2597,9 +2667,38 @@ export default function PannelloControllo() {
           </div>
         )}
       </div>
-    </div>
+    </> 
   );
 }
+
+
+// Responsive hamburger button and icon
+const hamburgerBtnStyle = {
+  position: "fixed",
+  top: 18,
+  left: 18,
+  zIndex: 120,
+  width: 44,
+  height: 44,
+  background: "#0f172a",
+  border: "1px solid #334155",
+  borderRadius: 8,
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: 5,
+  cursor: "pointer",
+  boxShadow: "0 2px 8px #0005",
+};
+const hamburgerIconBar = {
+  width: 24,
+  height: 3,
+  background: "#f59e0b",
+  borderRadius: 2,
+  margin: 0,
+  display: "block",
+};
 
 /* STILI OTTIMIZZATI PER MOBILE & TABLET */
 
