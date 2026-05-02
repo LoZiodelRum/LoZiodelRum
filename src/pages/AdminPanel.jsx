@@ -1,51 +1,128 @@
+
 import Navbar from "../components/Navbar";
-// @ts-nocheck
 import "../App.css";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 
+const MENU_OPTIONS = [
+  { label: "Locali", value: "locali" },
+  { label: "Cocktail", value: "cocktail" },
+  { label: "Distillati", value: "distillati" },
+  { label: "Vini", value: "vini" },
+  { label: "Utenti", value: "utenti" },
+  { label: "Proprietari", value: "proprietari" },
+  { label: "Bartender", value: "bartender" },
+  { label: "Articoli", value: "articoli" },
+];
+
+const TABLE_MAP = {
+  locali: { table: "locali", label: "nome" },
+  cocktail: { table: "cocktail", label: "nome" },
+  distillati: { table: "distillati", label: "nome" },
+  vini: { table: "vini", label: "nome" },
+  utenti: { table: "profili", label: "nome" },
+  proprietari: { table: "profili", label: "nome", filter: { ruolo: "proprietario" } },
+  bartender: { table: "profili", label: "nome", filter: { ruolo: "bartender" } },
+  articoli: { table: "articoli", label: "titolo" },
+};
+
 export default function AdminPanel() {
-  const [utenti, setUtenti] = useState([]);
-  const [bartender, setBartender] = useState([]);
-  const [proprietari, setProprietari] = useState([]);
-  const [locali, setLocali] = useState([]);
-  const [articoli, setArticoli] = useState([]);
-  const [cocktail, setCocktail] = useState([]);
-  const [distillati, setDistillati] = useState([]);
-  const [vini, setVini] = useState([]);
-  const [selectedCocktail, setSelectedCocktail] = useState(null);
-  const [selectedDistillato, setSelectedDistillato] = useState(null);
-  const [selectedVino, setSelectedVino] = useState(null);
+  const [selectedType, setSelectedType] = useState("locali");
+  const [items, setItems] = useState([]);
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [loading, setLoading] = useState(false);
 
-  const [selectedUser, setSelectedUser] = useState(null);
-  const [selectedLocale, setSelectedLocale] = useState(null);
-  const [selectedArticolo, setSelectedArticolo] = useState(null);
-  const [newArticle, setNewArticle] = useState(false);
-
-  // Carica dati menu a tendina
   useEffect(() => {
-    async function fetchAll() {
-      const [utRes, baRes, prRes, loRes, arRes, coRes, diRes, viRes] = await Promise.all([
-        supabase.from("Profili").select("*"),
-        supabase.from("Profili").select("*").ilike("ruolo", "%bartender%"),
-        supabase.from("Profili").select("*").ilike("ruolo", "%proprietario%"),
-        supabase.from("Locali").select("*"),
-        supabase.from("articoli").select("*"),
-        supabase.from("cocktail").select("*"),
-        supabase.from("distillati").select("*"),
-        supabase.from("vini").select("*"),
-      ]);
-      setUtenti(utRes.data || []);
-      setBartender(baRes.data || []);
-      setProprietari(prRes.data || []);
-      setLocali((loRes.data || []).slice().sort((a, b) => (a.nome || '').localeCompare(b.nome || '')));
-      setArticoli(arRes.data || []);
-      setCocktail((coRes.data || []).slice().sort((a, b) => (a.nome || '').localeCompare(b.nome || '')));
-      setDistillati((diRes.data || []).slice().sort((a, b) => (a.nome || '').localeCompare(b.nome || '')));
-      setVini((viRes.data || []).slice().sort((a, b) => (a.nome || '').localeCompare(b.nome || '')));
+    async function fetchData() {
+      setLoading(true);
+      setSelectedItem(null);
+      const config = TABLE_MAP[selectedType];
+      let query = supabase.from(config.table).select("*");
+      if (selectedType === "proprietari" || selectedType === "bartender") {
+        query = query.eq("ruolo", config.filter.ruolo);
+      }
+      const { data, error } = await query;
+      setItems(data || []);
+      setLoading(false);
     }
-    fetchAll();
-  }, []);
+    fetchData();
+  }, [selectedType]);
+
+  // Mapping per apertura schede esistenti
+  function renderDetail() {
+    if (!selectedItem) return null;
+    switch (selectedType) {
+      case "locali":
+        return <LocaleFullCard locale={selectedItem} refresh={() => setSelectedItem(null)} />;
+      case "cocktail":
+        return <CocktailFullCard cocktail={selectedItem} refresh={() => setSelectedItem(null)} />;
+      case "distillati":
+        return <DistillatoFullCard distillato={selectedItem} refresh={() => setSelectedItem(null)} />;
+      case "vini":
+        return <VinoFullCard vino={selectedItem} refresh={() => setSelectedItem(null)} />;
+      case "utenti":
+      case "proprietari":
+      case "bartender":
+        return <UserFullCard user={selectedItem} refresh={() => setSelectedItem(null)} />;
+      case "articoli":
+        return <ArticleFullCard articolo={selectedItem} refresh={() => setSelectedItem(null)} />;
+      default:
+        return null;
+    }
+  }
+
+  return (
+    <>
+      <Navbar />
+      <div className="page fade-in" style={container}>
+        <h1 style={title}>Pannello di Controllo</h1>
+        <div style={{ marginBottom: 32 }}>
+          <label htmlFor="main-menu" style={{ color: "#f5a623", fontWeight: 700, fontSize: 20, marginRight: 16 }}>Gestione contenuti</label>
+          <select
+            id="main-menu"
+            value={selectedType}
+            onChange={e => setSelectedType(e.target.value)}
+            style={{ ...select, fontSize: 18, minWidth: 180 }}
+          >
+            {MENU_OPTIONS.map(opt => (
+              <option key={opt.value} value={opt.value}>{opt.label}</option>
+            ))}
+          </select>
+        </div>
+        <div style={{ minHeight: 300, background: "#181818", borderRadius: 16, padding: 24, boxShadow: "0 2px 12px #000a" }}>
+          {loading ? (
+            <div style={{ color: "#f5a623", fontSize: 20, textAlign: "center", padding: 40 }}>Caricamento…</div>
+          ) : (
+            <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+              {items.map((item, idx) => (
+                <li
+                  key={item.id || idx}
+                  onClick={() => setSelectedItem(item)}
+                  style={{
+                    padding: "16px 18px",
+                    borderRadius: 10,
+                    marginBottom: 10,
+                    background: selectedItem && selectedItem.id === item.id ? "#f5a623" : "#232323",
+                    color: selectedItem && selectedItem.id === item.id ? "#111" : "#fff",
+                    fontWeight: selectedItem && selectedItem.id === item.id ? 700 : 400,
+                    cursor: "pointer",
+                    transition: "background 0.2s, color 0.2s"
+                  }}
+                >
+                  {item[TABLE_MAP[selectedType].label] || item.username || item.email || item.id}
+                </li>
+              ))}
+              {items.length === 0 && <li style={{ color: "#fff", opacity: 0.7, textAlign: "center", padding: 40 }}>Nessun dato disponibile</li>}
+            </ul>
+          )}
+        </div>
+        <div style={{ marginTop: 32 }}>
+          {renderDetail()}
+        </div>
+      </div>
+    </>
+  );
+}
 
   // Stili responsive per select
   const mobileSelect = {
