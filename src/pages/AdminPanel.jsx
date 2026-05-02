@@ -3,13 +3,33 @@ import { TASTE_PROFILE_OPTIONS, AROMATIC_FAMILY_OPTIONS } from "../lib/cocktailO
 
 export default AdminPanel;
 function AdminPanel(props) {
-  // Tutta la logica, funzioni, variabili, hook, e return JSX qui dentro
 
-  // STEP 2: FIX selectedTable undefined
+  // --- STATE & VARS ---
   const [selectedTable, setSelectedTable] = React.useState("locali");
+  const [selectedItem, setSelectedItem] = React.useState(null);
+  const [selectedOriginalItem, setSelectedOriginalItem] = React.useState(null);
+  const [saveStatus, setSaveStatus] = React.useState(null);
+  const [isCreating, setIsCreating] = React.useState(false);
+  const [createRoleHint, setCreateRoleHint] = React.useState(null);
+  const [uploadingWineImage, setUploadingWineImage] = React.useState(false);
+  const [uploadingCocktailImage, setUploadingCocktailImage] = React.useState(false);
+  const [uploadingDistillatoImage, setUploadingDistillatoImage] = React.useState(false);
+  const [uploadingLocaleImage, setUploadingLocaleImage] = React.useState(false);
+  const [uploadingLocaleVideo, setUploadingLocaleVideo] = React.useState(false);
+  const [imagePreviewError, setImagePreviewError] = React.useState(false);
+  // supabase client
+  const supabase = require("../lib/supabaseClient").supabase || window.supabase;
+  // fallback wineTableName
+  const wineTableName = "vini";
+  // fallback removedLocaliFields
+  const removedLocaliFields = ["__typename", "created_at", "updated_at", "deleted_at", "owner_id", "owner", "approvato", "verificato", "in_evidenza", "menu_caricato", "numero_recensioni", "numero_cocktail_creati", "numero_locali_visitati", "recensioni", "cocktail_creati", "locali_segnalati", "preferiti", "badges", "points", "level", "ultimo_accesso", "email_verificata", "status", "bio_breve", "avatar_url", "city", "paese", "genere", "distillato_preferito", "cocktail_preferito", "intensita_preferita", "profilo_gustativo_preferito", "famiglia_aromatica_preferita", "metodo_consumo_preferito", "instagram", "tiktok", "sito_web", "nome_locale", "esperienza_anni", "specialita", "certificazioni", "indirizzo_locale", "citta_locale", "partita_iva", "numero_dipendenti", "descrizione_locale"];
+  // fallback loadData
+  const loadData = async () => {};
 
-  // STEP 4: FAILSAFE anti pagina nera
-  if (!selectedTable) return null;
+  // FAILSAFE anti pagina nera/undefined
+  if (!selectedTable || typeof selectedTable === "undefined") return null;
+  // Failsafe for selectedItem in render
+  // (other failsafes are inline in code)
 
   // --- INIZIO LOGICA E RENDERING ---
 
