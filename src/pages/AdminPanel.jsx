@@ -51,6 +51,7 @@ function AdminPanelLegacyWrapper() {
   };
 
   // Rileva mobile
+function AdminPanelLegacy() {
   const isMobile = window.innerWidth <= 600;
 
   return (
@@ -421,3 +422,4 @@ const green = { background: "#16a34a", padding: "10px 14px", borderRadius: 8 };
 const blue = { background: "#2563eb", padding: "10px 14px", borderRadius: 8 };
 const red = { background: "#dc2626", padding: "10px 14px", borderRadius: 8 };
 const orange = { background: "#f5a623", padding: "10px 14px", borderRadius: 8 };
+}
