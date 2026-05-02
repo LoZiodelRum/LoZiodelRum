@@ -308,7 +308,7 @@ export default function AdminPanel() {
       </div>
     </>
   );
-}
+
 
 function ArticoloFullCard({ articolo, refresh }) {
   const [edit, setEdit] = useState(articolo);
