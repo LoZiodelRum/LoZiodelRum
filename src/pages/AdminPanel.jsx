@@ -26,9 +26,36 @@ export default function AdminPanel() {
     }, 1000);
   }
 
-  // Funzione mock: cambio ruolo (solo alert)
-  function handleRoleChange(e) {
-    alert(`Ruolo selezionato: ${e.target.value}`);
+
+  // Stato form utente (mock)
+  const [formUser, setFormUser] = useState({ nome: "", cognome: "", email: "", ruolo: "utente" });
+
+  // Funzione: click su "Modifica" popola il form
+
+  function handleEditUser(utente) {
+    setFormUser({
+      nome: utente.nome,
+      cognome: utente.cognome,
+      email: utente.email,
+      ruolo: utente.ruolo,
+    });
+  }
+
+  // Funzione: submit form utente (mock)
+  function handleFormSubmit(e) {
+    e.preventDefault();
+    alert(`Dati inviati: ${JSON.stringify(formUser, null, 2)}`);
+    // Reset form dopo submit
+    setFormUser({ nome: "", cognome: "", email: "", ruolo: "utente" });
+  }
+
+  // Funzione: elimina utente (mock, solo stato locale)
+  function handleDeleteUser(id) {
+    setUtenti(u => u.filter(user => user.id !== id));
+    // Se il form mostra l'utente eliminato, resetta il form
+    if (formUser && utenti.find(u => u.id === id && u.email === formUser.email)) {
+      setFormUser({ nome: "", cognome: "", email: "", ruolo: "utente" });
+    }
   }
 
   return (
@@ -86,7 +113,18 @@ export default function AdminPanel() {
                 <td style={{ padding: 8, border: "1px solid #333" }}>{utente.username}</td>
                 <td style={{ padding: 8, border: "1px solid #333" }}>{utente.ruolo}</td>
                 <td style={{ padding: 8, border: "1px solid #333" }}>
-                  <button style={{ background: "#f5a623", color: "#181818", border: 0, borderRadius: 6, padding: "6px 14px", fontWeight: 700, cursor: "pointer" }}>Modifica</button>
+                  <button
+                    style={{ background: "#f5a623", color: "#181818", border: 0, borderRadius: 6, padding: "6px 14px", fontWeight: 700, cursor: "pointer", marginRight: 8 }}
+                    onClick={() => handleEditUser(utente)}
+                  >
+                    Modifica
+                  </button>
+                  <button
+                    style={{ background: "#e74c3c", color: "#fff", border: 0, borderRadius: 6, padding: "6px 14px", fontWeight: 700, cursor: "pointer" }}
+                    onClick={() => handleDeleteUser(utente.id)}
+                  >
+                    Elimina
+                  </button>
                 </td>
               </tr>
             ))}
@@ -97,33 +135,59 @@ export default function AdminPanel() {
       {/* FORM STATICO - CREA/MODIFICA UTENTE */}
       <div style={{ background: "#181818", borderRadius: 16, padding: 24, maxWidth: 500, marginBottom: 32, boxShadow: "0 2px 8px rgba(0,0,0,0.10)" }}>
         <h2 style={{ color: "#f5a623", fontSize: "1.2rem", marginBottom: 18 }}>Crea / Modifica Utente</h2>
-        <form>
+        <form onSubmit={handleFormSubmit}>
           <div style={{ marginBottom: 14 }}>
             <label style={{ color: "#f5a623", display: "block", marginBottom: 4 }}>Nome</label>
-            <input type="text" style={{ width: "100%", padding: 10, borderRadius: 6, border: "1px solid #444", background: "#222", color: "#fff" }} placeholder="Nome" />
+            <input
+              type="text"
+              style={{ width: "100%", padding: 10, borderRadius: 6, border: "1px solid #444", background: "#222", color: "#fff" }}
+              placeholder="Nome"
+              value={formUser.nome}
+              onChange={e => setFormUser(f => ({ ...f, nome: e.target.value }))}
+            />
           </div>
           <div style={{ marginBottom: 14 }}>
             <label style={{ color: "#f5a623", display: "block", marginBottom: 4 }}>Cognome</label>
-            <input type="text" style={{ width: "100%", padding: 10, borderRadius: 6, border: "1px solid #444", background: "#222", color: "#fff" }} placeholder="Cognome" />
+            <input
+              type="text"
+              style={{ width: "100%", padding: 10, borderRadius: 6, border: "1px solid #444", background: "#222", color: "#fff" }}
+              placeholder="Cognome"
+              value={formUser.cognome}
+              onChange={e => setFormUser(f => ({ ...f, cognome: e.target.value }))}
+            />
           </div>
           <div style={{ marginBottom: 14 }}>
             <label style={{ color: "#f5a623", display: "block", marginBottom: 4 }}>Email</label>
-            <input type="email" style={{ width: "100%", padding: 10, borderRadius: 6, border: "1px solid #444", background: "#222", color: "#fff" }} placeholder="Email" />
+            <input
+              type="email"
+              style={{ width: "100%", padding: 10, borderRadius: 6, border: "1px solid #444", background: "#222", color: "#fff" }}
+              placeholder="Email"
+              value={formUser.email}
+              onChange={e => setFormUser(f => ({ ...f, email: e.target.value }))}
+            />
           </div>
           <div style={{ marginBottom: 14 }}>
             <label style={{ color: "#f5a623", display: "block", marginBottom: 4 }}>Ruolo</label>
             <select
               style={{ width: "100%", padding: 10, borderRadius: 6, border: "1px solid #444", background: "#222", color: "#fff" }}
-              onChange={handleRoleChange}
+              value={formUser.ruolo}
+              onChange={e => setFormUser(f => ({ ...f, ruolo: e.target.value }))}
             >
-              <option>utente</option>
-              <option>bartender</option>
-              <option>proprietario</option>
-              <option>admin</option>
+              <option value="utente">utente</option>
+              <option value="bartender">bartender</option>
+              <option value="proprietario">proprietario</option>
+              <option value="admin">admin</option>
             </select>
           </div>
-          <button type="submit" style={{ background: "#f5a623", color: "#181818", border: 0, borderRadius: 6, padding: "10px 24px", fontWeight: 700, cursor: "pointer", marginTop: 10 }}>
+          <button type="submit" style={{ background: "#f5a623", color: "#181818", border: 0, borderRadius: 6, padding: "10px 24px", fontWeight: 700, cursor: "pointer", marginTop: 10, marginRight: 10 }}>
             Salva
+          </button>
+          <button
+            type="button"
+            style={{ background: "#444", color: "#fff", border: 0, borderRadius: 6, padding: "10px 24px", fontWeight: 700, cursor: "pointer", marginTop: 10 }}
+            onClick={() => setFormUser({ nome: "", cognome: "", email: "", ruolo: "utente" })}
+          >
+            Reset
           </button>
         </form>
       </div>
