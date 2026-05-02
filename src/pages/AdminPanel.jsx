@@ -29,6 +29,41 @@ export default function AdminPanel() {
         </div>
       </div>
 
+      {/* LISTA DATI - TABELLA UTENTI STATICO */}
+      <div style={{ background: "#181818", borderRadius: 16, padding: 24, marginBottom: 32, boxShadow: "0 2px 8px rgba(0,0,0,0.10)", maxWidth: 900 }}>
+        <h2 style={{ color: "#f5a623", fontSize: "1.2rem", marginBottom: 18 }}>Utenti</h2>
+        <table style={{ width: "100%", borderCollapse: "collapse", color: "#fff" }}>
+          <thead>
+            <tr style={{ background: "#222", color: "#fff" }}>
+              <th style={{ padding: 8, border: "1px solid #444" }}>Nome</th>
+              <th style={{ padding: 8, border: "1px solid #444" }}>Cognome</th>
+              <th style={{ padding: 8, border: "1px solid #444" }}>Email</th>
+              <th style={{ padding: 8, border: "1px solid #444" }}>Username</th>
+              <th style={{ padding: 8, border: "1px solid #444" }}>Ruolo</th>
+              <th style={{ padding: 8, border: "1px solid #444" }}>Azione</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style={{ padding: 8, border: "1px solid #333" }}>Mario</td>
+              <td style={{ padding: 8, border: "1px solid #333" }}>Rossi</td>
+              <td style={{ padding: 8, border: "1px solid #333" }}>mario@email.it</td>
+              <td style={{ padding: 8, border: "1px solid #333" }}>mariorossi</td>
+              <td style={{ padding: 8, border: "1px solid #333" }}>admin</td>
+              <td style={{ padding: 8, border: "1px solid #333" }}><button style={{ background: "#f5a623", color: "#181818", border: 0, borderRadius: 6, padding: "6px 14px", fontWeight: 700, cursor: "pointer" }}>Modifica</button></td>
+            </tr>
+            <tr>
+              <td style={{ padding: 8, border: "1px solid #333" }}>Giulia</td>
+              <td style={{ padding: 8, border: "1px solid #333" }}>Bianchi</td>
+              <td style={{ padding: 8, border: "1px solid #333" }}>giulia@email.it</td>
+              <td style={{ padding: 8, border: "1px solid #333" }}>giuliab</td>
+              <td style={{ padding: 8, border: "1px solid #333" }}>utente</td>
+              <td style={{ padding: 8, border: "1px solid #333" }}><button style={{ background: "#f5a623", color: "#181818", border: 0, borderRadius: 6, padding: "6px 14px", fontWeight: 700, cursor: "pointer" }}>Modifica</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
       <p>Versione stabile attiva</p>
     </div>
   );
