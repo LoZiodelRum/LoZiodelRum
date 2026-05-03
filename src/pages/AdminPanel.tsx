@@ -1941,8 +1941,9 @@ export default function AdminPanel() {
     return (
       <div className="page page-full-bleed fade-in" style={{ background: "#020617", minHeight: "100vh", color: "white", position: "relative" }}>
         {/* HEADER MOBILE */}
-        <div style={{ padding: "18px 0 10px 18px", background: "#0f172a", borderBottom: "1px solid #1e293b", position: "sticky", top: 0, zIndex: 30 }}>
-          <h2 style={{ color: "#f59e0b", fontWeight: 700, fontSize: 22, margin: 0, letterSpacing: 0.5, textAlign: "left" }}>Pannello di Controllo</h2>
+
+        <div style={{ padding: "18px 0 10px 0", background: "#0f172a", borderBottom: "1px solid #1e293b", position: "sticky", top: 0, zIndex: 30, display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <h2 style={{ color: "#f59e0b", fontWeight: 700, fontSize: 22, margin: 0, letterSpacing: 0.5, textAlign: "center", width: "100%" }}>Pannello di Controllo</h2>
         </div>
 
         {/* FRECCIA SINISTRA (apri menu) */}
@@ -2031,21 +2032,8 @@ export default function AdminPanel() {
           </div>
         </div>
 
-        {/* APPROVAZIONI PENDENTI */}
-        <div style={{ margin: "0 12px 18px 12px", background: "#0f172a", padding: 15, borderRadius: 10, border: "1px solid #1e293b" }}>
-          <h3 style={{ fontSize: "1rem", color: "#f59e0b", marginBottom: 10 }}>Approvazioni pendenti</h3>
-          {utenti.filter(u => !u.approvato).map(u => (
-            <div key={u.id} style={approvalRowStyle}>
-              <span style={{ fontSize: "0.9rem" }}>{u.username} ({u.ruolo})</span>
-              <button style={btnApproveStyle} onClick={() => toggleApprovazione(u)}>
-                Approva
-              </button>
-            </div>
-          ))}
-          {utenti.filter(u => !u.approvato).length === 0 && (
-            <p style={{ fontSize: "0.8rem", color: "#666" }}>Nessun utente da approvare.</p>
-          )}
-        </div>
+
+        {/* APPROVAZIONI PENDENTI RIMOSSO */}
 
         {/* EDITOR DETTAGLIO (scheda) */}
         {selectedItem && (
@@ -2076,7 +2064,7 @@ export default function AdminPanel() {
   return (
     <div className="page page-full-bleed fade-in" style={layoutStyle}>
       <div style={sidebarStyle}>
-        <h2 style={{ color: "#f59e0b", marginBottom: 20, fontSize: "1.2rem" }}>Pannello di Controllo</h2>
+        <h2 style={{ color: "#f59e0b", marginBottom: 20, fontSize: "1.2rem", textAlign: "center", width: "100%" }}>Pannello di Controllo</h2>
 
         <div style={{ marginTop: 20 }}>
           {Sidebar("Locali", locali, "Locali", "nome")}
@@ -2099,20 +2087,8 @@ export default function AdminPanel() {
           <div style={kpiCardStyle}><span style={kpiLabelStyle}>Articoli</span> <strong>{kpi.articoli}</strong></div>
         </div>
 
-        <div style={approvalBoxStyle}>
-          <h3 style={{ fontSize: "1rem", color: "#f59e0b", marginBottom: 10 }}>Approvazioni pendenti</h3>
-          {utenti.filter(u => !u.approvato).map(u => (
-            <div key={u.id} style={approvalRowStyle}>
-              <span style={{ fontSize: "0.9rem" }}>{u.username} ({u.ruolo})</span>
-              <button style={btnApproveStyle} onClick={() => toggleApprovazione(u)}>
-                Approva
-              </button>
-            </div>
-          ))}
-          {utenti.filter(u => !u.approvato).length === 0 && (
-            <p style={{ fontSize: "0.8rem", color: "#666" }}>Nessun utente da approvare.</p>
-          )}
-        </div>
+
+        {/* APPROVAZIONI PENDENTI RIMOSSO */}
 
         <div style={quickActionGridStyle}>
           <div style={quickActionCardStyle}>
