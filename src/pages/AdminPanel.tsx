@@ -2037,27 +2037,141 @@ export default function AdminPanel() {
 
         {/* EDITOR DETTAGLIO (scheda) */}
         {selectedItem && (
-          <div style={{ margin: "0 12px 80px 12px" }}>
-            {/* ...esistente: cardStyle, form, ecc... */}
-            <div style={cardStyle}>
-              <h2 style={{ fontSize: "1.1rem", marginBottom: 15 }}>
-                {isCreating
-                  ? "Nuovo elemento"
-                  : (selectedItem.nome || selectedItem.titolo || selectedItem.username)}
+          <div style={{ margin: "0 8px 80px 8px" }}>
+            <div
+              style={{
+                background: "#0f172a",
+                padding: "18px 8px 28px 8px",
+                borderRadius: 16,
+                marginTop: 18,
+                border: "1px solid #1e293b",
+                boxShadow: "0 2px 12px #0002",
+                maxWidth: 540,
+                marginLeft: "auto",
+                marginRight: "auto"
+              }}
+            >
+              <h2 style={{ fontSize: 20, marginBottom: 18, color: "#f59e0b", textAlign: "center", fontWeight: 700 }}>
+                {isCreating ? "Nuovo elemento" : (selectedItem.nome || selectedItem.titolo || selectedItem.username)}
               </h2>
-              {saveStatus === "ok" && (<div style={badgeOkStyle}>Modifica salvata</div>)}
-              {saveStatus === "error" && (<div style={badgeErrorStyle}>Modifica non salvata</div>)}
-              {/* ...resto del form già esistente... */}
-              {/* ...esistente: rendering campi, bottoni, ecc... */}
-              {/* ...non toccare logica! */}
-              {/* ... */}
-              {/* ... */}
-              {/* ... */}
+              {saveStatus === "ok" && (<div style={{ ...badgeOkStyle, fontSize: 15, padding: 8 }}>Modifica salvata</div>)}
+              {saveStatus === "error" && (<div style={{ ...badgeErrorStyle, fontSize: 15, padding: 8 }}>Modifica non salvata</div>)}
+              <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                {editorKeys.map(key => {
+                  if ((key === "id" && selectedTable !== "profili") || (selectedTable === "cocktail" && (key === "data_creazione" || key === "created_at" || key === "texture")) || (selectedTable === "Locali" && removedLocaliFields.has(key))) return null;
+                  // LOGICA INPUT MOBILE (semplificata, ma fedele all'originale)
+                  if (selectedTable === "profili" && key === "password") {
+                    return (
+                      <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                        <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
+                        <input type="password" value={selectedItem[key] ?? ""} onChange={e => { const value = e.target.value; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} placeholder={isCreating ? "Imposta password iniziale" : "Lascia vuoto per non cambiarla"} style={inputMobileStyle} />
+                      </div>
+                    );
+                  }
+                  if (selectedTable === "profili" && profiliSelectOptions[key]) {
+                    return (
+                      <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                        <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
+                        <select value={selectedItem[key] ?? ""} disabled={profiliReadonlyFields.has(key)} onChange={e => { const value = e.target.value; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} style={{ ...inputMobileStyle, opacity: profiliReadonlyFields.has(key) ? 0.7 : 1 }}>
+                          <option value="">Scegli</option>
+                          {profiliSelectOptions[key].map(option => <option key={option} value={option}>{option}</option>)}
+                        </select>
+                      </div>
+                    );
+                  }
+                  if (booleanFields.has(key)) {
+                    return (
+                      <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                        <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
+                        <select value={String(toBoolean(selectedItem[key]))} onChange={e => { const value = e.target.value === "true"; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} style={inputMobileStyle}>
+                          <option value="true">true</option>
+                          <option value="false">false</option>
+                        </select>
+                      </div>
+                    );
+                  }
+                  if (selectedTable === "Locali" && localiSelectOptions[key]) {
+                    return (
+                      <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                        <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
+                        <select value={selectedItem[key] ?? ""} onChange={e => { const value = e.target.value; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} style={inputMobileStyle}>
+                          <option value="">Scegli</option>
+                          {localiSelectOptions[key].map(option => <option key={option} value={option}>{option}</option>)}
+                        </select>
+                      </div>
+                    );
+                  }
+                  if (selectedTable === "vini" && aisSelectOptions[key]) {
+                    return (
+                      <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                        <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
+                        <select value={selectedItem[key] ?? ""} onChange={e => { const value = e.target.value; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} style={inputMobileStyle}>
+                          <option value="">Scegli</option>
+                          {aisSelectOptions[key].map(option => <option key={option} value={option}>{option}</option>)}
+                        </select>
+                      </div>
+                    );
+                  }
+                  if (selectedTable === "cocktail" && cocktailMultiSelectOptions[key]) {
+                    return (
+                      <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                        <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
+                        <input value={selectedItem[key] ?? ""} onChange={e => { setSelectedItem((prev: any) => ({ ...prev, [key]: e.target.value })); setSaveStatus(null); }} style={inputMobileStyle} />
+                      </div>
+                    );
+                  }
+                  if (selectedTable === "profili" && profiliTextareaFields.has(key)) {
+                    return (
+                      <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                        <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
+                        <textarea rows={4} value={selectedItem[key] ?? ""} onChange={e => { setSelectedItem((prev: any) => ({ ...prev, [key]: e.target.value })); setSaveStatus(null); }} style={{ ...inputMobileStyle, minHeight: 110, resize: "vertical" }} />
+                      </div>
+                    );
+                  }
+                  if (key === "contenuto") {
+                    return (
+                      <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                        <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
+                        <textarea rows={6} value={selectedItem[key] ?? ""} onChange={e => { setSelectedItem((prev: any) => ({ ...prev, [key]: e.target.value })); setSaveStatus(null); }} style={{ ...inputMobileStyle, resize: "vertical" }} />
+                      </div>
+                    );
+                  }
+                  // Default: input testo
+                  return (
+                    <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                      <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
+                      <input type={selectedTable === "profili" && profiliNumberFields.has(key) ? "number" : "text"} value={selectedItem[key] ?? ""} disabled={selectedTable === "profili" && profiliReadonlyFields.has(key)} onChange={e => { setSelectedItem((prev: any) => ({ ...prev, [key]: e.target.value })); setSaveStatus(null); }} style={{ ...inputMobileStyle, opacity: selectedTable === "profili" && profiliReadonlyFields.has(key) ? 0.7 : 1 }} />
+                    </div>
+                  );
+                })}
+              </div>
+              {/* Bottoni azione */}
+              <div style={{ display: "flex", gap: 10, marginTop: 22 }}>
+                <button style={{ ...btnSaveStyle, fontSize: 16, padding: "13px 0" }} onClick={salvaModifiche}>
+                  {isCreating ? "Crea" : "Salva"}
+                </button>
+                {!isCreating && (
+                  <button style={{ ...btnDeleteStyle, fontSize: 16, padding: "13px 0" }} onClick={eliminaElemento}>
+                    Elimina
+                  </button>
+                )}
+              </div>
             </div>
           </div>
         )}
       </div>
     );
+
+// Stile input mobile/tablet
+const inputMobileStyle = {
+  padding: "14px 12px",
+  borderRadius: 8,
+  background: "#181f2e",
+  color: "#fff",
+  border: "1px solid #334155",
+  fontSize: "16px",
+  width: "100%"
+};
   }
 
   // --- DESKTOP LAYOUT (INVARIATO) ---
