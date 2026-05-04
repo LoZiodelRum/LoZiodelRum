@@ -486,6 +486,8 @@ export default function AdminPanelMobile() {
 
             {Sidebar("Locali", locali, "Locali", "nome")}
             {Sidebar("Utenti", utenti, "profili", "username")}
+            {Sidebar("Bartender", utenti.filter((u) => u.ruolo === "bartender"), "profili", "username")}
+            {Sidebar("Proprietari", utenti.filter((u) => u.ruolo === "proprietario"), "profili", "username")}
             {Sidebar("Cocktail", cocktail, "cocktail", "nome")}
             {Sidebar("Distillati", distillati, "distillati", "nome")}
             {Sidebar("Vini", vini, "vini", "nome")}
@@ -506,6 +508,9 @@ export default function AdminPanelMobile() {
             <h3 style={{ color: "#f59e0b" }}>Azioni</h3>
             <button style={actionButtonStyle}>Nuovo Cocktail</button>
             <button style={actionButtonStyle}>Nuovo Distillato</button>
+            <button style={actionButtonStyle}>Nuovo Vino</button>
+            <button style={actionButtonStyle}>Nuovo Proprietario</button>
+            <button style={actionButtonStyle}>Nuovo Bartender</button>
             <button style={actionButtonStyle}>Nuovo Locale</button>
           </div>
         </>
