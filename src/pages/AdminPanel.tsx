@@ -1,228 +1,11 @@
-
+import "../App.css";
 import React, { useEffect, useState } from "react";
-import Navbar from "../components/Navbar";
-import { useUser } from "../context/UserContext";
 import { supabase } from "../lib/supabaseClient";
-import { TASTE_PROFILE_OPTIONS, AROMATIC_FAMILY_OPTIONS } from "../lib/cocktailOptionSets";
+import { useUser } from "../context/UserContext";
+import { AROMATIC_FAMILY_OPTIONS, TASTE_PROFILE_OPTIONS } from "../lib/cocktailOptionSets";
 
-// --- STILI GLOBALI (devono stare PRIMA della funzione AdminPanel) ---
 const PREVIEW_BOX_SIZE = 280;
-const btnSaveStyle = {
-  background: "#10b981",
-  color: "white",
-  border: "none",
-  padding: "12px 20px",
-  borderRadius: 6,
-  fontWeight: "bold" as const,
-  cursor: "pointer",
-  flex: 1,
-};
-const btnDeleteStyle = {
-  background: "#ef4444",
-  color: "white",
-  border: "none",
-  padding: "12px 20px",
-  borderRadius: 6,
-  fontWeight: "bold" as const,
-  cursor: "pointer",
-  flex: 1,
-};
-const badgeOkStyle = {
-  background: "rgba(16, 185, 129, 0.2)",
-  color: "#10b981",
-  padding: 10,
-  borderRadius: 6,
-  marginBottom: 15,
-  border: "1px solid #10b981",
-  textAlign: "center" as const
-};
 
-const badgeErrorStyle = {
-  background: "rgba(239, 68, 68, 0.2)",
-  color: "#ef4444",
-  padding: 10,
-  borderRadius: 6,
-  marginBottom: 15,
-  border: "1px solid #ef4444",
-  textAlign: "center" as const
-};
-
-
-const layoutStyle: React.CSSProperties = {
-  display: "flex",
-  flexWrap: "wrap",
-  alignItems: "flex-start",
-  minHeight: "100vh",
-  paddingBottom: 100,
-  background: "#020617",
-  color: "white"
-};
-
-const sidebarStyle: React.CSSProperties = {
-  width: "100%",
-  maxWidth: "16.25rem",
-  flexBasis: "260px",
-  flexGrow: 1,
-  padding: 20,
-  borderRight: "1px solid #1e293b",
-  background: "#0f172a"
-};
-
-const contentStyle: React.CSSProperties = {
-  flex: 1,
-  minWidth: 0,
-  padding: "20px 20px 140px",
-};
-
-const kpiGridStyle: React.CSSProperties = {
-  display: "flex",
-  gap: 10,
-  flexWrap: "wrap",
-  marginBottom: 20
-};
-
-const kpiCardStyle: React.CSSProperties = {
-  background: "#0f172a",
-  padding: "15px",
-  borderRadius: 12,
-  border: "1px solid #334155",
-  flex: "1 1 140px",
-  textAlign: "center"
-};
-
-const kpiLabelStyle: React.CSSProperties = {
-  display: "block",
-  fontSize: "0.75rem",
-  color: "#94a3b8",
-  marginBottom: 5,
-  textTransform: "uppercase"
-};
-
-const quickActionGridStyle: React.CSSProperties = {
-  marginTop: 20,
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
-  gap: 12,
-};
-
-const quickActionCardStyle: React.CSSProperties = {
-  background: "#0f172a",
-  border: "1px solid #1e293b",
-  borderRadius: 10,
-  padding: 15,
-  minHeight: 120,
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "space-between",
-};
-
-const quickActionTitleStyle: React.CSSProperties = {
-  fontSize: "1rem",
-  color: "#f59e0b",
-  margin: 0,
-};
-
-const quickActionBtnStyle: React.CSSProperties = {
-  background: "#f59e0b",
-  color: "#000",
-  border: "none",
-  borderRadius: 8,
-  padding: "10px 12px",
-  cursor: "pointer",
-  fontWeight: "bold",
-};
-
-const cardStyle: React.CSSProperties = {
-  background: "#0f172a",
-  padding: 20,
-  paddingBottom: 36,
-  borderRadius: 16,
-  marginTop: 20,
-  marginBottom: 80,
-  border: "1px solid #1e293b"
-};
-
-const formGridStyle: React.CSSProperties = {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))",
-  gap: 15
-};
-
-const sidebarTitleStyle = { color: "#f59e0b", fontSize: "0.9rem", marginBottom: 8 };
-
-const fieldStyle = {
-  marginBottom: 10,
-  display: "flex",
-  flexDirection: "column" as const,
-};
-
-const labelStyle = {
-  fontSize: "0.8rem",
-  color: "#f5a623",
-  marginBottom: 5
-};
-
-const inputStyle = {
-  padding: "10px",
-  borderRadius: 6,
-  background: "#020617",
-  color: "#fff",
-  border: "1px solid #334155",
-  fontSize: "14px"
-};
-
-const selectStyle = {
-  width: "100%",
-  padding: "10px",
-  borderRadius: 6,
-  background: "#020617",
-  color: "#fff",
-  border: "1px solid #334155",
-};
-
-const approvalBoxStyle = {
-  marginTop: 20,
-  background: "#0f172a",
-  padding: 15,
-  borderRadius: 10,
-  border: "1px solid #1e293b"
-};
-
-const approvalRowStyle = {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  padding: "10px 0",
-  borderBottom: "1px solid #1e293b",
-};
-
-const btnApproveStyle = {
-  background: "#f59e0b",
-  color: "#000",
-  border: "none",
-  padding: "6px 12px",
-  borderRadius: 6,
-  fontWeight: "bold" as const,
-  cursor: "pointer"
-};
-
-const inputMobileStyle = {
-  padding: "14px 12px",
-  borderRadius: 8,
-  background: "#181f2e",
-  color: "#fff",
-  border: "1px solid #334155",
-  fontSize: "16px",
-  width: "100%"
-};
-
-const buttonRowStyle = {
-  display: "flex",
-  gap: 10,
-  marginTop: 25,
-};
-
-// --- FINE STILI GLOBALI ---
 
 export default function AdminPanel() {
   const { loading, isAdmin } = useUser();
@@ -252,10 +35,6 @@ export default function AdminPanel() {
   });
 
   const [saveStatus, setSaveStatus] = useState<"ok" | "error" | null>(null);
-
-  // UI state per mobile/tablet off-canvas
-  const [leftOpen, setLeftOpen] = useState(false);
-  const [rightOpen, setRightOpen] = useState(false);
   const [uploadingLocaleImage, setUploadingLocaleImage] = useState(false);
   const [uploadingLocaleVideo, setUploadingLocaleVideo] = useState(false);
   const [uploadingCocktailImage, setUploadingCocktailImage] = useState(false);
@@ -1395,10 +1174,6 @@ export default function AdminPanel() {
     await loadData();
   }
 
-
-  // Media query per mobile/tablet
-  const isMobile = typeof window !== "undefined" && window.matchMedia && window.matchMedia("(max-width: 1023px)").matches;
-
   if (loading) return null;
   if (!isAdmin) return <div style={{ padding: 20, color: "red" }}>Accesso negato</div>;
 
@@ -2019,7 +1794,6 @@ export default function AdminPanel() {
     }
 
     if (table.toLowerCase() === "vini") {
-      // Solo la logica di default, nessuna ridefinizione di costanti di stile qui
       const vinoTemplate: Record<string, any> = {
         nome: "",
         categoria: "",
@@ -2056,6 +1830,7 @@ export default function AdminPanel() {
         note_personali: "",
         valutazione: "",
       };
+
       Object.keys(vinoTemplate).forEach((k) => {
         if (draft[k] === undefined) {
           draft[k] = vinoTemplate[k];
@@ -2137,269 +1912,10 @@ export default function AdminPanel() {
     setImagePreviewError(false);
   }, [selectedItem?.id, selectedItem?.immagine, selectedTable]);
 
- useEffect(() => {
-  if (!isMobile) return;
-
-  if (leftOpen || rightOpen) {
-    document.body.style.overflow = "hidden";
-  } else {
-    document.body.style.overflow = "";
-  }
-
-  return () => {
-    document.body.style.overflow = "";
-  };
-}, [leftOpen, rightOpen, isMobile]);
-
-
-    // Gestione selezione menu mobile/tablet: patch sicura
-    const handleMenuSelect = (item: any, table: string) => {
-      if (!item) return;
-      setSelectedItem(item);
-      setSelectedTable(table || "");
-      if (isMobile) {
-        setLeftOpen(false);
-        setRightOpen(false);
-      }
-    };
-
-    return (
-      <>
-        <Navbar />
-        <div className="page page-full-bleed fade-in" style={{ background: "#020617", minHeight: "100vh", color: "white", position: "relative", paddingTop: 90 }}>
-        {/* HEADER MOBILE */}
-
-        <div style={{ padding: "18px 0 10px 0", background: "#0f172a", borderBottom: "1px solid #1e293b", position: "sticky", top: 0, zIndex: 30, display: "flex", justifyContent: "center", alignItems: "center" }}>
-          <h2 style={{ color: "#f59e0b", fontWeight: 700, fontSize: 22, margin: 0, letterSpacing: 0.5, textAlign: "center", width: "100%" }}>Pannello di Controllo</h2>
-        </div>
-
-        {/* FRECCIA SINISTRA (apri menu) */}
-        <button aria-label="Apri menu" onClick={() => setLeftOpen(true)} style={{ position: "fixed", top: 18, left: 8, zIndex: 50, background: "#0f172a", border: "none", borderRadius: 20, width: 36, height: 36, display: leftOpen ? "none" : "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px #0002", color: "#f59e0b", fontSize: 22, cursor: "pointer" }}>
-          <span style={{ display: "inline-block", transform: "rotate(180deg)" }}>➔</span>
-        </button>
-        {/* FRECCIA DESTRA (apri azioni) */}
-        <button aria-label="Apri azioni" onClick={() => setRightOpen(true)} style={{ position: "fixed", top: 18, right: 8, zIndex: 50, background: "#0f172a", border: "none", borderRadius: 20, width: 36, height: 36, display: rightOpen ? "none" : "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px #0002", color: "#f59e0b", fontSize: 22, cursor: "pointer" }}>
-          <span style={{ display: "inline-block" }}>➔</span>
-        </button>
-
-        {/* OFF-CANVAS SINISTRA (MENU) */}
-        <div style={{ position: "fixed", top: 0, left: 0, height: "100%", width: "70vw", maxWidth: 340, background: "#0f172a", zIndex: 100, boxShadow: leftOpen ? "2px 0 16px #0006" : "none", transform: leftOpen ? "translateX(0)" : "translateX(-100%)", transition: "transform 0.3s cubic-bezier(.4,0,.2,1)", overflowY: "auto" }}>
-          <div style={{ padding: 18, borderBottom: "1px solid #1e293b", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <span style={{ color: "#f59e0b", fontWeight: 700, fontSize: 18 }}>Menu</span>
-            <button aria-label="Chiudi menu" onClick={() => setLeftOpen(false)} style={{ background: "none", border: "none", color: "#f59e0b", fontSize: 22, cursor: "pointer" }}>✕</button>
-          </div>
-          <div style={{ padding: 18 }}>
-            <div style={{ marginBottom: 16 }}>{Sidebar("Locali", locali, "Locali", "nome")}</div>
-            {Sidebar("Utenti", utenti, "profili", "username")}
-            {Sidebar("Bartender", bartender, "profili", "username")}
-            {Sidebar("Proprietari", proprietari, "profili", "username")}
-            {Sidebar("Cocktail", cocktail, "cocktail", "nome")}
-            {Sidebar("Distillati", distillati, "distillati", "nome")}
-            {Sidebar("Vini", vini, wineTableName, "nome")}
-            {Sidebar("Articoli", articoli, "articoli", "titolo")}
-          </div>
-        </div>
-
-        {/* OVERLAY per chiusura off-canvas sinistra */}
-        {leftOpen && <div onClick={() => setLeftOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 90, background: "rgba(0,0,0,0.25)" }} />}
-
-        {/* OFF-CANVAS DESTRA (AZIONI) */}
-        <div style={{ position: "fixed", top: 0, right: 0, height: "100%", width: "70vw", maxWidth: 340, background: "#0f172a", zIndex: 100, boxShadow: rightOpen ? "-2px 0 16px #0006" : "none", transform: rightOpen ? "translateX(0)" : "translateX(100%)", transition: "transform 0.3s cubic-bezier(.4,0,.2,1)", overflowY: "auto" }}>
-          <div style={{ padding: 18, borderBottom: "1px solid #1e293b", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <span style={{ color: "#f59e0b", fontWeight: 700, fontSize: 18 }}>Azioni</span>
-            <button aria-label="Chiudi azioni" onClick={() => setRightOpen(false)} style={{ background: "none", border: "none", color: "#f59e0b", fontSize: 22, cursor: "pointer" }}>✕</button>
-          </div>
-          <div style={{ padding: 18, display: "grid", gap: 12 }}>
-            <div style={quickActionCardStyle}>
-              <h3 style={quickActionTitleStyle}>Aggiunta Cocktail</h3>
-              <button style={quickActionBtnStyle} onClick={() => { setRightOpen(false); openCreateEditor("cocktail", cocktail); }}>modifica cocktail</button>
-            </div>
-            <div style={quickActionCardStyle}>
-              <h3 style={quickActionTitleStyle}>Aggiunta Distillati</h3>
-              <button style={quickActionBtnStyle} onClick={() => { setRightOpen(false); openCreateEditor("distillati", distillati); }}>modifica distillati</button>
-            </div>
-            <div style={quickActionCardStyle}>
-              <h3 style={quickActionTitleStyle}>Aggiunta Vini</h3>
-              <button style={quickActionBtnStyle} onClick={() => { setRightOpen(false); openCreateEditor(wineTableName, vini); }}>modifica vini</button>
-            </div>
-            <div style={quickActionCardStyle}>
-              <h3 style={quickActionTitleStyle}>Aggiunta Locali</h3>
-              <button style={quickActionBtnStyle} onClick={() => { setRightOpen(false); openCreateEditor("Locali", locali); }}>modifica locali</button>
-            </div>
-            <div style={quickActionCardStyle}>
-              <h3 style={quickActionTitleStyle}>Aggiunta Bartender</h3>
-              <button style={quickActionBtnStyle} onClick={() => { setRightOpen(false); openCreateEditor("profili", bartender, "bartender"); }}>modifica bartender</button>
-            </div>
-            <div style={quickActionCardStyle}>
-              <h3 style={quickActionTitleStyle}>Aggiunta Proprietari</h3>
-              <button style={quickActionBtnStyle} onClick={() => { setRightOpen(false); openCreateEditor("profili", proprietari, "proprietario"); }}>modifica proprietari</button>
-            </div>
-          </div>
-        </div>
-        {/* OVERLAY per chiusura off-canvas destra */}
-        {rightOpen && <div onClick={() => setRightOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 90, background: "rgba(0,0,0,0.25)" }} />}
-
-        {/* KPI GRID MOBILE */}
-        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, margin: "22px 12px 18px 12px" }}>
-          <div style={{ background: "#181f2e", borderRadius: 12, padding: "18px 0 10px 0", textAlign: "center" }}>
-            <span style={{ color: "#f59e0b", fontWeight: 600, fontSize: 13, display: "block", marginBottom: 2 }}>UTENTI</span>
-            <span style={{ fontWeight: 700, fontSize: 26 }}>{kpi.utenti}</span>
-          </div>
-          <div style={{ background: "#181f2e", borderRadius: 12, padding: "18px 0 10px 0", textAlign: "center" }}>
-            <span style={{ color: "#f59e0b", fontWeight: 600, fontSize: 13, display: "block", marginBottom: 2 }}>LOCALI</span>
-            <span style={{ fontWeight: 700, fontSize: 26 }}>{kpi.locali}</span>
-          </div>
-          <div style={{ background: "#181f2e", borderRadius: 12, padding: "18px 0 10px 0", textAlign: "center" }}>
-            <span style={{ color: "#f59e0b", fontWeight: 600, fontSize: 13, display: "block", marginBottom: 2 }}>DRINK</span>
-            <span style={{ fontWeight: 700, fontSize: 26 }}>{kpi.drink}</span>
-          </div>
-          <div style={{ background: "#181f2e", borderRadius: 12, padding: "18px 0 10px 0", textAlign: "center" }}>
-            <span style={{ color: "#f59e0b", fontWeight: 600, fontSize: 13, display: "block", marginBottom: 2 }}>ARTICOLI</span>
-            <span style={{ fontWeight: 700, fontSize: 26 }}>{kpi.articoli}</span>
-          </div>
-        </div>
-
-
-        {/* APPROVAZIONI PENDENTI RIMOSSO */}
-
-        {/* EDITOR DETTAGLIO (scheda) */}
-        {/* Mostra sempre la scheda se selectedItem e selectedTable esistono, anche su mobile/tablet */}
-        {selectedItem && selectedTable && (
-          <div style={{ margin: "0 8px 80px 8px" }}>
-            <div
-              style={{
-                background: "#0f172a",
-                padding: "18px 8px 28px 8px",
-                borderRadius: 16,
-                marginTop: 18,
-                border: "1px solid #1e293b",
-                boxShadow: "0 2px 12px #0002",
-                maxWidth: 540,
-                marginLeft: "auto",
-                marginRight: "auto"
-              }}
-            >
-              <h2 style={{ fontSize: 20, marginBottom: 18, color: "#f59e0b", textAlign: "center", fontWeight: 700 }}>
-                {isCreating ? "Nuovo elemento" : (selectedItem?.nome || selectedItem?.titolo || selectedItem?.username || "")}
-              </h2>
-              {saveStatus === "ok" && (<div style={{ ...badgeOkStyle, fontSize: 15, padding: 8 }}>Modifica salvata</div>)}
-              {saveStatus === "error" && (<div style={{ ...badgeErrorStyle, fontSize: 15, padding: 8 }}>Modifica non salvata</div>)}
-              <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-                {editorKeys.map(key => {
-                  if ((key === "id" && selectedTable !== "profili") || (selectedTable === "cocktail" && (key === "data_creazione" || key === "created_at" || key === "texture")) || (selectedTable === "Locali" && removedLocaliFields.has(key))) return null;
-                  // LOGICA INPUT MOBILE (semplificata, ma fedele all'originale)
-                  if (selectedTable === "profili" && key === "password") {
-                    return (
-                      <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                        <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
-                        <input type="password" value={selectedItem?.[key] ?? ""} onChange={e => { const value = e.target.value; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} placeholder={isCreating ? "Imposta password iniziale" : "Lascia vuoto per non cambiarla"} style={inputMobileStyle} />
-                      </div>
-                    );
-                  }
-                  if (selectedTable === "profili" && profiliSelectOptions[key]) {
-                    return (
-                      <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                        <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
-                        <select value={selectedItem?.[key] ?? ""} disabled={profiliReadonlyFields.has(key)} onChange={e => { const value = e.target.value; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} style={{ ...inputMobileStyle, opacity: profiliReadonlyFields.has(key) ? 0.7 : 1 }}>
-
-                          <option value="">Scegli</option>
-                          {profiliSelectOptions[key].map(option => <option key={option} value={option}>{option}</option>)}
-                        </select>
-                      </div>
-                    );
-                  }
-                  if (booleanFields.has(key)) {
-                    return (
-                      <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                        <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
-                        <select value={String(toBoolean(selectedItem[key]))} onChange={e => { const value = e.target.value === "true"; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} style={inputMobileStyle}>
-                          <option value="true">true</option>
-                          <option value="false">false</option>
-                        </select>
-                      </div>
-                    );
-                  }
-                  if (selectedTable === "Locali" && localiSelectOptions[key]) {
-                    return (
-                      <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                        <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
-                        <select value={selectedItem[key] ?? ""} onChange={e => { const value = e.target.value; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} style={inputMobileStyle}>
-                          <option value="">Scegli</option>
-                          {localiSelectOptions[key].map(option => <option key={option} value={option}>{option}</option>)}
-                        </select>
-                      </div>
-                    );
-                  }
-                  if (selectedTable === "vini" && aisSelectOptions[key]) {
-                    return (
-                      <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                        <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
-                        <select value={selectedItem[key] ?? ""} onChange={e => { const value = e.target.value; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} style={inputMobileStyle}>
-                          <option value="">Scegli</option>
-                          {aisSelectOptions[key].map(option => <option key={option} value={option}>{option}</option>)}
-                        </select>
-                      </div>
-                    );
-                  }
-                  if (selectedTable === "cocktail" && cocktailMultiSelectOptions[key]) {
-                    return (
-                      <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                        <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
-                        <input value={selectedItem[key] ?? ""} onChange={e => { setSelectedItem((prev: any) => ({ ...prev, [key]: e.target.value })); setSaveStatus(null); }} style={inputMobileStyle} />
-                      </div>
-                    );
-                  }
-                  if (selectedTable === "profili" && profiliTextareaFields.has(key)) {
-                    return (
-                      <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                        <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
-                        <textarea rows={4} value={selectedItem[key] ?? ""} onChange={e => { setSelectedItem((prev: any) => ({ ...prev, [key]: e.target.value })); setSaveStatus(null); }} style={{ ...inputMobileStyle, minHeight: 110, resize: "vertical" }} />
-                      </div>
-                    );
-                  }
-                  if (key === "contenuto") {
-                    return (
-                      <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                        <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
-                        <textarea rows={6} value={selectedItem[key] ?? ""} onChange={e => { setSelectedItem((prev: any) => ({ ...prev, [key]: e.target.value })); setSaveStatus(null); }} style={{ ...inputMobileStyle, resize: "vertical" }} />
-                      </div>
-                    );
-                  }
-                  // Default: input testo
-                  return (
-                    <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                      <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
-                      <input type={selectedTable === "profili" && profiliNumberFields.has(key) ? "number" : "text"} value={selectedItem[key] ?? ""} disabled={selectedTable === "profili" && profiliReadonlyFields.has(key)} onChange={e => { setSelectedItem((prev: any) => ({ ...prev, [key]: e.target.value })); setSaveStatus(null); }} style={{ ...inputMobileStyle, opacity: selectedTable === "profili" && profiliReadonlyFields.has(key) ? 0.7 : 1 }} />
-                    </div>
-                  );
-                })}
-              </div>
-              {/* Bottoni azione */}
-              <div style={{ display: "flex", gap: 10, marginTop: 22 }}>
-                <button style={{ ...btnSaveStyle, fontSize: 16, padding: "13px 0" }} onClick={salvaModifiche}>
-                  {isCreating ? "Crea" : "Salva"}
-                </button>
-                {!isCreating && (
-                  <button style={{ ...btnDeleteStyle, fontSize: 16, padding: "13px 0" }} onClick={eliminaElemento}>
-                    Elimina
-                  </button>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        </div>
-      </>
-    );
-
-
-
-  // --- DESKTOP LAYOUT (INVARIATO) ---
   return (
     <div className="page page-full-bleed fade-in" style={layoutStyle}>
       <div style={sidebarStyle}>
-        <h2 style={{ color: "#f59e0b", marginBottom: 20, fontSize: "1.2rem", textAlign: "center", width: "100%" }}>Pannello di Controllo</h2>
+        <h2 style={{ color: "#f59e0b", marginBottom: 20, fontSize: "1.2rem" }}>Pannello di Controllo</h2>
 
         <div style={{ marginTop: 20 }}>
           {Sidebar("Locali", locali, "Locali", "nome")}
@@ -2422,8 +1938,20 @@ export default function AdminPanel() {
           <div style={kpiCardStyle}><span style={kpiLabelStyle}>Articoli</span> <strong>{kpi.articoli}</strong></div>
         </div>
 
-
-        {/* APPROVAZIONI PENDENTI RIMOSSO */}
+        <div style={approvalBoxStyle}>
+          <h3 style={{ fontSize: "1rem", color: "#f59e0b", marginBottom: 10 }}>Approvazioni pendenti</h3>
+          {utenti.filter(u => !u.approvato).map(u => (
+            <div key={u.id} style={approvalRowStyle}>
+              <span style={{ fontSize: "0.9rem" }}>{u.username} ({u.ruolo})</span>
+              <button style={btnApproveStyle} onClick={() => toggleApprovazione(u)}>
+                Approva
+              </button>
+            </div>
+          ))}
+          {utenti.filter(u => !u.approvato).length === 0 && (
+            <p style={{ fontSize: "0.8rem", color: "#666" }}>Nessun utente da approvare.</p>
+          )}
+        </div>
 
         <div style={quickActionGridStyle}>
           <div style={quickActionCardStyle}>
@@ -2456,14 +1984,14 @@ export default function AdminPanel() {
 
           <div style={quickActionCardStyle}>
             <h3 style={quickActionTitleStyle}>Aggiunta Bartender</h3>
-            <button style={quickActionBtnStyle} onClick={() => openCreateEditor("profili", bartender, "bartender")}> 
+            <button style={quickActionBtnStyle} onClick={() => openCreateEditor("profili", bartender, "bartender")}>
               modifica bartender
             </button>
           </div>
 
           <div style={quickActionCardStyle}>
             <h3 style={quickActionTitleStyle}>Aggiunta Proprietari</h3>
-            <button style={quickActionBtnStyle} onClick={() => openCreateEditor("profili", proprietari, "proprietario")}> 
+            <button style={quickActionBtnStyle} onClick={() => openCreateEditor("profili", proprietari, "proprietario")}>
               modifica proprietari
             </button>
           </div>
@@ -3073,6 +2601,210 @@ export default function AdminPanel() {
   );
 }
 
+/* STILI OTTIMIZZATI PER MOBILE & TABLET */
 
+const layoutStyle: React.CSSProperties = { 
+  display: "flex", 
+  flexWrap: "wrap", // Permette alla sidebar di andare sopra il contenuto su mobile
+  alignItems: "flex-start",
+  minHeight: "100vh", 
+  paddingBottom: 100,
+  background: "#020617", 
+  color: "white" 
+};
 
+const sidebarStyle: React.CSSProperties = { 
+  width: "100%", 
+  maxWidth: "16.25rem",
+  flexBasis: "260px",
+  flexGrow: 1,
+  padding: 20, 
+  borderRight: "1px solid #1e293b",
+  background: "#0f172a" 
+};
 
+const contentStyle: React.CSSProperties = { 
+  flex: 1, 
+  minWidth: 0,
+  padding: "20px 20px 140px",
+};
+
+const kpiGridStyle: React.CSSProperties = { 
+  display: "flex", 
+  gap: 10, 
+  flexWrap: "wrap", // I KPI vanno a capo su mobile
+  marginBottom: 20 
+};
+
+const kpiCardStyle: React.CSSProperties = {
+  background: "#0f172a",
+  padding: "15px",
+  borderRadius: 12,
+  border: "1px solid #334155",
+  flex: "1 1 140px", // Cresce e si restringe, minimo 140px
+  textAlign: "center"
+};
+
+const kpiLabelStyle: React.CSSProperties = {
+  display: "block",
+  fontSize: "0.75rem",
+  color: "#94a3b8",
+  marginBottom: 5,
+  textTransform: "uppercase"
+};
+
+const cardStyle: React.CSSProperties = {
+  background: "#0f172a",
+  padding: 20,
+  paddingBottom: 36,
+  borderRadius: 16,
+  marginTop: 20,
+  marginBottom: 80,
+  border: "1px solid #1e293b"
+};
+
+const formGridStyle: React.CSSProperties = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", // Griglia automatica per i campi input
+  gap: 15
+};
+
+const sidebarTitleStyle = { color: "#f59e0b", fontSize: "0.9rem", marginBottom: 8 };
+
+const fieldStyle = {
+  marginBottom: 10,
+  display: "flex",
+  flexDirection: "column" as const,
+};
+
+const labelStyle = {
+  fontSize: "0.8rem",
+  color: "#f5a623",
+  marginBottom: 5
+};
+
+const inputStyle = {
+  padding: "10px",
+  borderRadius: 6,
+  background: "#020617",
+  color: "#fff",
+  border: "1px solid #334155",
+  fontSize: "14px"
+};
+
+const selectStyle = {
+  width: "100%",
+  padding: "10px",
+  borderRadius: 6,
+  background: "#020617",
+  color: "#fff",
+  border: "1px solid #334155",
+};
+
+const approvalBoxStyle = {
+  marginTop: 20,
+  background: "#0f172a",
+  padding: 15,
+  borderRadius: 10,
+  border: "1px solid #1e293b"
+};
+
+const quickActionGridStyle: React.CSSProperties = {
+  marginTop: 20,
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+  gap: 12,
+};
+
+const quickActionCardStyle: React.CSSProperties = {
+  background: "#0f172a",
+  border: "1px solid #1e293b",
+  borderRadius: 10,
+  padding: 15,
+  minHeight: 120,
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "space-between",
+};
+
+const quickActionTitleStyle: React.CSSProperties = {
+  fontSize: "1rem",
+  color: "#f59e0b",
+  margin: 0,
+};
+
+const quickActionBtnStyle: React.CSSProperties = {
+  background: "#f59e0b",
+  color: "#000",
+  border: "none",
+  borderRadius: 8,
+  padding: "10px 12px",
+  cursor: "pointer",
+  fontWeight: "bold",
+};
+
+const approvalRowStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  padding: "10px 0",
+  borderBottom: "1px solid #1e293b",
+};
+
+const btnApproveStyle = {
+  background: "#f59e0b",
+  color: "#000",
+  border: "none",
+  padding: "6px 12px",
+  borderRadius: 6,
+  fontWeight: "bold" as const,
+  cursor: "pointer"
+};
+
+const buttonRowStyle = {
+  display: "flex",
+  gap: 10,
+  marginTop: 25,
+};
+
+const btnSaveStyle = {
+  background: "#10b981",
+  color: "white",
+  border: "none",
+  padding: "12px 20px",
+  borderRadius: 6,
+  fontWeight: "bold" as const,
+  cursor: "pointer",
+  flex: 1
+};
+
+const btnDeleteStyle = {
+  background: "#ef4444",
+  color: "white",
+  border: "none",
+  padding: "12px 20px",
+  borderRadius: 6,
+  fontWeight: "bold" as const,
+  cursor: "pointer",
+  flex: 1
+};
+
+const badgeOkStyle = {
+  background: "rgba(16, 185, 129, 0.2)",
+  color: "#10b981",
+  padding: 10,
+  borderRadius: 6,
+  marginBottom: 15,
+  border: "1px solid #10b981",
+  textAlign: "center" as const
+};
+
+const badgeErrorStyle = {
+  background: "rgba(239, 68, 68, 0.2)",
+  color: "#ef4444",
+  padding: 10,
+  borderRadius: 6,
+  marginBottom: 15,
+  border: "1px solid #ef4444",
+  textAlign: "center" as const
+};
