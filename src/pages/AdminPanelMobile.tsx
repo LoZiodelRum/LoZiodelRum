@@ -158,13 +158,6 @@ export default function AdminPanelMobile() {
         <Box title="ARTICOLI" value={kpi.articoli} />
       </div>
 
-      {selectedItem && (
-        <div style={selectedCardStyle}>
-          <h2 style={{ margin: 0 }}>{getTitle(selectedItem)}</h2>
-          <p style={{ color: "#f59e0b", marginTop: 8 }}>{selectedTable}</p>
-        </div>
-      )}
-
       {leftOpen && (
         <>
           <div style={overlayStyle} onClick={() => setLeftOpen(false)} />
@@ -250,7 +243,7 @@ const titleBoxStyle: React.CSSProperties = {
 const titleStyle: React.CSSProperties = {
   color: "#f59e0b",
   margin: 0,
-  fontSize: 32,
+  fontSize: 24,
 };
 
 const kpiGridStyle: React.CSSProperties = {
@@ -261,21 +254,21 @@ const kpiGridStyle: React.CSSProperties = {
 
 const boxStyle: React.CSSProperties = {
   background: "#111827",
-  borderRadius: 18,
-  padding: "28px 10px",
+  borderRadius: 12,
+  padding: "14px 6px",
   textAlign: "center",
 };
 
 const boxTitleStyle: React.CSSProperties = {
   color: "#f59e0b",
-  fontWeight: 700,
-  fontSize: 18,
-  marginBottom: 12,
+  fontWeight: 600,
+  fontSize: 14,
+  marginBottom: 4,
 };
 
 const boxValueStyle: React.CSSProperties = {
-  fontWeight: 800,
-  fontSize: 44,
+  fontWeight: 700,
+  fontSize: 26,
 };
 
 const selectedCardStyle: React.CSSProperties = {
