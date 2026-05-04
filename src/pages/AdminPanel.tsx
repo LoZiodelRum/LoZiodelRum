@@ -2137,22 +2137,30 @@ export default function AdminPanel() {
     setImagePreviewError(false);
   }, [selectedItem?.id, selectedItem?.immagine, selectedTable]);
 
-  // --- MOBILE/TABLET LAYOUT ---
-  if (isMobile) {
-    // Blocca scroll quando un off-canvas è aperto
-    useEffect(() => {
-      if (leftOpen || rightOpen) {
-        document.body.style.overflow = "hidden";
-      } else {
-        document.body.style.overflow = "";
-      }
-      return () => { document.body.style.overflow = ""; };
-    }, [leftOpen, rightOpen]);
+ useEffect(() => {
+  if (!isMobile) return;
 
-    // Chiudi pannelli laterali quando selezioni un elemento
-    const handleMenuSelect = (cb: () => void) => {
-      cb();
-      setLeftOpen(false);
+  if (leftOpen || rightOpen) {
+    document.body.style.overflow = "hidden";
+  } else {
+    document.body.style.overflow = "";
+  }
+
+  return () => {
+    document.body.style.overflow = "";
+  };
+}, [leftOpen, rightOpen, isMobile]);
+
+
+    // Gestione selezione menu mobile/tablet: patch sicura
+    const handleMenuSelect = (item: any, table: string) => {
+      if (!item) return;
+      setSelectedItem(item);
+      setSelectedTable(table || "");
+      if (isMobile) {
+        setLeftOpen(false);
+        setRightOpen(false);
+      }
     };
 
     return (
@@ -2255,8 +2263,8 @@ export default function AdminPanel() {
         {/* APPROVAZIONI PENDENTI RIMOSSO */}
 
         {/* EDITOR DETTAGLIO (scheda) */}
-        {/* Mostra sempre la scheda se selectedItem esiste, anche su mobile/tablet */}
-        {selectedItem && (
+        {/* Mostra sempre la scheda se selectedItem e selectedTable esistono, anche su mobile/tablet */}
+        {selectedItem && selectedTable && (
           <div style={{ margin: "0 8px 80px 8px" }}>
             <div
               style={{
@@ -2272,7 +2280,7 @@ export default function AdminPanel() {
               }}
             >
               <h2 style={{ fontSize: 20, marginBottom: 18, color: "#f59e0b", textAlign: "center", fontWeight: 700 }}>
-                {isCreating ? "Nuovo elemento" : (selectedItem.nome || selectedItem.titolo || selectedItem.username)}
+                {isCreating ? "Nuovo elemento" : (selectedItem?.nome || selectedItem?.titolo || selectedItem?.username || "")}
               </h2>
               {saveStatus === "ok" && (<div style={{ ...badgeOkStyle, fontSize: 15, padding: 8 }}>Modifica salvata</div>)}
               {saveStatus === "error" && (<div style={{ ...badgeErrorStyle, fontSize: 15, padding: 8 }}>Modifica non salvata</div>)}
@@ -2284,7 +2292,7 @@ export default function AdminPanel() {
                     return (
                       <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                         <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
-                        <input type="password" value={selectedItem[key] ?? ""} onChange={e => { const value = e.target.value; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} placeholder={isCreating ? "Imposta password iniziale" : "Lascia vuoto per non cambiarla"} style={inputMobileStyle} />
+                        <input type="password" value={selectedItem?.[key] ?? ""} onChange={e => { const value = e.target.value; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} placeholder={isCreating ? "Imposta password iniziale" : "Lascia vuoto per non cambiarla"} style={inputMobileStyle} />
                       </div>
                     );
                   }
@@ -2292,7 +2300,8 @@ export default function AdminPanel() {
                     return (
                       <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                         <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
-                        <select value={selectedItem[key] ?? ""} disabled={profiliReadonlyFields.has(key)} onChange={e => { const value = e.target.value; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} style={{ ...inputMobileStyle, opacity: profiliReadonlyFields.has(key) ? 0.7 : 1 }}>
+                        <select value={selectedItem?.[key] ?? ""} disabled={profiliReadonlyFields.has(key)} onChange={e => { const value = e.target.value; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} style={{ ...inputMobileStyle, opacity: profiliReadonlyFields.has(key) ? 0.7 : 1 }}>
+
                           <option value="">Scegli</option>
                           {profiliSelectOptions[key].map(option => <option key={option} value={option}>{option}</option>)}
                         </select>
@@ -3062,7 +3071,7 @@ export default function AdminPanel() {
       </div>
     </div>
   );
-
+}
 
 
 
