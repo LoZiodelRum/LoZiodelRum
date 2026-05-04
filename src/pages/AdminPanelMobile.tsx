@@ -506,12 +506,77 @@ export default function AdminPanelMobile() {
             </button>
 
             <h3 style={{ color: "#f59e0b" }}>Azioni</h3>
-            <button style={actionButtonStyle}>Nuovo Cocktail</button>
-            <button style={actionButtonStyle}>Nuovo Distillato</button>
-            <button style={actionButtonStyle}>Nuovo Vino</button>
-            <button style={actionButtonStyle}>Nuovo Proprietario</button>
-            <button style={actionButtonStyle}>Nuovo Bartender</button>
-            <button style={actionButtonStyle}>Nuovo Locale</button>
+            <button
+  style={actionButtonStyle}
+  onClick={() => {
+    setSelectedTable("cocktail");
+    setSelectedItem({});
+    setIsCreating(true);
+    setRightOpen(false);
+  }}
+>
+  Nuovo Cocktail
+</button>
+
+<button
+  style={actionButtonStyle}
+  onClick={() => {
+    setSelectedTable("distillati");
+    setSelectedItem({});
+    setIsCreating(true);
+    setRightOpen(false);
+  }}
+>
+  Nuovo Distillato
+</button>
+
+<button
+  style={actionButtonStyle}
+  onClick={() => {
+    setSelectedTable("vini");
+    setSelectedItem({});
+    setIsCreating(true);
+    setRightOpen(false);
+  }}
+>
+  Nuovo Vino
+</button>
+
+<button
+  style={actionButtonStyle}
+  onClick={() => {
+    setSelectedTable("Locali");
+    setSelectedItem({});
+    setIsCreating(true);
+    setRightOpen(false);
+  }}
+>
+  Nuovo Locale
+</button>
+
+<button
+  style={actionButtonStyle}
+  onClick={() => {
+    setSelectedTable("profili");
+    setSelectedItem({ ruolo: "proprietario" });
+    setIsCreating(true);
+    setRightOpen(false);
+  }}
+>
+  Nuovo Proprietario
+</button>
+
+<button
+  style={actionButtonStyle}
+  onClick={() => {
+    setSelectedTable("profili");
+    setSelectedItem({ ruolo: "bartender" });
+    setIsCreating(true);
+    setRightOpen(false);
+  }}
+>
+  Nuovo Bartender
+</button>
           </div>
         </>
       )}
