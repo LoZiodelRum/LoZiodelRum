@@ -6,28 +6,17 @@ export default function AdminPanel() {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(max-width: 900px)");
+    const mediaQuery = window.matchMedia("(max-width: 1023px)");
 
-    const handleChange = (e: MediaQueryListEvent | MediaQueryList) => {
-      setIsMobile(e.matches);
+    const handleChange = () => {
+      setIsMobile(mediaQuery.matches);
     };
 
-    // iniziale
-    handleChange(mediaQuery);
-
-    // listener
-    if (mediaQuery.addEventListener) {
-      mediaQuery.addEventListener("change", handleChange);
-    } else {
-      mediaQuery.addListener(handleChange); // fallback
-    }
+    handleChange();
+    mediaQuery.addEventListener("change", handleChange);
 
     return () => {
-      if (mediaQuery.removeEventListener) {
-        mediaQuery.removeEventListener("change", handleChange);
-      } else {
-        mediaQuery.removeListener(handleChange);
-      }
+      mediaQuery.removeEventListener("change", handleChange);
     };
   }, []);
 

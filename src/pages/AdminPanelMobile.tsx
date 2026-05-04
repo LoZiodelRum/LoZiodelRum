@@ -5,22 +5,27 @@ import { useUser } from "../context/UserContext";
 export default function AdminPanelMobile() {
   const { loading, isAdmin } = useUser();
 
-  const [kpi, setKpi] = useState({
-    utenti: 0,
-    locali: 0,
-    drink: 0,
-    articoli: 0,
-  });
+  const [leftOpen, setLeftOpen] = useState(false);
+  const [rightOpen, setRightOpen] = useState(false);
 
-  const [utenti, setUtenti] = useState<any[]>([]);
   const [locali, setLocali] = useState<any[]>([]);
+  const [utenti, setUtenti] = useState<any[]>([]);
   const [cocktail, setCocktail] = useState<any[]>([]);
+  const [distillati, setDistillati] = useState<any[]>([]);
+  const [vini, setVini] = useState<any[]>([]);
   const [articoli, setArticoli] = useState<any[]>([]);
 
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [selectedTable, setSelectedTable] = useState("");
 
   const [loadingData, setLoadingData] = useState(true);
+
+  const kpi = {
+    utenti: utenti.length,
+    locali: locali.length,
+    drink: cocktail.length + distillati.length + vini.length,
+    articoli: articoli.length,
+  };
 
   useEffect(() => {
     if (!loading && isAdmin) {
@@ -32,140 +37,305 @@ export default function AdminPanelMobile() {
     }
   }, [loading, isAdmin]);
 
+  useEffect(() => {
+    if (leftOpen || rightOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [leftOpen, rightOpen]);
+
   async function loadData() {
     try {
       setLoadingData(true);
 
-      const { data: utentiData } = await supabase.from("Profili").select("*");
       const { data: localiData } = await supabase.from("Locali").select("*");
+      const { data: utentiData } = await supabase.from("Profili").select("*");
       const { data: cocktailData } = await supabase.from("cocktail").select("*");
+      const { data: distillatiData } = await supabase.from("distillati").select("*");
+      const { data: viniData } = await supabase.from("vini").select("*");
       const { data: articoliData } = await supabase.from("Articoli").select("*");
 
-      setUtenti(utentiData || []);
       setLocali(localiData || []);
+      setUtenti(utentiData || []);
       setCocktail(cocktailData || []);
+      setDistillati(distillatiData || []);
+      setVini(viniData || []);
       setArticoli(articoliData || []);
-
-      setKpi({
-        utenti: utentiData?.length || 0,
-        locali: localiData?.length || 0,
-        drink: cocktailData?.length || 0,
-        articoli: articoliData?.length || 0,
-      });
     } catch (err) {
-      console.error("Errore loadData AdminPanelMobile:", err);
+      console.error("Errore AdminPanelMobile loadData:", err);
     } finally {
       setLoadingData(false);
     }
   }
 
-  function openFirstEditor(table: string, data: any[]) {
-    if (!Array.isArray(data) || data.length === 0) {
-      setSelectedTable(table);
-      setSelectedItem(null);
-      return;
-    }
-
+  function openItem(table: string, item: any) {
     setSelectedTable(table);
-    setSelectedItem(data[0]);
+    setSelectedItem(item);
+    setLeftOpen(false);
   }
 
-  function getSelectedTitle(item: any) {
-    if (!item) return "Nessun elemento trovato";
+  function Sidebar(title: string, data: any[], table: string, label: string) {
+    const sorted = [...data].sort((a, b) =>
+      String(a?.[label] ?? a?.nome ?? "").localeCompare(
+        String(b?.[label] ?? b?.nome ?? "")
+      )
+    );
 
     return (
+      <div style={{ marginBottom: 18 }}>
+        <h4 style={{ color: "#f59e0b", marginBottom: 8 }}>{title}</h4>
+
+        <select
+          style={selectStyle}
+          value=""
+          onChange={(e) => {
+            const value = e.target.value;
+            const item = data.find((d) => String(d.id) === value);
+            if (item) openItem(table, item);
+          }}
+        >
+          <option value="">Seleziona</option>
+          {sorted.map((d) => (
+            <option key={d.id} value={String(d.id)}>
+              {d?.[label] ?? d?.nome ?? d?.titolo ?? "—"}
+            </option>
+          ))}
+        </select>
+      </div>
+    );
+  }
+
+  function getTitle(item: any) {
+    if (!item) return "";
+    return (
       item.nome ||
-      item.name ||
-      item.titolo ||
-      item.title ||
-      item.email ||
       item.username ||
+      item.titolo ||
+      item.email ||
       "Elemento selezionato"
     );
   }
 
   if (loading || loadingData) {
     return (
-      <div className="min-h-screen bg-[#020617] flex items-center justify-center text-white">
-        Caricamento...
+      <div style={pageStyle}>
+        <p>Caricamento...</p>
       </div>
     );
   }
 
   if (!isAdmin) {
     return (
-      <div className="min-h-screen bg-[#020617] flex items-center justify-center text-white">
-        Accesso negato
+      <div style={pageStyle}>
+        <p style={{ color: "red" }}>Accesso negato</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-[#020617] text-white px-6 py-6">
-      <div className="bg-[#0f172a] border border-[#1f2937] px-4 py-6 mb-8 text-center">
-        <h1 className="text-3xl font-bold text-[#f59e0b]">
-          Pannello di Controllo
-        </h1>
+    <div style={pageStyle}>
+      <button onClick={() => setLeftOpen(true)} style={leftButtonStyle}>
+        ←
+      </button>
+
+      <button onClick={() => setRightOpen(true)} style={rightButtonStyle}>
+        →
+      </button>
+
+      <div style={titleBoxStyle}>
+        <h1 style={titleStyle}>Pannello di Controllo</h1>
       </div>
 
-      <div className="grid grid-cols-2 gap-4 mb-6">
-        <Box
-          titolo="UTENTI"
-          valore={kpi.utenti}
-          onClick={() => openFirstEditor("profili", utenti)}
-        />
-
-        <Box
-          titolo="LOCALI"
-          valore={kpi.locali}
-          onClick={() => openFirstEditor("locali", locali)}
-        />
-
-        <Box
-          titolo="DRINK"
-          valore={kpi.drink}
-          onClick={() => openFirstEditor("cocktail", cocktail)}
-        />
-
-        <Box
-          titolo="ARTICOLI"
-          valore={kpi.articoli}
-          onClick={() => openFirstEditor("articoli", articoli)}
-        />
+      <div style={kpiGridStyle}>
+        <Box title="UTENTI" value={kpi.utenti} />
+        <Box title="LOCALI" value={kpi.locali} />
+        <Box title="DRINK" value={kpi.drink} />
+        <Box title="ARTICOLI" value={kpi.articoli} />
       </div>
 
-      {selectedTable && (
-        <div className="mt-6 bg-[#0f172a] border border-[#1f2937] p-6 rounded-2xl">
-          <p className="text-sm font-bold text-[#f59e0b] mb-3 uppercase">
-            {selectedTable}
-          </p>
-
-          <p className="text-2xl font-bold text-white">
-            {getSelectedTitle(selectedItem)}
-          </p>
+      {selectedItem && (
+        <div style={selectedCardStyle}>
+          <h2 style={{ margin: 0 }}>{getTitle(selectedItem)}</h2>
+          <p style={{ color: "#f59e0b", marginTop: 8 }}>{selectedTable}</p>
         </div>
+      )}
+
+      {leftOpen && (
+        <>
+          <div style={overlayStyle} onClick={() => setLeftOpen(false)} />
+          <div style={leftMenuStyle}>
+            <button onClick={() => setLeftOpen(false)} style={closeButtonStyle}>
+              ✕
+            </button>
+
+            {Sidebar("Locali", locali, "Locali", "nome")}
+            {Sidebar("Utenti", utenti, "profili", "username")}
+            {Sidebar("Cocktail", cocktail, "cocktail", "nome")}
+            {Sidebar("Distillati", distillati, "distillati", "nome")}
+            {Sidebar("Vini", vini, "vini", "nome")}
+            {Sidebar("Articoli", articoli, "articoli", "titolo")}
+          </div>
+        </>
+      )}
+
+      {rightOpen && (
+        <>
+          <div style={overlayStyle} onClick={() => setRightOpen(false)} />
+          <div style={rightMenuStyle}>
+            <button onClick={() => setRightOpen(false)} style={closeButtonStyle}>
+              ✕
+            </button>
+
+            <h3 style={{ color: "#f59e0b" }}>Azioni</h3>
+            <button style={actionButtonStyle}>Nuovo Cocktail</button>
+            <button style={actionButtonStyle}>Nuovo Distillato</button>
+            <button style={actionButtonStyle}>Nuovo Locale</button>
+          </div>
+        </>
       )}
     </div>
   );
 }
 
-function Box({
-  titolo,
-  valore,
-  onClick,
-}: {
-  titolo: string;
-  valore: number;
-  onClick?: () => void;
-}) {
+function Box({ title, value }: any) {
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="bg-[#111827] rounded-2xl min-h-[105px] p-4 text-center shadow-md active:scale-95 transition"
-    >
-      <p className="text-[#f59e0b] text-base font-bold mb-2">{titolo}</p>
-      <p className="text-4xl font-bold text-white">{valore}</p>
-    </button>
+    <div style={boxStyle}>
+      <div style={boxTitleStyle}>{title}</div>
+      <div style={boxValueStyle}>{value}</div>
+    </div>
   );
 }
+
+const pageStyle: React.CSSProperties = {
+  background: "#020617",
+  minHeight: "100vh",
+  color: "white",
+  padding: "92px 24px 24px",
+  position: "relative",
+};
+
+const leftButtonStyle: React.CSSProperties = {
+  position: "fixed",
+  top: 22,
+  left: 16,
+  zIndex: 50,
+  width: 58,
+  height: 58,
+  borderRadius: "50%",
+  border: "none",
+  background: "#111827",
+  color: "#f59e0b",
+  fontSize: 28,
+};
+
+const rightButtonStyle: React.CSSProperties = {
+  ...leftButtonStyle,
+  left: "auto",
+  right: 16,
+};
+
+const titleBoxStyle: React.CSSProperties = {
+  background: "#0f172a",
+  border: "1px solid #1f2937",
+  padding: "24px 10px",
+  textAlign: "center",
+  marginBottom: 26,
+};
+
+const titleStyle: React.CSSProperties = {
+  color: "#f59e0b",
+  margin: 0,
+  fontSize: 32,
+};
+
+const kpiGridStyle: React.CSSProperties = {
+  display: "grid",
+  gridTemplateColumns: "1fr 1fr",
+  gap: 16,
+};
+
+const boxStyle: React.CSSProperties = {
+  background: "#111827",
+  borderRadius: 18,
+  padding: "28px 10px",
+  textAlign: "center",
+};
+
+const boxTitleStyle: React.CSSProperties = {
+  color: "#f59e0b",
+  fontWeight: 700,
+  fontSize: 18,
+  marginBottom: 12,
+};
+
+const boxValueStyle: React.CSSProperties = {
+  fontWeight: 800,
+  fontSize: 44,
+};
+
+const selectedCardStyle: React.CSSProperties = {
+  marginTop: 28,
+  background: "#0f172a",
+  border: "1px solid #1f2937",
+  borderRadius: 22,
+  padding: 24,
+};
+
+const overlayStyle: React.CSSProperties = {
+  position: "fixed",
+  inset: 0,
+  background: "rgba(0,0,0,0.4)",
+  zIndex: 90,
+};
+
+const leftMenuStyle: React.CSSProperties = {
+  position: "fixed",
+  top: 0,
+  left: 0,
+  width: "78%",
+  height: "100%",
+  background: "#0f172a",
+  zIndex: 100,
+  padding: 20,
+  overflowY: "auto",
+};
+
+const rightMenuStyle: React.CSSProperties = {
+  ...leftMenuStyle,
+  left: "auto",
+  right: 0,
+};
+
+const closeButtonStyle: React.CSSProperties = {
+  background: "transparent",
+  color: "#f59e0b",
+  border: "none",
+  fontSize: 28,
+  marginBottom: 20,
+};
+
+const selectStyle: React.CSSProperties = {
+  width: "100%",
+  background: "#020617",
+  color: "white",
+  border: "1px solid #334155",
+  borderRadius: 12,
+  padding: "14px 12px",
+  fontSize: 16,
+};
+
+const actionButtonStyle: React.CSSProperties = {
+  width: "100%",
+  background: "#f59e0b",
+  color: "#020617",
+  border: "none",
+  borderRadius: 12,
+  padding: 14,
+  marginBottom: 12,
+  fontWeight: 700,
+};
