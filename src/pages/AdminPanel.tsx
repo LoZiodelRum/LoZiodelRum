@@ -8,15 +8,6 @@ const PREVIEW_BOX_SIZE = 280;
 
 
 export default function AdminPanel() {
-  const inputMobileStyle = {
-  padding: "14px 12px",
-  borderRadius: 8,
-  background: "#181f2e",
-  color: "#fff",
-  border: "1px solid #334155",
-  fontSize: "16px",
-  width: "100%"
-};
   const { loading, isAdmin } = useUser();
 
   const [locali, setLocali] = useState<any[]>([]);
@@ -1928,216 +1919,11 @@ export default function AdminPanel() {
   useEffect(() => {
     setImagePreviewError(false);
   }, [selectedItem?.id, selectedItem?.immagine, selectedTable]);
-/* STILI OTTIMIZZATI PER MOBILE & TABLET */
-
-const layoutStyle: React.CSSProperties = { 
-  display: "flex", 
-  flexWrap: "wrap", // Permette alla sidebar di andare sopra il contenuto su mobile
-  alignItems: "flex-start",
-  minHeight: "100vh", 
-  paddingBottom: 100,
-  background: "#020617", 
-  color: "white" 
-};
-
-const sidebarStyle: React.CSSProperties = { 
-  width: "100%", 
-  maxWidth: "16.25rem",
-  flexBasis: "260px",
-  flexGrow: 1,
-  padding: 20, 
-  borderRight: "1px solid #1e293b",
-  background: "#0f172a" 
-};
-
-const contentStyle: React.CSSProperties = { 
-  flex: 1, 
-  minWidth: 0,
-  padding: "20px 20px 140px",
-};
-
-const kpiGridStyle: React.CSSProperties = { 
-  display: "flex", 
-  gap: 10, 
-  flexWrap: "wrap", // I KPI vanno a capo su mobile
-  marginBottom: 20 
-};
-
-const kpiCardStyle: React.CSSProperties = {
-  background: "#0f172a",
-  padding: "15px",
-  borderRadius: 12,
-  border: "1px solid #334155",
-  flex: "1 1 140px", // Cresce e si restringe, minimo 140px
-  textAlign: "center"
-};
-
-const kpiLabelStyle: React.CSSProperties = {
-  display: "block",
-  fontSize: "0.75rem",
-  color: "#94a3b8",
-  marginBottom: 5,
-  textTransform: "uppercase"
-};
-
-const cardStyle: React.CSSProperties = {
-  background: "#0f172a",
-  padding: 20,
-  paddingBottom: 36,
-  borderRadius: 16,
-  marginTop: 20,
-  marginBottom: 80,
-  border: "1px solid #1e293b"
-};
-
-const formGridStyle: React.CSSProperties = {
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", // Griglia automatica per i campi input
-  gap: 15
-};
-
-const sidebarTitleStyle = { color: "#f59e0b", fontSize: "0.9rem", marginBottom: 8 };
-
-const fieldStyle = {
-  marginBottom: 10,
-  display: "flex",
-  flexDirection: "column" as const,
-};
-
-const labelStyle = {
-  fontSize: "0.8rem",
-  color: "#f5a623",
-  marginBottom: 5
-};
-
-const inputStyle = {
-  padding: "10px",
-  borderRadius: 6,
-  background: "#020617",
-  color: "#fff",
-  border: "1px solid #334155",
-  fontSize: "14px"
-};
-
-const selectStyle = {
-  width: "100%",
-  padding: "10px",
-  borderRadius: 6,
-  background: "#020617",
-  color: "#fff",
-  border: "1px solid #334155",
-};
-
-const approvalBoxStyle = {
-  marginTop: 20,
-  background: "#0f172a",
-  padding: 15,
-  borderRadius: 10,
-  border: "1px solid #1e293b"
-};
-
-const quickActionGridStyle: React.CSSProperties = {
-  marginTop: 20,
-  display: "grid",
-  gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
-  gap: 12,
-};
-
-const quickActionCardStyle: React.CSSProperties = {
-  background: "#0f172a",
-  border: "1px solid #1e293b",
-  borderRadius: 10,
-  padding: 15,
-  minHeight: 120,
-  display: "flex",
-  flexDirection: "column",
-  justifyContent: "space-between",
-};
-
-const quickActionTitleStyle: React.CSSProperties = {
-  fontSize: "1rem",
-  color: "#f59e0b",
-  margin: 0,
-};
-
-const quickActionBtnStyle: React.CSSProperties = {
-  background: "#f59e0b",
-  color: "#000",
-  border: "none",
-  borderRadius: 8,
-  padding: "10px 12px",
-  cursor: "pointer",
-  fontWeight: "bold",
-};
-
-const approvalRowStyle = {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center",
-  padding: "10px 0",
-  borderBottom: "1px solid #1e293b",
-};
-
-const btnApproveStyle = {
-  background: "#f59e0b",
-  color: "#000",
-  border: "none",
-  padding: "6px 12px",
-  borderRadius: 6,
-  fontWeight: "bold" as const,
-  cursor: "pointer"
-};
-
-const buttonRowStyle = {
-  display: "flex",
-  gap: 10,
-  marginTop: 25,
-};
-
-const btnSaveStyle = {
-  background: "#10b981",
-  color: "white",
-  border: "none",
-  padding: "12px 20px",
-  borderRadius: 6,
-  fontWeight: "bold" as const,
-  cursor: "pointer",
-  flex: 1
-};
-
-const btnDeleteStyle = {
-  background: "#ef4444",
-  color: "white",
-  border: "none",
-  padding: "12px 20px",
-  borderRadius: 6,
-  fontWeight: "bold" as const,
-  cursor: "pointer",
-  flex: 1
-};
-
-const badgeOkStyle = {
-  background: "rgba(16, 185, 129, 0.2)",
-  color: "#10b981",
-  padding: 10,
-  borderRadius: 6,
-  marginBottom: 15,
-  border: "1px solid #10b981",
-  textAlign: "center" as const
-};
-
-const badgeErrorStyle = {
-  background: "rgba(239, 68, 68, 0.2)",
-  color: "#ef4444",
-  padding: 10,
-  borderRadius: 6,
-  marginBottom: 15,
-  border: "1px solid #ef4444",
-  textAlign: "center" as const
-};
 
   // --- MOBILE/TABLET LAYOUT ---
-  useEffect(() => {
+  if (isMobile) {
+    // Blocca scroll quando un off-canvas è aperto
+    useEffect(() => {
       if (leftOpen || rightOpen) {
         document.body.style.overflow = "hidden";
       } else {
@@ -2145,11 +1931,13 @@ const badgeErrorStyle = {
       }
       return () => { document.body.style.overflow = ""; };
     }, [leftOpen, rightOpen]);
+
+    // Chiudi pannelli laterali quando selezioni un elemento
     const handleMenuSelect = (cb: () => void) => {
       cb();
       setLeftOpen(false);
     };
-  if (isMobile) {
+
     return (
       <div className="page page-full-bleed fade-in" style={{ background: "#020617", minHeight: "100vh", color: "white", position: "relative" }}>
         {/* HEADER MOBILE */}
@@ -2375,7 +2163,16 @@ const badgeErrorStyle = {
     );
 
 // Stile input mobile/tablet
-
+const inputMobileStyle = {
+  padding: "14px 12px",
+  borderRadius: 8,
+  background: "#181f2e",
+  color: "#fff",
+  border: "1px solid #334155",
+  fontSize: "16px",
+  width: "100%"
+};
+  }
 
   // --- DESKTOP LAYOUT (INVARIATO) ---
   return (
@@ -3054,4 +2851,211 @@ const badgeErrorStyle = {
     </div>
   );
 }
-}
+
+/* STILI OTTIMIZZATI PER MOBILE & TABLET */
+
+const layoutStyle: React.CSSProperties = { 
+  display: "flex", 
+  flexWrap: "wrap", // Permette alla sidebar di andare sopra il contenuto su mobile
+  alignItems: "flex-start",
+  minHeight: "100vh", 
+  paddingBottom: 100,
+  background: "#020617", 
+  color: "white" 
+};
+
+const sidebarStyle: React.CSSProperties = { 
+  width: "100%", 
+  maxWidth: "16.25rem",
+  flexBasis: "260px",
+  flexGrow: 1,
+  padding: 20, 
+  borderRight: "1px solid #1e293b",
+  background: "#0f172a" 
+};
+
+const contentStyle: React.CSSProperties = { 
+  flex: 1, 
+  minWidth: 0,
+  padding: "20px 20px 140px",
+};
+
+const kpiGridStyle: React.CSSProperties = { 
+  display: "flex", 
+  gap: 10, 
+  flexWrap: "wrap", // I KPI vanno a capo su mobile
+  marginBottom: 20 
+};
+
+const kpiCardStyle: React.CSSProperties = {
+  background: "#0f172a",
+  padding: "15px",
+  borderRadius: 12,
+  border: "1px solid #334155",
+  flex: "1 1 140px", // Cresce e si restringe, minimo 140px
+  textAlign: "center"
+};
+
+const kpiLabelStyle: React.CSSProperties = {
+  display: "block",
+  fontSize: "0.75rem",
+  color: "#94a3b8",
+  marginBottom: 5,
+  textTransform: "uppercase"
+};
+
+const cardStyle: React.CSSProperties = {
+  background: "#0f172a",
+  padding: 20,
+  paddingBottom: 36,
+  borderRadius: 16,
+  marginTop: 20,
+  marginBottom: 80,
+  border: "1px solid #1e293b"
+};
+
+const formGridStyle: React.CSSProperties = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fill, minmax(200px, 1fr))", // Griglia automatica per i campi input
+  gap: 15
+};
+
+const sidebarTitleStyle = { color: "#f59e0b", fontSize: "0.9rem", marginBottom: 8 };
+
+const fieldStyle = {
+  marginBottom: 10,
+  display: "flex",
+  flexDirection: "column" as const,
+};
+
+const labelStyle = {
+  fontSize: "0.8rem",
+  color: "#f5a623",
+  marginBottom: 5
+};
+
+const inputStyle = {
+  padding: "10px",
+  borderRadius: 6,
+  background: "#020617",
+  color: "#fff",
+  border: "1px solid #334155",
+  fontSize: "14px"
+};
+
+const selectStyle = {
+  width: "100%",
+  padding: "10px",
+  borderRadius: 6,
+  background: "#020617",
+  color: "#fff",
+  border: "1px solid #334155",
+};
+
+const approvalBoxStyle = {
+  marginTop: 20,
+  background: "#0f172a",
+  padding: 15,
+  borderRadius: 10,
+  border: "1px solid #1e293b"
+};
+
+const quickActionGridStyle: React.CSSProperties = {
+  marginTop: 20,
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fill, minmax(260px, 1fr))",
+  gap: 12,
+};
+
+const quickActionCardStyle: React.CSSProperties = {
+  background: "#0f172a",
+  border: "1px solid #1e293b",
+  borderRadius: 10,
+  padding: 15,
+  minHeight: 120,
+  display: "flex",
+  flexDirection: "column",
+  justifyContent: "space-between",
+};
+
+const quickActionTitleStyle: React.CSSProperties = {
+  fontSize: "1rem",
+  color: "#f59e0b",
+  margin: 0,
+};
+
+const quickActionBtnStyle: React.CSSProperties = {
+  background: "#f59e0b",
+  color: "#000",
+  border: "none",
+  borderRadius: 8,
+  padding: "10px 12px",
+  cursor: "pointer",
+  fontWeight: "bold",
+};
+
+const approvalRowStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  padding: "10px 0",
+  borderBottom: "1px solid #1e293b",
+};
+
+const btnApproveStyle = {
+  background: "#f59e0b",
+  color: "#000",
+  border: "none",
+  padding: "6px 12px",
+  borderRadius: 6,
+  fontWeight: "bold" as const,
+  cursor: "pointer"
+};
+
+const buttonRowStyle = {
+  display: "flex",
+  gap: 10,
+  marginTop: 25,
+};
+
+const btnSaveStyle = {
+  background: "#10b981",
+  color: "white",
+  border: "none",
+  padding: "12px 20px",
+  borderRadius: 6,
+  fontWeight: "bold" as const,
+  cursor: "pointer",
+  flex: 1
+};
+
+const btnDeleteStyle = {
+  background: "#ef4444",
+  color: "white",
+  border: "none",
+  padding: "12px 20px",
+  borderRadius: 6,
+  fontWeight: "bold" as const,
+  cursor: "pointer",
+  flex: 1
+};
+
+const badgeOkStyle = {
+  background: "rgba(16, 185, 129, 0.2)",
+  color: "#10b981",
+  padding: 10,
+  borderRadius: 6,
+  marginBottom: 15,
+  border: "1px solid #10b981",
+  textAlign: "center" as const
+};
+
+const badgeErrorStyle = {
+  background: "rgba(239, 68, 68, 0.2)",
+  color: "#ef4444",
+  padding: 10,
+  borderRadius: 6,
+  marginBottom: 15,
+  border: "1px solid #ef4444",
+  textAlign: "center" as const
+};
