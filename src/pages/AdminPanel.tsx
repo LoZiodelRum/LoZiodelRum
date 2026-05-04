@@ -35,6 +35,10 @@ export default function AdminPanel() {
   });
 
   const [saveStatus, setSaveStatus] = useState<"ok" | "error" | null>(null);
+
+  // UI state per mobile/tablet off-canvas
+  const [leftOpen, setLeftOpen] = useState(false);
+  const [rightOpen, setRightOpen] = useState(false);
   const [uploadingLocaleImage, setUploadingLocaleImage] = useState(false);
   const [uploadingLocaleVideo, setUploadingLocaleVideo] = useState(false);
   const [uploadingCocktailImage, setUploadingCocktailImage] = useState(false);
@@ -1174,6 +1178,10 @@ export default function AdminPanel() {
     await loadData();
   }
 
+
+  // Media query per mobile/tablet
+  const isMobile = typeof window !== "undefined" && window.matchMedia && window.matchMedia("(max-width: 1023px)").matches;
+
   if (loading) return null;
   if (!isAdmin) return <div style={{ padding: 20, color: "red" }}>Accesso negato</div>;
 
@@ -1912,10 +1920,265 @@ export default function AdminPanel() {
     setImagePreviewError(false);
   }, [selectedItem?.id, selectedItem?.immagine, selectedTable]);
 
+  // --- MOBILE/TABLET LAYOUT ---
+  if (isMobile) {
+    // Blocca scroll quando un off-canvas è aperto
+    useEffect(() => {
+      if (leftOpen || rightOpen) {
+        document.body.style.overflow = "hidden";
+      } else {
+        document.body.style.overflow = "";
+      }
+      return () => { document.body.style.overflow = ""; };
+    }, [leftOpen, rightOpen]);
+
+    // Chiudi pannelli laterali quando selezioni un elemento
+    const handleMenuSelect = (cb: () => void) => {
+      cb();
+      setLeftOpen(false);
+    };
+
+    return (
+      <div className="page page-full-bleed fade-in" style={{ background: "#020617", minHeight: "100vh", color: "white", position: "relative" }}>
+        {/* HEADER MOBILE */}
+
+        <div style={{ padding: "18px 0 10px 0", background: "#0f172a", borderBottom: "1px solid #1e293b", position: "sticky", top: 0, zIndex: 30, display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <h2 style={{ color: "#f59e0b", fontWeight: 700, fontSize: 22, margin: 0, letterSpacing: 0.5, textAlign: "center", width: "100%" }}>Pannello di Controllo</h2>
+        </div>
+
+        {/* FRECCIA SINISTRA (apri menu) */}
+        <button aria-label="Apri menu" onClick={() => setLeftOpen(true)} style={{ position: "fixed", top: 18, left: 8, zIndex: 50, background: "#0f172a", border: "none", borderRadius: 20, width: 36, height: 36, display: leftOpen ? "none" : "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px #0002", color: "#f59e0b", fontSize: 22, cursor: "pointer" }}>
+          <span style={{ display: "inline-block", transform: "rotate(180deg)" }}>➔</span>
+        </button>
+        {/* FRECCIA DESTRA (apri azioni) */}
+        <button aria-label="Apri azioni" onClick={() => setRightOpen(true)} style={{ position: "fixed", top: 18, right: 8, zIndex: 50, background: "#0f172a", border: "none", borderRadius: 20, width: 36, height: 36, display: rightOpen ? "none" : "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px #0002", color: "#f59e0b", fontSize: 22, cursor: "pointer" }}>
+          <span style={{ display: "inline-block" }}>➔</span>
+        </button>
+
+        {/* OFF-CANVAS SINISTRA (MENU) */}
+        <div style={{ position: "fixed", top: 0, left: 0, height: "100%", width: "70vw", maxWidth: 340, background: "#0f172a", zIndex: 100, boxShadow: leftOpen ? "2px 0 16px #0006" : "none", transform: leftOpen ? "translateX(0)" : "translateX(-100%)", transition: "transform 0.3s cubic-bezier(.4,0,.2,1)", overflowY: "auto" }}>
+          <div style={{ padding: 18, borderBottom: "1px solid #1e293b", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <span style={{ color: "#f59e0b", fontWeight: 700, fontSize: 18 }}>Menu</span>
+            <button aria-label="Chiudi menu" onClick={() => setLeftOpen(false)} style={{ background: "none", border: "none", color: "#f59e0b", fontSize: 22, cursor: "pointer" }}>✕</button>
+          </div>
+          <div style={{ padding: 18 }}>
+            <div style={{ marginBottom: 16 }}>{Sidebar("Locali", locali, "Locali", "nome")}</div>
+            {Sidebar("Utenti", utenti, "profili", "username")}
+            {Sidebar("Bartender", bartender, "profili", "username")}
+            {Sidebar("Proprietari", proprietari, "profili", "username")}
+            {Sidebar("Cocktail", cocktail, "cocktail", "nome")}
+            {Sidebar("Distillati", distillati, "distillati", "nome")}
+            {Sidebar("Vini", vini, wineTableName, "nome")}
+            {Sidebar("Articoli", articoli, "articoli", "titolo")}
+          </div>
+        </div>
+
+        {/* OVERLAY per chiusura off-canvas sinistra */}
+        {leftOpen && <div onClick={() => setLeftOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 90, background: "rgba(0,0,0,0.25)" }} />}
+
+        {/* OFF-CANVAS DESTRA (AZIONI) */}
+        <div style={{ position: "fixed", top: 0, right: 0, height: "100%", width: "70vw", maxWidth: 340, background: "#0f172a", zIndex: 100, boxShadow: rightOpen ? "-2px 0 16px #0006" : "none", transform: rightOpen ? "translateX(0)" : "translateX(100%)", transition: "transform 0.3s cubic-bezier(.4,0,.2,1)", overflowY: "auto" }}>
+          <div style={{ padding: 18, borderBottom: "1px solid #1e293b", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+            <span style={{ color: "#f59e0b", fontWeight: 700, fontSize: 18 }}>Azioni</span>
+            <button aria-label="Chiudi azioni" onClick={() => setRightOpen(false)} style={{ background: "none", border: "none", color: "#f59e0b", fontSize: 22, cursor: "pointer" }}>✕</button>
+          </div>
+          <div style={{ padding: 18, display: "grid", gap: 12 }}>
+            <div style={quickActionCardStyle}>
+              <h3 style={quickActionTitleStyle}>Aggiunta Cocktail</h3>
+              <button style={quickActionBtnStyle} onClick={() => { setRightOpen(false); openCreateEditor("cocktail", cocktail); }}>modifica cocktail</button>
+            </div>
+            <div style={quickActionCardStyle}>
+              <h3 style={quickActionTitleStyle}>Aggiunta Distillati</h3>
+              <button style={quickActionBtnStyle} onClick={() => { setRightOpen(false); openCreateEditor("distillati", distillati); }}>modifica distillati</button>
+            </div>
+            <div style={quickActionCardStyle}>
+              <h3 style={quickActionTitleStyle}>Aggiunta Vini</h3>
+              <button style={quickActionBtnStyle} onClick={() => { setRightOpen(false); openCreateEditor(wineTableName, vini); }}>modifica vini</button>
+            </div>
+            <div style={quickActionCardStyle}>
+              <h3 style={quickActionTitleStyle}>Aggiunta Locali</h3>
+              <button style={quickActionBtnStyle} onClick={() => { setRightOpen(false); openCreateEditor("Locali", locali); }}>modifica locali</button>
+            </div>
+            <div style={quickActionCardStyle}>
+              <h3 style={quickActionTitleStyle}>Aggiunta Bartender</h3>
+              <button style={quickActionBtnStyle} onClick={() => { setRightOpen(false); openCreateEditor("profili", bartender, "bartender"); }}>modifica bartender</button>
+            </div>
+            <div style={quickActionCardStyle}>
+              <h3 style={quickActionTitleStyle}>Aggiunta Proprietari</h3>
+              <button style={quickActionBtnStyle} onClick={() => { setRightOpen(false); openCreateEditor("profili", proprietari, "proprietario"); }}>modifica proprietari</button>
+            </div>
+          </div>
+        </div>
+        {/* OVERLAY per chiusura off-canvas destra */}
+        {rightOpen && <div onClick={() => setRightOpen(false)} style={{ position: "fixed", inset: 0, zIndex: 90, background: "rgba(0,0,0,0.25)" }} />}
+
+        {/* KPI GRID MOBILE */}
+        <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, margin: "22px 12px 18px 12px" }}>
+          <div style={{ background: "#181f2e", borderRadius: 12, padding: "18px 0 10px 0", textAlign: "center" }}>
+            <span style={{ color: "#f59e0b", fontWeight: 600, fontSize: 13, display: "block", marginBottom: 2 }}>UTENTI</span>
+            <span style={{ fontWeight: 700, fontSize: 26 }}>{kpi.utenti}</span>
+          </div>
+          <div style={{ background: "#181f2e", borderRadius: 12, padding: "18px 0 10px 0", textAlign: "center" }}>
+            <span style={{ color: "#f59e0b", fontWeight: 600, fontSize: 13, display: "block", marginBottom: 2 }}>LOCALI</span>
+            <span style={{ fontWeight: 700, fontSize: 26 }}>{kpi.locali}</span>
+          </div>
+          <div style={{ background: "#181f2e", borderRadius: 12, padding: "18px 0 10px 0", textAlign: "center" }}>
+            <span style={{ color: "#f59e0b", fontWeight: 600, fontSize: 13, display: "block", marginBottom: 2 }}>DRINK</span>
+            <span style={{ fontWeight: 700, fontSize: 26 }}>{kpi.drink}</span>
+          </div>
+          <div style={{ background: "#181f2e", borderRadius: 12, padding: "18px 0 10px 0", textAlign: "center" }}>
+            <span style={{ color: "#f59e0b", fontWeight: 600, fontSize: 13, display: "block", marginBottom: 2 }}>ARTICOLI</span>
+            <span style={{ fontWeight: 700, fontSize: 26 }}>{kpi.articoli}</span>
+          </div>
+        </div>
+
+
+        {/* APPROVAZIONI PENDENTI RIMOSSO */}
+
+        {/* EDITOR DETTAGLIO (scheda) */}
+        {selectedItem && (
+          <div style={{ margin: "0 8px 80px 8px" }}>
+            <div
+              style={{
+                background: "#0f172a",
+                padding: "18px 8px 28px 8px",
+                borderRadius: 16,
+                marginTop: 18,
+                border: "1px solid #1e293b",
+                boxShadow: "0 2px 12px #0002",
+                maxWidth: 540,
+                marginLeft: "auto",
+                marginRight: "auto"
+              }}
+            >
+              <h2 style={{ fontSize: 20, marginBottom: 18, color: "#f59e0b", textAlign: "center", fontWeight: 700 }}>
+                {isCreating ? "Nuovo elemento" : (selectedItem.nome || selectedItem.titolo || selectedItem.username)}
+              </h2>
+              {saveStatus === "ok" && (<div style={{ ...badgeOkStyle, fontSize: 15, padding: 8 }}>Modifica salvata</div>)}
+              {saveStatus === "error" && (<div style={{ ...badgeErrorStyle, fontSize: 15, padding: 8 }}>Modifica non salvata</div>)}
+              <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
+                {editorKeys.map(key => {
+                  if ((key === "id" && selectedTable !== "profili") || (selectedTable === "cocktail" && (key === "data_creazione" || key === "created_at" || key === "texture")) || (selectedTable === "Locali" && removedLocaliFields.has(key))) return null;
+                  // LOGICA INPUT MOBILE (semplificata, ma fedele all'originale)
+                  if (selectedTable === "profili" && key === "password") {
+                    return (
+                      <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                        <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
+                        <input type="password" value={selectedItem[key] ?? ""} onChange={e => { const value = e.target.value; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} placeholder={isCreating ? "Imposta password iniziale" : "Lascia vuoto per non cambiarla"} style={inputMobileStyle} />
+                      </div>
+                    );
+                  }
+                  if (selectedTable === "profili" && profiliSelectOptions[key]) {
+                    return (
+                      <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                        <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
+                        <select value={selectedItem[key] ?? ""} disabled={profiliReadonlyFields.has(key)} onChange={e => { const value = e.target.value; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} style={{ ...inputMobileStyle, opacity: profiliReadonlyFields.has(key) ? 0.7 : 1 }}>
+                          <option value="">Scegli</option>
+                          {profiliSelectOptions[key].map(option => <option key={option} value={option}>{option}</option>)}
+                        </select>
+                      </div>
+                    );
+                  }
+                  if (booleanFields.has(key)) {
+                    return (
+                      <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                        <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
+                        <select value={String(toBoolean(selectedItem[key]))} onChange={e => { const value = e.target.value === "true"; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} style={inputMobileStyle}>
+                          <option value="true">true</option>
+                          <option value="false">false</option>
+                        </select>
+                      </div>
+                    );
+                  }
+                  if (selectedTable === "Locali" && localiSelectOptions[key]) {
+                    return (
+                      <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                        <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
+                        <select value={selectedItem[key] ?? ""} onChange={e => { const value = e.target.value; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} style={inputMobileStyle}>
+                          <option value="">Scegli</option>
+                          {localiSelectOptions[key].map(option => <option key={option} value={option}>{option}</option>)}
+                        </select>
+                      </div>
+                    );
+                  }
+                  if (selectedTable === "vini" && aisSelectOptions[key]) {
+                    return (
+                      <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                        <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
+                        <select value={selectedItem[key] ?? ""} onChange={e => { const value = e.target.value; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} style={inputMobileStyle}>
+                          <option value="">Scegli</option>
+                          {aisSelectOptions[key].map(option => <option key={option} value={option}>{option}</option>)}
+                        </select>
+                      </div>
+                    );
+                  }
+                  if (selectedTable === "cocktail" && cocktailMultiSelectOptions[key]) {
+                    return (
+                      <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                        <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
+                        <input value={selectedItem[key] ?? ""} onChange={e => { setSelectedItem((prev: any) => ({ ...prev, [key]: e.target.value })); setSaveStatus(null); }} style={inputMobileStyle} />
+                      </div>
+                    );
+                  }
+                  if (selectedTable === "profili" && profiliTextareaFields.has(key)) {
+                    return (
+                      <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                        <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
+                        <textarea rows={4} value={selectedItem[key] ?? ""} onChange={e => { setSelectedItem((prev: any) => ({ ...prev, [key]: e.target.value })); setSaveStatus(null); }} style={{ ...inputMobileStyle, minHeight: 110, resize: "vertical" }} />
+                      </div>
+                    );
+                  }
+                  if (key === "contenuto") {
+                    return (
+                      <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                        <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
+                        <textarea rows={6} value={selectedItem[key] ?? ""} onChange={e => { setSelectedItem((prev: any) => ({ ...prev, [key]: e.target.value })); setSaveStatus(null); }} style={{ ...inputMobileStyle, resize: "vertical" }} />
+                      </div>
+                    );
+                  }
+                  // Default: input testo
+                  return (
+                    <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                      <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
+                      <input type={selectedTable === "profili" && profiliNumberFields.has(key) ? "number" : "text"} value={selectedItem[key] ?? ""} disabled={selectedTable === "profili" && profiliReadonlyFields.has(key)} onChange={e => { setSelectedItem((prev: any) => ({ ...prev, [key]: e.target.value })); setSaveStatus(null); }} style={{ ...inputMobileStyle, opacity: selectedTable === "profili" && profiliReadonlyFields.has(key) ? 0.7 : 1 }} />
+                    </div>
+                  );
+                })}
+              </div>
+              {/* Bottoni azione */}
+              <div style={{ display: "flex", gap: 10, marginTop: 22 }}>
+                <button style={{ ...btnSaveStyle, fontSize: 16, padding: "13px 0" }} onClick={salvaModifiche}>
+                  {isCreating ? "Crea" : "Salva"}
+                </button>
+                {!isCreating && (
+                  <button style={{ ...btnDeleteStyle, fontSize: 16, padding: "13px 0" }} onClick={eliminaElemento}>
+                    Elimina
+                  </button>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
+      </div>
+    );
+
+// Stile input mobile/tablet
+const inputMobileStyle = {
+  padding: "14px 12px",
+  borderRadius: 8,
+  background: "#181f2e",
+  color: "#fff",
+  border: "1px solid #334155",
+  fontSize: "16px",
+  width: "100%"
+};
+  }
+
+  // --- DESKTOP LAYOUT (INVARIATO) ---
   return (
     <div className="page page-full-bleed fade-in" style={layoutStyle}>
       <div style={sidebarStyle}>
-        <h2 style={{ color: "#f59e0b", marginBottom: 20, fontSize: "1.2rem" }}>Pannello di Controllo</h2>
+        <h2 style={{ color: "#f59e0b", marginBottom: 20, fontSize: "1.2rem", textAlign: "center", width: "100%" }}>Pannello di Controllo</h2>
 
         <div style={{ marginTop: 20 }}>
           {Sidebar("Locali", locali, "Locali", "nome")}
@@ -1938,20 +2201,8 @@ export default function AdminPanel() {
           <div style={kpiCardStyle}><span style={kpiLabelStyle}>Articoli</span> <strong>{kpi.articoli}</strong></div>
         </div>
 
-        <div style={approvalBoxStyle}>
-          <h3 style={{ fontSize: "1rem", color: "#f59e0b", marginBottom: 10 }}>Approvazioni pendenti</h3>
-          {utenti.filter(u => !u.approvato).map(u => (
-            <div key={u.id} style={approvalRowStyle}>
-              <span style={{ fontSize: "0.9rem" }}>{u.username} ({u.ruolo})</span>
-              <button style={btnApproveStyle} onClick={() => toggleApprovazione(u)}>
-                Approva
-              </button>
-            </div>
-          ))}
-          {utenti.filter(u => !u.approvato).length === 0 && (
-            <p style={{ fontSize: "0.8rem", color: "#666" }}>Nessun utente da approvare.</p>
-          )}
-        </div>
+
+        {/* APPROVAZIONI PENDENTI RIMOSSO */}
 
         <div style={quickActionGridStyle}>
           <div style={quickActionCardStyle}>
@@ -1984,14 +2235,14 @@ export default function AdminPanel() {
 
           <div style={quickActionCardStyle}>
             <h3 style={quickActionTitleStyle}>Aggiunta Bartender</h3>
-            <button style={quickActionBtnStyle} onClick={() => openCreateEditor("profili", bartender, "bartender")}>
+            <button style={quickActionBtnStyle} onClick={() => openCreateEditor("profili", bartender, "bartender")}> 
               modifica bartender
             </button>
           </div>
 
           <div style={quickActionCardStyle}>
             <h3 style={quickActionTitleStyle}>Aggiunta Proprietari</h3>
-            <button style={quickActionBtnStyle} onClick={() => openCreateEditor("profili", proprietari, "proprietario")}>
+            <button style={quickActionBtnStyle} onClick={() => openCreateEditor("profili", proprietari, "proprietario")}> 
               modifica proprietari
             </button>
           </div>
@@ -2808,3 +3059,4 @@ const badgeErrorStyle = {
   border: "1px solid #ef4444",
   textAlign: "center" as const
 };
+// test
