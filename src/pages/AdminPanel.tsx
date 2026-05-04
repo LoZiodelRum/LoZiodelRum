@@ -1,5 +1,6 @@
 import "../App.css";
 import React, { useEffect, useState } from "react";
+import Navbar from "../components/Navbar";
 import { supabase } from "../lib/supabaseClient";
 import { useUser } from "../context/UserContext";
 import { AROMATIC_FAMILY_OPTIONS, TASTE_PROFILE_OPTIONS } from "../lib/cocktailOptionSets";
@@ -1939,7 +1940,9 @@ export default function AdminPanel() {
     };
 
     return (
-      <div className="page page-full-bleed fade-in" style={{ background: "#020617", minHeight: "100vh", color: "white", position: "relative" }}>
+      <>
+        <Navbar />
+        <div className="page page-full-bleed fade-in" style={{ background: "#020617", minHeight: "100vh", color: "white", position: "relative" }}>
         {/* HEADER MOBILE */}
 
         <div style={{ padding: "18px 0 10px 0", background: "#0f172a", borderBottom: "1px solid #1e293b", position: "sticky", top: 0, zIndex: 30, display: "flex", justifyContent: "center", alignItems: "center" }}>
@@ -2160,7 +2163,8 @@ export default function AdminPanel() {
           </div>
         )}
       </div>
-    );
+    </>
+  );
 
 // Stile input mobile/tablet
 const inputMobileStyle = {
@@ -2176,8 +2180,10 @@ const inputMobileStyle = {
 
   // --- DESKTOP LAYOUT (INVARIATO) ---
   return (
-    <div className="page page-full-bleed fade-in" style={layoutStyle}>
-      <div style={sidebarStyle}>
+    <>
+      <Navbar />
+      <div className="page page-full-bleed fade-in" style={layoutStyle}>
+        <div style={sidebarStyle}>
         <h2 style={{ color: "#f59e0b", marginBottom: 20, fontSize: "1.2rem", textAlign: "center", width: "100%" }}>Pannello di Controllo</h2>
 
         <div style={{ marginTop: 20 }}>
