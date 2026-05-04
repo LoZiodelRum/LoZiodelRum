@@ -2137,9 +2137,7 @@ const badgeErrorStyle = {
 };
 
   // --- MOBILE/TABLET LAYOUT ---
-  if (isMobile) {
-    // Blocca scroll quando un off-canvas è aperto
-    useEffect(() => {
+  useEffect(() => {
       if (leftOpen || rightOpen) {
         document.body.style.overflow = "hidden";
       } else {
@@ -2147,13 +2145,11 @@ const badgeErrorStyle = {
       }
       return () => { document.body.style.overflow = ""; };
     }, [leftOpen, rightOpen]);
-
-    // Chiudi pannelli laterali quando selezioni un elemento
     const handleMenuSelect = (cb: () => void) => {
       cb();
       setLeftOpen(false);
     };
-
+  if (isMobile) {
     return (
       <div className="page page-full-bleed fade-in" style={{ background: "#020617", minHeight: "100vh", color: "white", position: "relative" }}>
         {/* HEADER MOBILE */}
