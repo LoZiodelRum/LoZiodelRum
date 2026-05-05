@@ -268,11 +268,11 @@ export default function AdminPanelMobile() {
   return (
     <div style={pageStyle}>
       <button onClick={() => setLeftOpen(true)} style={leftButtonStyle}>
-        &gt;
+     →
       </button>
 
       <button onClick={() => setRightOpen(true)} style={rightButtonStyle}>
-      &lt;
+      ←
       </button>
 
       <div style={titleBoxStyle}>
