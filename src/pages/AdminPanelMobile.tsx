@@ -156,15 +156,27 @@ export default function AdminPanelMobile() {
     if (selectedTable === "articoli") return "Articoli";
     return selectedTable;
   }
+function getEditorKeys() {
+  if (!selectedItem) return [];
 
-  function getEditorKeys() {
-    if (!selectedItem) return [];
-    return Object.keys(selectedItem).filter((key) => {
-      if (selectedTable === "Locali" && removedLocaliFields.has(key)) return false;
-      if (selectedTable === "cocktail" && ["data_creazione", "created_at", "texture"].includes(key)) return false;
-      return true;
-    });
+  // 👉 NUOVO: se stai creando, usa un record esistente come struttura
+  if (isCreating) {
+    if (selectedTable === "Locali" && locali[0]) return Object.keys(locali[0]);
+    if (selectedTable === "profili" && utenti[0]) return Object.keys(utenti[0]);
+    if (selectedTable === "cocktail" && cocktail[0]) return Object.keys(cocktail[0]);
+    if (selectedTable === "distillati" && distillati[0]) return Object.keys(distillati[0]);
+    if (selectedTable === "vini" && vini[0]) return Object.keys(vini[0]);
+    if (selectedTable === "articoli" && articoli[0]) return Object.keys(articoli[0]);
   }
+
+  return Object.keys(selectedItem).filter((key) => {
+    if (selectedTable === "Locali" && removedLocaliFields.has(key)) return false;
+    if (selectedTable === "cocktail" && ["data_creazione", "created_at", "texture"].includes(key)) return false;
+    return true;
+  });
+}
+  
+    
 
   function openItem(table: string, item: any) {
     setSelectedTable(table);
@@ -180,6 +192,14 @@ export default function AdminPanelMobile() {
     try {
       const tableName = getTableName();
       const payload = { ...selectedItem };
+
+// 👉 PULIZIA AUTOMATICA IN CREAZIONE
+if (isCreating) {
+  delete payload.id;
+  delete payload.created_at;
+  delete payload.updated_at;
+  delete payload.ultimo_accesso;
+}
 
       if (!isCreating && payload.id) {
         const { error } = await supabase.from(tableName).update(payload).eq("id", payload.id);
@@ -510,7 +530,7 @@ export default function AdminPanelMobile() {
   style={actionButtonStyle}
   onClick={() => {
     setSelectedTable("cocktail");
-    setSelectedItem({});
+    setSelectedItem(null);
     setIsCreating(true);
     setRightOpen(false);
   }}
@@ -522,7 +542,7 @@ export default function AdminPanelMobile() {
   style={actionButtonStyle}
   onClick={() => {
     setSelectedTable("distillati");
-    setSelectedItem({});
+    setSelectedItem(null);
     setIsCreating(true);
     setRightOpen(false);
   }}
@@ -534,7 +554,7 @@ export default function AdminPanelMobile() {
   style={actionButtonStyle}
   onClick={() => {
     setSelectedTable("vini");
-    setSelectedItem({});
+    setSelectedItem(null);
     setIsCreating(true);
     setRightOpen(false);
   }}
@@ -546,7 +566,7 @@ export default function AdminPanelMobile() {
   style={actionButtonStyle}
   onClick={() => {
     setSelectedTable("Locali");
-    setSelectedItem({});
+    setSelectedItem(null);
     setIsCreating(true);
     setRightOpen(false);
   }}
