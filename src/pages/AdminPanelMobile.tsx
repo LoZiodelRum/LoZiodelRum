@@ -156,25 +156,32 @@ export default function AdminPanelMobile() {
     if (selectedTable === "articoli") return "Articoli";
     return selectedTable;
   }
-function getEditorKeys() {
-  if (!selectedItem) {
-  // 👉 struttura base per creazione
-  if (selectedTable === "Locali" && locali[0]) return Object.keys(locali[0]);
-  if (selectedTable === "profili" && utenti[0]) return Object.keys(utenti[0]);
-  if (selectedTable === "cocktail" && cocktail[0]) return Object.keys(cocktail[0]);
-  if (selectedTable === "distillati" && distillati[0]) return Object.keys(distillati[0]);
-  if (selectedTable === "vini" && vini[0]) return Object.keys(vini[0]);
-  if (selectedTable === "articoli" && articoli[0]) return Object.keys(articoli[0]);
+  
+    function getEditorKeys() {
+  try {
+    if (!selectedItem) {
+      if (selectedTable === "Locali" && locali.length > 0) return Object.keys(locali[0]);
+      if (selectedTable === "profili" && utenti.length > 0) return Object.keys(utenti[0]);
+      if (selectedTable === "cocktail" && cocktail.length > 0) return Object.keys(cocktail[0]);
+      if (selectedTable === "distillati" && distillati.length > 0) return Object.keys(distillati[0]);
+      if (selectedTable === "vini" && vini.length > 0) return Object.keys(vini[0]);
+      if (selectedTable === "articoli" && articoli.length > 0) return Object.keys(articoli[0]);
 
-  return [];
+      return [];
+    }
+
+    return Object.keys(selectedItem).filter((key) => {
+      if (selectedTable === "Locali" && removedLocaliFields.has(key)) return false;
+      if (selectedTable === "cocktail" && ["data_creazione", "created_at", "texture"].includes(key)) return false;
+      return true;
+    });
+  } catch (err) {
+    console.error("Errore getEditorKeys:", err);
+    return [];
+  }
 }
 
-  return Object.keys(selectedItem).filter((key) => {
-    if (selectedTable === "Locali" && removedLocaliFields.has(key)) return false;
-    if (selectedTable === "cocktail" && ["data_creazione", "created_at", "texture"].includes(key)) return false;
-    return true;
-  });
-}
+  
   
     
 
