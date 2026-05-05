@@ -188,7 +188,39 @@ function getEditorKeys() {
 
   async function salvaModifiche() {
     if (!selectedItem || !selectedTable) return;
+    // 👉 VALIDAZIONE BASE
+if (isCreating) {
+  if (selectedTable === "Locali" && !selectedItem.nome) {
+    alert("Inserisci il nome del locale");
+    return;
+  }
 
+  if (selectedTable === "cocktail" && !selectedItem.nome) {
+    alert("Inserisci il nome del cocktail");
+    return;
+  }
+
+  if (selectedTable === "vini" && !selectedItem.nome) {
+    alert("Inserisci il nome del vino");
+    return;
+  }
+
+  if (selectedTable === "distillati" && !selectedItem.nome) {
+    alert("Inserisci il nome del distillato");
+    return;
+  }
+
+  if (selectedTable === "profili" && !selectedItem.username) {
+    alert("Inserisci username");
+    return;
+  }
+}
+// 👉 PULIZIA STRINGHE VUOTE
+Object.keys(selectedItem).forEach((key) => {
+  if (selectedItem[key] === "") {
+    delete selectedItem[key];
+  }
+});
     try {
       const tableName = getTableName();
       const payload = { ...selectedItem };
@@ -307,7 +339,7 @@ if (isCreating) {
       </div>
 
       {/* EDITOR DETTAGLIO */}
-      {selectedItem && (
+      {(selectedItem || isCreating) && (
         <div style={{ margin: "18px 0 80px 0" }}>
           <div style={editorBoxStyle}>
             <h2 style={editorTitleStyle}>
@@ -505,13 +537,13 @@ if (isCreating) {
             </button>
 
             {Sidebar("Locali", locali, "Locali", "nome")}
-            {Sidebar("Utenti", utenti, "profili", "username")}
-            {Sidebar("Bartender", utenti.filter((u) => u.ruolo === "bartender"), "profili", "username")}
-            {Sidebar("Proprietari", utenti.filter((u) => u.ruolo === "proprietario"), "profili", "username")}
-            {Sidebar("Cocktail", cocktail, "cocktail", "nome")}
-            {Sidebar("Distillati", distillati, "distillati", "nome")}
-            {Sidebar("Vini", vini, "vini", "nome")}
-            {Sidebar("Articoli", articoli, "articoli", "titolo")}
+            {Sidebar("Utenti", utenti, "Profili", "username")}
+            {Sidebar("Bartender", utenti.filter((u) => u.ruolo === "bartender"), "Profili", "username")}
+            {Sidebar("Proprietari", utenti.filter((u) => u.ruolo === "proprietario"), "Profili", "username")}
+            {Sidebar("Cocktail", cocktail, "Cocktail", "nome")}
+            {Sidebar("Distillati", distillati, "Distillati", "nome")}
+            {Sidebar("Vini", vini, "Vini", "nome")}
+            {Sidebar("Articoli", articoli, "Articoli", "titolo")}
           </div>
         </>
       )}
@@ -577,7 +609,7 @@ if (isCreating) {
 <button
   style={actionButtonStyle}
   onClick={() => {
-    setSelectedTable("profili");
+    setSelectedTable("Profili");
     setSelectedItem({ ruolo: "proprietario" });
     setIsCreating(true);
     setRightOpen(false);
@@ -589,7 +621,7 @@ if (isCreating) {
 <button
   style={actionButtonStyle}
   onClick={() => {
-    setSelectedTable("profili");
+    setSelectedTable("Profili");
     setSelectedItem({ ruolo: "bartender" });
     setIsCreating(true);
     setRightOpen(false);
