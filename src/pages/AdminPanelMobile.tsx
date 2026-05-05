@@ -268,11 +268,11 @@ export default function AdminPanelMobile() {
   return (
     <div style={pageStyle}>
       <button onClick={() => setLeftOpen(true)} style={leftButtonStyle}>
-        ←
+        &lt;
       </button>
 
       <button onClick={() => setRightOpen(true)} style={rightButtonStyle}>
-        →
+      &lt;
       </button>
 
       <div style={titleBoxStyle}>
@@ -612,16 +612,17 @@ const pageStyle: CSSProperties = {
 
 const leftButtonStyle: CSSProperties = {
   position: "fixed",
-  top: 22,
+  top: 86,
   left: 16,
   zIndex: 50,
-  width: 46,
-  height: 46,
+  width: 44,
+  height: 44,
   borderRadius: "50%",
   border: "none",
   background: "#111827",
   color: "#f59e0b",
-  fontSize: 24,
+  fontSize: 28,
+  fontWeight: 700,
 };
 
 const rightButtonStyle: CSSProperties = {
