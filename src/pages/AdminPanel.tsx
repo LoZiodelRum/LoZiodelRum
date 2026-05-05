@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import Navbar from "../components/Navbar";
 import AdminPanelDesktop from "./AdminPanelDesktop";
 import AdminPanelMobile from "./AdminPanelMobile";
 
@@ -13,12 +14,26 @@ export default function AdminPanel() {
     };
 
     handleChange();
-    mediaQuery.addEventListener("change", handleChange);
+
+    if (mediaQuery.addEventListener) {
+      mediaQuery.addEventListener("change", handleChange);
+    } else {
+      mediaQuery.addListener(handleChange);
+    }
 
     return () => {
-      mediaQuery.removeEventListener("change", handleChange);
+      if (mediaQuery.removeEventListener) {
+        mediaQuery.removeEventListener("change", handleChange);
+      } else {
+        mediaQuery.removeListener(handleChange);
+      }
     };
   }, []);
 
-  return isMobile ? <AdminPanelMobile /> : <AdminPanelDesktop />;
+  return (
+    <>
+      <Navbar />
+      {isMobile ? <AdminPanelMobile /> : <AdminPanelDesktop />}
+    </>
+  );
 }
