@@ -157,7 +157,17 @@ export default function AdminPanelMobile() {
     return selectedTable;
   }
 function getEditorKeys() {
-  if (!selectedItem) return [];
+  if (!selectedItem) {
+  // 👉 struttura base per creazione
+  if (selectedTable === "Locali" && locali[0]) return Object.keys(locali[0]);
+  if (selectedTable === "profili" && utenti[0]) return Object.keys(utenti[0]);
+  if (selectedTable === "cocktail" && cocktail[0]) return Object.keys(cocktail[0]);
+  if (selectedTable === "distillati" && distillati[0]) return Object.keys(distillati[0]);
+  if (selectedTable === "vini" && vini[0]) return Object.keys(vini[0]);
+  if (selectedTable === "articoli" && articoli[0]) return Object.keys(articoli[0]);
+
+  return [];
+}
 
   // 👉 NUOVO: se stai creando, usa un record esistente come struttura
   if (isCreating) {
