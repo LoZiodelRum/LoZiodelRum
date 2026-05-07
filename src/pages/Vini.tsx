@@ -14,72 +14,7 @@ type VinoCard = {
   placeholder?: boolean;
 };
 
-const mockVini = [
-  {
-    id: "1",
-    name: "Barolo DOCG",
-    image: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=1200",
-    category: "Rosso",
-    alcol: "14%",
-    descrizione: "Strutturato, intenso",
-  },
-  {
-    id: "2",
-    name: "Brunello di Montalcino",
-    image: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=1200",
-    category: "Rosso",
-    alcol: "14.5%",
-    descrizione: "Profondo, elegante",
-  },
-  {
-    id: "3",
-    name: "Franciacorta Brut",
-    image: "https://images.unsplash.com/photo-1516594915697-87eb3b1c14ea?w=1200",
-    category: "Bollicine",
-    alcol: "12.5%",
-    descrizione: "Fine, cremoso",
-  },
-  {
-    id: "4",
-    name: "Prosecco Superiore",
-    image: "https://images.unsplash.com/photo-1569919659476-f0852f6834b7?w=1200",
-    category: "Bollicine",
-    alcol: "11.5%",
-    descrizione: "Fresco, floreale",
-  },
-  {
-    id: "5",
-    name: "Vermentino di Gallura",
-    image: "https://images.unsplash.com/photo-1558008258-3256797b43f3?w=1200",
-    category: "Bianco",
-    alcol: "13%",
-    descrizione: "Sapido, mediterraneo",
-  },
-  {
-    id: "6",
-    name: "Gewurztraminer",
-    image: "https://images.unsplash.com/photo-1474722883778-792e7990302f?w=1200",
-    category: "Bianco",
-    alcol: "13.5%",
-    descrizione: "Aromatico, speziato",
-  },
-  {
-    id: "7",
-    name: "Chiaretto del Garda",
-    image: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=1200",
-    category: "Rosato",
-    alcol: "12.5%",
-    descrizione: "Delicato, fruttato",
-  },
-  {
-    id: "8",
-    name: "Cerasuolo d'Abruzzo",
-    image: "https://images.unsplash.com/photo-1584916201218-f4242ceb4809?w=1200",
-    category: "Rosato",
-    alcol: "13%",
-    descrizione: "Vivace, gastronomico",
-  },
-];
+
 
 export default function Vini() {
   const [vini, setVini] = useState<VinoCard[]>([]);
@@ -95,44 +30,33 @@ export default function Vini() {
   async function load() {
     setLoading(true);
 
-    const { data, error } = await supabase.from("vini").select("id, nome, immagine, categoria, alcol, descrizione");
-    console.log("VINI CARICATI:", data);
+    const { data, error } = await supabase
+      .from("vini")
+      .select("*")
+      .order("nome", { ascending: true });
+    console.log("NUMERO VINI SUPABASE:", data?.length);
+    console.log("PRIMI VINI SUPABASE:", data?.slice(0, 5));
 
 
     if (!error && data && data.length) {
-      const mapped = data
-        .map((vino: any) => {
-          const imageUrl = typeof vino.immagine === "string" ? vino.immagine.trim() : "";
-          console.log("IMMAGINE VINO:", vino.nome, vino.immagine);
-          return {
-            id: String(vino.id),
-            nome: vino.nome || "Vino",
-            immagine: imageUrl,
-            categoria: (vino.categoria || "Altro").trim(),
-            alcol: vino.alcol || "",
-            descrizione: vino.descrizione || "",
-          };
-        })
-        .sort((a: VinoCard, b: VinoCard) => a.nome.localeCompare(b.nome));
-
+      const mapped = data.map((vino: any) => {
+        const imageUrl = typeof vino.immagine === "string" ? vino.immagine.trim() : "";
+        return {
+          id: String(vino.id),
+          nome: vino.nome || "Vino",
+          immagine: imageUrl,
+          categoria: (vino.categoria || "Altro").trim(),
+          alcol: vino.alcol || "",
+          descrizione: vino.descrizione || "",
+        };
+      });
       setVini(mapped);
       setLoading(false);
       return;
     }
 
 
-    const fallback = [...mockVini]
-      .sort((a, b) => a.name.localeCompare(b.name))
-      .map((vino) => ({
-        id: vino.id,
-        nome: vino.name,
-        immagine: vino.image,
-        categoria: vino.category,
-        alcol: vino.alcol,
-        descrizione: vino.descrizione,
-      }));
-
-    setVini(fallback);
+    setVini([]);
     setLoading(false);
   }
 
@@ -261,36 +185,41 @@ export default function Vini() {
               }}
               style={item.placeholder ? { opacity: 0.65, cursor: "default" } : undefined}
             >
-              {item.immagine ? (
-                <img
-                  src={item.immagine}
-                  alt={item.nome}
-                  style={{
+              {(() => {
+                const imageUrl = typeof item.immagine === "string" ? item.immagine.trim() : "";
+                if (imageUrl) {
+                  return (
+                    <img
+                      src={imageUrl}
+                      alt={item.nome || "Vino"}
+                      className="wine-card-img"
+                      style={{
+                        width: "100%",
+                        height: "360px",
+                        objectFit: "cover",
+                        display: "block",
+                        background: "#111",
+                        borderRadius: "12px 12px 0 0",
+                        margin: 0,
+                      }}
+                    />
+                  );
+                }
+                return (
+                  <div style={{
                     width: "100%",
-                    height: window.innerWidth <= 768 ? "260px" : "360px",
-                    objectFit: "cover",
-                    objectPosition: "center",
+                    height: "360px",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
                     background: "#111",
-                    display: "block",
-                    margin: 0,
+                    color: "#f5a623",
                     borderRadius: "12px 12px 0 0",
-                  }}
-                  onError={e => { e.currentTarget.style.display = 'none'; }}
-                />
-              ) : (
-                <div style={{
-                  width: "100%",
-                  height: window.innerWidth <= 768 ? "260px" : "360px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  background: "#111",
-                  color: "#f5a623",
-                  borderRadius: "12px 12px 0 0",
-                  fontWeight: 600,
-                  fontSize: 15,
-                }}>Immagine in arrivo</div>
-              )}
+                    fontWeight: 600,
+                    fontSize: 15,
+                  }}>Immagine in arrivo</div>
+                );
+              })()}
               <div className="drink-card-caption">
                 <h3>{normalizeWineName(item.nome)}</h3>
               </div>
@@ -338,12 +267,14 @@ export default function Vini() {
             word-break: break-word;
           }
 
-          .vini-preview-page .drink-card-uniform img {
+          .wine-card-img {
             width: 100% !important;
-            height: calc(100% - 40px) !important;
-            object-fit: contain !important;
-            object-position: center bottom !important;
-            background: #fff !important;
+            height: 360px !important;
+            object-fit: cover !important;
+            display: block !important;
+            background: #111 !important;
+            border-radius: 12px 12px 0 0 !important;
+            margin: 0 !important;
           }
 
           @media (max-width: 768px) {
