@@ -1983,10 +1983,10 @@ export default function AdminPanel() {
             <button aria-label="Chiudi azioni" onClick={() => setRightOpen(false)} style={{ background: "none", border: "none", color: "#f59e0b", fontSize: 22, cursor: "pointer" }}>✕</button>
           </div>
           <div style={{ padding: 18, display: "grid", gap: 12 }}>
-                        <div style={quickActionCardStyle}>
-                          <h3 style={quickActionTitleStyle}>Aggiunta Articoli</h3>
-                          <button style={quickActionBtnStyle} onClick={() => { setRightOpen(false); openCreateEditor("articoli", articoli); }}>modifica articoli</button>
-                        </div>
+            <div style={quickActionCardStyle}>
+              <h3 style={quickActionTitleStyle}>Aggiunta Articoli</h3>
+              <button style={quickActionBtnStyle} onClick={() => { setRightOpen(false); openCreateEditor("articoli", articoli); }}>modifica articoli</button>
+            </div>
             <div style={quickActionCardStyle}>
               <h3 style={quickActionTitleStyle}>Aggiunta Articolo</h3>
               <button style={quickActionBtnStyle} onClick={() => { setRightOpen(false); openCreateEditor("articoli", articoli); }}>modifica articoli</button>
