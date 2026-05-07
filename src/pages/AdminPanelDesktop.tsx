@@ -2253,6 +2253,17 @@ const inputMobileStyle = {
               modifica proprietari
             </button>
           </div>
+          <div style={quickActionCardStyle}>
+            <h3 style={quickActionTitleStyle}>Aggiunta Articoli</h3>
+            <button
+              style={quickActionBtnStyle}
+              onClick={() => {
+                openCreateEditor("articoli", articoli);
+              }}
+            >
+              modifica articoli
+            </button>
+          </div>
         </div>
 
         {selectedItem && (
