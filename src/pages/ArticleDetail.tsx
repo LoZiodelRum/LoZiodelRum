@@ -317,7 +317,7 @@ export default function ArticleDetail() {
             </div>
 
             {/* 🔥 BOX ARTICOLO COMPLETO */}
-            <div className="article-wrapper" style={articleWrapper}>
+            <div className="article-wrapper" style={{ ...articleWrapper, width: '100%', maxWidth: '100vw', overflowX: 'hidden' }}>
               <div className="article-box" style={articleBox}>
                 <div className="article-content" style={articleContent}>
                   {renderArticleContent(data.contenuto || "")}

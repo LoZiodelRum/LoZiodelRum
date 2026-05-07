@@ -160,18 +160,20 @@ export default function Navbar() {
         style={{
           position: "fixed",
           top: 70,
-          right: menuOpen ? 0 : "-100%",
-          width: "100%",
-          maxWidth: "320px",
+          right: 0,
+          width: "80vw",
+          maxWidth: "300px",
           height: "calc(100vh - 70px)",
           background: "rgba(0,0,0,0.97)",
           display: "none",
           flexDirection: "column",
           padding: "18px",
           zIndex: 1100,
-          transition: "right 0.3s ease",
+          transition: "transform 0.3s cubic-bezier(.4,0,.2,1)",
           overflowY: "auto",
+          overflowX: "hidden",
           borderLeft: "1px solid #333",
+          transform: menuOpen ? "translateX(0)" : "translateX(100%)",
         }}
       >
         <Link to="/home" onClick={closeMobileMenu} style={{ ...linkStyle("/home"), padding: "12px 0", borderBottom: "1px solid #333" }}>Home</Link>
@@ -208,6 +210,10 @@ export default function Navbar() {
 
       {/* STYLE RESPONSIVE */}
       <style>{`
+        html, body, #root {
+          overflow-x: hidden !important;
+          max-width: 100vw !important;
+        }
         @media (max-width: 900px) {
           .navbar-links-desktop { display: none !important; }
           .navbar-hamburger-mobile { display: block !important; }
