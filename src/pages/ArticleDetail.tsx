@@ -233,7 +233,8 @@ export default function ArticleDetail() {
   // ---
   return (
     <>
-      <Navbar />
+        <Navbar />
+        {/* NOTA: Nessun menu laterale custom/mobile drawer viene montato qui. Solo Navbar gestisce il menu mobile. */}
       {!data ? (
         <div className="page fade-in" style={{ padding: 40 }}>Caricamento...</div>
       ) : (
