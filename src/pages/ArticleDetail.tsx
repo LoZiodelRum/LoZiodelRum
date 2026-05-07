@@ -5,6 +5,8 @@ import { useParams } from "react-router-dom";
 import { useUser } from "../context/UserContext"; // ✅ AGGIUNTO
 import Navbar from "../components/Navbar";
 
+import { hero, overlay, heroBox, badge, title, subtitle, meta, articleWrapper } from "./articleDetailStyles";
+
 function normalizeUrl(url: string) {
   return url.replace(/\s+/g, "").trim();
 }
@@ -145,8 +147,6 @@ function renderArticleContent(raw: string) {
 }
 
 export default function ArticleDetail() {
-    // Navbar ufficiale in alto
-    // ...existing code...
   const { id } = useParams();
   const { role } = useUser(); // ✅
   const isAdmin = role === "admin"; // ✅
@@ -154,16 +154,6 @@ export default function ArticleDetail() {
   const [data, setData] = useState<any>(null);
   const [form, setForm] = useState<any>(null); // ✅
   const [uploading, setUploading] = useState(false); // ✅
-
-  // --- RENDER ---
-  return (
-    <>
-      <Navbar />
-      {/* ...resto del rendering originale... */}
-      {/** Il resto del componente rimane invariato **/}
-    </>
-  );
-
   useEffect(() => {
     load();
   }, [id]);
@@ -240,172 +230,105 @@ export default function ArticleDetail() {
     setUploading(false);
   }
 
-  if (!data) {
-    return <div className="page fade-in" style={{ padding: 40 }}>Caricamento...</div>;
-  }
-
+  // ---
   return (
-    <div className="page page-full-bleed fade-in">
-      <style>{`
-        .article-hero-box,
-        .article-box {
-          width: min(94vw, 64rem) !important;
-          max-width: none !important;
-          margin-left: auto !important;
-          margin-right: auto !important;
-        }
+    <>
+      <Navbar />
+      {!data ? (
+        <div className="page fade-in" style={{ padding: 40 }}>Caricamento...</div>
+      ) : (
+        <main>
+          <div className="page page-full-bleed fade-in">
+            <style>{`
+              .article-hero-box,
+              .article-box {
+                width: min(94vw, 64rem) !important;
+                max-width: none !important;
+                margin-left: auto !important;
+                margin-right: auto !important;
+              }
 
-        @media (max-width: 768px) {
-          .article-hero {
-            border-radius: 0 !important;
-            width: 100vw !important;
-            margin-left: calc(-50vw + 50%) !important;
-          }
+              @media (max-width: 768px) {
+                .article-hero {
+                  border-radius: 0 !important;
+                  width: 100vw !important;
+                  margin-left: calc(-50vw + 50%) !important;
+                }
 
-          .article-hero-box,
-          .article-box {
-            width: calc(100vw - 16px) !important;
-            max-width: none !important;
-            padding: 24px 18px !important;
-            border-radius: 16px !important;
-          }
+                .article-hero-box,
+                .article-box {
+                  width: calc(100vw - 16px) !important;
+                  max-width: none !important;
+                  padding: 24px 18px !important;
+                  border-radius: 16px !important;
+                }
 
-          .article-hero-box {
-            margin-bottom: -170px !important;
-          }
+                .article-hero-box {
+                  margin-bottom: -170px !important;
+                }
 
-          .article-hero-title {
-            font-size: clamp(1.35rem, 6.2vw, 1.85rem) !important;
-          }
-          .article-hero-subtitle {
-            font-size: 15px !important;
-          }
-          .article-wrapper {
-            width: 100vw !important;
-            margin-left: calc(-50vw + 50%) !important;
-            margin-top: 220px !important;
-            display: flex !important;
-            justify-content: center !important;
-          }
+                .article-hero-title {
+                  font-size: clamp(1.35rem, 6.2vw, 1.85rem) !important;
+                }
+                .article-hero-subtitle {
+                  font-size: 15px !important;
+                }
+                .article-wrapper {
+                  width: 100vw !important;
+                  margin-left: calc(-50vw + 50%) !important;
+                  margin-top: 220px !important;
+                  display: flex !important;
+                  justify-content: center !important;
+                }
 
-          .article-content {
-            font-size: 18px !important;
-          }
-          .article-content p,
-          .article-content span,
-          .article-content li {
-            font-size: 18px !important;
-          }
-        }
-      `}</style>
+                .article-content {
+                  font-size: 18px !important;
+                }
+                .article-content p,
+                .article-content span,
+                .article-content li {
+                  font-size: 18px !important;
+                }
+              }
+            `}</style>
 
+            {/* HERO */}
+            <div
+              className="article-hero"
+              style={{
+                ...hero,
+                backgroundImage: `url(${data.immagine})`,
+              }}
+            >
+              <div style={overlay} />
 
+              <div className="article-hero-box" style={heroBox}>
+                <span style={badge}>{data.categoria}</span>
 
-      {/* HERO */}
-      <div
-        className="article-hero"
-        style={{
-          ...hero,
-          backgroundImage: `url(${data.immagine})`,
-        }}
-      >
-        <div style={overlay} />
+                <h1 className="article-hero-title" style={title}>{data.titolo}</h1>
 
-        <div className="article-hero-box" style={heroBox}>
-          <span style={badge}>{data.categoria}</span>
+                <p className="article-hero-subtitle" style={subtitle}>{data.descrizione}</p>
 
-          <h1 className="article-hero-title" style={title}>{data.titolo}</h1>
+                <div style={meta}>
+                  <span>Lo Zio del Rum</span>
+                </div>
+              </div>
+            </div>
 
-          <p className="article-hero-subtitle" style={subtitle}>{data.descrizione}</p>
-
-          <div style={meta}>
-            <span>Lo Zio del Rum</span>
+            {/* 🔥 BOX ARTICOLO COMPLETO */}
+            <div className="article-wrapper" style={articleWrapper}>
+              <div className="article-box" style={articleBox}>
+                <div className="article-content" style={articleContent}>
+                  {renderArticleContent(data.contenuto || "")}
+                </div>
+              </div>
+            </div>
           </div>
-        </div>
-      </div>
-
-      {/* 🔥 BOX ARTICOLO COMPLETO */}
-      <div className="article-wrapper" style={articleWrapper}>
-        <div className="article-box" style={articleBox}>
-          <div className="article-content" style={articleContent}>
-            {renderArticleContent(data.contenuto || "")}
-          </div>
-        </div>
-      </div>
-
-    </div>
+        </main>
+      )}
+    </>
   );
 }
-
-/* STILI */
-
-const container = {
-  background: "#000",
-  minHeight: "100vh",
-};
-
-const hero = {
-  height: "clamp(220px, 45vw, 520px)",
-  position: "relative" as const,
-  backgroundSize: "cover",
-  backgroundPosition: "center",
-  display: "flex",
-  alignItems: "flex-end",
-  justifyContent: "center",
-};
-
-const overlay = {
-  position: "absolute" as const,
-  inset: 0,
-  background: "linear-gradient(to bottom, transparent 40%, rgba(0,0,0,0.82) 100%)",
-};
-
-const heroBox = {
-  position: "relative" as const,
-  background: "rgba(25,25,25,0.95)",
-  borderRadius: 20,
-  padding: "40px",
-  maxWidth: "min(100%, 56rem)",
-  width: "90%",
-  marginBottom: -200,
-  color: "#fff",
-  boxShadow: "0 20px 60px rgba(0,0,0,0.6)",
-};
-
-const badge = {
-  background: "#1e3a5f",
-  padding: "4px 10px",
-  borderRadius: 8,
-  fontSize: 12,
-  display: "inline-block",
-  marginBottom: 10,
-};
-
-const title = {
-  fontSize: "clamp(2rem, 6vw, 2.75rem)",
-  margin: "10px 0",
-  lineHeight: 1.2,
-};
-
-const subtitle = {
-  fontSize: 18,
-  color: "#ccc",
-  marginBottom: 20,
-};
-
-const meta = {
-  display: "flex",
-  gap: 20,
-  fontSize: 14,
-  color: "#aaa",
-};
-
-const articleWrapper = {
-  display: "flex",
-  justifyContent: "center",
-  marginTop: 240,
-  paddingBottom: 80,
-};
 
 const articleBox = {
   maxWidth: "min(100%, 56rem)",
