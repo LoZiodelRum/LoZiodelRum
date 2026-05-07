@@ -2235,9 +2235,6 @@ const inputMobileStyle = {
 
           <div style={quickActionCardStyle}>
             <h3 style={quickActionTitleStyle}>Aggiunta Locali</h3>
-            <button style={quickActionBtnStyle} onClick={() => openCreateEditor("Locali", locali)}>
-              modifica locali
-            </button>
           </div>
 
           <div style={quickActionCardStyle}>
