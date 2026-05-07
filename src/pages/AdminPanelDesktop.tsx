@@ -2002,6 +2002,18 @@ export default function AdminPanel() {
               <h3 style={quickActionTitleStyle}>Aggiunta Proprietari</h3>
               <button style={quickActionBtnStyle} onClick={() => { setRightOpen(false); openCreateEditor("profili", proprietari, "proprietario"); }}>modifica proprietari</button>
             </div>
+            <div style={quickActionCardStyle}>
+              <h3 style={quickActionTitleStyle}>Aggiunta Articoli</h3>
+              <button
+                style={quickActionBtnStyle}
+                onClick={() => {
+                  setRightOpen(false);
+                  openCreateEditor("articoli", articoli);
+                }}
+              >
+                modifica articoli
+              </button>
+            </div>
           </div>
         </div>
         {/* OVERLAY per chiusura off-canvas destra */}
