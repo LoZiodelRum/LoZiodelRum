@@ -256,15 +256,35 @@ export default function Vini() {
               }}
               style={item.placeholder ? { opacity: 0.65, cursor: "default" } : undefined}
             >
-              {item.immagine ? (
+              {(item.immagine || item.immagine_url || item.image || item.img || item.foto) ? (
                 <img
-                  src={item.immagine}
+                  src={item.immagine || item.immagine_url || item.image || item.img || item.foto}
                   alt={item.nome}
-                  style={getPreviewImageStyle(item)}
-                  onLoad={(event) => handlePreviewImageLoad(item.id, event)}
+                  style={{
+                    width: "100%",
+                    height: "180px",
+                    objectFit: "cover",
+                    objectPosition: "center",
+                    borderRadius: "12px 12px 0 0",
+                    background: "#18181b",
+                    display: "block",
+                    margin: 0,
+                  }}
+                  onError={e => { e.currentTarget.style.display = 'none'; }}
                 />
               ) : (
-                <div className="no-img-placeholder">NO IMG</div>
+                <div style={{
+                  width: "100%",
+                  height: "180px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: "#18181b",
+                  color: "#f5a623",
+                  borderRadius: "12px 12px 0 0",
+                  fontWeight: 600,
+                  fontSize: 15,
+                }}>Immagine in arrivo</div>
               )}
               <div className="drink-card-caption">
                 <h3>{normalizeWineName(item.nome)}</h3>
