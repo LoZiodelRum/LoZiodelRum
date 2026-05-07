@@ -95,19 +95,24 @@ export default function Vini() {
   async function load() {
     setLoading(true);
 
-    const { data, error } = await supabase.from("vini").select("*");
+    const { data, error } = await supabase.from("vini").select("id, nome, immagine, categoria, alcol, descrizione");
+    console.log("VINI CARICATI:", data);
 
 
     if (!error && data && data.length) {
       const mapped = data
-        .map((vino: any) => ({
-          id: String(vino.id),
-          nome: vino.nome || vino.name || "Vino",
-          immagine: vino.immagine ?? null,
-          categoria: (vino.categoria || vino.category || "Altro").trim(),
-          alcol: vino.alcol || vino.grado_alcolico || "",
-          descrizione: vino.descrizione || vino.description || "",
-        }))
+        .map((vino: any) => {
+          const imageUrl = typeof vino.immagine === "string" ? vino.immagine.trim() : "";
+          console.log("IMMAGINE VINO:", vino.nome, vino.immagine);
+          return {
+            id: String(vino.id),
+            nome: vino.nome || "Vino",
+            immagine: imageUrl,
+            categoria: (vino.categoria || "Altro").trim(),
+            alcol: vino.alcol || "",
+            descrizione: vino.descrizione || "",
+          };
+        })
         .sort((a: VinoCard, b: VinoCard) => a.nome.localeCompare(b.nome));
 
       setVini(mapped);
@@ -262,24 +267,24 @@ export default function Vini() {
                   alt={item.nome}
                   style={{
                     width: "100%",
-                    height: "180px",
+                    height: window.innerWidth <= 768 ? "260px" : "360px",
                     objectFit: "cover",
                     objectPosition: "center",
-                    borderRadius: "12px 12px 0 0",
-                    background: "#18181b",
+                    background: "#111",
                     display: "block",
                     margin: 0,
+                    borderRadius: "12px 12px 0 0",
                   }}
                   onError={e => { e.currentTarget.style.display = 'none'; }}
                 />
               ) : (
                 <div style={{
                   width: "100%",
-                  height: "180px",
+                  height: window.innerWidth <= 768 ? "260px" : "360px",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  background: "#18181b",
+                  background: "#111",
                   color: "#f5a623",
                   borderRadius: "12px 12px 0 0",
                   fontWeight: 600,

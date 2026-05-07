@@ -113,7 +113,7 @@ export default function VinoDetail() {
   }
 
   const imageUrl = useMemo(() => {
-    return vino?.immagine || vino?.immagine_url || vino?.image || vino?.img || null;
+    return typeof vino?.immagine === "string" ? vino.immagine.trim() : "";
   }, [vino]);
 
   const heroImageStyleForWine = useMemo(() => {
