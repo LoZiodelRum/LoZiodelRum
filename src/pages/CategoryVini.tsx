@@ -66,23 +66,51 @@ export default function CategoryVini() {
           {vini.length === 0 ? (
             <p style={{ color: "#cbd5e1", marginTop: 8 }}>Nessun vino disponibile in questa categoria.</p>
           ) : (
-            vini.map((item) => (
-              <article
-                key={item.id}
-                className="drink-card-uniform"
-                onClick={() => navigate(`/vini/${item.id}`)}
-                style={{ cursor: "pointer" }}
-              >
-                {item.immagine ? (
-                  <img src={item.immagine} alt={item.nome} />
-                ) : (
-                  <div className="no-img-placeholder">NO IMG</div>
-                )}
-                <div className="drink-card-caption">
-                  <h3 translate="no">{item.nome}</h3>
-                </div>
-              </article>
-            ))
+            vini.map((item) => {
+              const imgUrl = item.immagine || item.immagine_url || item.image || item.img || item.foto || null;
+              return (
+                <article
+                  key={item.id}
+                  className="drink-card-uniform"
+                  onClick={() => navigate(`/vini/${item.id}`)}
+                  style={{ cursor: "pointer" }}
+                >
+                  {imgUrl ? (
+                    <img
+                      src={imgUrl}
+                      alt={item.nome}
+                      style={{
+                        width: "100%",
+                        height: "180px",
+                        objectFit: "cover",
+                        objectPosition: "center",
+                        borderRadius: "12px 12px 0 0",
+                        background: "#18181b",
+                        display: "block",
+                        margin: 0,
+                      }}
+                      onError={e => { e.currentTarget.style.display = 'none'; }}
+                    />
+                  ) : (
+                    <div style={{
+                      width: "100%",
+                      height: "180px",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      background: "#18181b",
+                      color: "#f5a623",
+                      borderRadius: "12px 12px 0 0",
+                      fontWeight: 600,
+                      fontSize: 15,
+                    }}>Immagine in arrivo</div>
+                  )}
+                  <div className="drink-card-caption">
+                    <h3 translate="no">{item.nome}</h3>
+                  </div>
+                </article>
+              );
+            })
           )}
         </div>
       </section>
