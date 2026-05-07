@@ -7,7 +7,7 @@ import { useNavigate, useParams } from "react-router-dom";
 type VinoCard = {
   id: string;
   nome: string;
-  immagine: string | null;
+  immagine?: string | null;
   categoria: string;
   alcol: string;
   descrizione: string;
@@ -97,14 +97,13 @@ export default function Vini() {
 
     const { data, error } = await supabase.from("vini").select("*");
 
-    const normalizeImage = (obj: any) => obj.immagine || obj.immagine_url || obj.image || obj.img || null;
 
     if (!error && data && data.length) {
       const mapped = data
         .map((vino: any) => ({
           id: String(vino.id),
           nome: vino.nome || vino.name || "Vino",
-          immagine: normalizeImage(vino),
+          immagine: vino.immagine ?? null,
           categoria: (vino.categoria || vino.category || "Altro").trim(),
           alcol: vino.alcol || vino.grado_alcolico || "",
           descrizione: vino.descrizione || vino.description || "",
@@ -115,6 +114,7 @@ export default function Vini() {
       setLoading(false);
       return;
     }
+
 
     const fallback = [...mockVini]
       .sort((a, b) => a.name.localeCompare(b.name))
@@ -256,9 +256,9 @@ export default function Vini() {
               }}
               style={item.placeholder ? { opacity: 0.65, cursor: "default" } : undefined}
             >
-              {(item.immagine || item.immagine_url || item.image || item.img || item.foto) ? (
+              {item.immagine ? (
                 <img
-                  src={item.immagine || item.immagine_url || item.image || item.img || item.foto}
+                  src={item.immagine}
                   alt={item.nome}
                   style={{
                     width: "100%",
