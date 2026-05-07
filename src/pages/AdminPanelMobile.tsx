@@ -122,7 +122,7 @@ export default function AdminPanelMobile() {
       const { data: cocktailData } = await supabase.from("cocktail").select("*");
       const { data: distillatiData } = await supabase.from("distillati").select("*");
       const { data: viniData } = await supabase.from("vini").select("*");
-      const { data: articoliData } = await supabase.from("Articoli").select("*");
+      const { data: articoliData } = await supabase.from("articoli").select("*");
 
       setLocali(localiData || []);
       setUtenti(utentiData || []);
@@ -153,7 +153,7 @@ export default function AdminPanelMobile() {
     if (selectedTable === "cocktail") return "cocktail";
     if (selectedTable === "distillati") return "distillati";
     if (selectedTable === "vini") return "vini";
-    if (selectedTable === "articoli") return "Articoli";
+    if (selectedTable === "articoli") return "articoli";
     return selectedTable;
   }
   
