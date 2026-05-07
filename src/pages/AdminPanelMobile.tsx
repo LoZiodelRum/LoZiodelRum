@@ -568,6 +568,18 @@ if (isCreating) {
             <button
   style={actionButtonStyle}
   onClick={() => {
+    setSelectedTable("articoli");
+    setSelectedItem(null);
+    setIsCreating(true);
+    setRightOpen(false);
+  }}
+>
+  Nuovo Articolo
+</button>
+
+            <button
+  style={actionButtonStyle}
+  onClick={() => {
     setSelectedTable("cocktail");
     setSelectedItem(null);
     setIsCreating(true);
