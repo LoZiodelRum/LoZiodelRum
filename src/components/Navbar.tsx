@@ -66,7 +66,11 @@ export default function Navbar() {
         }}
         onClick={() => {
           closeMobileMenu();
-          navigate("/");
+          if (user) {
+            navigate("/home");
+          } else {
+            navigate("/");
+          }
         }}
       >
         <img

@@ -616,7 +616,7 @@ if (isCreating) {
 <button
   style={actionButtonStyle}
   onClick={() => {
-    setSelectedTable("Profili");
+    setSelectedTable("profili");
     setSelectedItem({ ruolo: "proprietario" });
     setIsCreating(true);
     setRightOpen(false);
@@ -628,7 +628,7 @@ if (isCreating) {
 <button
   style={actionButtonStyle}
   onClick={() => {
-    setSelectedTable("Profili");
+    setSelectedTable("profili");
     setSelectedItem({ ruolo: "bartender" });
     setIsCreating(true);
     setRightOpen(false);
