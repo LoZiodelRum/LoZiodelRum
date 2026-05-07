@@ -55,6 +55,13 @@ export default function AdminPanelMobile() {
     competenza_staff: "Competenza staff",
     atmosfera: "Atmosfera",
     qualita_prezzo: "Qualità/prezzo",
+    estratto: "Estratto",
+    categoria: "Categoria",
+    slug: "Slug",
+    autore_nome: "Autore",
+    pubblicato: "Pubblicato",
+    tag: "Tag",
+    tempo_lettura: "Tempo di lettura (min)",
   };
 
   const localiSelectOptions: Record<string, string[]> = {
@@ -569,7 +576,18 @@ if (isCreating) {
   style={actionButtonStyle}
   onClick={() => {
     setSelectedTable("articoli");
-    setSelectedItem(null);
+    setSelectedItem({
+      titolo: "",
+      contenuto: "",
+      estratto: "",
+      categoria: "",
+      immagine: "",
+      slug: "",
+      autore_nome: "",
+      pubblicato: false,
+      tag: "",
+      tempo_lettura: 1
+    });
     setIsCreating(true);
     setRightOpen(false);
   }}
