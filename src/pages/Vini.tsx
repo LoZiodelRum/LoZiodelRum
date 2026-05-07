@@ -9,11 +9,77 @@ type VinoCard = {
   nome: string;
   immagine?: string | null;
   categoria: string;
-  colore?: string | null;
   alcol: string;
   descrizione: string;
   placeholder?: boolean;
 };
+
+const mockVini = [
+  {
+    id: "1",
+    name: "Barolo DOCG",
+    image: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=1200",
+    category: "Rosso",
+    alcol: "14%",
+    descrizione: "Strutturato, intenso",
+  },
+  {
+    id: "2",
+    name: "Brunello di Montalcino",
+    image: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=1200",
+    category: "Rosso",
+    alcol: "14.5%",
+    descrizione: "Profondo, elegante",
+  },
+  {
+    id: "3",
+    name: "Franciacorta Brut",
+    image: "https://images.unsplash.com/photo-1516594915697-87eb3b1c14ea?w=1200",
+    category: "Bollicine",
+    alcol: "12.5%",
+    descrizione: "Fine, cremoso",
+  },
+  {
+    id: "4",
+    name: "Prosecco Superiore",
+    image: "https://images.unsplash.com/photo-1569919659476-f0852f6834b7?w=1200",
+    category: "Bollicine",
+    alcol: "11.5%",
+    descrizione: "Fresco, floreale",
+  },
+  {
+    id: "5",
+    name: "Vermentino di Gallura",
+    image: "https://images.unsplash.com/photo-1558008258-3256797b43f3?w=1200",
+    category: "Bianco",
+    alcol: "13%",
+    descrizione: "Sapido, mediterraneo",
+  },
+  {
+    id: "6",
+    name: "Gewurztraminer",
+    image: "https://images.unsplash.com/photo-1474722883778-792e7990302f?w=1200",
+    category: "Bianco",
+    alcol: "13.5%",
+    descrizione: "Aromatico, speziato",
+  },
+  {
+    id: "7",
+    name: "Chiaretto del Garda",
+    image: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=1200",
+    category: "Rosato",
+    alcol: "12.5%",
+    descrizione: "Delicato, fruttato",
+  },
+  {
+    id: "8",
+    name: "Cerasuolo d'Abruzzo",
+    image: "https://images.unsplash.com/photo-1584916201218-f4242ceb4809?w=1200",
+    category: "Rosato",
+    alcol: "13%",
+    descrizione: "Vivace, gastronomico",
+  },
+];
 
 export default function Vini() {
   const [vini, setVini] = useState<VinoCard[]>([]);
@@ -29,117 +95,53 @@ export default function Vini() {
   async function load() {
     setLoading(true);
 
-    const { data, error } = await supabase
-      .from("vini")
-      .select("*")
-      .order("nome", { ascending: true });
+    const { data, error } = await supabase.from("vini").select("*");
 
-    console.log("ERRORE VINI SUPABASE:", error);
-    console.log("NUMERO VINI SUPABASE:", data?.length);
-    console.log("PRIMI VINI SUPABASE:", data?.slice(0, 5));
 
-    if (error) {
-      console.error("Errore caricamento vini:", error);
-      setVini([]);
-      setLoading(false);
-      return;
-    }
-
-    if (data && data.length) {
-      const mapped: VinoCard[] = data.map((vino: any) => {
-        const imageUrl = typeof vino.immagine === "string" ? vino.immagine.trim() : "";
-
-        return {
+    if (!error && data && data.length) {
+      const mapped = data
+        .map((vino: any) => ({
           id: String(vino.id),
-          nome: vino.nome || "Vino",
-          immagine: imageUrl || null,
-          categoria: String(vino.categoria || vino.tipologia || vino.tipo || "Altro").trim(),
-          colore: vino.colore ? String(vino.colore).trim() : null,
-          alcol: vino.alcol || vino.gradazione || vino.gradazione_alcolica || "",
-          descrizione: vino.descrizione || vino.note || vino.note_degustative || "",
-        };
-      });
-
-      console.log(
-        "CHECK IMMAGINI VINI:",
-        mapped.map((vino) => ({
-          nome: vino.nome,
-          categoria: vino.categoria,
-          colore: vino.colore,
-          immagine: vino.immagine,
+          nome: vino.nome || vino.name || "Vino",
+          immagine: vino.immagine ?? null,
+          categoria: (vino.categoria || vino.category || "Altro").trim(),
+          alcol: vino.alcol || vino.grado_alcolico || "",
+          descrizione: vino.descrizione || vino.description || "",
         }))
-      );
+        .sort((a: VinoCard, b: VinoCard) => a.nome.localeCompare(b.nome));
 
       setVini(mapped);
       setLoading(false);
       return;
     }
 
-    setVini([]);
+
+    const fallback = [...mockVini]
+      .sort((a, b) => a.name.localeCompare(b.name))
+      .map((vino) => ({
+        id: vino.id,
+        nome: vino.name,
+        immagine: vino.image,
+        categoria: vino.category,
+        alcol: vino.alcol,
+        descrizione: vino.descrizione,
+      }));
+
+    setVini(fallback);
     setLoading(false);
   }
 
-  function textForCategory(vino: VinoCard) {
-    return `${vino.categoria || ""} ${vino.colore || ""} ${vino.nome || ""}`.toLowerCase();
-  }
-
-  function isRosso(vino: VinoCard) {
-    const text = textForCategory(vino);
-    return (
-      text.includes("rosso") ||
-      text.includes("rossi") ||
-      text.includes("rubino") ||
-      text.includes("granato") ||
-      text.includes("porpora")
-    );
-  }
-
-  function isBianco(vino: VinoCard) {
-    const text = textForCategory(vino);
-    return (
-      text.includes("bianco") ||
-      text.includes("bianchi") ||
-      text.includes("giallo") ||
-      text.includes("dorato") ||
-      text.includes("paglierino") ||
-      text.includes("ambrato")
-    );
-  }
-
-  function isRosato(vino: VinoCard) {
-    const text = textForCategory(vino);
-    return (
-      text.includes("rosato") ||
-      text.includes("rosati") ||
-      text.includes("rosa") ||
-      text.includes("cerasuolo")
-    );
-  }
-
-  function isBollicina(vino: VinoCard) {
-    const text = textForCategory(vino);
-    return (
-      text.includes("bollic") ||
-      text.includes("spumante") ||
-      text.includes("champagne") ||
-      text.includes("prosecco") ||
-      text.includes("franciacorta")
-    );
-  }
-
-  const rossiAll = useMemo(() => vini.filter((vino) => isRosso(vino)), [vini]);
-  const bianchiAll = useMemo(() => vini.filter((vino) => isBianco(vino) && !isRosso(vino)), [vini]);
-  const rosatiAll = useMemo(() => vini.filter((vino) => isRosato(vino)), [vini]);
-  const bollicineAll = useMemo(() => vini.filter((vino) => isBollicina(vino)), [vini]);
+  const rossiAll = useMemo(() => vini.filter((vino) => vino.categoria.toLowerCase().includes("rosso")), [vini]);
+  const bianchiAll = useMemo(() => vini.filter((vino) => vino.categoria.toLowerCase().includes("bianco")), [vini]);
+  const rosatiAll = useMemo(() => vini.filter((vino) => vino.categoria.toLowerCase().includes("rosat")), [vini]);
+  const bollicineAll = useMemo(() => vini.filter((vino) => vino.categoria.toLowerCase().includes("bollic")), [vini]);
   const altriAll = useMemo(
-    () =>
-      vini.filter(
-        (vino) =>
-          !isRosso(vino) &&
-          !isBianco(vino) &&
-          !isRosato(vino) &&
-          !isBollicina(vino)
-      ),
+    () => vini.filter((vino) =>
+      !vino.categoria.toLowerCase().includes("rosso") &&
+      !vino.categoria.toLowerCase().includes("bianco") &&
+      !vino.categoria.toLowerCase().includes("rosat") &&
+      !vino.categoria.toLowerCase().includes("bollic")
+    ),
     [vini]
   );
 
@@ -158,14 +160,7 @@ export default function Vini() {
   };
 
   if (loading) {
-    return (
-      <>
-        <Navbar />
-        <div className="page fade-in" style={{ background: "#0b0b0b", color: "#f5a623" }}>
-          Caricamento vini...
-        </div>
-      </>
-    );
+    return <div className="page fade-in">Caricamento...</div>;
   }
 
   function normalizeWineName(name: string) {
@@ -182,28 +177,27 @@ export default function Vini() {
   function getBottleScale(item: VinoCard) {
     const ratio = imageRatios[item.id] ?? 1;
 
-    if (ratio >= 1.45) return 1;
-    if (ratio >= 1.2) return 1;
-    if (ratio >= 1.0) return 1;
-    if (ratio >= 0.8) return 1;
-    return 1;
+    if (ratio >= 1.45) return 2.05;
+    if (ratio >= 1.2) return 1.75;
+    if (ratio >= 1.0) return 1.45;
+    if (ratio >= 0.8) return 1.18;
+    return 1.03;
   }
 
   function getPreviewImageStyle(item: VinoCard): React.CSSProperties | undefined {
     if (item.placeholder) return undefined;
 
     return {
-      objectFit: "cover",
-      objectPosition: "center center",
+      objectFit: "contain",
+      objectPosition: "center bottom",
       transform: `scale(${getBottleScale(item)})`,
-      transformOrigin: "center center",
-      background: "#111",
+      transformOrigin: "center bottom",
+      background: "#ffffff",
     };
   }
 
   function renderSection(title: string, list: VinoCard[], tipo: string, fillPlaceholders = true) {
     const cards = [...list];
-
     if (fillPlaceholders) {
       while (cards.length < 6) {
         cards.push({
@@ -211,7 +205,6 @@ export default function Vini() {
           nome: "In arrivo",
           immagine: null,
           categoria: "",
-          colore: null,
           alcol: "",
           descrizione: "",
           placeholder: true,
@@ -246,53 +239,60 @@ export default function Vini() {
         </div>
 
         <div className="drink-grid-uniform vini-grid">
-          {cards.map((item) => {
-            const imageUrl = typeof item.immagine === "string" ? item.immagine.trim() : "";
-
-            return (
-              <article
-                key={item.id}
-                className="drink-card-uniform vini-card-real"
-                role={item.placeholder ? undefined : "button"}
-                tabIndex={item.placeholder ? -1 : 0}
-                onClick={() => {
-                  if (!item.placeholder) navigate(`/vini/${item.id}`);
-                }}
-                onKeyDown={(e) => {
-                  if (!item.placeholder && (e.key === "Enter" || e.key === " ")) {
-                    e.preventDefault();
-                    navigate(`/vini/${item.id}`);
-                  }
-                }}
-                style={item.placeholder ? { opacity: 0.65, cursor: "default" } : undefined}
-              >
-                <div className="wine-card-image-box">
-                  {imageUrl ? (
-                    <img
-                      src={imageUrl}
-                      alt={item.nome || "Vino"}
-                      className="wine-card-img"
-                      loading="lazy"
-                      onLoad={(event) => handlePreviewImageLoad(item.id, event)}
-                      onError={(event) => {
-                        console.error("IMMAGINE VINO NON CARICATA:", item.nome, imageUrl);
-                        event.currentTarget.style.display = "none";
-                        const parent = event.currentTarget.parentElement;
-                        if (parent) parent.classList.add("wine-image-error");
-                      }}
-                      style={getPreviewImageStyle(item)}
-                    />
-                  ) : (
-                    <div className="wine-card-placeholder">Immagine in arrivo</div>
-                  )}
-                </div>
-
-                <div className="drink-card-caption">
-                  <h3>{normalizeWineName(item.nome)}</h3>
-                </div>
-              </article>
-            );
-          })}
+          {cards.map((item) => (
+            <article
+              key={item.id}
+              className="drink-card-uniform"
+              role={item.placeholder ? undefined : "button"}
+              tabIndex={item.placeholder ? -1 : 0}
+              onClick={() => {
+                if (!item.placeholder) navigate(`/vini/${item.id}`);
+              }}
+              onKeyDown={(e) => {
+                if (!item.placeholder && (e.key === "Enter" || e.key === " ")) {
+                  e.preventDefault();
+                  navigate(`/vini/${item.id}`);
+                }
+              }}
+              style={item.placeholder ? { opacity: 0.65, cursor: "default" } : undefined}
+            >
+              {item.immagine ? (
+                <img
+                  src={item.immagine}
+                  alt={item.nome}
+                  style={{
+                    width: "100%",
+                    height: "360px",
+objectFit: "contain",
+padding: "20px",
+background: "#fff",
+boxSizing: "border-box",
+                    objectPosition: "center",
+                    borderRadius: "12px 12px 0 0",
+                    display: "block",
+                    margin: 0,
+                  }}
+                  onError={e => { e.currentTarget.style.display = 'none'; }}
+                />
+              ) : (
+                <div style={{
+                  width: "100%",
+                  height: "180px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  background: "#18181b",
+                  color: "#f5a623",
+                  borderRadius: "12px 12px 0 0",
+                  fontWeight: 600,
+                  fontSize: 15,
+                }}>Immagine in arrivo</div>
+              )}
+              <div className="drink-card-caption">
+                <h3>{normalizeWineName(item.nome)}</h3>
+              </div>
+            </article>
+          ))}
         </div>
       </section>
     );
@@ -308,12 +308,6 @@ export default function Vini() {
         }}
       >
         <style>{`
-          .vini-preview-page {
-            min-height: 100vh;
-            overflow-x: hidden;
-            padding-bottom: 48px;
-          }
-
           .vini-preview-page .drink-section-white {
             background: transparent;
           }
@@ -324,97 +318,15 @@ export default function Vini() {
 
           .vini-grid {
             grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
-            align-items: stretch !important;
           }
 
-          .vini-preview-page .drink-card-uniform.vini-card-real {
-            aspect-ratio: auto !important;
-            height: auto !important;
-            min-height: 0 !important;
-            overflow: hidden !important;
-            display: flex !important;
-            flex-direction: column !important;
-            background: #111 !important;
-            border: 1px solid rgba(255, 255, 255, 0.35) !important;
-            border-radius: 12px !important;
-            cursor: pointer;
-          }
-
-          .wine-card-image-box {
-            width: 100% !important;
-            height: 360px !important;
-            min-height: 360px !important;
-            max-height: 360px !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            overflow: hidden !important;
-            background: #111 !important;
-            padding: 0 !important;
-            margin: 0 !important;
-            border-radius: 12px 12px 0 0 !important;
-            position: relative !important;
-          }
-
-          .wine-card-img {
-            width: 100% !important;
-            height: 100% !important;
-            min-height: 100% !important;
-            object-fit: cover !important;
-            object-position: center center !important;
-            display: block !important;
-            background: #111 !important;
-            border-radius: 12px 12px 0 0 !important;
-            margin: 0 !important;
-            padding: 0 !important;
-          }
-
-          .wine-card-placeholder {
-            width: 100% !important;
-            height: 100% !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            background: #111 !important;
-            color: #f5a623 !important;
-            font-weight: 700 !important;
-            font-size: 16px !important;
-            text-align: center !important;
-          }
-
-          .wine-image-error::after {
-            content: "Immagine in arrivo";
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: #111;
-            color: #f5a623;
-            font-weight: 700;
-            font-size: 16px;
-          }
-
-          .vini-preview-page .drink-card-caption {
-            width: 100% !important;
-            min-height: 54px !important;
-            height: 54px !important;
-            display: flex !important;
-            align-items: center !important;
-            justify-content: center !important;
-            background: #ffffff !important;
-            color: #111 !important;
-            padding: 0 12px !important;
-            margin: 0 !important;
-            border-radius: 0 0 12px 12px !important;
+          .vini-preview-page .drink-card-uniform {
+            aspect-ratio: 1 / 1.46 !important;
           }
 
           .vini-preview-page .drink-card-caption h3 {
             font-size: 15px;
             line-height: 1.15;
-            margin: 0 !important;
-            color: #111 !important;
-            text-align: center !important;
             display: -webkit-box;
             -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
@@ -423,51 +335,41 @@ export default function Vini() {
             word-break: break-word;
           }
 
-          @media (max-width: 1024px) {
-            .vini-grid {
-              grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-            }
+          .vini-preview-page .drink-card-uniform img {
+            width: 100% !important;
+            height: calc(100% - 40px) !important;
+            object-fit: contain !important;
+            object-position: center bottom !important;
+            background: #fff !important;
           }
 
           @media (max-width: 768px) {
-            .vini-grid {
-              grid-template-columns: repeat(1, minmax(0, 1fr)) !important;
-            }
-
-            .vini-preview-page .drink-card-uniform.vini-card-real {
-              aspect-ratio: auto !important;
-              height: auto !important;
-            }
-
-            .wine-card-image-box {
-              height: 260px !important;
-              min-height: 260px !important;
-              max-height: 260px !important;
+            .vini-preview-page .drink-card-uniform {
+              aspect-ratio: 1 / 1.52 !important;
             }
 
             .vini-preview-page .drink-card-caption {
-              min-height: 44px !important;
-              height: 44px !important;
+              min-height: 34px !important;
+              height: 34px !important;
               padding: 0 8px !important;
             }
 
             .vini-preview-page .drink-card-uniform img {
-              height: 100% !important;
+              height: calc(100% - 34px) !important;
             }
           }
         `}</style>
-
-        {categoria && categoryConfig[categoria] ? (
-          renderSection(categoryConfig[categoria].title, categoryConfig[categoria].items, categoria, false)
-        ) : (
-          <>
-            {renderSection("Rossi", rossi, "rossi")}
-            {renderSection("Bianchi", bianchi, "bianchi")}
-            {renderSection("Rosati", rosati, "rosati")}
-            {renderSection("Bollicine", bollicine, "bollicine")}
-            {renderSection("Altri vini", altri, "altri-vini")}
-          </>
-        )}
+        {categoria && categoryConfig[categoria]
+          ? renderSection(categoryConfig[categoria].title, categoryConfig[categoria].items, categoria, false)
+          : (
+            <>
+              {renderSection("Rossi", rossi, "rossi")}
+              {renderSection("Bianchi", bianchi, "bianchi")}
+              {renderSection("Rosati", rosati, "rosati")}
+              {renderSection("Bollicine", bollicine, "bollicine")}
+              {renderSection("Altri vini", altri, "altri-vini")}
+            </>
+          )}
       </div>
     </>
   );
