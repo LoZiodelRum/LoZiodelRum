@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useParams } from "react-router-dom";
 import { useUser } from "../context/UserContext"; // ✅ AGGIUNTO
+import Navbar from "../components/Navbar";
 
 function normalizeUrl(url: string) {
   return url.replace(/\s+/g, "").trim();
@@ -144,6 +145,8 @@ function renderArticleContent(raw: string) {
 }
 
 export default function ArticleDetail() {
+    // Navbar ufficiale in alto
+    // ...existing code...
   const { id } = useParams();
   const { role } = useUser(); // ✅
   const isAdmin = role === "admin"; // ✅
@@ -152,10 +155,18 @@ export default function ArticleDetail() {
   const [form, setForm] = useState<any>(null); // ✅
   const [uploading, setUploading] = useState(false); // ✅
 
+  // --- RENDER ---
+  return (
+    <>
+      <Navbar />
+      {/* ...resto del rendering originale... */}
+      {/** Il resto del componente rimane invariato **/}
+    </>
+  );
+
   useEffect(() => {
     load();
   }, [id]);
-
   async function load() {
     const { data } = await supabase
       .from("articoli")
@@ -185,6 +196,7 @@ export default function ArticleDetail() {
     setData(form);
     alert("Salvato ✅");
   }
+  // ...existing code...
 
   // ✅ DELETE
   async function handleDelete() {
