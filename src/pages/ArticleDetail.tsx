@@ -44,106 +44,36 @@ function renderInlineLinks(text: string, keyBase: string) {
   return pieces;
 }
 
+
+// Riconosce url immagini (estensioni e domini richiesti)
+function isImageUrl(url: string) {
+  if (!/^https?:\/\//.test(url)) return false;
+  // Estensioni immagini
+  if (/(\.jpg|\.jpeg|\.png|\.webp|\.gif)(\?.*)?$/i.test(url)) return true;
+  // Domini immagini
+  if (/gstatic\.com\/images|encrypted-tbn/.test(url)) return true;
+  return false;
+}
+
+// Rendering contenuto articolo: ogni riga con solo url immagine -> <img>, resto testo
 function renderArticleContent(raw: string) {
   const content = raw || "";
-  // Regex per immagini markdown e link diretti a immagini
-  const imageMarkdownRegex = /!\[([^\]]*)\]\((https?:\/\/[^\n]+)\)/g;
-  const directImageRegex = /(https?:\/\/(?:[^\s]+)\.(?:jpg|jpeg|png|gif|webp|avif|svg))/gi;
-  const nodes: React.ReactNode[] = [];
-
-  let lastIndex = 0;
-  let m: RegExpExecArray | null;
-  let blockIndex = 0;
-
-  const pushTextChunk = (chunk: string) => {
-    const trimmed = chunk.trim();
-    if (!trimmed) return;
-
-    // Sostituisci i link diretti a immagini con un tag <img>
-    let imgIndex = 0;
-    const replaced = trimmed.replace(directImageRegex, (url) => {
-      imgIndex++;
-      return `[[IMG-${blockIndex}-${imgIndex}:${url}]]`;
-    });
-
-    const paragraphs = replaced.split(/\n{2,}/);
-    paragraphs.forEach((paragraph) => {
-      const lines = paragraph.split("\n");
-      const lineNodes: React.ReactNode[] = [];
-
-      lines.forEach((line, idx) => {
-        // Sostituisci i placeholder con <img>
-        const imgPlaceholderRegex = /\[\[IMG-(\d+)-(\d+):([^\]]+)\]\]/g;
-        let lastImgIdx = 0;
-        let imgMatch: RegExpExecArray | null;
-        const acc: React.ReactNode[] = [];
-        while ((imgMatch = imgPlaceholderRegex.exec(line)) !== null) {
-          if (imgMatch.index > lastImgIdx) {
-            acc.push(line.slice(lastImgIdx, imgMatch.index));
-          }
-          acc.push(
-            <img
-              key={`img-inline-${blockIndex}-${idx}-${imgMatch[2]}`}
-              src={imgMatch[3]}
-              alt="Immagine"
-              style={{ maxWidth: "100%", maxHeight: 320, borderRadius: 10, margin: "10px 0", display: "block" }}
-              loading="lazy"
-            />
-          );
-          lastImgIdx = imgMatch.index + imgMatch[0].length;
-        }
-        if (lastImgIdx < line.length) {
-          acc.push(line.slice(lastImgIdx));
-        }
-        if (acc.length > 0) {
-          lineNodes.push(...acc);
-        } else {
-          lineNodes.push(...renderInlineLinks(line, `p-${blockIndex}-${idx}`));
-        }
-        if (idx < lines.length - 1) lineNodes.push(<br key={`br-${blockIndex}-${idx}`} />);
-      });
-
-      nodes.push(
-        <p key={`p-${blockIndex}`} style={articleParagraph}>
-          {lineNodes}
-        </p>
-      );
-      blockIndex += 1;
-    });
-  };
-
-  // Prima gestisci le immagini markdown
-  while ((m = imageMarkdownRegex.exec(content)) !== null) {
-    const before = content.slice(lastIndex, m.index);
-    pushTextChunk(before);
-
-    const alt = m[1] || "Immagine articolo";
-    const src = normalizeUrl(m[2]);
-
-    if (isVideoUrl(src)) {
-      nodes.push(
-        <figure key={`video-${blockIndex}`} style={articleFigure}>
-          <video style={articleVideo} controls preload="metadata">
-            <source src={src} />
-          </video>
-          <figcaption style={articleCaption}>{alt}</figcaption>
-        </figure>
-      );
-    } else {
-      nodes.push(
-        <figure key={`img-${blockIndex}`} style={articleFigure}>
-          <img src={src} alt={alt} style={articleImage} loading="lazy" />
-          <figcaption style={articleCaption}>{alt}</figcaption>
-        </figure>
+  const lines = content.split(/\r?\n/);
+  return lines.map((line, idx) => {
+    const trimmed = line.trim();
+    if (isImageUrl(trimmed)) {
+      return (
+        <img
+          key={`img-line-${idx}`}
+          src={trimmed}
+          alt="Immagine articolo"
+          style={{ maxWidth: "100%", height: "auto", borderRadius: 16, margin: "24px 0", display: "block" }}
+          loading="lazy"
+        />
       );
     }
-    blockIndex += 1;
-    lastIndex = m.index + m[0].length;
-  }
-
-  // Gestisci il testo rimanente (inclusi link diretti a immagini)
-  pushTextChunk(content.slice(lastIndex));
-  return nodes;
+    return <p key={`p-line-${idx}`} style={articleParagraph}>{line}</p>;
+  });
 }
 
 export default function ArticleDetail() {
