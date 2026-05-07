@@ -1923,16 +1923,6 @@ export default function AdminPanel() {
 
   // --- MOBILE/TABLET LAYOUT ---
   if (isMobile) {
-    // Blocca scroll quando un off-canvas è aperto
-    useEffect(() => {
-      if (leftOpen || rightOpen) {
-        document.body.style.overflow = "hidden";
-      } else {
-        document.body.style.overflow = "";
-      }
-      return () => { document.body.style.overflow = ""; };
-    }, [leftOpen, rightOpen]);
-
     // Chiudi pannelli laterali quando selezioni un elemento
     const handleMenuSelect = (cb: () => void) => {
       cb();
