@@ -1988,10 +1988,6 @@ export default function AdminPanel() {
               <button style={quickActionBtnStyle} onClick={() => { setRightOpen(false); openCreateEditor("articoli", articoli); }}>modifica articoli</button>
             </div>
             <div style={quickActionCardStyle}>
-              <h3 style={quickActionTitleStyle}>Aggiunta Articolo</h3>
-              <button style={quickActionBtnStyle} onClick={() => { setRightOpen(false); openCreateEditor("articoli", articoli); }}>modifica articoli</button>
-            </div>
-            <div style={quickActionCardStyle}>
               <h3 style={quickActionTitleStyle}>Aggiunta Cocktail</h3>
               <button style={quickActionBtnStyle} onClick={() => { setRightOpen(false); openCreateEditor("cocktail", cocktail); }}>modifica cocktail</button>
             </div>
