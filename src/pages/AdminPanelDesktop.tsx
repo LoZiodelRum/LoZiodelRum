@@ -82,12 +82,24 @@ export default function AdminPanel() {
           const payload = await response.json().catch(() => ({}));
           if (response.ok && payload?.ok && Array.isArray(payload?.profiles)) {
             utentiData = payload.profiles;
-            <button
-              style={quickActionBtnStyle}
-              onClick={() => openCreateEditor("Locali", locali)}
-            >
-              modifica locali
-            </button>
+            break;
+          }
+
+          if (response.status !== 404 && response.status !== 405) {
+            break;
+          }
+        } catch {
+          // Keep fallback below if the endpoint is not reachable.
+        }
+      }
+    }
+
+    if (!utentiData) {
+      const fallbackUsers = await supabase.from("Profili").select("*");
+      utentiData = (fallbackUsers.data as any[]) || [];
+    }
+
+    const { data: articoliData } = await supabase.from("articoli").select("*");
     const { data: cocktailData } = await supabase.from("cocktail").select("*");
     const { data: distillatiData } = await supabase.from("distillati").select("*");
     let viniData: any[] | null = null;
@@ -2223,7 +2235,10 @@ const inputMobileStyle = {
 
           <div style={quickActionCardStyle}>
             <h3 style={quickActionTitleStyle}>Aggiunta Locali</h3>
-            <button style={quickActionBtnStyle} onClick={() => openCreateEditor("Locali", locali)}>
+            <button
+              style={quickActionBtnStyle}
+              onClick={() => openCreateEditPanel("locali")}
+            >
               modifica locali
             </button>
           </div>
