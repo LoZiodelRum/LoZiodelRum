@@ -2237,7 +2237,7 @@ const inputMobileStyle = {
             <h3 style={quickActionTitleStyle}>Aggiunta Locali</h3>
             <button
               style={quickActionBtnStyle}
-              onClick={() => openCreateEditPanel("locali")}
+              onClick={() => openCreateEditor("Locali", locali)}
             >
               modifica locali
             </button>
