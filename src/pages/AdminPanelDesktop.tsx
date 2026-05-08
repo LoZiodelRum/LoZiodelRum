@@ -2235,6 +2235,24 @@ const inputMobileStyle = {
 
           <div style={quickActionCardStyle}>
             <h3 style={quickActionTitleStyle}>Aggiunta Locali</h3>
+            <button
+              style={{
+                background: "#f59e0b",
+                color: "#000",
+                padding: "12px 20px",
+                borderRadius: "10px",
+                border: "none",
+                fontWeight: "bold",
+                cursor: "pointer",
+                width: "100%"
+              }}
+              onClick={() => {
+                setSelectedTable("locali");
+                if (typeof setIsEditing === "function") setIsEditing(true);
+              }}
+            >
+              modifica locali
+            </button>
           </div>
 
           <div style={quickActionCardStyle}>
