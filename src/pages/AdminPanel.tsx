@@ -7,20 +7,22 @@ export default function AdminPanel() {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const mediaQuery = window.matchMedia("(max-width: 1023px)");
+    if (typeof window !== "undefined") {
+      const mediaQuery = window.matchMedia("(max-width: 1023px)");
 
-    const handleResize = () => {
-      setIsMobile(mediaQuery.matches);
-    };
+      const handleResize = () => {
+        setIsMobile(mediaQuery.matches);
+      };
 
-    handleResize();
+      handleResize();
 
-    mediaQuery.addEventListener("change", handleResize);
+      mediaQuery.addEventListener("change", handleResize);
 
-    // cleanup corretto
-    return () => {
-      mediaQuery.removeEventListener("change", handleResize);
-    };
+      // cleanup corretto
+      return () => {
+        mediaQuery.removeEventListener("change", handleResize);
+      };
+    }
   }, []);
 
   return (
@@ -40,8 +42,8 @@ export default function AdminPanel() {
         }}
       >
         <div style={{ padding: "40px", color: "white" }}>
-  ADMIN PANEL STABILE
-</div>
+          ADMIN PANEL STABILE
+        </div>
       </main>
     </div>
   );
