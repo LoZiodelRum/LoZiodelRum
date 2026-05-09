@@ -49,8 +49,8 @@ export default function AdminPanel() {
   }, []);
 
   return (
-    <ErrorBoundary>
-      {isMobile ? <AdminPanelMobile /> : <AdminPanelDesktop />}
-    </ErrorBoundary>
+    <div className="min-h-screen pt-[120px] text-white">
+      ADMIN OK
+    </div>
   );
 }
