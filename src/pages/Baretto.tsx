@@ -51,38 +51,63 @@ export default function Baretto() {
     return () => { supabase.removeChannel(sub); };
   }, []);
 
-  // Load messages and participants for selected room
+  // Caricamento e realtime messaggi
   useEffect(() => {
     if (!selectedRoom) return;
     setLoading(true);
-    const fetchMessages = async () => {
-      const { data } = await supabase.from("chat_messages").select("*")
-        .eq("room_id", selectedRoom.id)
+    // Query corretta con join profili e filtro eliminato/null
+    const loadMessages = async (roomId: string) => {
+      const { data, error } = await supabase
+        .from("chat_messages")
+        .select(`*, profili:user_id (id, nome, username, avatar_url, online)`)
+        .eq("room_id", roomId)
+        .or("eliminato.is.null,eliminato.eq.false")
         .order("created_at", { ascending: true });
-      setMessages(data || []);
+      if (error) {
+        console.error(error);
+        setMessages([]);
+      } else {
+        setMessages(data || []);
+      }
       setLoading(false);
     };
+    loadMessages(selectedRoom.id);
+    // Carica partecipanti
     const fetchParticipants = async () => {
       const { data } = await supabase.from("chat_room_members").select("*, profili: user_id (id, nome, username, avatar_url, online)")
         .eq("room_id", selectedRoom.id);
       setParticipants((data || []).map((m: any) => ({ ...m.profili, online: m.online })));
     };
-    fetchMessages();
     fetchParticipants();
-    // Realtime subscription for messages
-    const subMsg = supabase.channel(`room-${selectedRoom.id}`).on(
-      "postgres_changes",
-      { event: "*", schema: "public", table: "chat_messages", filter: `room_id=eq.${selectedRoom.id}` },
-      fetchMessages
-    ).subscribe();
-    // Realtime for participants
+    // Realtime: aggiungi solo nuovo messaggio
+    const channel = supabase
+      .channel(`room-${selectedRoom.id}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "chat_messages",
+          filter: `room_id=eq.${selectedRoom.id}`
+        },
+        async (payload) => {
+          const { data } = await supabase
+            .from("chat_messages")
+            .select(`*, profili:user_id (id, nome, username, avatar_url, online)`)
+            .eq("id", payload.new.id)
+            .single();
+          setMessages((prev) => [...prev, data]);
+        }
+      )
+      .subscribe();
+    // Realtime per partecipanti
     const subPart = supabase.channel(`room-part-${selectedRoom.id}`).on(
       "postgres_changes",
       { event: "*", schema: "public", table: "chat_room_members", filter: `room_id=eq.${selectedRoom.id}` },
       fetchParticipants
     ).subscribe();
     return () => {
-      supabase.removeChannel(subMsg);
+      supabase.removeChannel(channel);
       supabase.removeChannel(subPart);
     };
   }, [selectedRoom]);
@@ -149,13 +174,8 @@ export default function Baretto() {
               </div>
             </div>
             <div style={{ flex: 1, padding: 20, overflowY: "auto", paddingBottom: 120, background: "#ebe5dc" }}>
-              {loading ? <div>Caricamento…</div> : messages.map((msg, i) => (
-                <ChatMessage key={msg.id || i} message={{
-                  user: participants.find((p: any) => p.id === msg.user_id)?.username || "?",
-                  text: msg.eliminato ? undefined : msg.testo,
-                  image: msg.immagine,
-                  orario: msg.created_at ? new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "",
-                }} me={msg.user_id === userId} />
+              {loading ? <div>Caricamento…</div> : messages.map((msg) => (
+                <ChatMessage key={msg.id} message={msg} me={msg.user_id === userId} />
               ))}
               <div ref={messagesEndRef} />
             </div>
