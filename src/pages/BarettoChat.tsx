@@ -30,23 +30,50 @@ export default function BarettoChat() {
     fetchRoom();
   }, [room]);
 
-  // Fetch messages
+  // Caricamento e realtime messaggi
   useEffect(() => {
     if (!roomId) return;
     setLoading(true);
-    const fetchMessages = async () => {
-      const { data } = await supabase.from("chat_messages").select("*").eq("room_id", roomId).order("created_at", { ascending: true });
-      setMessages(data || []);
+    const loadMessages = async (roomId: string) => {
+      const { data, error } = await supabase
+        .from("chat_messages")
+        .select(`*, profili:user_id (id, nome, username, avatar_url, online)`)
+        .eq("room_id", roomId)
+        .or("eliminato.is.null,eliminato.eq.false")
+        .order("created_at", { ascending: true });
+      if (error) {
+        console.error(error);
+        setMessages([]);
+      } else {
+        setMessages(data || []);
+      }
       setLoading(false);
     };
-    fetchMessages();
-    // Realtime
-    const sub = supabase.channel(`room-${roomId}`).on(
-      "postgres_changes",
-      { event: "*", schema: "public", table: "chat_messages", filter: `room_id=eq.${roomId}` },
-      fetchMessages
-    ).subscribe();
-    return () => { supabase.removeChannel(sub); };
+    loadMessages(roomId);
+    // Realtime: aggiungi solo nuovo messaggio
+    const channel = supabase
+      .channel(`room-${roomId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "chat_messages",
+          filter: `room_id=eq.${roomId}`
+        },
+        async (payload) => {
+          const { data } = await supabase
+            .from("chat_messages")
+            .select(`*, profili:user_id (id, nome, username, avatar_url, online)`)
+            .eq("id", payload.new.id)
+            .single();
+          setMessages((prev) => [...prev, data]);
+        }
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [roomId]);
 
   useEffect(() => {
@@ -75,13 +102,8 @@ export default function BarettoChat() {
         </div>
       </div>
       <div style={{ flex: 1, padding: 20, overflowY: "auto" }}>
-        {loading ? <div>Caricamento…</div> : messages.map((msg, i) => (
-          <ChatMessage key={msg.id || i} message={{
-            user: msg.user_id, // TODO: map to username
-            text: msg.eliminato ? undefined : msg.testo,
-            image: msg.immagine,
-            orario: msg.created_at ? new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "",
-          }} me={msg.user_id === 1} />
+        {loading ? <div>Caricamento…</div> : messages.map((msg) => (
+          <ChatMessage key={msg.id} message={msg} me={msg.user_id === userId} />
         ))}
         <div ref={bottomRef} />
       </div>

@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useRef } from "react";
-// MainLayout ora solo via router
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import { ChatWindow, ChatMessage, ChatInput } from "../components/chat";
@@ -11,10 +10,13 @@ export default function BarettoMobileChat() {
   const [message, setMessage] = useState("");
   const bottomRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(true);
-  const [roomId, setRoomId] = useState<number|null>(null);
-  // TODO: Replace with real user context
-  const username = "Lo Zio";
-  const userId = 1;
+  const [roomId, setRoomId] = useState<string|null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUserId(user?.id || null);
+    });
+  }, []);
 
   // Fetch room id by name
   useEffect(() => {
@@ -26,23 +28,50 @@ export default function BarettoMobileChat() {
     fetchRoom();
   }, [room]);
 
-  // Fetch messages
+  // Caricamento e realtime messaggi
   useEffect(() => {
     if (!roomId) return;
     setLoading(true);
-    const fetchMessages = async () => {
-      const { data } = await supabase.from("chat_messages").select("*").eq("room_id", roomId).order("created_at", { ascending: true });
-      setMessages(data || []);
+    const loadMessages = async (roomId: string) => {
+      const { data, error } = await supabase
+        .from("chat_messages")
+        .select(`*, profili:user_id (id, nome, username, avatar_url, online)`)
+        .eq("room_id", roomId)
+        .or("eliminato.is.null,eliminato.eq.false")
+        .order("created_at", { ascending: true });
+      if (error) {
+        console.error(error);
+        setMessages([]);
+      } else {
+        setMessages(data || []);
+      }
       setLoading(false);
     };
-    fetchMessages();
-    // Realtime
-    const sub = supabase.channel(`room-mobile-${roomId}`).on(
-      "postgres_changes",
-      { event: "*", schema: "public", table: "chat_messages", filter: `room_id=eq.${roomId}` },
-      fetchMessages
-    ).subscribe();
-    return () => { supabase.removeChannel(sub); };
+    loadMessages(roomId);
+    // Realtime: aggiungi solo nuovo messaggio
+    const channel = supabase
+      .channel(`room-mobile-${roomId}`)
+      .on(
+        "postgres_changes",
+        {
+          event: "INSERT",
+          schema: "public",
+          table: "chat_messages",
+          filter: `room_id=eq.${roomId}`
+        },
+        async (payload) => {
+          const { data } = await supabase
+            .from("chat_messages")
+            .select(`*, profili:user_id (id, nome, username, avatar_url, online)`)
+            .eq("id", payload.new.id)
+            .single();
+          setMessages((prev) => [...prev, data]);
+        }
+      )
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
   }, [roomId]);
 
   useEffect(() => {
@@ -50,10 +79,10 @@ export default function BarettoMobileChat() {
   }, [messages]);
 
   const handleSend = async () => {
-    if (!message.trim() || !roomId) return;
+    if (!message.trim() || !roomId || !userId) return;
     await supabase.from("chat_messages").insert({
       room_id: roomId,
-      user_id: userId, // TODO: real user id
+      user_id: userId,
       testo: message,
       created_at: new Date().toISOString(),
       eliminato: false
@@ -65,14 +94,14 @@ export default function BarettoMobileChat() {
     <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "#ebe5dc", paddingTop: 47 }}>
       {/* HEADER */}
       <div style={{ padding: 15, borderBottom: "1px solid #ddd", background: "#f7f4ee", display: "flex", alignItems: "center", gap: 10 }}>
-        <button onClick={() => navigate("/baretto")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer" }}>←</button>
+        <button onClick={() => navigate("/baretto")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer" }}>0</button>
         <div>
           <strong style={{ color: "#c9a86a" }}>{room ? `Tavolo ${room}` : "Tavolo"}</strong>
         </div>
       </div>
       <ChatWindow>
-        {loading ? <div style={{ padding: 20 }}>Caricamento…</div> : messages.map((msg, i) => (
-          <ChatMessage key={msg.id || i} message={{ user: msg.user_id, text: msg.testo, orario: new Date(msg.created_at).toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }) }} me={msg.user_id === userId} />
+        {loading ? <div style={{ padding: 20 }}>Caricamento…</div> : messages.map((msg) => (
+          <ChatMessage key={msg.id} message={msg} me={msg.user_id === userId} />
         ))}
         <div ref={bottomRef} />
       </ChatWindow>
