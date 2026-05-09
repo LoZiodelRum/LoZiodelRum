@@ -2087,6 +2087,37 @@ export default function AdminPanel() {
               <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                     {editorKeys.map(key => {
                       if ((key === "id" && selectedTable !== "profili") || (selectedTable === "cocktail" && (key === "data_creazione" || key === "created_at" || key === "texture")) || (selectedTable === "cocktail" && (key === "texture")) || (selectedTable === "Locali" && removedLocaliFields.has(key))) return null;
+                      // Inserisci il campo sensazione_palato subito dopo Genere SOLO per cocktail
+                      if (selectedTable === "cocktail" && key === "Genere") {
+                        return [
+                          (
+                            <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                              <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
+                              <select
+                                value={selectedItem[key] ?? ""}
+                                onChange={e => { setSelectedItem((prev: any) => ({ ...prev, [key]: e.target.value })); setSaveStatus(null); }}
+                                style={inputMobileStyle}
+                              >
+                                <option value="">Scegli</option>
+                                {cocktailMultiSelectOptions[key].map(option => <option key={option} value={option}>{option}</option>)}
+                              </select>
+                            </div>
+                          ),
+                          (
+                            <div key="sensazione_palato" style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                              <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>Sensazione al palato</label>
+                              <select
+                                value={selectedItem["sensazione_palato"] ?? ""}
+                                onChange={e => { setSelectedItem((prev: any) => ({ ...prev, sensazione_palato: e.target.value })); setSaveStatus(null); }}
+                                style={inputMobileStyle}
+                              >
+                                <option value="">Scegli</option>
+                                {cocktailMultiSelectOptions["sensazione_palato"].map(option => <option key={option} value={option}>{option}</option>)}
+                              </select>
+                            </div>
+                          )
+                        ];
+                      }
                       if (selectedTable === "profili" && key === "password") {
                         return (
                           <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
