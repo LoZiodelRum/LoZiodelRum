@@ -39,7 +39,9 @@ export default function AdminPanel() {
           minHeight: "100vh",
         }}
       >
-        {isMobile ? <AdminPanelMobile /> : <AdminPanelDesktop />}
+        <div style={{ padding: "40px", color: "white" }}>
+  ADMIN PANEL STABILE
+</div>
       </main>
     </div>
   );
