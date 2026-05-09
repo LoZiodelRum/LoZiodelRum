@@ -55,14 +55,15 @@ export default function AdminPanel() {
 
   async function loadData() {
     const { data: localiData } = await supabase.from("Locali").select("*");
-    const adminPassword =
-      localStorage.getItem("adminPassword") ||
-      import.meta.env.VITE_ADMIN_PASSWORD ||
-      "";
+    let adminPassword = "";
+    if (typeof window !== "undefined" && window.localStorage) {
+      adminPassword = localStorage.getItem("adminPassword") || "";
+    }
+    adminPassword = adminPassword || import.meta.env.VITE_ADMIN_PASSWORD || "";
 
     let utentiData: any[] | null = null;
     if (adminPassword) {
-      const isNetlifyHost = typeof window !== "undefined" && window.location.hostname.includes("netlify");
+      const isNetlifyHost = typeof window !== "undefined" && window.location && window.location.hostname.includes("netlify");
       const endpoints = isNetlifyHost
         ? ["/.netlify/functions/admin-list-profili", "/api/admin-list-profili"]
         : ["/api/admin-list-profili", "/.netlify/functions/admin-list-profili"];
@@ -164,16 +165,17 @@ export default function AdminPanel() {
   async function salvaModifiche() {
     if (!selectedItem || !selectedTable) return;
 
-    const adminPassword =
-      localStorage.getItem("adminPassword") ||
-      import.meta.env.VITE_ADMIN_PASSWORD ||
-      "";
+    let adminPassword = "";
+    if (typeof window !== "undefined" && window.localStorage) {
+      adminPassword = localStorage.getItem("adminPassword") || "";
+    }
+    adminPassword = adminPassword || import.meta.env.VITE_ADMIN_PASSWORD || "";
 
     const {
       data: { session },
     } = await supabase.auth.getSession();
 
-    const isNetlifyHost = typeof window !== "undefined" && window.location.hostname.includes("netlify");
+    const isNetlifyHost = typeof window !== "undefined" && window.location && window.location.hostname.includes("netlify");
 
     const { id, ...dataToUpdate } = selectedItem;
 
@@ -784,13 +786,17 @@ export default function AdminPanel() {
       selectedItem?.username ||
       "questo elemento";
 
-    const confirmed = window.confirm(`Confermi l'eliminazione di ${label}? Questa azione non puo essere annullata.`);
+    let confirmed = true;
+    if (typeof window !== "undefined" && window.confirm) {
+      confirmed = window.confirm(`Confermi l'eliminazione di ${label}? Questa azione non puo essere annullata.`);
+    }
     if (!confirmed) return;
 
-    const adminPassword =
-      localStorage.getItem("adminPassword") ||
-      import.meta.env.VITE_ADMIN_PASSWORD ||
-      "";
+    let adminPassword = "";
+    if (typeof window !== "undefined" && window.localStorage) {
+      adminPassword = localStorage.getItem("adminPassword") || "";
+    }
+    adminPassword = adminPassword || import.meta.env.VITE_ADMIN_PASSWORD || "";
 
     const hasValidId = selectedItem.id !== undefined && selectedItem.id !== null && String(selectedItem.id).trim() !== "";
     const fallbackSlug = typeof selectedItem?.slug === "string" ? selectedItem.slug.trim() : "";
@@ -813,7 +819,7 @@ export default function AdminPanel() {
         return;
       }
 
-      const isNetlifyHost = typeof window !== "undefined" && window.location.hostname.includes("netlify");
+      const isNetlifyHost = typeof window !== "undefined" && window.location && window.location.hostname.includes("netlify");
       const endpoints = isNetlifyHost
         ? ["/.netlify/functions/admin-save-profili", "/api/admin-save-profili"]
         : ["/api/admin-save-profili", "/.netlify/functions/admin-save-profili"];
@@ -1092,7 +1098,7 @@ export default function AdminPanel() {
         return;
       }
 
-      const isNetlifyHost = typeof window !== "undefined" && window.location.hostname.includes("netlify");
+      const isNetlifyHost = typeof window !== "undefined" && window.location && window.location.hostname.includes("netlify");
       const endpoints = isNetlifyHost
         ? ["/.netlify/functions/admin-save-locale", "/api/admin-save-locale"]
         : ["/api/admin-save-locale", "/.netlify/functions/admin-save-locale"];
@@ -1180,7 +1186,20 @@ export default function AdminPanel() {
 
 
   // Media query per mobile/tablet
-  const isMobile = typeof window !== "undefined" && window.matchMedia && window.matchMedia("(max-width: 1023px)").matches;
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const mediaQuery = window.matchMedia("(max-width: 1023px)");
+      const handleResize = () => {
+        setIsMobile(mediaQuery.matches);
+      };
+      handleResize();
+      mediaQuery.addEventListener("change", handleResize);
+      return () => {
+        mediaQuery.removeEventListener("change", handleResize);
+      };
+    }
+  }, []);
 
   if (loading) return null;
   if (!isAdmin) return <div style={{ padding: 20, color: "red" }}>Accesso negato</div>;
@@ -1924,12 +1943,14 @@ export default function AdminPanel() {
   if (isMobile) {
     // Blocca scroll quando un off-canvas è aperto
     useEffect(() => {
-      if (leftOpen || rightOpen) {
-        document.body.style.overflow = "hidden";
-      } else {
-        document.body.style.overflow = "";
+      if (typeof document !== "undefined" && document.body) {
+        if (leftOpen || rightOpen) {
+          document.body.style.overflow = "hidden";
+        } else {
+          document.body.style.overflow = "";
+        }
+        return () => { document.body.style.overflow = ""; };
       }
-      return () => { document.body.style.overflow = ""; };
     }, [leftOpen, rightOpen]);
 
     // Chiudi pannelli laterali quando selezioni un elemento
