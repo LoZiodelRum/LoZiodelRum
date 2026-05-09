@@ -1199,6 +1199,16 @@ export default function AdminPanel() {
   if (loading) return null;
   if (!isAdmin) return <div style={{ padding: 20, color: "red" }}>Accesso negato</div>;
 
+  // --- LAYOUT FIX: padding-top per navbar fixed ---
+  const adminContainerStyle = {
+    width: "100%",
+    minHeight: "100vh",
+    overflowX: "hidden",
+    background: "#020617",
+    color: "white",
+    paddingTop: 110,
+  };
+
   const booleanFields = new Set(["approvato", "in_evidenza", "verificato", "email_verificata"]);
   const toBoolean = (value: any) => {
     if (typeof value === "boolean") return value;
@@ -1950,18 +1960,39 @@ export default function AdminPanel() {
       setLeftOpen(false);
     };
 
-    return (
-      <div className="page page-full-bleed fade-in" style={{ background: "#020617", minHeight: "100vh", color: "white", position: "relative" }}>
-        {/* HEADER MOBILE */}
 
+    return (
+      <div className="page page-full-bleed fade-in" style={adminContainerStyle}>
+        {/* HEADER */}
         <div style={{ padding: "18px 0 10px 0", background: "#0f172a", borderBottom: "1px solid #1e293b", position: "sticky", top: 0, zIndex: 30, display: "flex", justifyContent: "center", alignItems: "center" }}>
           <h2 style={{ color: "#f59e0b", fontWeight: 700, fontSize: 22, margin: 0, letterSpacing: 0.5, textAlign: "center", width: "100%" }}>Pannello di Controllo</h2>
         </div>
 
-        {/* BOX GESTIONE TAVOLI MOBILE */}
-        <div style={{ margin: 18, background: "#18181b", borderRadius: 18, boxShadow: "0 2px 12px #0002", padding: 20, display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-          <h3 style={{ color: "#f59e0b", fontWeight: 700, fontSize: 18, marginBottom: 10 }}>Gestione Tavoli</h3>
-          <button style={{ background: "#f59e0b", color: "#fff", border: "none", borderRadius: 8, padding: "10px 18px", fontWeight: 700, fontSize: 16, cursor: "pointer", boxShadow: "0 2px 8px #f59e0b22" }} onClick={() => window.location.href = "/admin-chat-rooms"}>modifica tavoli</button>
+        {/* GRIGLIA ADMIN PRINCIPALE */}
+        <div
+          className="admin-grid"
+          style={{
+            display: "grid",
+            gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+            gap: 24,
+            margin: "32px auto 0 auto",
+            maxWidth: 1200,
+            width: "100%",
+            padding: "0 16px",
+          }}
+        >
+          {/* Box Aggiunta Articoli (esempio, puoi spostare se serve) */}
+          <div style={{ background: "#18181b", borderRadius: 18, boxShadow: "0 2px 12px #0002", padding: 20, display: "flex", flexDirection: "column", alignItems: "flex-start", minHeight: 180 }}>
+            <h3 style={{ color: "#f59e0b", fontWeight: 700, fontSize: 18, marginBottom: 10 }}>Aggiunta Articoli</h3>
+            <button style={{ background: "#f59e0b", color: "#fff", border: "none", borderRadius: 8, padding: "10px 18px", fontWeight: 700, fontSize: 16, cursor: "pointer", boxShadow: "0 2px 8px #f59e0b22", marginBottom: 8 }} onClick={() => setEditArticleId(articoli.length > 0 ? articoli[0].id : null)}>modifica articoli</button>
+          </div>
+
+          {/* BOX GESTIONE TAVOLI */}
+          <div style={{ background: "#18181b", borderRadius: 18, boxShadow: "0 2px 12px #0002", padding: 20, display: "flex", flexDirection: "column", alignItems: "flex-start", minHeight: 180 }}>
+            <h3 style={{ color: "#f59e0b", fontWeight: 700, fontSize: 18, marginBottom: 10 }}>Gestione Tavoli</h3>
+            <button style={{ background: "#f59e0b", color: "#fff", border: "none", borderRadius: 8, padding: "10px 18px", fontWeight: 700, fontSize: 16, cursor: "pointer", boxShadow: "0 2px 8px #f59e0b22" }} onClick={() => window.location.href = "/admin-chat-rooms"}>modifica tavoli</button>
+          </div>
+          {/* ...altri box admin qui... */}
         </div>
 
         {/* FRECCIA SINISTRA (apri menu) */}
