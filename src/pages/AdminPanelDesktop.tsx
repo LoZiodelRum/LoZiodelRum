@@ -1,5 +1,6 @@
 import ArticleBlockEdit from "./ArticleBlockEdit";
 import ArticleBlockEditor, { ArticleBlock } from "../components/admin/ArticleBlockEditor";
+// trigger vercel deploy
 import "../App.css";
 import React, { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
@@ -2076,30 +2077,7 @@ export default function AdminPanel() {
               {saveStatus === "ok" && (<div style={{ ...badgeOkStyle, fontSize: 15, padding: 8 }}>Modifica salvata</div>)}
               {saveStatus === "error" && (<div style={{ ...badgeErrorStyle, fontSize: 15, padding: 8 }}>Modifica non salvata</div>)}
               <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-                {selectedTable === "articoli"
-                  ? <ArticleBlockEditor
-                      initialBlocks={(() => {
-                        const content = selectedItem?.contenuto || "";
-                        const lines = content.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
-                        const blocks: ArticleBlock[] = [];
-                        for (const line of lines) {
-                          if (/^https?:\/\//.test(line) && (line.endsWith(".jpg") || line.endsWith(".jpeg") || line.endsWith(".png") || line.endsWith(".webp") || line.endsWith(".gif"))) {
-                            blocks.push({ type: "image", url: line, width: "100%", align: "center" });
-                          } else if (line.length < 50 && !line.endsWith(".")) {
-                            blocks.push({ type: "section-title", value: line });
-                          } else {
-                            blocks.push({ type: "paragraph", value: line });
-                          }
-                        }
-                        return blocks;
-                      })()}
-                      onSave={blocks => {
-                        const contenuto = blocks.map(b => b.type === "image" ? b.url : b.value).join("\n");
-                        setSelectedItem((prev: any) => ({ ...prev, contenuto }));
-                        setSaveStatus(null);
-                      }}
-                    />
-                  : editorKeys.map(key => {
+                {editorKeys.map(key => {
                       if ((key === "id" && selectedTable !== "profili") || (selectedTable === "cocktail" && (key === "data_creazione" || key === "created_at" || key === "texture")) || (selectedTable === "Locali" && removedLocaliFields.has(key))) return null;
                       if (selectedTable === "profili" && key === "password") {
                         return (
@@ -2170,67 +2148,18 @@ export default function AdminPanel() {
                         );
                       }
                       if (key === "contenuto" && selectedTable === "articoli") {
-                        // Editor a blocchi minimale per articoli
-                        // Parsing blocchi: split per doppio a capo
-                        const rawContent = selectedItem[key] || "";
-                        const blocks = rawContent.split(/\n\s*\n/).filter(Boolean);
-                        const updateBlock = (idx, value) => {
-                          const newBlocks = blocks.slice();
-                          newBlocks[idx] = value;
-                          setSelectedItem((prev) => ({ ...prev, [key]: newBlocks.join("\n\n") }));
-                          setSaveStatus(null);
-                        };
-                        const removeBlock = (idx) => {
-                          const newBlocks = blocks.slice();
-                          newBlocks.splice(idx, 1);
-                          setSelectedItem((prev) => ({ ...prev, [key]: newBlocks.join("\n\n") }));
-                          setSaveStatus(null);
-                        };
-                        const addParagraph = () => {
-                          setSelectedItem((prev) => ({ ...prev, [key]: (rawContent ? rawContent + "\n\n" : "") + "Nuovo paragrafo" }));
-                          setSaveStatus(null);
-                        };
-                        const addImage = () => {
-                          setSelectedItem((prev) => ({ ...prev, [key]: (rawContent ? rawContent + "\n\n" : "") + "http://" }));
-                          setSaveStatus(null);
-                        };
                         return (
-                          <div key={key} style={{ margin: "18px 0", padding: 16, border: "1px solid #f59e0b", borderRadius: 8, background: "#18181b" }}>
-                            <div style={{ fontWeight: 700, fontSize: 18, color: "#f59e0b", marginBottom: 12 }}>Contenuto a blocchi</div>
-                            <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
-                              <button type="button" onClick={addParagraph} style={{ background: "#27272a", color: "#f59e0b", border: "1px solid #f59e0b", borderRadius: 4, padding: "6px 12px", cursor: "pointer" }}>Aggiungi paragrafo</button>
-                              <button type="button" onClick={addImage} style={{ background: "#27272a", color: "#f59e0b", border: "1px solid #f59e0b", borderRadius: 4, padding: "6px 12px", cursor: "pointer" }}>Aggiungi immagine</button>
-                            </div>
-                            <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-                              {blocks.length === 0 && <div style={{ color: "#aaa", fontStyle: "italic" }}>Nessun blocco presente</div>}
-                              {blocks.map((block, idx) => {
-                                const isImage = /^https?:\/\/.+\.(jpg|jpeg|png|webp|gif)$/i.test(block.trim());
-                                if (isImage) {
-                                  return (
-                                    <div key={idx} style={{ background: "#23232b", borderRadius: 6, padding: 10, display: "flex", flexDirection: "column", gap: 6 }}>
-                                      <div style={{ fontWeight: 600, color: "#f59e0b" }}>Immagine</div>
-                                      <img src={block.trim()} alt="img" style={{ maxWidth: "100%", maxHeight: 180, borderRadius: 4, background: "#111" }} onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
-                                      <input type="text" value={block} onChange={e => updateBlock(idx, e.target.value)} placeholder="URL immagine" style={{ width: "100%", padding: 6, borderRadius: 4, border: "1px solid #444", background: "#18181b", color: "#fff" }} />
-                                      <select value={(() => { const m = block.match(/\|width=(\d+)/); return m ? m[1] : "100"; })()} onChange={e => updateBlock(idx, block.replace(/\|width=\d+/, '') + `|width=${e.target.value}`)} style={{ width: 90, marginTop: 4 }}>
-                                        <option value="25">25%</option>
-                                        <option value="50">50%</option>
-                                        <option value="75">75%</option>
-                                        <option value="100">100%</option>
-                                      </select>
-                                      <button type="button" onClick={() => removeBlock(idx)} style={{ marginTop: 6, background: "#18181b", color: "#f87171", border: "1px solid #f87171", borderRadius: 4, padding: "4px 10px", cursor: "pointer", alignSelf: "flex-end" }}>Elimina blocco</button>
-                                    </div>
-                                  );
-                                } else {
-                                  return (
-                                    <div key={idx} style={{ background: "#23232b", borderRadius: 6, padding: 10, display: "flex", flexDirection: "column", gap: 6 }}>
-                                      <div style={{ fontWeight: 600, color: "#f59e0b" }}>Paragrafo</div>
-                                      <textarea value={block} onChange={e => updateBlock(idx, e.target.value)} rows={3} style={{ width: "100%", padding: 6, borderRadius: 4, border: "1px solid #444", background: "#18181b", color: "#fff", resize: "vertical" }} />
-                                      <button type="button" onClick={() => removeBlock(idx)} style={{ marginTop: 6, background: "#18181b", color: "#f87171", border: "1px solid #f87171", borderRadius: 4, padding: "4px 10px", cursor: "pointer", alignSelf: "flex-end" }}>Elimina blocco</button>
-                                    </div>
-                                  );
-                                }
-                              })}
-                            </div>
+                          <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                            <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>contenuto</label>
+                            <textarea
+                              rows={12}
+                              value={selectedItem[key] ?? ""}
+                              onChange={e => {
+                                setSelectedItem((prev: any) => ({ ...prev, [key]: e.target.value }));
+                                setSaveStatus(null);
+                              }}
+                              style={{ width: "100%", minHeight: 220, padding: 8, borderRadius: 6, border: "1px solid #444", background: "#18181b", color: "#fff", resize: "vertical" }}
+                            />
                           </div>
                         );
                       }
@@ -2850,9 +2779,19 @@ const inputMobileStyle = {
                         style={{ ...inputStyle, width: "100%", minHeight: 110, resize: "vertical" }}
                       />
                     ) : key === "contenuto" ? (
-                      // Per articoli la textarea non viene mai renderizzata qui
-                      null
-
+                      <textarea
+                        rows={6}
+                        value={selectedItem[key] ?? ""}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          setSelectedItem((prev: any) => ({
+                            ...prev,
+                            [key]: value,
+                          }));
+                          setSaveStatus(null);
+                        }}
+                        style={{ ...inputStyle, width: "100%", resize: "vertical" }}
+                      />
                     ) : (
                       <input
                         type={selectedTable === "profili" && profiliNumberFields.has(key) ? "number" : "text"}
