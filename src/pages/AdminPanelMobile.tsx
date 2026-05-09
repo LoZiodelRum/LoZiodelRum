@@ -111,7 +111,7 @@ export default function AdminPanelMobile() {
   useEffect(() => {
     if (!loading && isAdmin) loadData();
     if (!loading && !isAdmin) setLoadingData(false);
-  }, [loading, isAdmin]);
+  }, [isAdmin]);
 
   useEffect(() => {
     document.body.style.overflow = leftOpen || rightOpen ? "hidden" : "";

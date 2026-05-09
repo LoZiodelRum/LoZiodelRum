@@ -65,7 +65,7 @@ export default function AdminPanel() {
     if (!loading && isAdmin) {
       loadData();
     }
-  }, [loading]);
+  }, [isAdmin]);
 
   async function loadData() {
     const { data: localiData } = await supabase.from("Locali").select("*");
