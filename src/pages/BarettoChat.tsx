@@ -12,7 +12,13 @@ export default function BarettoChat() {
   const bottomRef = useRef<HTMLDivElement>(null);
   const [loading, setLoading] = useState(true);
   const username = "Lo Zio"; // TODO: real user
-  const [roomId, setRoomId] = useState<number|null>(null);
+  const [roomId, setRoomId] = useState<string|null>(null);
+  const [userId, setUserId] = useState<string | null>(null);
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUserId(user?.id || null);
+    });
+  }, []);
 
   // Fetch room id by name
   useEffect(() => {
@@ -48,10 +54,10 @@ export default function BarettoChat() {
   }, [messages]);
 
   const handleSend = async () => {
-    if (!message.trim() || !roomId) return;
+    if (!message.trim() || !roomId || !userId) return;
     await supabase.from("chat_messages").insert({
       room_id: roomId,
-      user_id: 1, // TODO: real user id
+      user_id: userId,
       testo: message,
       created_at: new Date().toISOString(),
       eliminato: false

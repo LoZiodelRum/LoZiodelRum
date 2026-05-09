@@ -1,6 +1,15 @@
 import React, { useEffect, useState } from "react";
 // MainLayout ora solo via router
 import { useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { supabase } from "../lib/supabaseClient";
+// Ottieni user id reale da Supabase Auth
+const [userId, setUserId] = useState<string | null>(null);
+useEffect(() => {
+  supabase.auth.getUser().then(({ data: { user } }) => {
+    setUserId(user?.id || null);
+  });
+}, []);
 import { supabase } from "../lib/supabaseClient";
 import {
   ChatLayout,
@@ -80,10 +89,10 @@ export default function Baretto() {
   }, [selectedRoom]);
 
   const handleSend = async () => {
-    if (!message.trim() || !selectedRoom) return;
+    if (!message.trim() || !selectedRoom || !userId) return;
     await supabase.from("chat_messages").insert({
       room_id: selectedRoom.id,
-      user_id: 1, // TODO: real user id
+      user_id: userId,
       testo: message,
       created_at: new Date().toISOString(),
       eliminato: false
@@ -167,7 +176,10 @@ export default function Baretto() {
         open={modalOpen}
         onClose={() => setModalOpen(false)}
         onCreate={async ({ nome, descrizione, categoria, pubblico, immagine }) => {
-          // Crea tavolo reale su Supabase
+          if (!userId) {
+            alert("Utente non autenticato");
+            return;
+          }
           const now = new Date().toISOString();
           const { data, error } = await supabase.from("chat_rooms").insert({
             nome,
