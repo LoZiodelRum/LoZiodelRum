@@ -332,7 +332,7 @@ if (isCreating) {
   const editorKeys = getEditorKeys();
 
   return (
-    <div style={pageStyle}>
+    <div style={{ ...pageStyle, paddingTop: 140 }}>
       <button onClick={() => setLeftOpen(true)} style={leftButtonStyle}>
      →
       </button>
