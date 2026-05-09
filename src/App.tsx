@@ -1,6 +1,6 @@
 import React from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
-import Layout from "./Layout";
+import MainLayout from "./layouts/MainLayout";
 // Scroll to top ad ogni cambio pagina
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -53,11 +53,10 @@ export default function App() {
     <>
       <ScrollToTop />
       <Routes>
-        {/* AUTH SENZA NAVBAR */}
+        {/* AUTH SENZA NAVBAR (fullscreen) */}
         <Route path="/" element={<Auth />} />
-        {/* Tutte le altre pagine wrappate da Layout che contiene la Navbar */}
-        <Route element={<Layout />}>
-          {/* MAIN */}
+        {/* Tutte le altre pagine wrappate da MainLayout che contiene la Navbar */}
+        <Route element={<MainLayout />}>
           <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
           <Route path="/mappa" element={<ProtectedRoute><MapPage /></ProtectedRoute>} />
 

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import Navbar from "../components/Navbar";
+// MainLayout ora solo via router
 import AdminPanelDesktop from "./AdminPanelDesktop";
 import AdminPanelMobile from "./AdminPanelMobile";
 
@@ -32,7 +32,6 @@ export default function AdminPanel() {
 
   return (
     <>
-      <Navbar />
       {isMobile ? <AdminPanelMobile /> : <AdminPanelDesktop />}
     </>
   );

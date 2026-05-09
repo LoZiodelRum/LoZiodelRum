@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from "react";
+// MainLayout ora solo via router
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import { ChatWindow, ChatMessage, ChatInput } from "../components/chat";
@@ -61,7 +62,7 @@ export default function BarettoMobileChat() {
   };
 
   return (
-    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "#ebe5dc" }}>
+    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "#ebe5dc", paddingTop: 47 }}>
       {/* HEADER */}
       <div style={{ padding: 15, borderBottom: "1px solid #ddd", background: "#f7f4ee", display: "flex", alignItems: "center", gap: 10 }}>
         <button onClick={() => navigate("/baretto")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer" }}>←</button>

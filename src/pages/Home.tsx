@@ -1,5 +1,5 @@
 import "../App.css";
-import Navbar from "../components/Navbar";
+// MainLayout ora solo via router
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, MapPin } from "lucide-react";
@@ -168,16 +168,14 @@ export default function Home() {
   const heroVideoSrc = `/home-hero.mp4?v=${HOME_HERO_VIDEO_VERSION}`;
 
   return (
-    <>
-      <Navbar />
-      <div
-        style={{
-          background: "#0b0b0b",
-          color: "#fff",
-          margin: 0,
-          padding: 0,
-          minHeight: "100vh",
-        }}
+    <div
+      style={{
+        background: "#0b0b0b",
+        color: "#fff",
+        margin: 0,
+        padding: 0,
+        minHeight: "100vh",
+      }}
       >
       <style>{`
         @media (max-width: 768px) {
@@ -580,7 +578,6 @@ export default function Home() {
         </p>
       </section>
 
-      </div>
-    </>
+    </div>
   );
 }

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from "react";
+// MainLayout ora solo via router
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import {
@@ -88,7 +89,8 @@ export default function Baretto() {
   };
 
   return (
-    <ChatLayout>
+    <div style={{ paddingTop: 47, minHeight: "100vh" }}>
+      <ChatLayout>
       <ChatSidebar>
         <h2 style={{ color: "#c9a86a", marginBottom: 20 }}>Tavoli</h2>
         {loading ? <div>Caricamento…</div> : (
@@ -136,6 +138,7 @@ export default function Baretto() {
           </>
         )}
       </ChatSidebar>
-    </ChatLayout>
+      </ChatLayout>
+    </div>
   );
 }
