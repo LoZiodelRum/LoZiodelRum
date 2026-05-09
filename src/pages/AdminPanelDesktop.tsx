@@ -1,6 +1,5 @@
 import ArticleBlockEdit from "./ArticleBlockEdit";
 import ArticleBlockEditor, { ArticleBlock } from "../components/admin/ArticleBlockEditor";
-// trigger vercel deploy
 import "../App.css";
 import React, { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
@@ -2171,6 +2170,7 @@ export default function AdminPanel() {
                         );
                       }
                       if (key === "contenuto" && selectedTable === "articoli") {
+                        // Nasconde la textarea per "contenuto" articoli, lasciando solo l'editor blocchi
                         return null;
                       }
                       return (
@@ -2789,19 +2789,9 @@ const inputMobileStyle = {
                         style={{ ...inputStyle, width: "100%", minHeight: 110, resize: "vertical" }}
                       />
                     ) : key === "contenuto" ? (
-                      <textarea
-                        rows={6}
-                        value={selectedItem[key] ?? ""}
-                        onChange={(e) => {
-                          const value = e.target.value;
-                          setSelectedItem((prev: any) => ({
-                            ...prev,
-                            [key]: value,
-                          }));
-                          setSaveStatus(null);
-                        }}
-                        style={{ ...inputStyle, width: "100%", resize: "vertical" }}
-                      />
+                      // Per articoli la textarea non viene mai renderizzata qui
+                      null
+
                     ) : (
                       <input
                         type={selectedTable === "profili" && profiliNumberFields.has(key) ? "number" : "text"}
