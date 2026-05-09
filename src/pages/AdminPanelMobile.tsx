@@ -334,7 +334,13 @@ if (isCreating) {
       </button>
 
       <div style={titleBoxStyle}>
-        <h1 style={titleStyle}>Pannello di Controllo</h1>
+	  <h1 style={titleStyle}>Pannello di Controllo</h1>
+      </div>
+
+      {/* BOX GESTIONE TAVOLI MOBILE */}
+      <div style={{ margin: 18, background: "#18181b", borderRadius: 18, boxShadow: "0 2px 12px #0002", padding: 20, display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+        <h3 style={{ color: "#f59e0b", fontWeight: 700, fontSize: 18, marginBottom: 10 }}>Gestione Tavoli</h3>
+        <button style={{ background: "#f59e0b", color: "#fff", border: "none", borderRadius: 8, padding: "10px 18px", fontWeight: 700, fontSize: 16, cursor: "pointer", boxShadow: "0 2px 8px #f59e0b22" }} onClick={() => window.location.href = "/admin-chat-rooms"}>modifica tavoli</button>
       </div>
 
       <div style={kpiGridStyle}>
@@ -688,6 +694,7 @@ const pageStyle: CSSProperties = {
   minHeight: "100vh",
   color: "white",
   padding: "60px 8px 16px 8px",
+  marginTop: 48, // Spazio extra per la navbar mobile
   position: "relative",
   overflowX: "hidden",
 };
