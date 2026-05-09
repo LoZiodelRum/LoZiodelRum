@@ -9,39 +9,38 @@ export default function AdminPanel() {
   useEffect(() => {
     const mediaQuery = window.matchMedia("(max-width: 1023px)");
 
-    const handleChange = (e?: MediaQueryListEvent) => {
-      setIsMobile(e ? e.matches : mediaQuery.matches);
+    const handleResize = () => {
+      setIsMobile(mediaQuery.matches);
     };
 
-    // inizializzazione
-    handleChange();
+    handleResize();
 
-    // listener responsive
-    if (mediaQuery.addEventListener) {
-      mediaQuery.addEventListener("change", handleChange);
-    } else {
-      mediaQuery.addListener(handleChange);
-    }
+    mediaQuery.addEventListener("change", handleResize);
 
     // cleanup corretto
     return () => {
-      if (mediaQuery.removeEventListener) {
-        mediaQuery.removeEventListener("change", handleChange);
-      } else {
-        mediaQuery.removeListener(handleChange);
-      }
+      mediaQuery.removeEventListener("change", handleResize);
     };
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#020B1C]">
-      {/* Navbar ufficiale */}
+    <div
+      style={{
+        minHeight: "100vh",
+        background: "#020B1C",
+        overflowX: "hidden",
+      }}
+    >
       <Navbar />
 
-      {/* Contenuto admin */}
-      <div className="pt-[110px]">
+      <main
+        style={{
+          paddingTop: isMobile ? "170px" : "120px",
+          minHeight: "100vh",
+        }}
+      >
         {isMobile ? <AdminPanelMobile /> : <AdminPanelDesktop />}
-      </div>
+      </main>
     </div>
   );
 }
