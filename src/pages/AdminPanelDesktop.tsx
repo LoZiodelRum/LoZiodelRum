@@ -1200,7 +1200,7 @@ export default function AdminPanel() {
   if (!isAdmin) return <div style={{ padding: 20, color: "red" }}>Accesso negato</div>;
 
   // --- LAYOUT FIX: padding-top per navbar fixed ---
-  const adminContainerStyle = {
+  const adminContainerStyle: React.CSSProperties = {
     width: "100%",
     minHeight: "100vh",
     overflowX: "hidden",
