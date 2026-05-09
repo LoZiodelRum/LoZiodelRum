@@ -30,10 +30,16 @@ export default function AdminPanel() {
     };
   }, []);
 
-  return (
-    <>
-      <Navbar />
-      {isMobile ? <AdminPanelMobile /> : <AdminPanelDesktop />}
-    </>
-  );
+    return (
+      <div
+        style={{
+          minHeight: "100vh",
+          background: "#020B1C",
+          color: "white",
+          paddingTop: "140px",
+        }}
+      >
+        ADMIN PANEL TEST OK
+      </div>
+    );
 }
