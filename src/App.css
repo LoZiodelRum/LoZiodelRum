@@ -133,7 +133,7 @@
 }
 /* Stili per il box rettangolare del form Crea il tuo Cocktail */
 .crea-cocktail-form-rect {
-  background: rgba(23,23,23,0.90);
+  background: #171717;
   border-radius: 18px;
   padding: 28px 32px 18px 32px;
   margin-bottom: 0;
