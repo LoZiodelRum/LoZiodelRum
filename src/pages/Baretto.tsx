@@ -1,15 +1,5 @@
 import React, { useEffect, useState } from "react";
-// MainLayout ora solo via router
 import { useNavigate } from "react-router-dom";
-import { useEffect, useState } from "react";
-import { supabase } from "../lib/supabaseClient";
-// Ottieni user id reale da Supabase Auth
-const [userId, setUserId] = useState<string | null>(null);
-useEffect(() => {
-  supabase.auth.getUser().then(({ data: { user } }) => {
-    setUserId(user?.id || null);
-  });
-}, []);
 import { supabase } from "../lib/supabaseClient";
 import {
   ChatLayout,
@@ -30,9 +20,17 @@ export default function Baretto() {
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
+  const [userId, setUserId] = useState<string | null>(null);
   const navigate = useNavigate();
-  const username = "Lo Zio"; // TODO: replace with real user
-  const userId = 1; // TODO: real user id
+  // username può essere ricavato dal profilo, qui lasciato come placeholder
+  const username = "Lo Zio";
+
+  // Ottieni user id reale da Supabase Auth
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data: { user } }) => {
+      setUserId(user?.id || null);
+    });
+  }, []);
 
   // Load chat rooms
   useEffect(() => {
