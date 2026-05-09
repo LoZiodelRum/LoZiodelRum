@@ -11,6 +11,7 @@ import {
   ChatInput,
   ChatParticipants
 } from "../components/chat";
+import CreateRoomModal from "../components/chat/CreateRoomModal";
 
 export default function Baretto() {
   const [rooms, setRooms] = useState<any[]>([]);
@@ -19,8 +20,10 @@ export default function Baretto() {
   const [participants, setParticipants] = useState<any[]>([]);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
+  const [modalOpen, setModalOpen] = useState(false);
   const navigate = useNavigate();
   const username = "Lo Zio"; // TODO: replace with real user
+  const userId = 1; // TODO: real user id
 
   // Load chat rooms
   useEffect(() => {
@@ -91,13 +94,34 @@ export default function Baretto() {
   return (
     <div style={{ paddingTop: 47, minHeight: "100vh" }}>
       <ChatLayout>
-      <ChatSidebar>
-        <h2 style={{ color: "#c9a86a", marginBottom: 20 }}>Tavoli</h2>
-        {loading ? <div>Caricamento…</div> : (
-          <ChatRoomList rooms={rooms} onSelect={setSelectedRoom} />
-        )}
-      </ChatSidebar>
-      <ChatWindow>
+        <ChatSidebar>
+          <h2 style={{ color: "#c9a86a", marginBottom: 20 }}>Tavoli</h2>
+          <button
+            onClick={() => setModalOpen(true)}
+            style={{
+              width: "100%",
+              background: "#c9a86a",
+              color: "#fff",
+              border: "none",
+              borderRadius: 10,
+              padding: "12px 0",
+              fontWeight: 700,
+              fontSize: 16,
+              marginBottom: 18,
+              cursor: "pointer",
+              transition: "background 0.2s",
+              boxShadow: "0 2px 8px #c9a86a22"
+            }}
+            onMouseOver={e => (e.currentTarget.style.background = "#b8955a")}
+            onMouseOut={e => (e.currentTarget.style.background = "#c9a86a")}
+          >
+            + Crea il Tavolo
+          </button>
+          {loading ? <div>Caricamento…</div> : (
+            <ChatRoomList rooms={rooms} onSelect={setSelectedRoom} />
+          )}
+        </ChatSidebar>
+        <ChatWindow>
         {!selectedRoom ? (
           <div style={{ padding: 40, color: "#7a6a58" }}>Seleziona un tavolo per iniziare a chattare.</div>
         ) : (
@@ -139,6 +163,38 @@ export default function Baretto() {
         )}
       </ChatSidebar>
       </ChatLayout>
+      <CreateRoomModal
+        open={modalOpen}
+        onClose={() => setModalOpen(false)}
+        onCreate={async ({ nome, descrizione, categoria, pubblico, immagine }) => {
+          // Crea tavolo reale su Supabase
+          const now = new Date().toISOString();
+          const { data, error } = await supabase.from("chat_rooms").insert({
+            nome,
+            descrizione,
+            categoria,
+            pubblico,
+            immagine,
+            creato_da: userId,
+            created_at: now,
+            updated_at: now,
+            deleted: false
+          }).select().single();
+          if (error || !data) {
+            alert("Errore creazione tavolo: " + (error?.message || ""));
+            return;
+          }
+          // Aggiungi creator come admin
+          await supabase.from("chat_room_members").insert({
+            room_id: data.id,
+            user_id: userId,
+            ruolo: "admin",
+            joined_at: now
+          });
+          setModalOpen(false);
+          setSelectedRoom(data);
+        }}
+      />
     </div>
   );
 }
