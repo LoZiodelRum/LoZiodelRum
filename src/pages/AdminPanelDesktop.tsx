@@ -1,6 +1,3 @@
-import ArticleBlockEdit from "./ArticleBlockEdit";
-import ArticleBlockEditor, { ArticleBlock } from "../components/admin/ArticleBlockEditor";
-// trigger vercel deploy
 import "../App.css";
 import React, { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
@@ -27,17 +24,6 @@ export default function AdminPanel() {
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [selectedOriginalItem, setSelectedOriginalItem] = useState<any>(null);
   const [selectedTable, setSelectedTable] = useState<string>("");
-    const [editArticleId, setEditArticleId] = useState<string | null>(null);
-              <button style={quickActionBtnStyle} onClick={() => {
-                if (articoli.length > 0) setEditArticleId(articoli[0].id);
-              }}>modifica articoli</button>
-        {editArticleId && selectedTable === "articoli" && (
-          <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.25)", zIndex: 1000 }}>
-            <div style={{ position: "absolute", left: 0, right: 0, top: 0, bottom: 0, overflow: "auto" }}>
-              <ArticleBlockEdit articleId={editArticleId} onClose={() => setEditArticleId(null)} />
-            </div>
-          </div>
-        )}
   const [isCreating, setIsCreating] = useState(false);
   const [createRoleHint, setCreateRoleHint] = useState<string | null>(null);
 
@@ -1291,13 +1277,6 @@ export default function AdminPanel() {
       "Build (Costruito in bicchiere)",
       "A strati (Layered)",
     ],
-    sensazione_palato: [
-      "Morbido",
-      "Secco",
-      "Cremoso",
-      "Frizzante",
-      "Vellutato",
-    ],
   };
 
   const cocktailValueAliases: Record<string, Record<string, string>> = {
@@ -1471,7 +1450,6 @@ export default function AdminPanel() {
     specialita: "specializzazione",
     indirizzo_locale: "indirizzo_locale",
     citta_locale: "citta_locale",
-    sensazione_palato: "Sensazione al palato",
   };
 
   function stringifyProfileCollection(value: unknown) {
@@ -1944,6 +1922,16 @@ export default function AdminPanel() {
 
   // --- MOBILE/TABLET LAYOUT ---
   if (isMobile) {
+    // Blocca scroll quando un off-canvas è aperto
+    useEffect(() => {
+      if (leftOpen || rightOpen) {
+        document.body.style.overflow = "hidden";
+      } else {
+        document.body.style.overflow = "";
+      }
+      return () => { document.body.style.overflow = ""; };
+    }, [leftOpen, rightOpen]);
+
     // Chiudi pannelli laterali quando selezioni un elemento
     const handleMenuSelect = (cb: () => void) => {
       cb();
@@ -1996,10 +1984,6 @@ export default function AdminPanel() {
           </div>
           <div style={{ padding: 18, display: "grid", gap: 12 }}>
             <div style={quickActionCardStyle}>
-              <h3 style={quickActionTitleStyle}>Aggiunta Articoli</h3>
-              <button style={quickActionBtnStyle} onClick={() => { setRightOpen(false); openCreateEditor("articoli", articoli); }}>modifica articoli</button>
-            </div>
-            <div style={quickActionCardStyle}>
               <h3 style={quickActionTitleStyle}>Aggiunta Cocktail</h3>
               <button style={quickActionBtnStyle} onClick={() => { setRightOpen(false); openCreateEditor("cocktail", cocktail); }}>modifica cocktail</button>
             </div>
@@ -2022,18 +2006,6 @@ export default function AdminPanel() {
             <div style={quickActionCardStyle}>
               <h3 style={quickActionTitleStyle}>Aggiunta Proprietari</h3>
               <button style={quickActionBtnStyle} onClick={() => { setRightOpen(false); openCreateEditor("profili", proprietari, "proprietario"); }}>modifica proprietari</button>
-            </div>
-            <div style={quickActionCardStyle}>
-              <h3 style={quickActionTitleStyle}>Aggiunta Articoli</h3>
-              <button
-                style={quickActionBtnStyle}
-                onClick={() => {
-                  setRightOpen(false);
-                  openCreateEditor("articoli", articoli);
-                }}
-              >
-                modifica articoli
-              </button>
             </div>
           </div>
         </div>
@@ -2085,139 +2057,93 @@ export default function AdminPanel() {
               {saveStatus === "ok" && (<div style={{ ...badgeOkStyle, fontSize: 15, padding: 8 }}>Modifica salvata</div>)}
               {saveStatus === "error" && (<div style={{ ...badgeErrorStyle, fontSize: 15, padding: 8 }}>Modifica non salvata</div>)}
               <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-                    {editorKeys.map(key => {
-                      if ((key === "id" && selectedTable !== "profili") || (selectedTable === "cocktail" && (key === "data_creazione" || key === "created_at" || key === "texture")) || (selectedTable === "cocktail" && (key === "texture")) || (selectedTable === "Locali" && removedLocaliFields.has(key))) return null;
-                      // Inserisci il campo sensazione_palato subito dopo Genere SOLO per cocktail
-                      if (selectedTable === "cocktail" && key === "Genere") {
-                        return [
-                          (
-                            <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                              <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
-                              <select
-                                value={selectedItem[key] ?? ""}
-                                onChange={e => { setSelectedItem((prev: any) => ({ ...prev, [key]: e.target.value })); setSaveStatus(null); }}
-                                style={inputMobileStyle}
-                              >
-                                <option value="">Scegli</option>
-                                {cocktailMultiSelectOptions[key].map(option => <option key={option} value={option}>{option}</option>)}
-                              </select>
-                            </div>
-                          ),
-                          (
-                            <div key="sensazione_palato" style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                              <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>Sensazione al palato</label>
-                              <select
-                                value={selectedItem["sensazione_palato"] ?? ""}
-                                onChange={e => { setSelectedItem((prev: any) => ({ ...prev, sensazione_palato: e.target.value })); setSaveStatus(null); }}
-                                style={inputMobileStyle}
-                              >
-                                <option value="">Scegli</option>
-                                {cocktailMultiSelectOptions["sensazione_palato"].map(option => <option key={option} value={option}>{option}</option>)}
-                              </select>
-                            </div>
-                          )
-                        ];
-                      }
-                      if (selectedTable === "profili" && key === "password") {
-                        return (
-                          <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                            <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
-                            <input type="password" value={selectedItem[key] ?? ""} onChange={e => { const value = e.target.value; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} placeholder={isCreating ? "Imposta password iniziale" : "Lascia vuoto per non cambiarla"} style={inputMobileStyle} />
-                          </div>
-                        );
-                      }
-                      if (selectedTable === "profili" && profiliSelectOptions[key]) {
-                        return (
-                          <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                            <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
-                            <select value={selectedItem[key] ?? ""} disabled={profiliReadonlyFields.has(key)} onChange={e => { const value = e.target.value; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} style={{ ...inputMobileStyle, opacity: profiliReadonlyFields.has(key) ? 0.7 : 1 }}>
-                              <option value="">Scegli</option>
-                              {profiliSelectOptions[key].map(option => <option key={option} value={option}>{option}</option>)}
-                            </select>
-                          </div>
-                        );
-                      }
-                      if (booleanFields.has(key)) {
-                        return (
-                          <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                            <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
-                            <select value={String(toBoolean(selectedItem[key]))} onChange={e => { const value = e.target.value === "true"; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} style={inputMobileStyle}>
-                              <option value="true">true</option>
-                              <option value="false">false</option>
-                            </select>
-                          </div>
-                        );
-                      }
-                      if (selectedTable === "Locali" && localiSelectOptions[key]) {
-                        return (
-                          <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                            <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
-                            <select value={selectedItem[key] ?? ""} onChange={e => { const value = e.target.value; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} style={inputMobileStyle}>
-                              <option value="">Scegli</option>
-                              {localiSelectOptions[key].map(option => <option key={option} value={option}>{option}</option>)}
-                            </select>
-                          </div>
-                        );
-                      }
-                      if (selectedTable === "vini" && aisSelectOptions[key]) {
-                        return (
-                          <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                            <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
-                            <select value={selectedItem[key] ?? ""} onChange={e => { const value = e.target.value; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} style={inputMobileStyle}>
-                              <option value="">Scegli</option>
-                              {aisSelectOptions[key].map(option => <option key={option} value={option}>{option}</option>)}
-                            </select>
-                          </div>
-                        );
-                      }
-                      if (selectedTable === "cocktail" && cocktailMultiSelectOptions[key]) {
-                        // compatibilità temporanea: se arriva "texture", mappa su sensazione_palato
-                        if (key === "texture") return null;
-                        return (
-                          <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                            <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
-                            <select
-                              value={selectedItem[key] ?? selectedItem["texture"] ?? ""}
-                              onChange={e => { setSelectedItem((prev: any) => ({ ...prev, [key]: e.target.value })); setSaveStatus(null); }}
-                              style={inputMobileStyle}
-                            >
-                              <option value="">Scegli</option>
-                              {cocktailMultiSelectOptions[key].map(option => <option key={option} value={option}>{option}</option>)}
-                            </select>
-                          </div>
-                        );
-                      }
-                      if (selectedTable === "profili" && profiliTextareaFields.has(key)) {
-                        return (
-                          <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                            <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
-                            <textarea rows={4} value={selectedItem[key] ?? ""} onChange={e => { setSelectedItem((prev: any) => ({ ...prev, [key]: e.target.value })); setSaveStatus(null); }} style={{ ...inputMobileStyle, minHeight: 110, resize: "vertical" }} />
-                          </div>
-                        );
-                      }
-                      if (key === "contenuto" && selectedTable === "articoli") {
-                        return (
-                          <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                            <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>contenuto</label>
-                            <textarea
-                              rows={12}
-                              value={selectedItem[key] ?? ""}
-                              onChange={e => {
-                                setSelectedItem((prev: any) => ({ ...prev, [key]: e.target.value }));
-                                setSaveStatus(null);
-                              }}
-                              style={{ width: "100%", minHeight: 220, padding: 8, borderRadius: 6, border: "1px solid #444", background: "#18181b", color: "#fff", resize: "vertical" }}
-                            />
-                          </div>
-                        );
-                      }
-                      return (
-                        <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                          <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
-                          <input type={selectedTable === "profili" && profiliNumberFields.has(key) ? "number" : "text"} value={selectedItem[key] ?? ""} disabled={selectedTable === "profili" && profiliReadonlyFields.has(key)} onChange={e => { setSelectedItem((prev: any) => ({ ...prev, [key]: e.target.value })); setSaveStatus(null); }} style={{ ...inputMobileStyle, opacity: selectedTable === "profili" && profiliReadonlyFields.has(key) ? 0.7 : 1 }} />
-                        </div>
-                      );
-                    })}
+                {editorKeys.map(key => {
+                  if ((key === "id" && selectedTable !== "profili") || (selectedTable === "cocktail" && (key === "data_creazione" || key === "created_at" || key === "texture")) || (selectedTable === "Locali" && removedLocaliFields.has(key))) return null;
+                  // LOGICA INPUT MOBILE (semplificata, ma fedele all'originale)
+                  if (selectedTable === "profili" && key === "password") {
+                    return (
+                      <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                        <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
+                        <input type="password" value={selectedItem[key] ?? ""} onChange={e => { const value = e.target.value; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} placeholder={isCreating ? "Imposta password iniziale" : "Lascia vuoto per non cambiarla"} style={inputMobileStyle} />
+                      </div>
+                    );
+                  }
+                  if (selectedTable === "profili" && profiliSelectOptions[key]) {
+                    return (
+                      <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                        <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
+                        <select value={selectedItem[key] ?? ""} disabled={profiliReadonlyFields.has(key)} onChange={e => { const value = e.target.value; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} style={{ ...inputMobileStyle, opacity: profiliReadonlyFields.has(key) ? 0.7 : 1 }}>
+                          <option value="">Scegli</option>
+                          {profiliSelectOptions[key].map(option => <option key={option} value={option}>{option}</option>)}
+                        </select>
+                      </div>
+                    );
+                  }
+                  if (booleanFields.has(key)) {
+                    return (
+                      <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                        <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
+                        <select value={String(toBoolean(selectedItem[key]))} onChange={e => { const value = e.target.value === "true"; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} style={inputMobileStyle}>
+                          <option value="true">true</option>
+                          <option value="false">false</option>
+                        </select>
+                      </div>
+                    );
+                  }
+                  if (selectedTable === "Locali" && localiSelectOptions[key]) {
+                    return (
+                      <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                        <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
+                        <select value={selectedItem[key] ?? ""} onChange={e => { const value = e.target.value; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} style={inputMobileStyle}>
+                          <option value="">Scegli</option>
+                          {localiSelectOptions[key].map(option => <option key={option} value={option}>{option}</option>)}
+                        </select>
+                      </div>
+                    );
+                  }
+                  if (selectedTable === "vini" && aisSelectOptions[key]) {
+                    return (
+                      <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                        <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
+                        <select value={selectedItem[key] ?? ""} onChange={e => { const value = e.target.value; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} style={inputMobileStyle}>
+                          <option value="">Scegli</option>
+                          {aisSelectOptions[key].map(option => <option key={option} value={option}>{option}</option>)}
+                        </select>
+                      </div>
+                    );
+                  }
+                  if (selectedTable === "cocktail" && cocktailMultiSelectOptions[key]) {
+                    return (
+                      <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                        <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
+                        <input value={selectedItem[key] ?? ""} onChange={e => { setSelectedItem((prev: any) => ({ ...prev, [key]: e.target.value })); setSaveStatus(null); }} style={inputMobileStyle} />
+                      </div>
+                    );
+                  }
+                  if (selectedTable === "profili" && profiliTextareaFields.has(key)) {
+                    return (
+                      <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                        <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
+                        <textarea rows={4} value={selectedItem[key] ?? ""} onChange={e => { setSelectedItem((prev: any) => ({ ...prev, [key]: e.target.value })); setSaveStatus(null); }} style={{ ...inputMobileStyle, minHeight: 110, resize: "vertical" }} />
+                      </div>
+                    );
+                  }
+                  if (key === "contenuto") {
+                    return (
+                      <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                        <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
+                        <textarea rows={6} value={selectedItem[key] ?? ""} onChange={e => { setSelectedItem((prev: any) => ({ ...prev, [key]: e.target.value })); setSaveStatus(null); }} style={{ ...inputMobileStyle, resize: "vertical" }} />
+                      </div>
+                    );
+                  }
+                  // Default: input testo
+                  return (
+                    <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                      <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
+                      <input type={selectedTable === "profili" && profiliNumberFields.has(key) ? "number" : "text"} value={selectedItem[key] ?? ""} disabled={selectedTable === "profili" && profiliReadonlyFields.has(key)} onChange={e => { setSelectedItem((prev: any) => ({ ...prev, [key]: e.target.value })); setSaveStatus(null); }} style={{ ...inputMobileStyle, opacity: selectedTable === "profili" && profiliReadonlyFields.has(key) ? 0.7 : 1 }} />
+                    </div>
+                  );
+                })}
               </div>
               {/* Bottoni azione */}
               <div style={{ display: "flex", gap: 10, marginTop: 22 }}>
@@ -2302,10 +2228,7 @@ const inputMobileStyle = {
 
           <div style={quickActionCardStyle}>
             <h3 style={quickActionTitleStyle}>Aggiunta Locali</h3>
-            <button
-              style={quickActionBtnStyle}
-              onClick={() => openCreateEditor("Locali", locali)}
-            >
+            <button style={quickActionBtnStyle} onClick={() => openCreateEditor("Locali", locali)}>
               modifica locali
             </button>
           </div>
@@ -2321,17 +2244,6 @@ const inputMobileStyle = {
             <h3 style={quickActionTitleStyle}>Aggiunta Proprietari</h3>
             <button style={quickActionBtnStyle} onClick={() => openCreateEditor("profili", proprietari, "proprietario")}> 
               modifica proprietari
-            </button>
-          </div>
-          <div style={quickActionCardStyle}>
-            <h3 style={quickActionTitleStyle}>Aggiunta Articoli</h3>
-            <button
-              style={quickActionBtnStyle}
-              onClick={() => {
-                openCreateEditor("articoli", articoli);
-              }}
-            >
-              modifica articoli
             </button>
           </div>
         </div>
