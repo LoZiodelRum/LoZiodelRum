@@ -260,7 +260,7 @@ export default function AdminPanel() {
       }
 
       if (selectedTable === "profili") {
-        const normalizedProfileDraft = normalizeProfiliPayload(cleanData);
+        const normalizedProfileDraft = ensureProfiliEditorFields(cleanData);
         Object.keys(cleanData).forEach((key) => delete cleanData[key]);
         Object.assign(cleanData, normalizedProfileDraft);
         cleanData.ruolo = cleanData.ruolo || createRoleHint || "utente";
@@ -458,7 +458,7 @@ export default function AdminPanel() {
         if (!adminPassword) {
           error = { message: "Password admin non disponibile. Esci e rientra come admin." };
         } else {
-          const normalizedProfileChanges = normalizeProfiliPayload(changedData);
+          const normalizedProfileChanges = ensureProfiliEditorFields(changedData);
           const endpoints = isNetlifyHost
             ? ["/.netlify/functions/admin-save-profili", "/api/admin-save-profili"]
             : ["/api/admin-save-profili", "/.netlify/functions/admin-save-profili"];
@@ -1502,8 +1502,7 @@ export default function AdminPanel() {
   function ensureProfiliEditorFields(item: any) {
     const ruolo = String(item?.ruolo || "utente").trim().toLowerCase();
     const status = String(item?.status || item?.stato || (ruolo === "admin" ? "admin" : item?.approvato ? "attivo" : "sospeso") || "attivo").trim().toLowerCase();
-
-    return {
+    const normalized = {
       id: item?.id ?? "",
       nome: item?.nome ?? "",
       cognome: item?.cognome ?? "",
@@ -1553,6 +1552,13 @@ export default function AdminPanel() {
       email_verificata: Boolean(item?.email_verificata),
       approvato: item?.approvato ?? (status === "attivo" || status === "admin"),
     };
+    normalized.ruolo = String(normalized.ruolo || "utente").trim().toLowerCase();
+    normalized.status = String(normalized.status || (normalized.approvato ? "attivo" : "sospeso")).trim().toLowerCase();
+    normalized.approvato = normalized.status === "attivo" || normalized.status === "admin";
+    if (!String(normalized.password || "").trim()) {
+      delete normalized.password;
+    }
+    return normalized;
   }
 
   function getProfiliEditorKeys(item: any) {
@@ -1561,28 +1567,11 @@ export default function AdminPanel() {
       if (["nome_locale", "esperienza_anni", "specialita", "certificazioni", "menu_caricato"].includes(key) && ruolo !== "bartender") {
         return false;
       }
-
       if (["nome_locale", "indirizzo_locale", "citta_locale", "partita_iva", "numero_dipendenti", "descrizione_locale"].includes(key) && ruolo !== "proprietario") {
         return !["nome_locale"].includes(key) ? false : ruolo === "bartender";
       }
-
-      return (
-        <div style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, fontWeight: 700, letterSpacing: 1, color: "#f59e0b", background: "transparent", minHeight: "60vh" }}>
-          Caricamento Pannello di Controllo…
-        </div>
-      );
-    }
+      return true;
     });
-
-    normalized.ruolo = String(normalized.ruolo || "utente").trim().toLowerCase();
-    normalized.status = String(normalized.status || (normalized.approvato ? "attivo" : "sospeso")).trim().toLowerCase();
-    normalized.approvato = normalized.status === "attivo" || normalized.status === "admin";
-
-    if (!String(normalized.password || "").trim()) {
-      delete normalized.password;
-    }
-
-    return normalized;
   }
 
   function mapCocktailOptionValue(key: string, rawValue: unknown): string {
