@@ -30,9 +30,10 @@ export default function AdminPanel() {
     };
   }, []);
 
-    return (
-      <div className="min-h-screen bg-[#020B1C] overflow-x-hidden pt-[140px] md:pt-[120px]">
-        {isMobile ? <AdminPanelMobile /> : <AdminPanelDesktop />}
-      </div>
-    );
+  return (
+    <>
+      <Navbar />
+      {isMobile ? <AdminPanelMobile /> : <AdminPanelDesktop />}
+    </>
+  );
 }
