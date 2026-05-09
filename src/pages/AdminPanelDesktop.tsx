@@ -1216,15 +1216,6 @@ export default function AdminPanel() {
   }
   if (!isAdmin) return <div style={{ padding: 20, color: "red" }}>Accesso negato</div>;
 
-  // --- LAYOUT FIX: padding-top per navbar fixed ---
-  const adminContainerStyle: React.CSSProperties = {
-    width: "100%",
-    minHeight: "100vh",
-    overflowX: "hidden",
-    background: "#020617",
-    color: "white",
-    paddingTop: 110,
-  };
 
   const booleanFields = new Set(["approvato", "in_evidenza", "verificato", "email_verificata"]);
   const toBoolean = (value: any) => {
@@ -1575,23 +1566,12 @@ export default function AdminPanel() {
         return !["nome_locale"].includes(key) ? false : ruolo === "bartender";
       }
 
-      return true;
-    });
-  }
-
-  function normalizeProfiliPayload(item: any) {
-    const normalized = { ...item };
-
-    profiliArrayFields.forEach((field) => {
-      normalized[field] = stringifyProfileCollection(normalized[field]);
-    });
-
-    profiliNumberFields.forEach((field) => {
-      const raw = normalized[field];
-      normalized[field] = raw === "" || raw === null || raw === undefined ? 0 : Number(raw);
-      if (Number.isNaN(normalized[field])) {
-        normalized[field] = 0;
-      }
+      return (
+        <div style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", fontSize: 22, fontWeight: 700, letterSpacing: 1, color: "#f59e0b", background: "transparent", minHeight: "60vh" }}>
+          Caricamento Pannello di Controllo…
+        </div>
+      );
+    }
     });
 
     normalized.ruolo = String(normalized.ruolo || "utente").trim().toLowerCase();
@@ -1979,7 +1959,7 @@ export default function AdminPanel() {
 
 
     return (
-      <div className="page page-full-bleed fade-in" style={adminContainerStyle}>
+      <div className="page page-full-bleed fade-in">
         {/* HEADER */}
         <div style={{ padding: "18px 0 10px 0", background: "#0f172a", borderBottom: "1px solid #1e293b", position: "sticky", top: 0, zIndex: 30, display: "flex", justifyContent: "center", alignItems: "center" }}>
           <h2 style={{ color: "#f59e0b", fontWeight: 700, fontSize: 22, margin: 0, letterSpacing: 0.5, textAlign: "center", width: "100%" }}>Pannello di Controllo</h2>
