@@ -695,113 +695,127 @@ const pageStyle: CSSProperties = {
   background: "#020617",
   minHeight: "100vh",
   color: "white",
-  padding: "76px 22px 24px",
+  padding: "60px 8px 16px 8px",
   position: "relative",
+  overflowX: "hidden",
 };
 
 const leftButtonStyle: CSSProperties = {
   position: "fixed",
-  top: 86,
-  left: 16,
+  top: 60,
+  left: 8,
   zIndex: 50,
-  width: 44,
-  height: 44,
+  width: 36,
+  height: 36,
   borderRadius: "50%",
   border: "none",
   background: "#111827",
   color: "#f59e0b",
-  fontSize: 28,
+  fontSize: 22,
   fontWeight: 700,
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
 };
 
 const rightButtonStyle: CSSProperties = {
   ...leftButtonStyle,
   left: "auto",
-  right: 16,
+  right: 8,
 };
 
 const titleBoxStyle: CSSProperties = {
   background: "#0f172a",
   border: "1px solid #1f2937",
-  padding: "16px 8px",
+  padding: "10px 4px",
   textAlign: "center",
-  marginBottom: 18,
+  marginBottom: 10,
 };
 
 const titleStyle: CSSProperties = {
   color: "#f59e0b",
   margin: 0,
-  fontSize: 24,
+  fontSize: 18,
+  fontWeight: 700,
+  letterSpacing: 0.01,
 };
 
 const kpiGridStyle: CSSProperties = {
   display: "grid",
   gridTemplateColumns: "1fr 1fr",
-  gap: 14,
+  gap: 8,
+  marginBottom: 8,
 };
 
 const boxStyle: CSSProperties = {
   background: "#111827",
-  borderRadius: 12,
-  padding: "14px 6px",
+  borderRadius: 10,
+  padding: "8px 4px",
   textAlign: "center",
+  minWidth: 0,
 };
 
 const boxTitleStyle: CSSProperties = {
   color: "#f59e0b",
   fontWeight: 600,
-  fontSize: 14,
-  marginBottom: 4,
+  fontSize: 12,
+  marginBottom: 2,
+  letterSpacing: 0.01,
 };
 
 const boxValueStyle: CSSProperties = {
   fontWeight: 700,
-  fontSize: 26,
+  fontSize: 18,
 };
 
 const editorBoxStyle: CSSProperties = {
   background: "#0f172a",
-  padding: "18px 10px 28px",
-  borderRadius: 16,
-  marginTop: 18,
+  padding: "10px 4px 18px 4px",
+  borderRadius: 10,
+  marginTop: 10,
   border: "1px solid #1e293b",
-  boxShadow: "0 2px 12px #0002",
+  boxShadow: "0 2px 8px #0002",
 };
 
 const editorTitleStyle: CSSProperties = {
-  fontSize: 20,
-  marginBottom: 18,
+  fontSize: 15,
+  marginBottom: 10,
   color: "#f59e0b",
   textAlign: "center",
   fontWeight: 700,
+  letterSpacing: 0.01,
 };
 
 const inputMobileStyle: CSSProperties = {
   width: "100%",
-  background: "#020617",
+  background: "#18181b",
   color: "white",
   border: "1px solid #334155",
-  borderRadius: 10,
-  padding: "12px",
-  fontSize: 15,
+  borderRadius: 8,
+  padding: "8px 10px",
+  fontSize: 14,
+  minWidth: 0,
+  boxSizing: "border-box",
 };
 
 const badgeOkStyle: CSSProperties = {
   background: "#064e3b",
   color: "#d1fae5",
-  borderRadius: 10,
-  padding: 8,
-  marginBottom: 14,
+  borderRadius: 8,
+  padding: 6,
+  marginBottom: 10,
   textAlign: "center",
+  fontSize: 13,
 };
 
 const badgeErrorStyle: CSSProperties = {
   background: "#7f1d1d",
   color: "#fee2e2",
-  borderRadius: 10,
-  padding: 8,
-  marginBottom: 14,
+  borderRadius: 8,
+  padding: 6,
+  marginBottom: 10,
   textAlign: "center",
+  fontSize: 13,
 };
 
 const btnSaveStyle: CSSProperties = {
@@ -809,10 +823,11 @@ const btnSaveStyle: CSSProperties = {
   background: "#f59e0b",
   color: "#020617",
   border: "none",
-  borderRadius: 12,
-  padding: "13px 0",
+  borderRadius: 8,
+  padding: "10px 0",
   fontWeight: 700,
-  fontSize: 16,
+  fontSize: 14,
+  minWidth: 0,
 };
 
 const btnDeleteStyle: CSSProperties = {
@@ -820,16 +835,17 @@ const btnDeleteStyle: CSSProperties = {
   background: "#7f1d1d",
   color: "white",
   border: "none",
-  borderRadius: 12,
-  padding: "13px 0",
+  borderRadius: 8,
+  padding: "10px 0",
   fontWeight: 700,
-  fontSize: 16,
+  fontSize: 14,
+  minWidth: 0,
 };
 
 const overlayStyle: CSSProperties = {
   position: "fixed",
   inset: 0,
-  background: "rgba(0,0,0,0.4)",
+  background: "rgba(0,0,0,0.32)",
   zIndex: 90,
 };
 
@@ -837,11 +853,12 @@ const leftMenuStyle: CSSProperties = {
   position: "fixed",
   top: 0,
   left: 0,
-  width: "78%",
+  width: "80vw",
+  maxWidth: 340,
   height: "100%",
   background: "#0f172a",
   zIndex: 100,
-  padding: 20,
+  padding: 12,
   overflowY: "auto",
 };
 
@@ -855,18 +872,20 @@ const closeButtonStyle: CSSProperties = {
   background: "transparent",
   color: "#f59e0b",
   border: "none",
-  fontSize: 28,
-  marginBottom: 20,
+  fontSize: 22,
+  marginBottom: 10,
 };
 
 const selectStyle: CSSProperties = {
   width: "100%",
-  background: "#020617",
+  background: "#18181b",
   color: "white",
   border: "1px solid #334155",
-  borderRadius: 12,
-  padding: "14px 12px",
-  fontSize: 16,
+  borderRadius: 8,
+  padding: "8px 10px",
+  fontSize: 14,
+  minWidth: 0,
+  boxSizing: "border-box",
 };
 
 const actionButtonStyle: CSSProperties = {
@@ -874,8 +893,10 @@ const actionButtonStyle: CSSProperties = {
   background: "#f59e0b",
   color: "#020617",
   border: "none",
-  borderRadius: 12,
-  padding: 14,
-  marginBottom: 12,
+  borderRadius: 8,
+  padding: "10px 0",
+  marginBottom: 8,
   fontWeight: 700,
+  fontSize: 14,
+  minWidth: 0,
 };
