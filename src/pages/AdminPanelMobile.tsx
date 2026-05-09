@@ -206,13 +206,19 @@ export default function AdminPanelMobile() {
 if (isCreating) {
   if (selectedTable === "Locali" && !selectedItem.nome) {
     alert("Inserisci il nome del locale");
-    return;
-  }
+    return (
+      <div className="page page-full-bleed fade-in" style={{ background: "#020617", minHeight: "100vh", color: "white", position: "relative" }}>
+        {/* HEADER MOBILE */}
 
-  if (selectedTable === "cocktail" && !selectedItem.nome) {
-    alert("Inserisci il nome del cocktail");
-    return;
-  }
+        <div style={{ padding: "18px 0 10px 0", background: "#0f172a", borderBottom: "1px solid #1e293b", position: "sticky", top: 0, zIndex: 30, display: "flex", justifyContent: "center", alignItems: "center" }}>
+          <h2 style={{ color: "#f59e0b", fontWeight: 700, fontSize: 22, margin: 0, letterSpacing: 0.5, textAlign: "center", width: "100%" }}>Pannello di Controllo</h2>
+        </div>
+
+        {/* BOX GESTIONE TAVOLI MOBILE */}
+        <div style={{ margin: 18, background: "#18181b", borderRadius: 18, boxShadow: "0 2px 12px #0002", padding: 20, display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+          <h3 style={{ color: "#f59e0b", fontWeight: 700, fontSize: 18, marginBottom: 10 }}>Gestione Tavoli</h3>
+          <button style={{ background: "#f59e0b", color: "#fff", border: "none", borderRadius: 8, padding: "10px 18px", fontWeight: 700, fontSize: 16, cursor: "pointer", boxShadow: "0 2px 8px #f59e0b22" }} onClick={() => window.location.href = "/admin-chat-rooms"}>modifica tavoli</button>
+        </div>
 
   if (selectedTable === "vini" && !selectedItem.nome) {
     alert("Inserisci il nome del vino");

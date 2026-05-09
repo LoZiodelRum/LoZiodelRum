@@ -1958,6 +1958,12 @@ export default function AdminPanel() {
           <h2 style={{ color: "#f59e0b", fontWeight: 700, fontSize: 22, margin: 0, letterSpacing: 0.5, textAlign: "center", width: "100%" }}>Pannello di Controllo</h2>
         </div>
 
+        {/* BOX GESTIONE TAVOLI MOBILE */}
+        <div style={{ margin: 18, background: "#18181b", borderRadius: 18, boxShadow: "0 2px 12px #0002", padding: 20, display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
+          <h3 style={{ color: "#f59e0b", fontWeight: 700, fontSize: 18, marginBottom: 10 }}>Gestione Tavoli</h3>
+          <button style={{ background: "#f59e0b", color: "#fff", border: "none", borderRadius: 8, padding: "10px 18px", fontWeight: 700, fontSize: 16, cursor: "pointer", boxShadow: "0 2px 8px #f59e0b22" }} onClick={() => window.location.href = "/admin-chat-rooms"}>modifica tavoli</button>
+        </div>
+
         {/* FRECCIA SINISTRA (apri menu) */}
         <button aria-label="Apri menu" onClick={() => setLeftOpen(true)} style={{ position: "fixed", top: 18, left: 8, zIndex: 50, background: "#0f172a", border: "none", borderRadius: 20, width: 36, height: 36, display: leftOpen ? "none" : "flex", alignItems: "center", justifyContent: "center", boxShadow: "0 2px 8px #0002", color: "#f59e0b", fontSize: 22, cursor: "pointer" }}>
           <span style={{ display: "inline-block", transform: "rotate(180deg)" }}>➔</span>
