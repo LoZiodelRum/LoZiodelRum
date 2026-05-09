@@ -36,20 +36,11 @@ export default function Navbar() {
 
   return (
     <nav
-      className="nav-container"
+      className="nav-container fixed top-0 left-0 w-full z-[9999] bg-black/95 text-white flex justify-between items-center px-5 md:px-8"
       style={{
-        position: "fixed",
-        top: 0,
-        left: 0,
-        width: "100vw",
-        background: "rgba(0,0,0,0.97)",
-        color: "#fff",
-        minHeight: "35px", // dimezza l'altezza
-        display: "flex",
-        justifyContent: "space-between",
-        alignItems: "center",
-        padding: "6px 20px", // dimezza il padding verticale
-        zIndex: 9999,
+        minHeight: "95px",
+        paddingTop: 0,
+        paddingBottom: 0,
         backdropFilter: "blur(10px)",
         boxShadow: "0 2px 16px #000a",
       }}
