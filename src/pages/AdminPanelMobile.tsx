@@ -694,7 +694,6 @@ const pageStyle: CSSProperties = {
   minHeight: "100vh",
   color: "white",
   padding: "60px 8px 16px 8px",
-  marginTop: 48, // Spazio extra per la navbar mobile
   position: "relative",
   overflowX: "hidden",
 };
