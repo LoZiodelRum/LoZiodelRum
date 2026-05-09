@@ -1,175 +1,61 @@
-import { useParams, useNavigate } from "react-router-dom";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { supabase } from "../lib/supabaseClient";
 
-export default function BarettoChat() {
-  const { room } = useParams();
+export default function BarettoMobile() {
+  const [rooms, setRooms] = useState<any[]>([]);
+  const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const [search, setSearch] = useState("");
 
-  const [message, setMessage] = useState("");
-  const [messages, setMessages] = useState([
-    {
-      user: "Rum",
-      text: "Ultimo messaggio nel tavolo",
-      me: false,
-    },
-    {
-      user: "Cocktail",
-      text: "Ultimo messaggio nel tavolo",
-      me: false,
-    },
-    {
-      user: "Whisky",
-      text: "Ultimo messaggio nel tavolo",
-      me: false,
-    },
-    {
-      user: "Locali",
-      text: "Ultimo messaggio nel tavolo",
-      me: false,
-    },
-    {
-      user: "Off Topic",
-      text: "Ultimo messaggio nel tavolo",
-      me: false,
-    },
-  ]);
+  useEffect(() => {
+    const fetchRooms = async () => {
+      const { data } = await supabase.from("chat_rooms").select("*").order("updated_at", { ascending: false });
+      setRooms(data || []);
+      setLoading(false);
+    };
+    fetchRooms();
+    const sub = supabase.channel("rooms-mobile").on(
+      "postgres_changes",
+      { event: "*", schema: "public", table: "chat_rooms" },
+      fetchRooms
+    ).subscribe();
+    return () => { supabase.removeChannel(sub); };
+  }, []);
 
-  const COLORS = {
-    textPrimary: "#2c1e14",
-    textSecondary: "#7a6a58",
-    gold: "#c9a86a",
-    bgLight: "#f7f4ee",
-    bgChat: "#ebe5dc",
-    bubbleLeft: "#ffffff",
-    bubbleRight: "#d9d2c7",
-  };
-
-  const handleSend = () => {
-    if (!message.trim()) return;
-
-    console.log("CLICK TAVOLO:", message);
-
-    navigate(`/baretto/chat/${message}`);
-  };
+  const filteredRooms = rooms.filter(r => !search || r.nome.toLowerCase().includes(search.toLowerCase()));
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        display: "flex",
-        flexDirection: "column",
-        background: COLORS.bgLight,
-      }}
-    >
+    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "#f7f4ee" }}>
       {/* HEADER */}
-      <div
-        style={{
-          padding: "15px",
-          borderBottom: "1px solid #ddd",
-          background: COLORS.bgLight,
-          display: "flex",
-          alignItems: "center",
-          gap: "10px",
-        }}
-      >
-        <button
-          onClick={() => navigate("/home")}
-          style={{
-            background: "none",
-            border: "none",
-            fontSize: "20px",
-            cursor: "pointer",
-          }}
-        >
-          ←
-        </button>
-
+      <div style={{ padding: 15, borderBottom: "1px solid #ddd", background: "#f7f4ee", display: "flex", alignItems: "center", gap: 10 }}>
+        <button onClick={() => navigate("/home")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer" }}>←</button>
         <div>
-          <strong style={{ color: COLORS.gold }}>
-            Tavoli
-          </strong>
-          <p
-            style={{
-              fontSize: "12px",
-              color: COLORS.textSecondary,
-            }}
-          >
-            Seleziona un tavolo
-          </p>
+          <strong style={{ color: "#c9a86a" }}>Tavoli</strong>
+          <p style={{ fontSize: 12, color: "#7a6a58" }}>Seleziona un tavolo</p>
         </div>
       </div>
-
+      {/* SEARCH */}
+      <div style={{ padding: "10px 20px 0 20px" }}>
+        <input
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          placeholder="Cerca tavolo..."
+          style={{ width: "100%", padding: 10, borderRadius: 20, border: "1px solid #ddd", background: "#fff", color: "#2c1e14", marginBottom: 10 }}
+        />
+      </div>
       {/* LISTA */}
-      <div
-        style={{
-          flex: 1,
-          padding: "20px",
-          overflowY: "auto",
-        }}
-      >
-        {messages.map((msg, index) => (
+      <div style={{ flex: 1, padding: 20, overflowY: "auto" }}>
+        {loading ? <div>Caricamento…</div> : filteredRooms.map(room => (
           <div
-            key={index}
-            onClick={() =>
-              navigate(`/baretto/chat/${msg.user}`)
-            }
-            style={{
-              background: COLORS.bubbleLeft,
-              padding: "15px",
-              borderRadius: "12px",
-              maxWidth: "100%",
-              marginBottom: "20px",
-              cursor: "pointer",
-            }}
+            key={room.id}
+            onClick={() => navigate(`/baretto/chat/${room.nome}`)}
+            style={{ background: "#fff", padding: 15, borderRadius: 12, maxWidth: "100%", marginBottom: 20, cursor: "pointer" }}
           >
-            <strong style={{ color: COLORS.gold }}>
-              Tavolo {msg.user}
-            </strong>
-
-            <p style={{ color: COLORS.textSecondary }}>
-              {msg.text}
-            </p>
+            <strong style={{ color: "#c9a86a" }}>Tavolo {room.nome}</strong>
+            <p style={{ color: "#7a6a58" }}>{room.descrizione || ""}</p>
           </div>
         ))}
-      </div>
-
-      {/* INPUT (non usato ma lasciato intatto) */}
-      <div
-        style={{
-          padding: "15px",
-          borderTop: "1px solid #ddd",
-          display: "flex",
-          gap: "10px",
-          background: COLORS.bgLight,
-        }}
-      >
-        <input
-          value={message}
-          onChange={(e) => setMessage(e.target.value)}
-          placeholder="Scrivi un messaggio..."
-          style={{
-            flex: 1,
-            padding: "12px",
-            borderRadius: "20px",
-            border: "1px solid #ddd",
-            background: "#ffffff",
-            color: COLORS.textPrimary,
-          }}
-        />
-
-        <button
-          onClick={handleSend}
-          style={{
-            background: COLORS.gold,
-            borderRadius: "50%",
-            width: "45px",
-            height: "45px",
-            border: "none",
-            cursor: "pointer",
-          }}
-        >
-          ➤
-        </button>
       </div>
     </div>
   );
