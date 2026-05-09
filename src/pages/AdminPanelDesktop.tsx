@@ -1196,7 +1196,24 @@ export default function AdminPanel() {
   // Media query per mobile/tablet
   const isMobile = typeof window !== "undefined" && window.matchMedia && window.matchMedia("(max-width: 1023px)").matches;
 
-  if (loading) return null;
+  if (loading) {
+    return (
+      <div style={{
+        width: "100%",
+        minHeight: "100vh",
+        background: "#020617",
+        color: "#f59e0b",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: 22,
+        fontWeight: 700,
+        letterSpacing: 1,
+      }}>
+        Caricamento Pannello di Controllo…
+      </div>
+    );
+  }
   if (!isAdmin) return <div style={{ padding: 20, color: "red" }}>Accesso negato</div>;
 
   // --- LAYOUT FIX: padding-top per navbar fixed ---
