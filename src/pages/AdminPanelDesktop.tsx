@@ -1,4 +1,5 @@
 import ArticleBlockEdit from "./ArticleBlockEdit";
+import ArticleBlockEditor, { ArticleBlock } from "../components/admin/ArticleBlockEditor";
 // trigger vercel deploy
 import "../App.css";
 import React, { useEffect, useState } from "react";
@@ -2076,89 +2077,109 @@ export default function AdminPanel() {
               {saveStatus === "ok" && (<div style={{ ...badgeOkStyle, fontSize: 15, padding: 8 }}>Modifica salvata</div>)}
               {saveStatus === "error" && (<div style={{ ...badgeErrorStyle, fontSize: 15, padding: 8 }}>Modifica non salvata</div>)}
               <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-                {editorKeys.map(key => {
-                  if ((key === "id" && selectedTable !== "profili") || (selectedTable === "cocktail" && (key === "data_creazione" || key === "created_at" || key === "texture")) || (selectedTable === "Locali" && removedLocaliFields.has(key))) return null;
-                  // LOGICA INPUT MOBILE (semplificata, ma fedele all'originale)
-                  if (selectedTable === "profili" && key === "password") {
-                    return (
-                      <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                        <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
-                        <input type="password" value={selectedItem[key] ?? ""} onChange={e => { const value = e.target.value; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} placeholder={isCreating ? "Imposta password iniziale" : "Lascia vuoto per non cambiarla"} style={inputMobileStyle} />
-                      </div>
-                    );
-                  }
-                  if (selectedTable === "profili" && profiliSelectOptions[key]) {
-                    return (
-                      <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                        <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
-                        <select value={selectedItem[key] ?? ""} disabled={profiliReadonlyFields.has(key)} onChange={e => { const value = e.target.value; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} style={{ ...inputMobileStyle, opacity: profiliReadonlyFields.has(key) ? 0.7 : 1 }}>
-                          <option value="">Scegli</option>
-                          {profiliSelectOptions[key].map(option => <option key={option} value={option}>{option}</option>)}
-                        </select>
-                      </div>
-                    );
-                  }
-                  if (booleanFields.has(key)) {
-                    return (
-                      <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                        <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
-                        <select value={String(toBoolean(selectedItem[key]))} onChange={e => { const value = e.target.value === "true"; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} style={inputMobileStyle}>
-                          <option value="true">true</option>
-                          <option value="false">false</option>
-                        </select>
-                      </div>
-                    );
-                  }
-                  if (selectedTable === "Locali" && localiSelectOptions[key]) {
-                    return (
-                      <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                        <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
-                        <select value={selectedItem[key] ?? ""} onChange={e => { const value = e.target.value; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} style={inputMobileStyle}>
-                          <option value="">Scegli</option>
-                          {localiSelectOptions[key].map(option => <option key={option} value={option}>{option}</option>)}
-                        </select>
-                      </div>
-                    );
-                  }
-                  if (selectedTable === "vini" && aisSelectOptions[key]) {
-                    return (
-                      <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                        <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
-                        <select value={selectedItem[key] ?? ""} onChange={e => { const value = e.target.value; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} style={inputMobileStyle}>
-                          <option value="">Scegli</option>
-                          {aisSelectOptions[key].map(option => <option key={option} value={option}>{option}</option>)}
-                        </select>
-                      </div>
-                    );
-                  }
-                  if (selectedTable === "cocktail" && cocktailMultiSelectOptions[key]) {
-                    return (
-                      <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                        <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
-                        <input value={selectedItem[key] ?? ""} onChange={e => { setSelectedItem((prev: any) => ({ ...prev, [key]: e.target.value })); setSaveStatus(null); }} style={inputMobileStyle} />
-                      </div>
-                    );
-                  }
-                  if (selectedTable === "profili" && profiliTextareaFields.has(key)) {
-                    return (
-                      <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                        <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
-                        <textarea rows={4} value={selectedItem[key] ?? ""} onChange={e => { setSelectedItem((prev: any) => ({ ...prev, [key]: e.target.value })); setSaveStatus(null); }} style={{ ...inputMobileStyle, minHeight: 110, resize: "vertical" }} />
-                      </div>
-                    );
-                  }
-                  if (key === "contenuto" && selectedTable === "articoli") {
-                    // Blocca la textarea per contenuto articoli, ora gestito da ArticleBlockEdit
-                    return null;
-                  }
-                  // Default: input testo
-                  return (
-                    <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                      <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
-                      <input type={selectedTable === "profili" && profiliNumberFields.has(key) ? "number" : "text"} value={selectedItem[key] ?? ""} disabled={selectedTable === "profili" && profiliReadonlyFields.has(key)} onChange={e => { setSelectedItem((prev: any) => ({ ...prev, [key]: e.target.value })); setSaveStatus(null); }} style={{ ...inputMobileStyle, opacity: selectedTable === "profili" && profiliReadonlyFields.has(key) ? 0.7 : 1 }} />
-                    </div>
-                  );
-                })}
+                {selectedTable === "articoli"
+                  ? <ArticleBlockEditor
+                      initialBlocks={(() => {
+                        const content = selectedItem?.contenuto || "";
+                        const lines = content.split(/\r?\n/).map(l => l.trim()).filter(Boolean);
+                        const blocks: ArticleBlock[] = [];
+                        for (const line of lines) {
+                          if (/^https?:\/\//.test(line) && (line.endsWith(".jpg") || line.endsWith(".jpeg") || line.endsWith(".png") || line.endsWith(".webp") || line.endsWith(".gif"))) {
+                            blocks.push({ type: "image", url: line, width: "100%", align: "center" });
+                          } else if (line.length < 50 && !line.endsWith(".")) {
+                            blocks.push({ type: "section-title", value: line });
+                          } else {
+                            blocks.push({ type: "paragraph", value: line });
+                          }
+                        }
+                        return blocks;
+                      })()}
+                      onSave={blocks => {
+                        const contenuto = blocks.map(b => b.type === "image" ? b.url : b.value).join("\n");
+                        setSelectedItem((prev: any) => ({ ...prev, contenuto }));
+                        setSaveStatus(null);
+                      }}
+                    />
+                  : editorKeys.map(key => {
+                      if ((key === "id" && selectedTable !== "profili") || (selectedTable === "cocktail" && (key === "data_creazione" || key === "created_at" || key === "texture")) || (selectedTable === "Locali" && removedLocaliFields.has(key))) return null;
+                      if (selectedTable === "profili" && key === "password") {
+                        return (
+                          <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                            <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
+                            <input type="password" value={selectedItem[key] ?? ""} onChange={e => { const value = e.target.value; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} placeholder={isCreating ? "Imposta password iniziale" : "Lascia vuoto per non cambiarla"} style={inputMobileStyle} />
+                          </div>
+                        );
+                      }
+                      if (selectedTable === "profili" && profiliSelectOptions[key]) {
+                        return (
+                          <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                            <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
+                            <select value={selectedItem[key] ?? ""} disabled={profiliReadonlyFields.has(key)} onChange={e => { const value = e.target.value; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} style={{ ...inputMobileStyle, opacity: profiliReadonlyFields.has(key) ? 0.7 : 1 }}>
+                              <option value="">Scegli</option>
+                              {profiliSelectOptions[key].map(option => <option key={option} value={option}>{option}</option>)}
+                            </select>
+                          </div>
+                        );
+                      }
+                      if (booleanFields.has(key)) {
+                        return (
+                          <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                            <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
+                            <select value={String(toBoolean(selectedItem[key]))} onChange={e => { const value = e.target.value === "true"; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} style={inputMobileStyle}>
+                              <option value="true">true</option>
+                              <option value="false">false</option>
+                            </select>
+                          </div>
+                        );
+                      }
+                      if (selectedTable === "Locali" && localiSelectOptions[key]) {
+                        return (
+                          <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                            <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
+                            <select value={selectedItem[key] ?? ""} onChange={e => { const value = e.target.value; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} style={inputMobileStyle}>
+                              <option value="">Scegli</option>
+                              {localiSelectOptions[key].map(option => <option key={option} value={option}>{option}</option>)}
+                            </select>
+                          </div>
+                        );
+                      }
+                      if (selectedTable === "vini" && aisSelectOptions[key]) {
+                        return (
+                          <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                            <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
+                            <select value={selectedItem[key] ?? ""} onChange={e => { const value = e.target.value; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} style={inputMobileStyle}>
+                              <option value="">Scegli</option>
+                              {aisSelectOptions[key].map(option => <option key={option} value={option}>{option}</option>)}
+                            </select>
+                          </div>
+                        );
+                      }
+                      if (selectedTable === "cocktail" && cocktailMultiSelectOptions[key]) {
+                        return (
+                          <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                            <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
+                            <input value={selectedItem[key] ?? ""} onChange={e => { setSelectedItem((prev: any) => ({ ...prev, [key]: e.target.value })); setSaveStatus(null); }} style={inputMobileStyle} />
+                          </div>
+                        );
+                      }
+                      if (selectedTable === "profili" && profiliTextareaFields.has(key)) {
+                        return (
+                          <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                            <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
+                            <textarea rows={4} value={selectedItem[key] ?? ""} onChange={e => { setSelectedItem((prev: any) => ({ ...prev, [key]: e.target.value })); setSaveStatus(null); }} style={{ ...inputMobileStyle, minHeight: 110, resize: "vertical" }} />
+                          </div>
+                        );
+                      }
+                      if (key === "contenuto" && selectedTable === "articoli") {
+                        return null;
+                      }
+                      return (
+                        <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                          <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
+                          <input type={selectedTable === "profili" && profiliNumberFields.has(key) ? "number" : "text"} value={selectedItem[key] ?? ""} disabled={selectedTable === "profili" && profiliReadonlyFields.has(key)} onChange={e => { setSelectedItem((prev: any) => ({ ...prev, [key]: e.target.value })); setSaveStatus(null); }} style={{ ...inputMobileStyle, opacity: selectedTable === "profili" && profiliReadonlyFields.has(key) ? 0.7 : 1 }} />
+                        </div>
+                      );
+                    })}
               </div>
               {/* Bottoni azione */}
               <div style={{ display: "flex", gap: 10, marginTop: 22 }}>
