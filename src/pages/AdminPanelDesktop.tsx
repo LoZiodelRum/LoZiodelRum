@@ -112,7 +112,7 @@ export default function AdminPanel() {
       setSelectedOriginalItem(normalizedSavedProfile);
     }
 
-    await loadData();
+    // await loadData(); // RIMOSSO: causava loop infinito e React error #310
   }
 
   async function eliminaElemento() {
