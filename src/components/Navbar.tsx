@@ -36,34 +36,66 @@ export default function Navbar() {
 
   return (
     <nav
-      className="navbar-container fixed top-0 left-0 w-full z-[9999] bg-black/95 text-white flex items-center justify-between px-6 h-[90px]"
+      className="nav-container"
       style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        width: "100vw",
+        background: "rgba(0,0,0,0.97)",
+        color: "#fff",
+        minHeight: "35px", // dimezza l'altezza
+        display: "flex",
+        justifyContent: "space-between",
+        alignItems: "center",
+        padding: "6px 20px", // dimezza il padding verticale
+        zIndex: 9999,
         backdropFilter: "blur(10px)",
         boxShadow: "0 2px 16px #000a",
       }}
     >
-      <div className="logo-area flex items-center gap-3 flex-shrink-0 cursor-pointer" onClick={() => {
-        closeMobileMenu();
-        if (user) {
-          navigate("/home");
-        } else {
-          navigate("/");
-        }
-      }}>
+      {/* BLOCCO SINISTRO */}
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          gap: 10,
+          marginRight: 40,
+          cursor: "pointer",
+          flexShrink: 0,
+        }}
+        onClick={() => {
+          closeMobileMenu();
+          if (user) {
+            navigate("/home");
+          } else {
+            navigate("/");
+          }
+        }}
+      >
         <img
           src="/logo.png"
           alt="Lo Zio del Rum logo"
           className="logo"
-          style={{ height: 76, width: 76, objectFit: "contain" }}
+          style={{ height: 76, width: 76, objectFit: "contain" }} // raddoppia la dimensione
         />
-        <div className="flex flex-col leading-tight">
+        <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.1 }}>
           <span style={{ fontWeight: 700, fontSize: 23, color: "#f5a623" }}>DrinkWise</span>
           <span style={{ fontSize: 11, opacity: 0.7 }}>by</span>
           <span style={{ fontWeight: 500, fontSize: 15 }}>Lo Zio del Rum</span>
         </div>
       </div>
 
-      <div className="desktop-menu hidden md:flex items-center gap-8 ml-auto">
+      {/* BLOCCO DESTRA */}
+      <div
+        className="navbar-links-desktop"
+        style={{
+          display: "flex",
+          gap: 22,
+          alignItems: "center",
+          marginLeft: "auto",
+        }}
+      >
         <Link to="/home" style={linkStyle("/home")}>Home</Link>
         <Link to="/mappa" style={linkStyle("/mappa")}>Mappa</Link>
         <Link to="/drink" style={linkStyle("/drink")}>Drink</Link>
@@ -71,9 +103,13 @@ export default function Navbar() {
         <Link to="/magazine" style={linkStyle("/magazine")}>Magazine</Link>
         <Link to="/community" style={linkStyle("/community")}>Community</Link>
         <Link to="/crea" style={linkStyle("/crea")}>Crea</Link>
+
         {isAdmin && (
-          <Link to="/admin" style={linkStyle("/admin")}>Pannello di Controllo</Link>
+          <Link to="/admin" style={linkStyle("/admin")}> 
+            Pannello di Controllo
+          </Link>
         )}
+
         {user && (
           <button
             onClick={handleLogout}
