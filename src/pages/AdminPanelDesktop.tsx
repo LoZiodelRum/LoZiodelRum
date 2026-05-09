@@ -2170,8 +2170,69 @@ export default function AdminPanel() {
                         );
                       }
                       if (key === "contenuto" && selectedTable === "articoli") {
-                        // Nasconde la textarea per "contenuto" articoli, lasciando solo l'editor blocchi
-                        return null;
+                        // Editor a blocchi minimale per articoli
+                        // Parsing blocchi: split per doppio a capo
+                        const rawContent = selectedItem[key] || "";
+                        const blocks = rawContent.split(/\n\s*\n/).filter(Boolean);
+                        const updateBlock = (idx, value) => {
+                          const newBlocks = blocks.slice();
+                          newBlocks[idx] = value;
+                          setSelectedItem((prev) => ({ ...prev, [key]: newBlocks.join("\n\n") }));
+                          setSaveStatus(null);
+                        };
+                        const removeBlock = (idx) => {
+                          const newBlocks = blocks.slice();
+                          newBlocks.splice(idx, 1);
+                          setSelectedItem((prev) => ({ ...prev, [key]: newBlocks.join("\n\n") }));
+                          setSaveStatus(null);
+                        };
+                        const addParagraph = () => {
+                          setSelectedItem((prev) => ({ ...prev, [key]: (rawContent ? rawContent + "\n\n" : "") + "Nuovo paragrafo" }));
+                          setSaveStatus(null);
+                        };
+                        const addImage = () => {
+                          setSelectedItem((prev) => ({ ...prev, [key]: (rawContent ? rawContent + "\n\n" : "") + "http://" }));
+                          setSaveStatus(null);
+                        };
+                        return (
+                          <div key={key} style={{ margin: "18px 0", padding: 16, border: "1px solid #f59e0b", borderRadius: 8, background: "#18181b" }}>
+                            <div style={{ fontWeight: 700, fontSize: 18, color: "#f59e0b", marginBottom: 12 }}>Contenuto a blocchi</div>
+                            <div style={{ display: "flex", gap: 8, marginBottom: 16 }}>
+                              <button type="button" onClick={addParagraph} style={{ background: "#27272a", color: "#f59e0b", border: "1px solid #f59e0b", borderRadius: 4, padding: "6px 12px", cursor: "pointer" }}>Aggiungi paragrafo</button>
+                              <button type="button" onClick={addImage} style={{ background: "#27272a", color: "#f59e0b", border: "1px solid #f59e0b", borderRadius: 4, padding: "6px 12px", cursor: "pointer" }}>Aggiungi immagine</button>
+                            </div>
+                            <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
+                              {blocks.length === 0 && <div style={{ color: "#aaa", fontStyle: "italic" }}>Nessun blocco presente</div>}
+                              {blocks.map((block, idx) => {
+                                const isImage = /^https?:\/\/.+\.(jpg|jpeg|png|webp|gif)$/i.test(block.trim());
+                                if (isImage) {
+                                  return (
+                                    <div key={idx} style={{ background: "#23232b", borderRadius: 6, padding: 10, display: "flex", flexDirection: "column", gap: 6 }}>
+                                      <div style={{ fontWeight: 600, color: "#f59e0b" }}>Immagine</div>
+                                      <img src={block.trim()} alt="img" style={{ maxWidth: "100%", maxHeight: 180, borderRadius: 4, background: "#111" }} onError={e => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                                      <input type="text" value={block} onChange={e => updateBlock(idx, e.target.value)} placeholder="URL immagine" style={{ width: "100%", padding: 6, borderRadius: 4, border: "1px solid #444", background: "#18181b", color: "#fff" }} />
+                                      <select value={(() => { const m = block.match(/\|width=(\d+)/); return m ? m[1] : "100"; })()} onChange={e => updateBlock(idx, block.replace(/\|width=\d+/, '') + `|width=${e.target.value}`)} style={{ width: 90, marginTop: 4 }}>
+                                        <option value="25">25%</option>
+                                        <option value="50">50%</option>
+                                        <option value="75">75%</option>
+                                        <option value="100">100%</option>
+                                      </select>
+                                      <button type="button" onClick={() => removeBlock(idx)} style={{ marginTop: 6, background: "#18181b", color: "#f87171", border: "1px solid #f87171", borderRadius: 4, padding: "4px 10px", cursor: "pointer", alignSelf: "flex-end" }}>Elimina blocco</button>
+                                    </div>
+                                  );
+                                } else {
+                                  return (
+                                    <div key={idx} style={{ background: "#23232b", borderRadius: 6, padding: 10, display: "flex", flexDirection: "column", gap: 6 }}>
+                                      <div style={{ fontWeight: 600, color: "#f59e0b" }}>Paragrafo</div>
+                                      <textarea value={block} onChange={e => updateBlock(idx, e.target.value)} rows={3} style={{ width: "100%", padding: 6, borderRadius: 4, border: "1px solid #444", background: "#18181b", color: "#fff", resize: "vertical" }} />
+                                      <button type="button" onClick={() => removeBlock(idx)} style={{ marginTop: 6, background: "#18181b", color: "#f87171", border: "1px solid #f87171", borderRadius: 4, padding: "4px 10px", cursor: "pointer", alignSelf: "flex-end" }}>Elimina blocco</button>
+                                    </div>
+                                  );
+                                }
+                              })}
+                            </div>
+                          </div>
+                        );
                       }
                       return (
                         <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
