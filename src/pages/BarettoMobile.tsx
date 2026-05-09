@@ -49,7 +49,7 @@ export default function BarettoMobile() {
         {loading ? <div>Caricamento…</div> : filteredRooms.map(room => (
           <div
             key={room.id}
-            onClick={() => navigate(`/baretto/chat/${room.nome}`)}
+            onClick={() => navigate(`/baretto/mobilechat/${room.nome}`)}
             style={{ background: "#fff", padding: 15, borderRadius: 12, maxWidth: "100%", marginBottom: 20, cursor: "pointer" }}
           >
             <strong style={{ color: "#c9a86a" }}>Tavolo {room.nome}</strong>
