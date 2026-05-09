@@ -702,7 +702,7 @@ const pageStyle: CSSProperties = {
 
 const leftButtonStyle: CSSProperties = {
   position: "fixed",
-  top: 60,
+  top: 110,
   left: 8,
   zIndex: 50,
   width: 36,
