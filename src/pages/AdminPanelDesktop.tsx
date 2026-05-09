@@ -1,4 +1,4 @@
-import ArticleEdit from "./ArticleEdit";
+import ArticleBlockEdit from "./ArticleBlockEdit";
 // trigger vercel deploy
 import "../App.css";
 import React, { useEffect, useState } from "react";
@@ -30,10 +30,10 @@ export default function AdminPanel() {
               <button style={quickActionBtnStyle} onClick={() => {
                 if (articoli.length > 0) setEditArticleId(articoli[0].id);
               }}>modifica articoli</button>
-        {editArticleId && (
+        {editArticleId && selectedTable === "articoli" && (
           <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.25)", zIndex: 1000 }}>
             <div style={{ position: "absolute", left: 0, right: 0, top: 0, bottom: 0, overflow: "auto" }}>
-              <ArticleEdit articleId={editArticleId} onClose={() => setEditArticleId(null)} />
+              <ArticleBlockEdit articleId={editArticleId} onClose={() => setEditArticleId(null)} />
             </div>
           </div>
         )}
@@ -2147,13 +2147,9 @@ export default function AdminPanel() {
                       </div>
                     );
                   }
-                  if (key === "contenuto") {
-                    return (
-                      <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                        <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
-                        <textarea rows={6} value={selectedItem[key] ?? ""} onChange={e => { setSelectedItem((prev: any) => ({ ...prev, [key]: e.target.value })); setSaveStatus(null); }} style={{ ...inputMobileStyle, resize: "vertical" }} />
-                      </div>
-                    );
+                  if (key === "contenuto" && selectedTable === "articoli") {
+                    // Blocca la textarea per contenuto articoli, ora gestito da ArticleBlockEdit
+                    return null;
                   }
                   // Default: input testo
                   return (
