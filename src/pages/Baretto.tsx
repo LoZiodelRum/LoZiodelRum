@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import {
@@ -21,6 +21,7 @@ export default function Baretto() {
   const [loading, setLoading] = useState(true);
   const [modalOpen, setModalOpen] = useState(false);
   const [userId, setUserId] = useState<string | null>(null);
+  const messagesEndRef = useRef<HTMLDivElement>(null);
   const navigate = useNavigate();
   // username può essere ricavato dal profilo, qui lasciato come placeholder
   const username = "Lo Zio";
@@ -86,6 +87,13 @@ export default function Baretto() {
     };
   }, [selectedRoom]);
 
+  // Auto-scroll su nuovo messaggio
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: "smooth" });
+    }
+  }, [messages]);
+
   const handleSend = async () => {
     if (!message.trim() || !selectedRoom || !userId) return;
     await supabase.from("chat_messages").insert({
@@ -140,15 +148,16 @@ export default function Baretto() {
                 <p style={{ color: "#7a6a58", fontSize: 12 }}>{selectedRoom.descrizione}</p>
               </div>
             </div>
-            <div style={{ flex: 1, padding: 20, overflowY: "auto" }}>
+            <div style={{ flex: 1, padding: 20, overflowY: "auto", paddingBottom: 120, background: "#ebe5dc" }}>
               {loading ? <div>Caricamento…</div> : messages.map((msg, i) => (
                 <ChatMessage key={msg.id || i} message={{
                   user: participants.find((p: any) => p.id === msg.user_id)?.username || "?",
                   text: msg.eliminato ? undefined : msg.testo,
                   image: msg.immagine,
                   orario: msg.created_at ? new Date(msg.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) : "",
-                }} me={msg.user_id === 1} />
+                }} me={msg.user_id === userId} />
               ))}
+              <div ref={messagesEndRef} />
             </div>
             <ChatInput value={message} onChange={setMessage} onSend={handleSend} />
           </>
