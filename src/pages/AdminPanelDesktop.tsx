@@ -65,14 +65,9 @@ export default function AdminPanel() {
     if (!loading && isAdmin) {
       loadData();
     }
-  }, [isAdmin]);
+  }, [loading]);
 
   async function loadData() {
-      const isProfiliTable = selectedTable === "profili";
-      const hasValidId = selectedItem && selectedItem.id !== undefined && selectedItem.id !== null && String(selectedItem.id).trim() !== "";
-      const id = selectedItem?.id;
-      const fallbackSlug = typeof selectedItem?.slug === "string" ? selectedItem.slug.trim() : "";
-      let savedItemFromServer = null;
     const { data: localiData } = await supabase.from("Locali").select("*");
     const adminPassword =
       localStorage.getItem("adminPassword") ||
@@ -85,8 +80,686 @@ export default function AdminPanel() {
       const endpoints = isNetlifyHost
         ? ["/.netlify/functions/admin-list-profili", "/api/admin-list-profili"]
         : ["/api/admin-list-profili", "/.netlify/functions/admin-list-profili"];
-      // ISOLAMENTO: solo test (il return va nel corpo principale del componente)
+
+      for (const endpoint of endpoints) {
+        try {
+          const response = await fetch(endpoint, {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              "x-admin-password": adminPassword,
+            },
+            body: JSON.stringify({}),
+          });
+
+          const payload = await response.json().catch(() => ({}));
+          if (response.ok && payload?.ok && Array.isArray(payload?.profiles)) {
+            utentiData = payload.profiles;
+            break;
+          }
+
+          if (response.status !== 404 && response.status !== 405) {
+            break;
+          }
+        } catch {
+          // Keep fallback below if the endpoint is not reachable.
+        }
+      }
     }
+
+    if (!utentiData) {
+      const fallbackUsers = await supabase.from("Profili").select("*");
+      utentiData = (fallbackUsers.data as any[]) || [];
+    }
+
+    const { data: articoliData } = await supabase.from("articoli").select("*");
+    const { data: cocktailData } = await supabase.from("cocktail").select("*");
+    const { data: distillatiData } = await supabase.from("distillati").select("*");
+    let viniData: any[] | null = null;
+    let detectedWineTable = "vini";
+
+    const viniTryLower = await supabase.from("vini").select("*");
+    if (!viniTryLower.error) {
+      viniData = viniTryLower.data || [];
+      detectedWineTable = "vini";
+    } else {
+      const viniTryUpper = await supabase.from("Vini").select("*");
+      if (!viniTryUpper.error) {
+        viniData = viniTryUpper.data || [];
+        detectedWineTable = "Vini";
+      }
+    }
+
+    const normalizeRole = (value: unknown) => String(value || "utente").trim().toLowerCase();
+    const normalizeApproved = (user: any) => {
+      if (typeof user?.approvato === "boolean") return user.approvato;
+      const statusValue = String(user?.status || user?.stato || "").toLowerCase();
+      if (["approved", "approvato", "attivo", "active"].includes(statusValue)) return true;
+      if (["pending", "in_attesa", "in attesa"].includes(statusValue)) return false;
+      return false;
+    };
+
+    const safeUsers = (Array.isArray(utentiData) ? utentiData : []).map((user: any) => ({
+      ...user,
+      ruolo: normalizeRole(user?.ruolo),
+      approvato: normalizeApproved(user),
+    }));
+    const safeCocktail = Array.isArray(cocktailData) ? cocktailData : [];
+
+    setLocali(localiData || []);
+    setUtenti(safeUsers);
+
+    setBartender(safeUsers.filter(u => u?.ruolo === "bartender"));
+    setProprietari(safeUsers.filter(u => u?.ruolo === "proprietario"));
+
+    setArticoli(articoliData || []);
+    setCocktail(safeCocktail);
+    setDistillati(distillatiData || []);
+    setVini(viniData || []);
+    setWineTableName(detectedWineTable);
+
+    setKpi({
+      utenti: safeUsers.length,
+      locali: (localiData || []).length,
+      drink: (safeCocktail.length || 0) + (distillatiData?.length || 0),
+      articoli: (articoliData || []).length,
+    });
+  }
+
+  async function toggleApprovazione(user: any) {
+    await supabase
+      .from("Profili")
+      .update({ approvato: !user.approvato })
+      .eq("id", user.id);
+
+    loadData();
+  }
+
+  async function salvaModifiche() {
+    if (!selectedItem || !selectedTable) return;
+
+    const adminPassword =
+      localStorage.getItem("adminPassword") ||
+      import.meta.env.VITE_ADMIN_PASSWORD ||
+      "";
+
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    const isNetlifyHost = typeof window !== "undefined" && window.location.hostname.includes("netlify");
+
+    const { id, ...dataToUpdate } = selectedItem;
+
+    const normalizeValue = (value: any) => {
+      if (value === "") return null;
+      return value ?? null;
+    };
+
+    const cleanData: any = {};
+    Object.keys(dataToUpdate).forEach(k => {
+      cleanData[k] = normalizeValue(dataToUpdate[k]);
+    });
+
+    if (selectedTable.toLowerCase() === "vini" && cleanData.image !== undefined) {
+      cleanData.immagine = cleanData.immagine ?? cleanData.image;
+      delete cleanData.image;
+    }
+
+    if (selectedTable.toLowerCase() === "vini" && cleanData.name !== undefined) {
+      cleanData.nome = cleanData.nome ?? cleanData.name;
+      delete cleanData.name;
+    }
+
+    if (selectedTable === "Locali") {
+      removedLocaliFields.forEach((field) => {
+        if (field in cleanData) {
+          delete cleanData[field];
+        }
+      });
+    }
+
+    const changedData: any = {};
+    if (!isCreating) {
+      Object.keys(cleanData).forEach((k) => {
+        const current = cleanData[k];
+        const previous = normalizeValue(selectedOriginalItem?.[k]);
+        if (JSON.stringify(current) !== JSON.stringify(previous)) {
+          changedData[k] = current;
+        }
+      });
+
+      if (Object.keys(changedData).length === 0) {
+        setSaveStatus("ok");
+        setTimeout(() => setSaveStatus(null), 2000);
+        return;
+      }
+    }
+
+    let error: any = null;
+
+    const hasValidId = id !== undefined && id !== null && String(id).trim() !== "";
+    const fallbackSlug = typeof selectedItem?.slug === "string" ? selectedItem.slug.trim() : "";
+    const isWineTable = selectedTable.toLowerCase() === "vini";
+    const isCocktailTable = selectedTable.toLowerCase() === "cocktail";
+    const isDistillatiTable = selectedTable.toLowerCase() === "distillati";
+    const isLocaliTable = selectedTable === "Locali";
+    const isProfiliTable = selectedTable === "profili";
+    let savedItemFromServer: any = null;
+
+    if (isCreating) {
+      if (selectedTable.toLowerCase() === "vini") {
+        const nowIso = new Date().toISOString();
+        if (!cleanData.created_at) {
+          cleanData.created_at = nowIso;
+        }
+      }
+
+      if (!cleanData.id) {
+        cleanData.id = crypto.randomUUID();
+      }
+
+      if (selectedTable === "profili") {
+        const normalizedProfileDraft = normalizeProfiliPayload(cleanData);
+        Object.keys(cleanData).forEach((key) => delete cleanData[key]);
+        Object.assign(cleanData, normalizedProfileDraft);
+        cleanData.ruolo = cleanData.ruolo || createRoleHint || "utente";
+        cleanData.approvato = cleanData.approvato ?? false;
+      }
+
+      if (isProfiliTable) {
+        if (!adminPassword) {
+          error = { message: "Password admin non disponibile. Esci e rientra come admin." };
+        } else {
+          const endpoints = isNetlifyHost
+            ? ["/.netlify/functions/admin-save-profili", "/api/admin-save-profili"]
+            : ["/api/admin-save-profili", "/.netlify/functions/admin-save-profili"];
+
+          let lastMessage = "Creazione utente fallita lato server.";
+
+          for (const endpoint of endpoints) {
+            try {
+              const response = await fetch(endpoint, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "x-admin-password": adminPassword,
+                },
+                body: JSON.stringify({
+                  mode: "create",
+                  id: null,
+                  changes: cleanData,
+                }),
+              });
+
+              const payload = await response.json().catch(() => ({}));
+              if (response.ok && payload?.ok) {
+                savedItemFromServer = payload?.profile || null;
+                lastMessage = "";
+                break;
+              }
+
+              lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
+              if (response.status !== 404 && response.status !== 405) {
+                break;
+              }
+            } catch (e: any) {
+              lastMessage = e?.message || `Errore di rete su ${endpoint}`;
+            }
+          }
+
+          if (lastMessage) {
+            error = { message: lastMessage };
+          }
+        }
+      } else if (isCocktailTable) {
+        if (!adminPassword) {
+          error = { message: "Password admin non disponibile. Esci e rientra come admin." };
+        } else {
+          const endpoints = [
+            "/api/admin-save-cocktail",
+            "/.netlify/functions/admin-save-cocktail",
+          ];
+
+          let lastMessage = "Creazione cocktail fallita lato server.";
+
+          for (const endpoint of endpoints) {
+            try {
+              const response = await fetch(endpoint, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "x-admin-password": adminPassword,
+                },
+                body: JSON.stringify({
+                  mode: "create",
+                  id: null,
+                  changes: cleanData,
+                }),
+              });
+
+              const payload = await response.json().catch(() => ({}));
+              if (response.ok && payload?.ok) {
+                lastMessage = "";
+                break;
+              }
+
+              lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
+            } catch (e: any) {
+              lastMessage = e?.message || `Errore di rete su ${endpoint}`;
+            }
+          }
+
+          if (lastMessage) {
+            error = { message: lastMessage };
+          }
+        }
+      } else if (isDistillatiTable) {
+        if (!adminPassword) {
+          error = { message: "Password admin non disponibile. Esci e rientra come admin." };
+        } else {
+          const endpoints = [
+            "/api/admin-save-distillato",
+            "/.netlify/functions/admin-save-distillato",
+          ];
+
+          let lastMessage = "Creazione distillato fallita lato server.";
+
+          for (const endpoint of endpoints) {
+            try {
+              const response = await fetch(endpoint, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "x-admin-password": adminPassword,
+                },
+                body: JSON.stringify({
+                  mode: "create",
+                  id: null,
+                  changes: cleanData,
+                }),
+              });
+
+              const payload = await response.json().catch(() => ({}));
+              if (response.ok && payload?.ok) {
+                lastMessage = "";
+                break;
+              }
+
+              lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
+            } catch (e: any) {
+              lastMessage = e?.message || `Errore di rete su ${endpoint}`;
+            }
+          }
+
+          if (lastMessage) {
+            error = { message: lastMessage };
+          }
+        }
+      } else if (isLocaliTable) {
+        if (!adminPassword) {
+          error = { message: "Password admin non disponibile. Esci e rientra come admin." };
+        } else {
+          const endpoints = isNetlifyHost
+            ? ["/.netlify/functions/admin-save-locale", "/api/admin-save-locale"]
+            : ["/api/admin-save-locale", "/.netlify/functions/admin-save-locale"];
+
+          let lastMessage = "Creazione locale fallita lato server.";
+
+          for (const endpoint of endpoints) {
+            try {
+              const response = await fetch(endpoint, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "x-admin-password": adminPassword,
+                },
+                body: JSON.stringify({
+                  mode: "create",
+                  id: null,
+                  changes: cleanData,
+                }),
+              });
+
+              const payload = await response.json().catch(() => ({}));
+              if (response.ok && payload?.ok) {
+                lastMessage = "";
+                break;
+              }
+
+              lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
+              if (response.status !== 404 && response.status !== 405) {
+                break;
+              }
+            } catch (e: any) {
+              lastMessage = e?.message || `Errore di rete su ${endpoint}`;
+            }
+          }
+
+          if (lastMessage) {
+            error = { message: lastMessage };
+          }
+        }
+      } else {
+        const result = await supabase
+          .from(selectedTable)
+          .insert([cleanData])
+          .select("id");
+
+        error = result.error;
+
+        if (!error && (!result.data || result.data.length === 0)) {
+          error = { message: "Nessun record creato. Verifica i permessi di scrittura." };
+        }
+      }
+    } else {
+      // Per gli articoli usiamo endpoint serverless admin: evita blocchi RLS lato client.
+      if (isProfiliTable) {
+        if (!adminPassword) {
+          error = { message: "Password admin non disponibile. Esci e rientra come admin." };
+        } else {
+          const normalizedProfileChanges = normalizeProfiliPayload(changedData);
+          const endpoints = isNetlifyHost
+            ? ["/.netlify/functions/admin-save-profili", "/api/admin-save-profili"]
+            : ["/api/admin-save-profili", "/.netlify/functions/admin-save-profili"];
+
+          let lastMessage = "Salvataggio utente fallito lato server.";
+
+          for (const endpoint of endpoints) {
+            try {
+              const response = await fetch(endpoint, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "x-admin-password": adminPassword,
+                },
+                body: JSON.stringify({
+                  mode: "update",
+                  id: hasValidId ? id : null,
+                  changes: normalizedProfileChanges,
+                }),
+              });
+
+              const payload = await response.json().catch(() => ({}));
+              if (response.ok && payload?.ok) {
+                savedItemFromServer = payload?.profile || null;
+                lastMessage = "";
+                break;
+              }
+
+              lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
+              if (response.status !== 404 && response.status !== 405) {
+                break;
+              }
+            } catch (e: any) {
+              lastMessage = e?.message || `Errore di rete su ${endpoint}`;
+            }
+          }
+
+          if (lastMessage) {
+            error = { message: lastMessage };
+          }
+        }
+      } else if (selectedTable === "articoli") {
+        if (!adminPassword) {
+          error = { message: "Password admin non disponibile. Esci e rientra come admin." };
+        } else {
+          const endpoints = [
+            "/api/admin-update-article",
+            "/.netlify/functions/admin-update-article",
+          ];
+
+          let lastMessage = "Salvataggio articolo fallito lato server.";
+
+          for (const endpoint of endpoints) {
+            try {
+              const response = await fetch(endpoint, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "x-admin-password": adminPassword,
+                },
+                body: JSON.stringify({
+                  id: hasValidId ? id : null,
+                  slug: fallbackSlug || null,
+                  changes: changedData,
+                }),
+              });
+
+              const payload = await response.json().catch(() => ({}));
+              if (response.ok && payload?.ok) {
+                lastMessage = "";
+                break;
+              }
+
+              lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
+            } catch (e: any) {
+              lastMessage = e?.message || `Errore di rete su ${endpoint}`;
+            }
+          }
+
+          if (lastMessage) {
+            error = { message: lastMessage };
+          }
+        }
+      } else if (isWineTable) {
+        if (!adminPassword) {
+          error = { message: "Password admin non disponibile. Esci e rientra come admin." };
+        } else {
+          const endpoints = [
+            "/api/admin-save-wine",
+            "/.netlify/functions/admin-save-wine",
+          ];
+
+          let lastMessage = "Salvataggio vino fallito lato server.";
+
+          for (const endpoint of endpoints) {
+            try {
+              const response = await fetch(endpoint, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "x-admin-password": adminPassword,
+                },
+                body: JSON.stringify({
+                  mode: isCreating ? "create" : "update",
+                  table: wineTableName,
+                  id: hasValidId ? id : null,
+                  changes: isCreating ? cleanData : changedData,
+                }),
+              });
+
+              const payload = await response.json().catch(() => ({}));
+              if (response.ok && payload?.ok) {
+                lastMessage = "";
+                break;
+              }
+
+              lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
+            } catch (e: any) {
+              lastMessage = e?.message || `Errore di rete su ${endpoint}`;
+            }
+          }
+
+          if (lastMessage) {
+            error = { message: lastMessage };
+          }
+        }
+      } else if (isCocktailTable) {
+        if (!adminPassword) {
+          error = { message: "Password admin non disponibile. Esci e rientra come admin." };
+        } else {
+          const endpoints = [
+            "/api/admin-save-cocktail",
+            "/.netlify/functions/admin-save-cocktail",
+          ];
+
+          let lastMessage = "Salvataggio cocktail fallito lato server.";
+
+          for (const endpoint of endpoints) {
+            try {
+              const response = await fetch(endpoint, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "x-admin-password": adminPassword,
+                },
+                body: JSON.stringify({
+                  mode: "update",
+                  id: hasValidId ? id : null,
+                  changes: changedData,
+                }),
+              });
+
+              const payload = await response.json().catch(() => ({}));
+              if (response.ok && payload?.ok) {
+                lastMessage = "";
+                break;
+              }
+
+              lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
+            } catch (e: any) {
+              lastMessage = e?.message || `Errore di rete su ${endpoint}`;
+            }
+          }
+
+          if (lastMessage) {
+            error = { message: lastMessage };
+          }
+        }
+      } else if (isDistillatiTable) {
+        if (!adminPassword) {
+          error = { message: "Password admin non disponibile. Esci e rientra come admin." };
+        } else {
+          const endpoints = [
+            "/api/admin-save-distillato",
+            "/.netlify/functions/admin-save-distillato",
+          ];
+
+          let lastMessage = "Salvataggio distillato fallito lato server.";
+
+          for (const endpoint of endpoints) {
+            try {
+              const response = await fetch(endpoint, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "x-admin-password": adminPassword,
+                },
+                body: JSON.stringify({
+                  mode: "update",
+                  id: hasValidId ? id : null,
+                  changes: changedData,
+                }),
+              });
+
+              const payload = await response.json().catch(() => ({}));
+              if (response.ok && payload?.ok) {
+                lastMessage = "";
+                break;
+              }
+
+              lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
+            } catch (e: any) {
+              lastMessage = e?.message || `Errore di rete su ${endpoint}`;
+            }
+          }
+
+          if (lastMessage) {
+            error = { message: lastMessage };
+          }
+        }
+      } else if (isLocaliTable) {
+        if (!adminPassword) {
+          error = { message: "Password admin non disponibile. Esci e rientra come admin." };
+        } else {
+          const endpoints = isNetlifyHost
+            ? ["/.netlify/functions/admin-save-locale", "/api/admin-save-locale"]
+            : ["/api/admin-save-locale", "/.netlify/functions/admin-save-locale"];
+
+          let lastMessage = "Salvataggio locale fallito lato server.";
+
+          for (const endpoint of endpoints) {
+            try {
+              const response = await fetch(endpoint, {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                  "x-admin-password": adminPassword,
+                },
+                body: JSON.stringify({
+                  mode: "update",
+                  id: hasValidId ? id : null,
+                  changes: changedData,
+                }),
+              });
+
+              const payload = await response.json().catch(() => ({}));
+              if (response.ok && payload?.ok) {
+                lastMessage = "";
+                break;
+              }
+
+              lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
+              if (response.status !== 404 && response.status !== 405) {
+                break;
+              }
+            } catch (e: any) {
+              lastMessage = e?.message || `Errore di rete su ${endpoint}`;
+            }
+          }
+
+          if (lastMessage) {
+            error = { message: lastMessage };
+          }
+        }
+      } else {
+        if (!session) {
+          setSaveStatus("error");
+          alert("Salvataggio bloccato: non sei autenticato su Supabase. Fai login con un account con permessi scrittura.");
+          return;
+        }
+
+      let query = supabase
+        .from(selectedTable)
+        .update(changedData);
+
+      if (hasValidId) {
+        query = query.eq("id", id);
+      } else if (selectedTable === "articoli" && fallbackSlug) {
+        query = query.eq("slug", fallbackSlug);
+      } else {
+        error = { message: "Impossibile salvare: record senza id/slug valido." };
+      }
+
+      const result = error
+        ? { data: null, error }
+        : await query.select("id,slug");
+
+      error = result.error;
+
+      if (!error && (!result.data || result.data.length === 0)) {
+        error = {
+          message: `Nessuna modifica salvata su ${selectedTable}. Verifica policy RLS/permessi utente e chiave record (id: ${String(id ?? "null")}, slug: ${fallbackSlug || "n/a"}).`,
+        };
+      }
+      }
+    }
+
+    if (error) {
+      setSaveStatus("error");
+      console.error("Errore salvataggio:", error);
+      alert(error.message || "Errore salvataggio");
+      return;
+    }
+
+    setSaveStatus("ok");
+
+    setTimeout(() => {
+      setSaveStatus(null);
+    }, 2000);
+
+    setIsCreating(false);
     setCreateRoleHint(null);
 
     if (!isCreating && !isProfiliTable) {
@@ -112,7 +785,7 @@ export default function AdminPanel() {
       setSelectedOriginalItem(normalizedSavedProfile);
     }
 
-    // await loadData(); // RIMOSSO: causava loop infinito e React error #310
+    await loadData();
   }
 
   async function eliminaElemento() {
@@ -523,26 +1196,8 @@ export default function AdminPanel() {
   // Media query per mobile/tablet
   const isMobile = typeof window !== "undefined" && window.matchMedia && window.matchMedia("(max-width: 1023px)").matches;
 
-  if (loading) {
-    return (
-      <div style={{
-        width: "100%",
-        minHeight: "100vh",
-        background: "#020617",
-        color: "#f59e0b",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        fontSize: 22,
-        fontWeight: 700,
-        letterSpacing: 1,
-      }}>
-        Caricamento Pannello di Controllo…
-      </div>
-    );
-  }
+  if (loading) return null;
   if (!isAdmin) return <div style={{ padding: 20, color: "red" }}>Accesso negato</div>;
-
 
   const booleanFields = new Set(["approvato", "in_evidenza", "verificato", "email_verificata"]);
   const toBoolean = (value: any) => {
@@ -829,7 +1484,8 @@ export default function AdminPanel() {
   function ensureProfiliEditorFields(item: any) {
     const ruolo = String(item?.ruolo || "utente").trim().toLowerCase();
     const status = String(item?.status || item?.stato || (ruolo === "admin" ? "admin" : item?.approvato ? "attivo" : "sospeso") || "attivo").trim().toLowerCase();
-    const normalized = {
+
+    return {
       id: item?.id ?? "",
       nome: item?.nome ?? "",
       cognome: item?.cognome ?? "",
@@ -879,13 +1535,6 @@ export default function AdminPanel() {
       email_verificata: Boolean(item?.email_verificata),
       approvato: item?.approvato ?? (status === "attivo" || status === "admin"),
     };
-    normalized.ruolo = String(normalized.ruolo || "utente").trim().toLowerCase();
-    normalized.status = String(normalized.status || (normalized.approvato ? "attivo" : "sospeso")).trim().toLowerCase();
-    normalized.approvato = normalized.status === "attivo" || normalized.status === "admin";
-    if (!String(normalized.password || "").trim()) {
-      delete normalized.password;
-    }
-    return normalized;
   }
 
   function getProfiliEditorKeys(item: any) {
@@ -894,11 +1543,39 @@ export default function AdminPanel() {
       if (["nome_locale", "esperienza_anni", "specialita", "certificazioni", "menu_caricato"].includes(key) && ruolo !== "bartender") {
         return false;
       }
+
       if (["nome_locale", "indirizzo_locale", "citta_locale", "partita_iva", "numero_dipendenti", "descrizione_locale"].includes(key) && ruolo !== "proprietario") {
         return !["nome_locale"].includes(key) ? false : ruolo === "bartender";
       }
+
       return true;
     });
+  }
+
+  function normalizeProfiliPayload(item: any) {
+    const normalized = { ...item };
+
+    profiliArrayFields.forEach((field) => {
+      normalized[field] = stringifyProfileCollection(normalized[field]);
+    });
+
+    profiliNumberFields.forEach((field) => {
+      const raw = normalized[field];
+      normalized[field] = raw === "" || raw === null || raw === undefined ? 0 : Number(raw);
+      if (Number.isNaN(normalized[field])) {
+        normalized[field] = 0;
+      }
+    });
+
+    normalized.ruolo = String(normalized.ruolo || "utente").trim().toLowerCase();
+    normalized.status = String(normalized.status || (normalized.approvato ? "attivo" : "sospeso")).trim().toLowerCase();
+    normalized.approvato = normalized.status === "attivo" || normalized.status === "admin";
+
+    if (!String(normalized.password || "").trim()) {
+      delete normalized.password;
+    }
+
+    return normalized;
   }
 
   function mapCocktailOptionValue(key: string, rawValue: unknown): string {
@@ -1273,39 +1950,12 @@ export default function AdminPanel() {
       setLeftOpen(false);
     };
 
-
     return (
-      <div className="page page-full-bleed fade-in">
-        {/* HEADER */}
+      <div className="page page-full-bleed fade-in" style={{ background: "#020617", minHeight: "100vh", color: "white", position: "relative" }}>
+        {/* HEADER MOBILE */}
+
         <div style={{ padding: "18px 0 10px 0", background: "#0f172a", borderBottom: "1px solid #1e293b", position: "sticky", top: 0, zIndex: 30, display: "flex", justifyContent: "center", alignItems: "center" }}>
           <h2 style={{ color: "#f59e0b", fontWeight: 700, fontSize: 22, margin: 0, letterSpacing: 0.5, textAlign: "center", width: "100%" }}>Pannello di Controllo</h2>
-        </div>
-
-        {/* GRIGLIA ADMIN PRINCIPALE */}
-        <div
-          className="admin-grid"
-          style={{
-            display: "grid",
-            gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
-            gap: 24,
-            margin: "32px auto 0 auto",
-            maxWidth: 1200,
-            width: "100%",
-            padding: "0 16px",
-          }}
-        >
-          {/* Box Aggiunta Articoli (esempio, puoi spostare se serve) */}
-          <div style={{ background: "#18181b", borderRadius: 18, boxShadow: "0 2px 12px #0002", padding: 20, display: "flex", flexDirection: "column", alignItems: "flex-start", minHeight: 180 }}>
-            <h3 style={{ color: "#f59e0b", fontWeight: 700, fontSize: 18, marginBottom: 10 }}>Aggiunta Articoli</h3>
-            <button style={{ background: "#f59e0b", color: "#fff", border: "none", borderRadius: 8, padding: "10px 18px", fontWeight: 700, fontSize: 16, cursor: "pointer", boxShadow: "0 2px 8px #f59e0b22", marginBottom: 8 }} onClick={() => setEditArticleId(articoli.length > 0 ? articoli[0].id : null)}>modifica articoli</button>
-          </div>
-
-          {/* BOX GESTIONE TAVOLI */}
-          <div style={{ background: "#18181b", borderRadius: 18, boxShadow: "0 2px 12px #0002", padding: 20, display: "flex", flexDirection: "column", alignItems: "flex-start", minHeight: 180 }}>
-            <h3 style={{ color: "#f59e0b", fontWeight: 700, fontSize: 18, marginBottom: 10 }}>Gestione Tavoli</h3>
-            <button style={{ background: "#f59e0b", color: "#fff", border: "none", borderRadius: 8, padding: "10px 18px", fontWeight: 700, fontSize: 16, cursor: "pointer", boxShadow: "0 2px 8px #f59e0b22" }} onClick={() => window.location.href = "/admin-chat-rooms"}>modifica tavoli</button>
-          </div>
-          {/* ...altri box admin qui... */}
         </div>
 
         {/* FRECCIA SINISTRA (apri menu) */}
@@ -1571,10 +2221,9 @@ export default function AdminPanel() {
               </div>
               {/* Bottoni azione */}
               <div style={{ display: "flex", gap: 10, marginTop: 22 }}>
-                {/* <button style={{ ...btnSaveStyle, fontSize: 16, padding: "13px 0" }} onClick={salvaModifiche}> */}
-                {/* Bottone salvaModifiche disabilitato per isolamento/test
+                <button style={{ ...btnSaveStyle, fontSize: 16, padding: "13px 0" }} onClick={salvaModifiche}>
                   {isCreating ? "Crea" : "Salva"}
-                </button> */}
+                </button>
                 {!isCreating && (
                   <button style={{ ...btnDeleteStyle, fontSize: 16, padding: "13px 0" }} onClick={eliminaElemento}>
                     Elimina
@@ -2274,10 +2923,9 @@ const inputMobileStyle = {
               )}
 
             <div style={buttonRowStyle}>
-              {/* <button style={btnSaveStyle} onClick={salvaModifiche}> */}
-              {/* Bottone salvaModifiche disabilitato per isolamento/test
+              <button style={btnSaveStyle} onClick={salvaModifiche}>
                 {isCreating ? "Crea" : "Salva"}
-              </button> */}
+              </button>
 
               {!isCreating && (
                 <button style={btnDeleteStyle} onClick={eliminaElemento}>

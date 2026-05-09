@@ -111,7 +111,7 @@ export default function AdminPanelMobile() {
   useEffect(() => {
     if (!loading && isAdmin) loadData();
     if (!loading && !isAdmin) setLoadingData(false);
-  }, [isAdmin]);
+  }, [loading, isAdmin]);
 
   useEffect(() => {
     document.body.style.overflow = leftOpen || rightOpen ? "hidden" : "";
@@ -203,24 +203,32 @@ export default function AdminPanelMobile() {
   async function salvaModifiche() {
     if (!selectedItem || !selectedTable) return;
     // 👉 VALIDAZIONE BASE
-    if (isCreating) {
-      if (selectedTable === "Locali" && !selectedItem.nome) {
-        alert("Inserisci il nome del locale");
-        return;
-      }
-      if (selectedTable === "vini" && !selectedItem.nome) {
-        alert("Inserisci il nome del vino");
-        return;
-      }
-      if (selectedTable === "distillati" && !selectedItem.nome) {
-        alert("Inserisci il nome del distillato");
-        return;
-      }
-      if (selectedTable === "profili" && !selectedItem.username) {
-        alert("Inserisci username");
-        return;
-      }
-    }
+if (isCreating) {
+  if (selectedTable === "Locali" && !selectedItem.nome) {
+    alert("Inserisci il nome del locale");
+    return;
+  }
+
+  if (selectedTable === "cocktail" && !selectedItem.nome) {
+    alert("Inserisci il nome del cocktail");
+    return;
+  }
+
+  if (selectedTable === "vini" && !selectedItem.nome) {
+    alert("Inserisci il nome del vino");
+    return;
+  }
+
+  if (selectedTable === "distillati" && !selectedItem.nome) {
+    alert("Inserisci il nome del distillato");
+    return;
+  }
+
+  if (selectedTable === "profili" && !selectedItem.username) {
+    alert("Inserisci username");
+    return;
+  }
+}
 // 👉 PULIZIA STRINGHE VUOTE
 Object.keys(selectedItem).forEach((key) => {
   if (selectedItem[key] === "") {
@@ -334,13 +342,7 @@ if (isCreating) {
       </button>
 
       <div style={titleBoxStyle}>
-	  <h1 style={titleStyle}>Pannello di Controllo</h1>
-      </div>
-
-      {/* BOX GESTIONE TAVOLI MOBILE */}
-      <div style={{ margin: 18, background: "#18181b", borderRadius: 18, boxShadow: "0 2px 12px #0002", padding: 20, display: "flex", flexDirection: "column", alignItems: "flex-start" }}>
-        <h3 style={{ color: "#f59e0b", fontWeight: 700, fontSize: 18, marginBottom: 10 }}>Gestione Tavoli</h3>
-        <button style={{ background: "#f59e0b", color: "#fff", border: "none", borderRadius: 8, padding: "10px 18px", fontWeight: 700, fontSize: 16, cursor: "pointer", boxShadow: "0 2px 8px #f59e0b22" }} onClick={() => window.location.href = "/admin-chat-rooms"}>modifica tavoli</button>
+        <h1 style={titleStyle}>Pannello di Controllo</h1>
       </div>
 
       <div style={kpiGridStyle}>
