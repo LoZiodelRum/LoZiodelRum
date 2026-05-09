@@ -6,6 +6,8 @@ export type CocktailPreferences = {
   profilo_gustativo?: string;
   famiglia_aromatica?: string;
   Genere?: string;
+  sensazione_palato?: string;
+  // compatibilità temporanea
   texture?: string;
 };
 
@@ -34,6 +36,8 @@ type CatalogCocktail = {
   profilo_gustativo?: string;
   famiglia_aromatica?: string;
   Genere?: string;
+  sensazione_palato?: string;
+  // compatibilità temporanea
   texture?: string;
   description?: string;
   technique?: string;
@@ -61,7 +65,7 @@ const preferenceKeys: Array<keyof CocktailPreferences> = [
   "profilo_gustativo",
   "famiglia_aromatica",
   "Genere",
-  "texture",
+  "sensazione_palato",
 ];
 
 const autoBaseRules: Array<{
@@ -73,7 +77,7 @@ const autoBaseRules: Array<{
   { keys: ["intensita_alcolica", "profilo_gustativo"], values: ["Molto alta", "Secco"], suggestions: ["Whisky"] },
   { keys: ["Genere", "profilo_gustativo"], values: ["Highball", "Acido"], suggestions: ["Gin"] },
   { keys: ["Genere", "profilo_gustativo"], values: ["Stirred (mescolati)", "Dolce"], suggestions: ["Brandy"] },
-  { keys: ["intensita_alcolica", "texture"], values: ["Bassa", "Leggero"], suggestions: ["Analcolico"] },
+  { keys: ["intensita_alcolica", "sensazione_palato"], values: ["Bassa", "Morbido"], suggestions: ["Analcolico"] },
 ];
 
 const spiritProfiles: Record<string, {
@@ -189,6 +193,8 @@ function splitField(value: unknown): string[] {
 }
 
 function normalizeCatalogRecord(record: Record<string, any>): CatalogCocktail {
+  // compatibilità: se arriva texture, mappa su sensazione_palato
+  const sensazionePalato = record.sensazione_palato || record.texture || "";
   return {
     name: record.name || record.nome || "Cocktail senza nome",
     ingredients: splitField(record.ingredients || record.ingredienti),
@@ -198,6 +204,8 @@ function normalizeCatalogRecord(record: Record<string, any>): CatalogCocktail {
     profilo_gustativo: record.profilo_gustativo,
     famiglia_aromatica: record.famiglia_aromatica || record.profilo_aromatico,
     Genere: record.Genere,
+    sensazione_palato: sensazionePalato,
+    // compatibilità
     texture: record.texture,
     description: record.description || record.descrizione,
     technique: record.technique || record.tecnica,

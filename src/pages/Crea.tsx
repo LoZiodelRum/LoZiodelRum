@@ -11,7 +11,7 @@ const initialPreferences: CocktailPreferences = {
   profilo_gustativo: "",
   famiglia_aromatica: "",
   Genere: "",
-  texture: "",
+  sensazione_palato: "",
 };
 
 const preferenceOptions = {
@@ -20,7 +20,7 @@ const preferenceOptions = {
   profilo_gustativo: ["Secco", "Dolce", "Acido", "Fruttato", "Amaro", "Tropicale", "Speziato", "Fresco"],
   famiglia_aromatica: ["Agrumato", "Floreale", "Speziato", "Erbaceo", "Tropicale", "Fruttato", "Affumicato"],
   Genere: ["Highball", "Shakerato", "Stirred (mescolati)", "Frozen", "Tiki", "Sour", "Pestati"],
-  texture: ["Setoso", "Leggero", "Cremoso", "Denso", "Frizzante", "Pulito"],
+  sensazione_palato: ["Morbido", "Secco", "Cremoso", "Frizzante", "Vellutato"],
 };
 
 export default function Crea() {
@@ -103,11 +103,16 @@ export default function Crea() {
               {Object.entries(preferenceOptions).map(([key, options]) => (
                 <div key={key} className="crea-cocktail-field">
                   <label className="crea-cocktail-label">
-                    {key.replace(/_/g, " ")}
+                    {key === "sensazione_palato" ? "Sensazione al palato" : key.replace(/_/g, " ")}
                   </label>
                   <select
                     name={key}
-                    value={preferences[key as keyof CocktailPreferences] || ""}
+                    value={
+                      // compatibilità temporanea: se vecchio dato "texture" presente, mappa su sensazione_palato
+                      key === "sensazione_palato" && preferences["sensazione_palato"] === undefined && preferences["texture"]
+                        ? preferences["texture"]
+                        : preferences[key as keyof CocktailPreferences] || ""
+                    }
                     onChange={handleChange}
                     className="crea-cocktail-select"
                   >

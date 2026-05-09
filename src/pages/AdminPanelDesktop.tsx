@@ -1291,6 +1291,13 @@ export default function AdminPanel() {
       "Build (Costruito in bicchiere)",
       "A strati (Layered)",
     ],
+    sensazione_palato: [
+      "Morbido",
+      "Secco",
+      "Cremoso",
+      "Frizzante",
+      "Vellutato",
+    ],
   };
 
   const cocktailValueAliases: Record<string, Record<string, string>> = {
@@ -1464,6 +1471,7 @@ export default function AdminPanel() {
     specialita: "specializzazione",
     indirizzo_locale: "indirizzo_locale",
     citta_locale: "citta_locale",
+    sensazione_palato: "Sensazione al palato",
   };
 
   function stringifyProfileCollection(value: unknown) {
@@ -2077,8 +2085,8 @@ export default function AdminPanel() {
               {saveStatus === "ok" && (<div style={{ ...badgeOkStyle, fontSize: 15, padding: 8 }}>Modifica salvata</div>)}
               {saveStatus === "error" && (<div style={{ ...badgeErrorStyle, fontSize: 15, padding: 8 }}>Modifica non salvata</div>)}
               <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
-                {editorKeys.map(key => {
-                      if ((key === "id" && selectedTable !== "profili") || (selectedTable === "cocktail" && (key === "data_creazione" || key === "created_at" || key === "texture")) || (selectedTable === "Locali" && removedLocaliFields.has(key))) return null;
+                    {editorKeys.map(key => {
+                      if ((key === "id" && selectedTable !== "profili") || (selectedTable === "cocktail" && (key === "data_creazione" || key === "created_at" || key === "texture")) || (selectedTable === "cocktail" && (key === "texture")) || (selectedTable === "Locali" && removedLocaliFields.has(key))) return null;
                       if (selectedTable === "profili" && key === "password") {
                         return (
                           <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
@@ -2132,10 +2140,19 @@ export default function AdminPanel() {
                         );
                       }
                       if (selectedTable === "cocktail" && cocktailMultiSelectOptions[key]) {
+                        // compatibilità temporanea: se arriva "texture", mappa su sensazione_palato
+                        if (key === "texture") return null;
                         return (
                           <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                             <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
-                            <input value={selectedItem[key] ?? ""} onChange={e => { setSelectedItem((prev: any) => ({ ...prev, [key]: e.target.value })); setSaveStatus(null); }} style={inputMobileStyle} />
+                            <select
+                              value={selectedItem[key] ?? selectedItem["texture"] ?? ""}
+                              onChange={e => { setSelectedItem((prev: any) => ({ ...prev, [key]: e.target.value })); setSaveStatus(null); }}
+                              style={inputMobileStyle}
+                            >
+                              <option value="">Scegli</option>
+                              {cocktailMultiSelectOptions[key].map(option => <option key={option} value={option}>{option}</option>)}
+                            </select>
                           </div>
                         );
                       }
