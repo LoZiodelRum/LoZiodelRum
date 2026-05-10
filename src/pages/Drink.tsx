@@ -58,7 +58,7 @@ export default function Drink() {
       const {
         data: distillatoData,
         error: distillatoError,
-      } = await supabase.from("distillato").select("*");
+      } = await supabase.from("distillati").select("*");
 
       console.log("distillatoData", distillatoData);
       console.log("distillatoError", distillatoError);
