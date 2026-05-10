@@ -59,7 +59,7 @@ export default function Auth() {
       .from("Profili")
       .select("approvato")
       .eq("id", user.id)
-      .single();
+      .maybeSingle();
 
     if (profiloError) {
       setMsg("Errore verifica profilo");
