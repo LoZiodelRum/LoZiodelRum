@@ -100,12 +100,6 @@ export default function Auth() {
         return;
       }
 
-      if (!profilo.approvato) {
-        setMsg("Account in attesa di approvazione");
-        setLoading(false);
-        return;
-      }
-
       const { error: loginError } = await supabase.auth.signInWithPassword({
         email: profilo.email,
         password,
