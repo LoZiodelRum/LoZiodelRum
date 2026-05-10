@@ -51,7 +51,7 @@ export default function PannelloControllo() {
 
   async function loadData() {
     const { data: localiData } = await supabase.from("Locali").select("*");
-    const { data: utentiData } = await supabase.from("profili").select("*");
+    const { data: utentiData } = await supabase.from("Profili").select("*");
     const { data: articoliData } = await supabase.from("articoli").select("*");
     const { data: cocktailData } = await supabase.from("cocktail").select("*");
     const { data: distillatiData } = await supabase.from("distillati").select("*");
@@ -95,7 +95,7 @@ export default function PannelloControllo() {
 
   async function toggleApprovazione(user: any) {
     await supabase
-      .from("profili")
+      .from("Profili")
       .update({ approvato: !user.approvato })
       .eq("id", user.id);
 
@@ -184,7 +184,7 @@ export default function PannelloControllo() {
         cleanData.id = crypto.randomUUID();
       }
 
-      if (selectedTable === "profili") {
+      if (selectedTable === "Profili") {
         cleanData.ruolo = cleanData.ruolo || createRoleHint || "utente";
         cleanData.approvato = cleanData.approvato ?? false;
       }
@@ -1321,7 +1321,7 @@ export default function PannelloControllo() {
       }
     }
 
-    if (table === "profili") {
+    if (table === "Profili") {
       draft.ruolo = roleHint || "utente";
       draft.approvato = false;
       draft.status = draft.status || "in_attesa";
@@ -1446,9 +1446,9 @@ export default function PannelloControllo() {
           {Sidebar("Locali", locali, "Locali", "nome")}
         </div>
 
-        {Sidebar("Utenti", utenti, "profili", "username")}
-        {Sidebar("Bartender", bartender, "profili", "username")}
-        {Sidebar("Proprietari", proprietari, "profili", "username")}
+        {Sidebar("Utenti", utenti, "Profili", "username")}
+        {Sidebar("Bartender", bartender, "Profili", "username")}
+        {Sidebar("Proprietari", proprietari, "Profili", "username")}
         {Sidebar("Cocktail", cocktail, "cocktail", "nome")}
         {Sidebar("Distillati", distillati, "distillati", "nome")}
         {Sidebar("Vini", vini, wineTableName, "nome")}
@@ -1509,14 +1509,14 @@ export default function PannelloControllo() {
 
           <div style={quickActionCardStyle}>
             <h3 style={quickActionTitleStyle}>Aggiunta Bartender</h3>
-            <button style={quickActionBtnStyle} onClick={() => openCreateEditor("profili", bartender, "bartender")}>
+            <button style={quickActionBtnStyle} onClick={() => openCreateEditor("Profili", bartender, "bartender")}>
               modifica bartender
             </button>
           </div>
 
           <div style={quickActionCardStyle}>
             <h3 style={quickActionTitleStyle}>Aggiunta Proprietari</h3>
-            <button style={quickActionBtnStyle} onClick={() => openCreateEditor("profili", proprietari, "proprietario")}>
+            <button style={quickActionBtnStyle} onClick={() => openCreateEditor("Profili", proprietari, "proprietario")}>
               modifica proprietari
             </button>
           </div>
