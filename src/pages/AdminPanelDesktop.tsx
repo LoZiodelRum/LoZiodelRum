@@ -1,3 +1,25 @@
+
+// Opzioni profilo gustativo e famiglia aromatica (inline, come nel vecchio progetto)
+const TASTE_PROFILE_OPTIONS = [
+  "Dolce (Sweet):",
+  "Acido/Aspro (Sour):",
+  "Amaro/Amaricante (Bitter):",
+  "Secco/Spiritoso (Dry/Spirit):",
+  "Fruttato/Tropicale:",
+  "Umami:",
+];
+
+const AROMATIC_FAMILY_OPTIONS = [
+  "Tostato/Affumicato",
+  "Balsamico",
+  "Speziato",
+  "Floreale",
+  "Fruttato",
+  "Vegetale",
+  "Agrumato",
+  "Erbaceo",
+  "Neutro",
+];
 import "../App.css";
 import React, { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
