@@ -77,6 +77,12 @@ export default function AdminPanel() {
 
   async function loadData() {
     const { data: localiData } = await supabase.from("Locali").select("*");
+    const { data: profilesData, error: profilesError } = await supabase
+  .from("Profili")
+  .select("*");
+
+console.log("PROFILI:", profilesData);
+console.log("ERRORE PROFILI:", profilesError);
     let adminPassword = "";
     if (typeof window !== "undefined" && window.localStorage) {
       adminPassword = localStorage.getItem("adminPassword") || "";
@@ -168,7 +174,7 @@ export default function AdminPanel() {
     setWineTableName(detectedWineTable);
 
     setKpi({
-      utenti: safeUsers.length,
+      utenti: profilesData?.length || 0,
       locali: (localiData || []).length,
       drink: (safeCocktail.length || 0) + (distillatiData?.length || 0),
       articoli: (articoliData || []).length,
