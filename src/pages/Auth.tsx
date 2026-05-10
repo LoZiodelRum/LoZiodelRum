@@ -30,26 +30,72 @@ export default function Auth() {
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState("");
 
+  useEffect(() => {
+    autoLogin();
+  }, []);
+
+  async function autoLogin() {
+    const remembered = localStorage.getItem("rememberedDevice");
+    const deviceToken = localStorage.getItem("deviceToken");
+
+    if (!remembered || !deviceToken) return;
+
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+
+    if (!session?.user) return;
+
+    const { data: profilo } = await supabase
+      .from("Profili")
+      .select("device_token")
+      .eq("id", session.user.id)
+      .maybeSingle();
+
+    if (!profilo) return;
+
+    if (profilo.device_token === deviceToken) {
+      navigate("/");
+    }
+  }
+
   async function handleLogin(e: any) {
     e.preventDefault();
+
     setLoading(true);
     setMsg("");
 
     try {
       let deviceToken = localStorage.getItem("deviceToken");
+
       if (!deviceToken) {
         deviceToken = uuidv4();
         localStorage.setItem("deviceToken", deviceToken);
       }
 
+      const cleanUsername = username.trim().toLowerCase();
+
       const { data: profilo, error: profiloError } = await supabase
         .from("Profili")
-        .select("id, email, approvato, device_token")
-        .eq("username", username)
+        .select("*")
+        .ilike("username", cleanUsername)
         .maybeSingle();
 
-      if (profiloError || !profilo) {
+      if (profiloError) {
+        console.error("Errore profilo:", profiloError);
+        setMsg("Errore recupero utente");
+        setLoading(false);
+        return;
+      }
+
+      if (!profilo) {
         setMsg("Utente non trovato");
+        setLoading(false);
+        return;
+      }
+
+      if (!profilo.email) {
+        setMsg("Email utente mancante");
         setLoading(false);
         return;
       }
@@ -66,6 +112,7 @@ export default function Auth() {
       });
 
       if (loginError) {
+        console.error("Errore login:", loginError);
         setMsg("Credenziali errate");
         setLoading(false);
         return;
@@ -74,27 +121,37 @@ export default function Auth() {
       if (profilo.device_token !== deviceToken) {
         await supabase
           .from("Profili")
-          .update({ device_token: deviceToken })
+          .update({
+            device_token: deviceToken,
+          })
           .eq("id", profilo.id);
       }
 
       localStorage.setItem("rememberedDevice", "true");
+
       navigate("/");
+
     } catch (err) {
       console.error(err);
       setMsg("Errore login");
     }
+
     setLoading(false);
   }
 
   async function handleRegister(e: any) {
     e.preventDefault();
+
     setLoading(true);
     setMsg("");
 
-    const email = `${username}@loziodelrum.it`;
+    const cleanUsername = username.trim().toLowerCase();
+    const email = `${cleanUsername}@loziodelrum.it`;
+
     let user: any = null;
+
     let deviceToken = localStorage.getItem("deviceToken");
+
     if (!deviceToken) {
       deviceToken = uuidv4();
       localStorage.setItem("deviceToken", deviceToken);
@@ -111,11 +168,13 @@ export default function Auth() {
           email,
           password,
         });
+
         if (login.error) {
           setMsg("Utente già registrato, password errata");
           setLoading(false);
           return;
         }
+
         user = login.data.user;
       } else {
         setMsg(error.message);
@@ -132,7 +191,10 @@ export default function Auth() {
       return;
     }
 
-    const ruoloFinale = username === "maurizio" ? "admin" : "utente";
+    const ruoloFinale =
+      cleanUsername === "maurizio" || cleanUsername === "lozio"
+        ? "admin"
+        : "utente";
 
     const { data: existingProfile } = await supabase
       .from("Profili")
@@ -141,33 +203,37 @@ export default function Auth() {
       .maybeSingle();
 
     if (!existingProfile) {
-      const { error: insertError } = await supabase.from("Profili").insert([
-        {
-          id: user.id,
-          nome,
-          cognome,
-          username,
-          email,
-          ruolo: ruoloFinale,
-          approvato: false,
-          device_token: deviceToken,
-          avatar_url: null,
-          bio_breve: null,
-          telefono: null,
-          city: null,
-          level: 1,
-          points: 0,
-          badges: [],
-          esperienze_principali: null,
-          specialita: null,
-          citta_operativa: null,
-          social_links: null,
-          nome_locale: null,
-          indirizzo: null,
-          created_at: new Date().toISOString(),
-        },
-      ]);
+      const { error: insertError } = await supabase
+        .from("Profili")
+        .insert([
+          {
+            id: user.id,
+            nome,
+            cognome,
+            username: cleanUsername,
+            email,
+            ruolo: ruoloFinale,
+            approvato: true,
+            device_token: deviceToken,
+            avatar_url: null,
+            bio_breve: null,
+            telefono: null,
+            city: null,
+            level: 1,
+            points: 0,
+            badges: [],
+            esperienze_principali: null,
+            specialita: null,
+            citta_operativa: null,
+            social_links: null,
+            nome_locale: null,
+            indirizzo: null,
+            created_at: new Date().toISOString(),
+          },
+        ]);
+
       if (insertError) {
+        console.error(insertError);
         setMsg(insertError.message);
         setLoading(false);
         return;
@@ -176,29 +242,6 @@ export default function Auth() {
 
     setStep("ruolo");
     setLoading(false);
-  }
-  // Autologin per device riconosciuto
-  useEffect(() => {
-    autoLogin();
-  }, []);
-
-  async function autoLogin() {
-    const remembered = localStorage.getItem("rememberedDevice");
-    const deviceToken = localStorage.getItem("deviceToken");
-    if (!remembered || !deviceToken) return;
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-    if (!session?.user) return;
-    const { data: profilo } = await supabase
-      .from("Profili")
-      .select("device_token")
-      .eq("id", session.user.id)
-      .maybeSingle();
-    if (!profilo) return;
-    if (profilo.device_token === deviceToken) {
-      navigate("/");
-    }
   }
 
   async function handleRuoloSelect(selectedRuolo: string) {
@@ -288,10 +331,34 @@ export default function Auth() {
 
         {isRegister && step === "auth" && (
           <>
-            <input placeholder="Nome" value={nome} onChange={(e) => setNome(e.target.value)} required />
-            <input placeholder="Cognome" value={cognome} onChange={(e) => setCognome(e.target.value)} required />
-            <input placeholder="Username" value={username} onChange={(e) => setUsername(e.target.value)} required />
-            <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required />
+            <input
+              placeholder="Nome"
+              value={nome}
+              onChange={(e) => setNome(e.target.value)}
+              required
+            />
+
+            <input
+              placeholder="Cognome"
+              value={cognome}
+              onChange={(e) => setCognome(e.target.value)}
+              required
+            />
+
+            <input
+              placeholder="Username"
+              value={username}
+              onChange={(e) => setUsername(e.target.value)}
+              required
+            />
+
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+            />
           </>
         )}
 
@@ -299,28 +366,81 @@ export default function Auth() {
           <>
             <h3>Scegli il tuo ruolo</h3>
 
-            <button type="button" onClick={() => setRuolo("utente")}>Utente</button>
-            <button type="button" onClick={() => setRuolo("bartender")}>Bartender</button>
-            <button type="button" onClick={() => setRuolo("proprietario")}>Proprietario</button>
+            <button
+              type="button"
+              onClick={() => setRuolo("utente")}
+            >
+              Utente
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setRuolo("bartender")}
+            >
+              Bartender
+            </button>
+
+            <button
+              type="button"
+              onClick={() => setRuolo("proprietario")}
+            >
+              Proprietario
+            </button>
 
             {ruolo === "bartender" && (
               <>
-                <input placeholder="Esperienze" value={esperienze} onChange={(e) => setEsperienze(e.target.value)} />
-                <input placeholder="Specialità" value={specialita} onChange={(e) => setSpecialita(e.target.value)} />
-                <input placeholder="Città" value={citta} onChange={(e) => setCitta(e.target.value)} />
-                <input placeholder="Social" value={social} onChange={(e) => setSocial(e.target.value)} />
+                <input
+                  placeholder="Esperienze"
+                  value={esperienze}
+                  onChange={(e) => setEsperienze(e.target.value)}
+                />
+
+                <input
+                  placeholder="Specialità"
+                  value={specialita}
+                  onChange={(e) => setSpecialita(e.target.value)}
+                />
+
+                <input
+                  placeholder="Città"
+                  value={citta}
+                  onChange={(e) => setCitta(e.target.value)}
+                />
+
+                <input
+                  placeholder="Social"
+                  value={social}
+                  onChange={(e) => setSocial(e.target.value)}
+                />
               </>
             )}
 
             {ruolo === "proprietario" && (
               <>
-                <input placeholder="Nome locale" value={nomeLocale} onChange={(e) => setNomeLocale(e.target.value)} />
-                <input placeholder="Indirizzo" value={indirizzo} onChange={(e) => setIndirizzo(e.target.value)} />
-                <input placeholder="Telefono" value={telefono} onChange={(e) => setTelefono(e.target.value)} />
+                <input
+                  placeholder="Nome locale"
+                  value={nomeLocale}
+                  onChange={(e) => setNomeLocale(e.target.value)}
+                />
+
+                <input
+                  placeholder="Indirizzo"
+                  value={indirizzo}
+                  onChange={(e) => setIndirizzo(e.target.value)}
+                />
+
+                <input
+                  placeholder="Telefono"
+                  value={telefono}
+                  onChange={(e) => setTelefono(e.target.value)}
+                />
               </>
             )}
 
-            <button type="button" onClick={() => handleRuoloSelect(ruolo)}>
+            <button
+              type="button"
+              onClick={() => handleRuoloSelect(ruolo)}
+            >
               Completa registrazione
             </button>
           </>
@@ -328,7 +448,11 @@ export default function Auth() {
 
         {step === "auth" && (
           <button>
-            {loading ? "..." : isRegister ? "Registrati" : "Accedi"}
+            {loading
+              ? "..."
+              : isRegister
+              ? "Registrati"
+              : "Accedi"}
           </button>
         )}
 
@@ -336,14 +460,19 @@ export default function Auth() {
           onClick={() => {
             setIsRegister(!isRegister);
             setStep("auth");
+            setMsg("");
           }}
-          style={{ marginTop: 10, cursor: "pointer" }}
+          style={{
+            marginTop: 10,
+            cursor: "pointer",
+          }}
         >
-          {isRegister ? "Hai già un account? Accedi" : "Registrati"}
+          {isRegister
+            ? "Hai già un account? Accedi"
+            : "Registrati"}
         </p>
 
         {msg && <p>{msg}</p>}
-        {/* Logout: localStorage.removeItem("rememberedDevice"); */}
       </form>
     </div>
   );
