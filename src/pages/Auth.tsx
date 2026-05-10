@@ -56,7 +56,7 @@ export default function Auth() {
     }
 
     const { data: profilo, error: profiloError } = await supabase
-      .from("profili")
+      .from("Profili")
       .select("approvato")
       .eq("id", user.id)
       .single();
@@ -125,13 +125,13 @@ export default function Auth() {
       username === "maurizio" ? "admin" : "utente";
 
     const { data: existingProfile } = await supabase
-      .from("profili")
+      .from("Profili")
       .select("id")
       .eq("id", user.id)
       .maybeSingle();
 
     if (!existingProfile) {
-      const { error: insertError } = await supabase.from("profili").insert([
+      const { error: insertError } = await supabase.from("Profili").insert([
         {
           id: user.id,
           nome,
@@ -208,7 +208,7 @@ export default function Auth() {
     }
 
     const { error } = await supabase
-      .from("profili")
+      .from("Profili")
       .update(updateData)
       .eq("id", user.id);
 
