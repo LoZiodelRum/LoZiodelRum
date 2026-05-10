@@ -33,20 +33,49 @@ export default function Drink() {
   async function load() {
     setLoading(true);
 
-    const { data: cocktailData } = await supabase.from("cocktail").select("*");
-    const { data: distillatiData, error: distillatiError } = await supabase.from("distillati").select("*");
+    console.log("SUPABASE TEST");
 
-    let distillatiRows: any[] = Array.isArray(distillatiData) ? distillatiData : [];
+    const { data: cocktailData, error: cocktailError } = await supabase
+      .from("cocktail")
+      .select("*");
+
+    console.log("cocktailData", cocktailData);
+    console.log("cocktailError", cocktailError);
+
+    const {
+      data: distillatiData,
+      error: distillatiError,
+    } = await supabase.from("distillati").select("*");
+
+    console.log("distillatiData", distillatiData);
+    console.log("distillatiError", distillatiError);
+
+    let distillatiRows: any[] = Array.isArray(distillatiData)
+      ? distillatiData
+      : [];
 
     if ((!distillatiRows.length && distillatiError) || !distillatiRows.length) {
-      const { data: distillatoData } = await supabase.from("distillato").select("*");
+      const {
+        data: distillatoData,
+        error: distillatoError,
+      } = await supabase.from("distillato").select("*");
+
+      console.log("distillatoData", distillatoData);
+      console.log("distillatoError", distillatoError);
+
       if (Array.isArray(distillatoData) && distillatoData.length) {
         distillatiRows = distillatoData;
       }
     }
 
     function getImage(obj: any) {
-      return obj.immagine || obj.immagine_url || obj.image || obj.img || null;
+      return (
+        obj.immagine ||
+        obj.immagine_url ||
+        obj.image ||
+        obj.img ||
+        null
+      );
     }
 
     function normalize(value: any) {
@@ -54,25 +83,29 @@ export default function Drink() {
     }
 
     function distillatoCategoryText(d: any) {
-      const categoria = [
-        d.categoria,
-        d.tipologia,
-        d.tipo,
-        d.tipo_distillato,
-        d.categoria_distillato,
-        d.category,
-        d.base_alcolica,
-      ]
-        .map(normalize)
-        .find((value) => value.length > 0) || "";
+      const categoria =
+        [
+          d.categoria,
+          d.tipologia,
+          d.tipo,
+          d.tipo_distillato,
+          d.categoria_distillato,
+          d.category,
+          d.base_alcolica,
+        ]
+          .map(normalize)
+          .find((value) => value.length > 0) || "";
 
       const nomeMarca = `${normalize(d.nome)} ${normalize(d.marca)}`.trim();
+
       return `${categoria} ${nomeMarca}`.trim();
     }
 
     function isDistillatoLike(record: any) {
       const cat = normalize(record?.categoria);
+
       const hasDistillatoCategory = cat.includes("distillat");
+
       const hasDistillatoFields = [
         record?.distilleria,
         record?.invecchiamento,
@@ -83,12 +116,22 @@ export default function Drink() {
         record?.note_aromatiche,
         record?.sottocategoria,
       ].some((value) => normalize(value).length > 0);
+
       return hasDistillatoCategory || hasDistillatoFields;
     }
 
     if (cocktailData) {
-      const sorted = cocktailData.sort((a: any, b: any) => a.nome.localeCompare(b.nome));
-      setCocktail(sorted.slice(0, 6).map((c: any) => ({ id: c.id, nome: c.nome, immagine: getImage(c) })));
+      const sorted = cocktailData.sort((a: any, b: any) =>
+        a.nome.localeCompare(b.nome)
+      );
+
+      setCocktail(
+        sorted.slice(0, 6).map((c: any) => ({
+          id: c.id,
+          nome: c.nome,
+          immagine: getImage(c),
+        }))
+      );
     }
 
     const mappedDistillati = distillatiRows
@@ -101,7 +144,9 @@ export default function Drink() {
       }))
       .sort((a, b) => a.nome.localeCompare(b.nome));
 
-    const cocktailDistillatiFallback: Distillato[] = (cocktailData || [])
+    const cocktailDistillatiFallback: Distillato[] = (
+      cocktailData || []
+    )
       .filter((record: any) => isDistillatoLike(record))
       .map((c: any) => ({
         id: c.id,
@@ -110,9 +155,13 @@ export default function Drink() {
         categoria: distillatoCategoryText(c),
         immagine: getImage(c),
       }))
-      .sort((a: Distillato, b: Distillato) => a.nome.localeCompare(b.nome));
+      .sort((a: Distillato, b: Distillato) =>
+        a.nome.localeCompare(b.nome)
+      );
 
-    const sourceDistillati = mappedDistillati.length ? mappedDistillati : cocktailDistillatiFallback;
+    const sourceDistillati = mappedDistillati.length
+      ? mappedDistillati
+      : cocktailDistillatiFallback;
 
     if (sourceDistillati.length) {
       const mapped = sourceDistillati
@@ -125,13 +174,33 @@ export default function Drink() {
         }))
         .sort((a, b) => a.nome.localeCompare(b.nome));
 
-      const containsAny = (text: string, words: string[]) => words.some((word) => text.includes(word));
-      const rumWords = ["rum", "rhum", "ron", "cachaca"];
-      const whiskyWords = ["whisky", "whiskey", "scotch", "bourbon", "rye", "single malt"];
+      const containsAny = (text: string, words: string[]) =>
+        words.some((word) => text.includes(word));
 
-      const rumCandidates = mapped.filter((d) => containsAny(d.categoria, rumWords));
-      const whiskyCandidates = mapped.filter((d) => containsAny(d.categoria, whiskyWords));
-      const altriCandidates = mapped.filter((d) => !containsAny(d.categoria, rumWords) && !containsAny(d.categoria, whiskyWords));
+      const rumWords = ["rum", "rhum", "ron", "cachaca"];
+
+      const whiskyWords = [
+        "whisky",
+        "whiskey",
+        "scotch",
+        "bourbon",
+        "rye",
+        "single malt",
+      ];
+
+      const rumCandidates = mapped.filter((d) =>
+        containsAny(d.categoria, rumWords)
+      );
+
+      const whiskyCandidates = mapped.filter((d) =>
+        containsAny(d.categoria, whiskyWords)
+      );
+
+      const altriCandidates = mapped.filter(
+        (d) =>
+          !containsAny(d.categoria, rumWords) &&
+          !containsAny(d.categoria, whiskyWords)
+      );
 
       setRum(rumCandidates.slice(0, 6));
       setWhisky(whiskyCandidates.slice(0, 6));
@@ -154,22 +223,35 @@ export default function Drink() {
       <section className="drink-section-white">
         <div className="drink-section-header">
           <h2 className="drink-section-title">{title}</h2>
-          <button className="btn-primary btn-small" onClick={() => navigate(`/categoria/${tipo}`)}>
+
+          <button
+            className="btn-primary btn-small"
+            onClick={() => navigate(`/categoria/${tipo}`)}
+          >
             Vedi tutti
           </button>
         </div>
 
         {!list.length ? (
-          <p style={{ textAlign: "center", color: "#999" }}>Nessun dato</p>
+          <p style={{ textAlign: "center", color: "#999" }}>
+            Nessun dato
+          </p>
         ) : (
           <div className="drink-grid-uniform">
             {list.map((item) => (
-              <article key={item.id} className="drink-card-uniform" onClick={() => navigate(`/drink/${item.id}`)}>
+              <article
+                key={item.id}
+                className="drink-card-uniform"
+                onClick={() => navigate(`/drink/${item.id}`)}
+              >
                 {item.immagine ? (
                   <img src={item.immagine} alt={item.nome} />
                 ) : (
-                  <div className="no-img-placeholder">NO IMG</div>
+                  <div className="no-img-placeholder">
+                    NO IMG
+                  </div>
                 )}
+
                 <div className="drink-card-caption">
                   <h3>{item.nome}</h3>
                 </div>
