@@ -1,7 +1,8 @@
 import "../App.css";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { supabase } from "../lib/supabaseClient.js";
 import { useNavigate } from "react-router-dom";
+import { v4 as uuidv4 } from "uuid";
 
 export default function Auth() {
   const navigate = useNavigate();
@@ -34,48 +35,56 @@ export default function Auth() {
     setLoading(true);
     setMsg("");
 
-    const email = `${username}@loziodelrum.it`;
+    try {
+      let deviceToken = localStorage.getItem("deviceToken");
+      if (!deviceToken) {
+        deviceToken = uuidv4();
+        localStorage.setItem("deviceToken", deviceToken);
+      }
 
-    const { data, error } = await supabase.auth.signInWithPassword({
-      email,
-      password,
-    });
+      const { data: profilo, error: profiloError } = await supabase
+        .from("Profili")
+        .select("id, email, approvato, device_token")
+        .eq("username", username)
+        .maybeSingle();
 
-    if (error) {
-      setMsg("Credenziali errate");
-      setLoading(false);
-      return;
-    }
+      if (profiloError || !profilo) {
+        setMsg("Utente non trovato");
+        setLoading(false);
+        return;
+      }
 
-    const user = data.user;
+      if (!profilo.approvato) {
+        setMsg("Account in attesa di approvazione");
+        setLoading(false);
+        return;
+      }
 
-    if (!user) {
+      const { error: loginError } = await supabase.auth.signInWithPassword({
+        email: profilo.email,
+        password,
+      });
+
+      if (loginError) {
+        setMsg("Credenziali errate");
+        setLoading(false);
+        return;
+      }
+
+      if (profilo.device_token !== deviceToken) {
+        await supabase
+          .from("Profili")
+          .update({ device_token: deviceToken })
+          .eq("id", profilo.id);
+      }
+
+      localStorage.setItem("rememberedDevice", "true");
+      navigate("/");
+    } catch (err) {
+      console.error(err);
       setMsg("Errore login");
-      setLoading(false);
-      return;
     }
-
-    const { data: profilo, error: profiloError } = await supabase
-      .from("Profili")
-      .select("approvato")
-      .eq("id", user.id)
-      .maybeSingle();
-
-    if (profiloError) {
-      setMsg("Errore verifica profilo");
-      setLoading(false);
-      return;
-    }
-
-    if (!profilo?.approvato) {
-      await supabase.auth.signOut();
-      setMsg("Account in attesa di approvazione");
-      setLoading(false);
-      return;
-    }
-
-    navigate("/");
-    window.location.reload();
+    setLoading(false);
   }
 
   async function handleRegister(e: any) {
@@ -84,8 +93,12 @@ export default function Auth() {
     setMsg("");
 
     const email = `${username}@loziodelrum.it`;
-
     let user: any = null;
+    let deviceToken = localStorage.getItem("deviceToken");
+    if (!deviceToken) {
+      deviceToken = uuidv4();
+      localStorage.setItem("deviceToken", deviceToken);
+    }
 
     const { data, error } = await supabase.auth.signUp({
       email,
@@ -98,13 +111,11 @@ export default function Auth() {
           email,
           password,
         });
-
         if (login.error) {
           setMsg("Utente già registrato, password errata");
           setLoading(false);
           return;
         }
-
         user = login.data.user;
       } else {
         setMsg(error.message);
@@ -121,8 +132,7 @@ export default function Auth() {
       return;
     }
 
-    const ruoloFinale =
-      username === "maurizio" ? "admin" : "utente";
+    const ruoloFinale = username === "maurizio" ? "admin" : "utente";
 
     const { data: existingProfile } = await supabase
       .from("Profili")
@@ -140,6 +150,7 @@ export default function Auth() {
           email,
           ruolo: ruoloFinale,
           approvato: false,
+          device_token: deviceToken,
           avatar_url: null,
           bio_breve: null,
           telefono: null,
@@ -156,7 +167,6 @@ export default function Auth() {
           created_at: new Date().toISOString(),
         },
       ]);
-
       if (insertError) {
         setMsg(insertError.message);
         setLoading(false);
@@ -166,6 +176,29 @@ export default function Auth() {
 
     setStep("ruolo");
     setLoading(false);
+  }
+  // Autologin per device riconosciuto
+  useEffect(() => {
+    autoLogin();
+  }, []);
+
+  async function autoLogin() {
+    const remembered = localStorage.getItem("rememberedDevice");
+    const deviceToken = localStorage.getItem("deviceToken");
+    if (!remembered || !deviceToken) return;
+    const {
+      data: { session },
+    } = await supabase.auth.getSession();
+    if (!session?.user) return;
+    const { data: profilo } = await supabase
+      .from("Profili")
+      .select("device_token")
+      .eq("id", session.user.id)
+      .maybeSingle();
+    if (!profilo) return;
+    if (profilo.device_token === deviceToken) {
+      navigate("/");
+    }
   }
 
   async function handleRuoloSelect(selectedRuolo: string) {
@@ -310,6 +343,7 @@ export default function Auth() {
         </p>
 
         {msg && <p>{msg}</p>}
+        {/* Logout: localStorage.removeItem("rememberedDevice"); */}
       </form>
     </div>
   );

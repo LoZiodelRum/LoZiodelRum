@@ -32,6 +32,7 @@ export default function Navbar() {
 
   async function handleLogout() {
     await supabase.auth.signOut();
+    localStorage.removeItem("rememberedDevice");
     closeMobileMenu();
     navigate("/");
     window.location.reload();
