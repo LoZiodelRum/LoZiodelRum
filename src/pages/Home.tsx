@@ -4,7 +4,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, MapPin } from "lucide-react";
 import { supabase } from "../lib/supabaseClient";
 import { useUser } from "../context/UserContext";
-import BarettoPreview from "../components/BarettoPreview";
 
 type Locale = {
   id: string;
