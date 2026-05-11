@@ -32,14 +32,14 @@ export default function Magazine() {
   }
 
   if (!articles.length) {
-    return <div className="page fade-in" style={{ padding: 40 }}>Nessun articolo</div>;
+    return <div className="page fade-in" style={{ padding: 40, marginTop: 24 }}>Nessun articolo</div>;
   }
 
   const hero = articles.find((a) => (a.titolo || "").trim().length > 0 && (a.descrizione || "").trim().length > 0);
   const others = hero ? articles.filter((a) => a.id !== hero.id) : articles;
 
   return (
-    <div className="page fade-in magazine-page-mobile" style={{ paddingTop: 0 }}>
+    <div className="page fade-in magazine-page-mobile" style={{ paddingTop: 24 }}>
 
       {/* HERO */}
       {hero && (

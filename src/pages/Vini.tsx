@@ -159,7 +159,7 @@ export default function Vini() {
   };
 
   if (loading) {
-    return <div className="page fade-in">Caricamento...</div>;
+    return <div className="page fade-in" style={{ marginTop: 24 }}>Caricamento...</div>;
   }
 
   function normalizeWineName(name: string) {

@@ -215,7 +215,7 @@ export default function Drink() {
   }
 
   if (loading) {
-    return <div className="page fade-in">Caricamento...</div>;
+    return <div className="page fade-in" style={{ marginTop: 24 }}>Caricamento...</div>;
   }
 
   function renderSection(title: string, list: any[], tipo: string) {

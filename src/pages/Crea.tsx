@@ -324,7 +324,7 @@ export default function Crea() {
   const createdDate = new Date().toLocaleDateString("it-IT");
 
   return (
-    <div className="page fade-in crea-page" style={{ maxWidth: 1180 }} data-page-version="crea-configurator-v2">
+    <div className="page fade-in crea-page" style={{ maxWidth: 1180, marginTop: 24 }} data-page-version="crea-configurator-v2">
       <div className="crea-header" style={{ marginBottom: 20 }}>
         <div>
           <h1 className="crea-title" style={titleStyle}>Crea</h1>

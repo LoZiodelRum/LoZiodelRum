@@ -66,7 +66,7 @@ export default function Community() {
 
   if (loading) {
     return (
-      <div className="page fade-in" style={{ padding: 40, background: "#0c0a09", minHeight: "100vh" }}>
+      <div className="page fade-in" style={{ padding: 40, background: "#0c0a09", minHeight: "100vh", marginTop: 24 }}>
         <h1>Community</h1>
       </div>
     );
@@ -74,7 +74,7 @@ export default function Community() {
 
   if (!isAuthenticated) {
     return (
-      <div className="page fade-in" style={{ padding: 40, background: "#0c0a09", minHeight: "100vh" }}>
+      <div className="page fade-in" style={{ padding: 40, background: "#0c0a09", minHeight: "100vh", marginTop: 24 }}>
         <h1 style={{ color: "#f5a623" }}>Community DrinkWise</h1>
         <SignupInviteBox description="Registrati o accedi per pubblicare contenuti, commentare e partecipare alla community." />
       </div>
@@ -82,7 +82,7 @@ export default function Community() {
   }
 
   return (
-    <div className="page page-full-bleed fade-in community-page" style={{ padding: 0, background: "#0c0a09", minHeight: "100vh" }}>
+    <div className="page page-full-bleed fade-in community-page" style={{ padding: 0, background: "#0c0a09", minHeight: "100vh", marginTop: 24 }}>
       <style>{`
         .community-shell {
           max-width: 1400px;
