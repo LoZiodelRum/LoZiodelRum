@@ -2098,7 +2098,12 @@ export default function AdminPanel() {
                               <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>Sensazione al palato</label>
                               <select
                                 value={selectedItem["sensazione_palato"] ?? ""}
-                                onChange={e => { setSelectedItem((prev: any) => ({ ...prev, sensazione_palato: e.target.value })); setSaveStatus(null); }}
+                                onChange={(e) =>
+                                  setSelectedItem((prev: any) => ({
+                                    ...prev,
+                                    sensazione_palato: e.target.value,
+                                  }))
+                                }
                                 style={inputMobileStyle}
                               >
                                 <option value="">Scegli</option>
