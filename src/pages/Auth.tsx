@@ -207,7 +207,6 @@ export default function Auth() {
             username: cleanUsername,
             email,
             ruolo: ruoloFinale,
-            approvato: true,
             device_token: deviceToken,
             avatar_url: null,
             bio_breve: null,
