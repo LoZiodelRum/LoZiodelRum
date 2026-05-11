@@ -2170,6 +2170,28 @@ export default function AdminPanel() {
                       if (selectedTable === "cocktail" && cocktailMultiSelectOptions[key]) {
                         // compatibilità temporanea: se arriva "texture", mappa su sensazione_palato
                         if (key === "texture") return null;
+                        if (key === "sensazione_palato") {
+                          return (
+                            <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                              <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
+                              <select
+                                value={selectedItem[key] ?? ""}
+                                onChange={e => { setSelectedItem((prev: any) => ({ ...prev, [key]: e.target.value })); setSaveStatus(null); }}
+                                style={inputMobileStyle}
+                              >
+                                <option value="">Scegli</option>
+                                <option value="Leggero">Leggero</option>
+                                <option value="Morbido">Morbido</option>
+                                <option value="Fresco">Fresco</option>
+                                <option value="Cremoso">Cremoso</option>
+                                <option value="Vellutato">Vellutato</option>
+                                <option value="Caldo">Caldo</option>
+                                <option value="Avvolgente">Avvolgente</option>
+                                <option value="Persistente">Persistente</option>
+                              </select>
+                            </div>
+                          );
+                        }
                         return (
                           <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                             <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
