@@ -472,6 +472,32 @@ if (isCreating) {
                 }
 
                 if (selectedTable === "cocktail" && cocktailMultiSelectOptions[key]) {
+                  if (key === "sensazione_palato") {
+                    return (
+                      <FieldWrap key={key} label={fieldLabelMap[key] ?? key}>
+                        <select
+                          value={selectedItem[key] ?? ""}
+                          onChange={(e) =>
+                            setSelectedItem((prev: any) => ({
+                              ...prev,
+                              sensazione_palato: e.target.value,
+                            }))
+                          }
+                          style={inputMobileStyle}
+                        >
+                          <option value="">Scegli</option>
+                          <option value="Leggero">Leggero</option>
+                          <option value="Morbido">Morbido</option>
+                          <option value="Fresco">Fresco</option>
+                          <option value="Cremoso">Cremoso</option>
+                          <option value="Vellutato">Vellutato</option>
+                          <option value="Caldo">Caldo</option>
+                          <option value="Avvolgente">Avvolgente</option>
+                          <option value="Persistente">Persistente</option>
+                        </select>
+                      </FieldWrap>
+                    );
+                  }
                   return (
                     <FieldWrap key={key} label={fieldLabelMap[key] ?? key}>
                       <input
