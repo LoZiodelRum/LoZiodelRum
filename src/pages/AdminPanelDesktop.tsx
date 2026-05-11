@@ -2102,7 +2102,14 @@ export default function AdminPanel() {
                                 style={inputMobileStyle}
                               >
                                 <option value="">Scegli</option>
-                                {cocktailMultiSelectOptions["sensazione_palato"].map(option => <option key={option} value={option}>{option}</option>)}
+                                <option value="Leggero">Leggero</option>
+                                <option value="Morbido">Morbido</option>
+                                <option value="Fresco">Fresco</option>
+                                <option value="Cremoso">Cremoso</option>
+                                <option value="Vellutato">Vellutato</option>
+                                <option value="Caldo">Caldo</option>
+                                <option value="Avvolgente">Avvolgente</option>
+                                <option value="Persistente">Persistente</option>
                               </select>
                             </div>
                           )
