@@ -25,8 +25,9 @@ export default function Crea() {
     famiglia_aromatica: "",
     base_alcolica: "",
     Genere: "",
+    sensazione_palato: "",
   });
-  const [preferences, setPreferences] = useState<CocktailPreferences>({});
+  const [preferences, setPreferences] = useState<CocktailPreferences & { sensazione_palato?: string }>({});
   const [suggestions, setSuggestions] = useState<SuggestedCocktail[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
@@ -34,7 +35,7 @@ export default function Crea() {
   const [savingNames, setSavingNames] = useState<Record<string, boolean>>({});
   const [savedNames, setSavedNames] = useState<Record<string, boolean>>({});
 
-  function updatePreference(key: keyof CocktailPreferences, value: string) {
+  function updatePreference(key: keyof CocktailPreferences | "sensazione_palato", value: string) {
     setPreferences((prev) => ({ ...prev, [key]: value }));
   }
 
@@ -268,6 +269,7 @@ export default function Crea() {
         profilo_gustativo: serializePreferenceValue(cocktailForm.profilo_gustativo || preferences.profilo_gustativo),
         famiglia_aromatica: serializePreferenceValue(cocktailForm.famiglia_aromatica || preferences.famiglia_aromatica),
         Genere: cocktailForm.Genere || preferences.Genere || null,
+        sensazione_palato: preferences.sensazione_palato || null,
         texture: preferences.texture || null,
         created_at: nowIso,
       },
@@ -490,7 +492,7 @@ export default function Crea() {
 }
 
 const preferenceFields: Array<{
-  key: keyof CocktailPreferences;
+  key: keyof CocktailPreferences | "sensazione_palato";
   label: string;
   options: string[];
 }> = [
@@ -499,6 +501,16 @@ const preferenceFields: Array<{
   { key: "profilo_gustativo", label: "Profilo gustativo", options: ["Dolce", "Secco", "Amaro", "Agrodolce", "Acido", "Fresco"] },
   { key: "famiglia_aromatica", label: "Famiglia aromatica", options: ["Agrumato", "Fruttato", "Speziato", "Erbaceo", "Floreale", "Tostato", "Piccante", "Neutro"] },
   { key: "Genere", label: "Genere", options: ["Sour", "Highball", "Stirred (mescolati)", "Pestati", "Frozen", "Shakerato", "Agitato", "Tiki", "Build (Costruito in bicchiere)", "A strati (Layered)"] },
+  { key: "sensazione_palato", label: "Sensazione al palato", options: [
+    "Leggero",
+    "Morbido",
+    "Fresco",
+    "Cremoso",
+    "Vellutato",
+    "Caldo",
+    "Avvolgente",
+    "Persistente",
+  ] },
 ];
 
 const eyebrowStyle: React.CSSProperties = {
