@@ -1279,11 +1279,14 @@ export default function AdminPanel() {
       "A strati (Layered)",
     ],
     sensazione_palato: [
+      "Leggero",
       "Morbido",
-      "Secco",
+      "Fresco",
       "Cremoso",
-      "Frizzante",
       "Vellutato",
+      "Caldo",
+      "Avvolgente",
+      "Persistente",
     ],
   };
 
