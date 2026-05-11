@@ -1,5 +1,3 @@
-import ArticleBlockEdit from "./ArticleBlockEdit";
-import ArticleBlockEditor, { ArticleBlock } from "../components/admin/ArticleBlockEditor";
 // trigger vercel deploy
 import "../App.css";
 import React, { useEffect, useState } from "react";
@@ -27,17 +25,6 @@ export default function AdminPanel() {
   const [selectedItem, setSelectedItem] = useState<any>(null);
   const [selectedOriginalItem, setSelectedOriginalItem] = useState<any>(null);
   const [selectedTable, setSelectedTable] = useState<string>("");
-    const [editArticleId, setEditArticleId] = useState<string | null>(null);
-              <button style={quickActionBtnStyle} onClick={() => {
-                if (articoli.length > 0) setEditArticleId(articoli[0].id);
-              }}>modifica articoli</button>
-        {editArticleId && selectedTable === "articoli" && (
-          <div style={{ position: "fixed", inset: 0, background: "rgba(0,0,0,0.25)", zIndex: 1000 }}>
-            <div style={{ position: "absolute", left: 0, right: 0, top: 0, bottom: 0, overflow: "auto" }}>
-              <ArticleBlockEdit articleId={editArticleId} onClose={() => setEditArticleId(null)} />
-            </div>
-          </div>
-        )}
   const [isCreating, setIsCreating] = useState(false);
   const [createRoleHint, setCreateRoleHint] = useState<string | null>(null);
 
