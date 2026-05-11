@@ -1,24 +1,3 @@
-// Opzioni profilo gustativo e famiglia aromatica (inline, come nel vecchio progetto)
-const TASTE_PROFILE_OPTIONS = [
-  "Dolce (Sweet):",
-  "Acido/Aspro (Sour):",
-  "Amaro/Amaricante (Bitter):",
-  "Secco/Spiritoso (Dry/Spirit):",
-  "Fruttato/Tropicale:",
-  "Umami:",
-];
-
-const AROMATIC_FAMILY_OPTIONS = [
-  "Tostato/Affumicato",
-  "Balsamico",
-  "Speziato",
-  "Floreale",
-  "Fruttato",
-  "Vegetale",
-  "Agrumato",
-  "Erbaceo",
-  "Neutro",
-];
 import { useEffect, useState } from "react";
 import type { CSSProperties } from "react";
 import { supabase } from "../lib/supabaseClient";
@@ -353,7 +332,7 @@ if (isCreating) {
   const editorKeys = getEditorKeys();
 
   return (
-    <div style={{ ...pageStyle, paddingTop: 140 }}>
+    <div style={pageStyle}>
       <button onClick={() => setLeftOpen(true)} style={leftButtonStyle}>
      →
       </button>
@@ -723,7 +702,7 @@ const pageStyle: CSSProperties = {
 
 const leftButtonStyle: CSSProperties = {
   position: "fixed",
-  top: 110,
+  top: 60,
   left: 8,
   zIndex: 50,
   width: 36,
