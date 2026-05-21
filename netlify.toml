@@ -1,0 +1,31 @@
+[build]
+  publish = "dist"
+  command = "npm run build"
+
+[functions]
+  directory = "netlify/functions"
+
+[[redirects]]
+  from = "/api/admin-update-article"
+  to = "/.netlify/functions/admin-update-article"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin-save-wine"
+  to = "/.netlify/functions/admin-save-wine"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin-save-cocktail"
+  to = "/.netlify/functions/admin-save-cocktail"
+  status = 200
+
+[[redirects]]
+  from = "/api/admin-save-locale"
+  to = "/.netlify/functions/admin-save-locale"
+  status = 200
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200

@@ -1,0 +1,1284 @@
+/* ============================================================
+   1. RESET E VARIABILI (Righe 1-20)
+   ============================================================ */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+:root {
+  --primary: #c47a2c;
+  --bg-dark: #0b0b0b;
+  --bg-card: #1a1a1a;
+  --text-main: #ffffff;
+  --text-muted: #cccccc;
+  --border: #333333;
+}
+
+html, body, #root {
+  height: 100%;
+  max-width: 100vw;
+  overflow-x: hidden;
+}
+
+body {
+  background-color: var(--bg-dark);
+  color: var(--text-main);
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ============================================================
+   2. TIPOGRAFIA E LINK (Righe 21-45)
+   ============================================================ */
+h1, h2, h3, h4, h5, h6 { 
+  color: var(--text-main); 
+  line-height: 1.2;
+}
+
+p, span { color: var(--text-muted); }
+
+a { 
+  color: var(--text-main); 
+  text-decoration: none; 
+  transition: color 0.3s ease;
+}
+
+a:hover { color: var(--primary); }
+
+.page-title {
+  font-size: 32px;
+  font-weight: 700;
+  margin-bottom: 24px;
+  word-wrap: break-word;
+}
+
+/* ============================================================
+   3. LAYOUT E GRID SYSTEM (Righe 46-75)
+   ============================================================ */
+.page {
+  padding: 32px;
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  min-height: calc(100vh - 80px);
+}
+
+.page-full-bleed {
+  max-width: 100%;
+  padding: 0;
+}
+
+.section { 
+  margin-bottom: 40px; 
+  width: 100%;
+}
+
+.grid-wrapper {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 24px;
+  width: 100%;
+}
+
+/* Flex utility per allineamenti rapidi */
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+/* ============================================================
+   4. COMPONENTI CARD (Righe 76-105)
+   ============================================================ */
+.card {
+  background-color: var(--bg-card);
+  border-radius: 16px;
+  padding: 20px;
+  border: 1px solid var(--border);
+  color: var(--text-main);
+  transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.card:hover {
+  border-color: var(--primary);
+  transform: translateY(-4px);
+}
+
+.card img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 10px;
+  margin-bottom: 15px;
+}
+
+.badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  background: var(--primary);
+  color: white;
+}
+
+/* ============================================================
+   5. FORM E INPUTS (Righe 106-140)
+   ============================================================ */
+input, textarea, select, .input {
+  background-color: #111;
+  color: #fff;
+  border: 1px solid var(--border);
+  padding: 14px;
+  border-radius: 10px;
+  width: 100%;
+  font-size: 16px; /* Importante per mobile */
+  outline: none;
+  transition: border-color 0.3s;
+}
+
+input:focus, select:focus {
+  border-color: var(--primary);
+}
+
+label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  color: var(--text-muted);
+}
+
+button {
+  background-color: var(--primary);
+  color: #fff;
+  border: none;
+  padding: 14px 24px;
+  border-radius: 10px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+}
+
+button:active { transform: scale(0.98); }
+
+/* ============================================================
+   6. UTILITY & COMPONENTI COMUNI
+   ============================================================ */
+.text-center { text-align: center; }
+.mt-20 { margin-top: 20px; }
+.hidden { display: none; }
+
+.btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  padding: 9px 15px;
+  border-radius: 8px;
+  background: var(--primary);
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  white-space: nowrap;
+  width: auto; /* Override bottoni a tutto schermo */
+}
+
+.btn-primary:hover {
+  color: #fff;
+  filter: brightness(1.1);
+}
+
+.btn-small {
+  padding: 6px 12px;
+  font-size: 12px;
+  border-radius: 6px;
+}
+
+.content-wrapper {
+  background: #fff;
+  border-radius: 20px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.section-title-dark {
+  color: #1f2937;
+}
+
+/* Grid cocktail: 3 col desktop */
+.cocktail-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+/* Grid locali/magazine: auto-fill 3 col desktop */
+.content-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+/* Card generica scura */
+.preview-card {
+  border-radius: 12px;
+  overflow: hidden;
+  background: #1a1a1a;
+  display: block;
+  text-decoration: none;
+  transition: transform 0.15s ease;
+}
+
+.preview-card:hover {
+  transform: translateY(-2px);
+}
+
+.preview-card img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  display: block;
+}
+
+.preview-card-body {
+  padding: 12px;
+}
+
+.preview-card-body h3 {
+  font-size: 14px;
+  font-weight: 600;
+  color: #fff;
+  margin: 0 0 4px 0;
+}
+
+.preview-card-body p {
+  font-size: 12px;
+  color: #aaa;
+  margin: 0;
+}
+
+/* Card cocktail chiara */
+.cocktail-card {
+  border-radius: 12px;
+  overflow: hidden;
+  background: #f5f4f0;
+  display: block;
+  text-decoration: none;
+  transition: transform 0.15s ease;
+}
+
+.cocktail-card:hover {
+  transform: translateY(-2px);
+}
+
+.cocktail-card img {
+  width: 100%;
+  height: 150px;
+  object-fit: cover;
+  display: block;
+}
+
+.cocktail-card-body {
+  padding: 10px 8px;
+  border-top: 1px solid #e5e5e5;
+  text-align: center;
+}
+
+.cocktail-card-body h3 {
+  font-size: 13px;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin: 0;
+}
+
+/* Animazione caricamento */
+.fade-in {
+  animation: fadeIn 0.4s ease-in;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Tabelle nel pannello controllo */
+.table-responsive {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/* ============================================================
+   COMPONENTI PAGINE SPECIFICHE
+   ============================================================ */
+
+/* Pagina con sfondo chiaro (Drink, Category) */
+.page-light {
+  background: #F5F5F0;
+  min-height: 100%;
+  border-radius: 22px;
+  padding: clamp(16px, 2.6vw, 28px);
+  margin-top: 10px;
+}
+.page-light h1, .page-light h2, .page-light h3 { color: #4b2e1f; }
+.page-light p, .page-light span { color: #555; }
+
+/* Spaziatura sezioni (Drink, Category) */
+.section-gap {
+  margin-top: clamp(28px, 5vw, 60px);
+}
+
+/* Card quadrata drink (Drink, Category) */
+.drink-card {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  border-radius: 16px;
+  overflow: hidden;
+  position: relative;
+  background: #111;
+  cursor: pointer;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.drink-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 14px 30px rgba(0,0,0,0.25);
+}
+.drink-card img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.drink-card-overlay {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  padding: 10px;
+  background: linear-gradient(transparent, rgba(0,0,0,0.9));
+}
+.drink-card-overlay h3 { color: #fff; font-size: 13px; margin: 0; }
+.drink-card-overlay p  { color: #bbb; font-size: 10px; margin-top: 2px; }
+
+.mobile-articles-title {
+  display: none;
+  margin: 0 0 12px;
+  color: #fff;
+  font-size: 24px;
+  font-weight: 800;
+}
+
+/* Placeholder immagine mancante */
+.no-img-placeholder {
+  width: 100%;
+  height: 100%;
+  background: #ddd;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #666;
+  font-size: 12px;
+}
+
+.drink-page-white {
+  background: #ffffff;
+  min-height: calc(100vh - 70px);
+  width: 100vw;
+  max-width: none;
+  margin: 0;
+  padding: 12px 12px 20px;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+}
+
+.magazine-page-mobile {
+  width: 100%;
+}
+
+.drink-section-white {
+  width: 100%;
+  background: #ffffff;
+  margin-bottom: 16px;
+}
+
+.drink-section-header {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.drink-section-header .btn-primary,
+.drink-section-header button {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+.drink-section-title {
+  color: #111;
+  font-size: 20px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.drink-top-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.drink-back-btn {
+  background: transparent;
+  color: #111;
+  font-size: 44px;
+  line-height: 1;
+  border: none;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+}
+
+.drink-page-heading {
+  color: #111;
+  margin: 0;
+  font-size: clamp(32px, 4.2vw, 52px);
+  font-weight: 500;
+}
+
+.drink-grid-uniform {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.drink-card-uniform {
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  overflow: hidden;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  aspect-ratio: 1 / 1;
+  box-shadow: 0 8px 18px rgba(0, 0, 0, 0.14);
+  transition: transform 0.22s ease, box-shadow 0.22s ease;
+}
+
+.drink-card-uniform:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 16px 30px rgba(0, 0, 0, 0.2);
+}
+
+.drink-card-uniform img,
+.drink-card-uniform .no-img-placeholder {
+  width: 100%;
+  height: calc(100% - 50px);
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.drink-card-caption {
+  background: #fff;
+  border-top: 1px solid #eee;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 10px;
+  text-align: center;
+}
+
+.drink-card-caption h3 {
+  margin: 0;
+  color: #111;
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1.15;
+}
+
+.drink-page-white h1,
+.drink-page-white h2,
+.drink-page-white h3,
+.drink-page-white p,
+.drink-page-white span {
+  color: #111;
+}
+
+@media (min-width: 1024px) {
+  .drink-page-white {
+    padding: 24px 40px 36px;
+  }
+
+  .drink-section-white {
+    margin-bottom: 24px;
+  }
+
+  .drink-grid-uniform {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 24px;
+  }
+}
+
+/* Hero VenueDetail */
+.venue-hero {
+  position: relative;
+  height: clamp(180px, 35vw, 340px);
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 24px;
+}
+.venue-hero img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.venue-hero-info {
+  position: static;
+  text-shadow: none;
+}
+
+.venue-header-panel {
+  margin-top: 0;
+}
+
+.venue-header-panel .venue-hero-info h1 {
+  margin: 0;
+  color: #fff;
+}
+
+.venue-header-panel .venue-hero-info p {
+  margin: 8px 0 0;
+}
+.venue-detail-page {
+  width: 100%;
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 14px 10px 20px;
+  margin-top: 0;
+  border-radius: 22px;
+  padding-top: 0;
+}
+.venue-meta-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.venue-section {
+  background: #111;
+  border: 1px solid #222;
+}
+.venue-section .section-title {
+  color: #fff;
+}
+.venue-section p,
+.venue-section span {
+  color: #ddd;
+}
+.gold-badge {
+  background: #a36b00;
+  color: #fff;
+}
+.contact-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 12px;
+  border-radius: 999px;
+  text-decoration: none;
+  background: #1f1f1f;
+  color: #fff;
+  border: 1px solid #3a3a3a;
+  font-size: 13px;
+  font-weight: 600;
+}
+.contact-chip:hover {
+  background: #2a2a2a;
+}
+.venue-description {
+  margin: 0;
+  line-height: 1.75;
+  color: #ddd;
+  white-space: pre-wrap;
+}
+.venue-main-video {
+  width: 100%;
+  max-height: 360px;
+  border-radius: 12px;
+  margin-top: 12px;
+  background: #000;
+}
+
+@media (max-width: 768px) {
+  .venue-detail-page {
+    max-width: 100%;
+    padding: 8px 1px 14px;
+    border-radius: 0;
+  }
+
+  .venue-detail-page .venue-hero,
+  .venue-detail-page .content-wrapper {
+    width: 100%;
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .venue-detail-page .content-wrapper {
+    padding: 14px 6px;
+  }
+
+  .venue-detail-page .grid-wrapper {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+}
+
+/* Hero Magazine */
+.magazine-hero {
+  height: clamp(200px, 40vw, 400px);
+  border-radius: 20px;
+  background-size: cover;
+  background-position: center;
+  margin-bottom: 24px;
+  cursor: pointer;
+  position: relative;
+  overflow: hidden;
+}
+.magazine-hero-overlay {
+  position: absolute;
+  bottom: 0;
+  padding: clamp(16px, 3vw, 30px);
+  background: linear-gradient(transparent, rgba(0,0,0,0.9));
+  width: 100%;
+}
+.magazine-hero-overlay h1 {
+  color: #fff;
+  font-size: clamp(1.3rem, 4vw, 2.25rem);
+  margin: 8px 0;
+}
+.magazine-hero-title-single {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.magazine-hero-overlay p { color: #ccc; font-size: clamp(12px, 1.5vw, 14px); }
+
+/* Card Article (Magazine) */
+.magazine-card {
+  border-radius: 16px;
+  overflow: hidden;
+  cursor: pointer;
+  position: relative;
+}
+.magazine-card img {
+  width: 100%;
+  height: clamp(130px, 18vw, 200px);
+  object-fit: cover;
+  display: block;
+}
+
+/* Form centrata: Auth, Registrazione */
+.form-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background: #0b0b0b;
+  padding: 20px;
+}
+.form-card {
+  width: min(100%, 400px);
+  background: #111;
+  padding: clamp(20px, 4vw, 32px);
+  border-radius: 14px;
+  color: #fff;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.form-card h2 { margin-bottom: 6px; }
+
+/* Badge categoria */
+.badge-category {
+  display: inline-block;
+  padding: 4px 8px;
+  border-radius: 6px;
+  font-size: 12px;
+  background: #2e7e79;
+  color: #fff;
+  font-weight: 600;
+}
+
+/* Rating box VenueDetail */
+.rating-box {
+  background: #111;
+  padding: 16px;
+  border-radius: 10px;
+}
+.rating-value {
+  margin-top: 8px;
+  padding: 8px;
+  background: #000;
+  border-radius: 6px;
+  border: 1px solid #333;
+  font-size: 14px;
+  color: #ccc;
+}
+
+/* Recensione card */
+.review-card {
+  background: #111;
+  padding: 16px;
+  border-radius: 12px;
+  margin-top: 16px;
+}
+.review-card p { margin: 0; color: #ddd; }
+.review-date { margin-top: 8px !important; font-size: 12px !important; opacity: 0.5; }
+
+/* Community: box registrazione non iscritti */
+.guest-register-box {
+  margin-top: 22px;
+  width: 100%;
+  border: 1px solid #2d2d2d;
+  background: linear-gradient(180deg, #151515 0%, #101010 100%);
+  border-radius: 14px;
+  padding: 18px;
+}
+
+@media (min-width: 1024px) {
+  .guest-register-box {
+    width: 50%;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
+
+.guest-register-box h2 {
+  margin: 0 0 8px;
+  font-size: 24px;
+  color: #fff;
+}
+
+.guest-register-box p {
+  margin: 0;
+  color: #c8c8c8;
+  line-height: 1.5;
+  font-size: 14px;
+}
+
+.guest-register-actions {
+  margin-top: 14px;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.guest-register-btn {
+  text-decoration: none;
+  border-radius: 10px;
+  padding: 10px 14px;
+  font-weight: 700;
+  font-size: 14px;
+}
+
+.guest-register-btn-primary {
+  background: #f5a623;
+  color: #111;
+}
+
+.guest-register-btn-secondary {
+  background: #1b1b1b;
+  border: 1px solid #383838;
+  color: #fff;
+}
+
+/* ============================================================
+   7. NAVBAR / HAMBURGER — Default Desktop
+   ============================================================ */
+.nav-menu-desktop {
+  display: flex !important;
+  align-items: center;
+}
+
+.hamburger-btn {
+  display: none !important;
+}
+
+.mobile-menu {
+  display: none !important;
+}
+
+.mobile-menu-overlay {
+  display: none !important;
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 1050;
+}
+
+.btn-primary,
+button[style*="#f5a623"],
+button[style*="#c47a2c"] {
+  margin-left: auto;
+  margin-right: auto;
+}
+
+.map-fullscreen .leaflet-left .leaflet-control {
+  margin-left: 14px;
+}
+
+.map-fullscreen .leaflet-bottom .leaflet-control {
+  margin-bottom: 14px;
+}
+
+.map-fullscreen .leaflet-top.leaflet-left .leaflet-control-zoom,
+.map-fullscreen .leaflet-control-attribution {
+  display: none !important;
+}
+
+.nav-container button,
+.mobile-menu button,
+.admin-modal button {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+/* ============================================================
+   8. RESPONSIVE BREAKPOINTS
+   ============================================================ */
+
+/* --- TABLET & MOBILE (≤1024px) --- */
+@media (max-width: 1024px) {
+  /* Attiva hamburger */
+  .nav-menu-desktop { display: none !important; }
+  .hamburger-btn    { display: flex !important; }
+  .mobile-menu      { display: flex !important; }
+  .mobile-menu-overlay { display: block !important; }
+
+  /* Layout */
+  .page { padding: 20px; }
+
+  /* Griglie a 2 colonne */
+  .cocktail-grid  { grid-template-columns: repeat(2, 1fr); gap: 16px; }
+  .content-grid   { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .grid-wrapper   { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+
+  /* Immagini */
+  .cocktail-card img  { height: 120px; }
+  .preview-card img   { height: 130px; }
+
+  /* Hero più contenuto */
+  .hero-section { height: 75vh !important; min-height: 380px; }
+}
+
+/* --- MOBILE (≤768px) --- */
+@media (max-width: 768px) {
+  .page { padding: 14px; }
+  .page-section { padding-top: 8px !important; padding-bottom: 8px !important; }
+  .page-full-bleed { padding: 0; }
+
+  [data-page-version="crea-configurator-v2"].crea-page {
+    padding: 12px;
+  }
+
+  [data-page-version="crea-configurator-v2"] .crea-header {
+    margin-bottom: 14px !important;
+  }
+
+  [data-page-version="crea-configurator-v2"] .crea-title {
+    font-size: clamp(1.8rem, 8vw, 2.4rem) !important;
+    line-height: 1.08;
+    margin-bottom: 4px !important;
+    color: #f5a623 !important;
+  }
+
+  [data-page-version="crea-configurator-v2"] .crea-panel {
+    border-radius: 16px !important;
+    padding: 14px !important;
+  }
+
+  [data-page-version="crea-configurator-v2"] .crea-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  [data-page-version="crea-configurator-v2"] .crea-label {
+    font-size: 13px !important;
+    color: #f5a623 !important;
+  }
+
+  [data-page-version="crea-configurator-v2"] .crea-select {
+    height: 48px !important;
+    font-size: 16px !important;
+    border-radius: 10px !important;
+  }
+
+  [data-page-version="crea-configurator-v2"] .crea-actions {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px !important;
+  }
+
+  [data-page-version="crea-configurator-v2"] .crea-actions .btn-primary {
+    width: 100%;
+    min-height: 44px;
+    font-size: 13px;
+    padding: 10px 10px;
+  }
+
+  [data-page-version="crea-configurator-v2"] .crea-results {
+    margin-top: 16px !important;
+    gap: 14px !important;
+  }
+
+  [data-page-version="crea-configurator-v2"] .crea-card {
+    padding: 14px !important;
+    border-radius: 16px !important;
+  }
+
+  [data-page-version="crea-configurator-v2"] .crea-card-header {
+    flex-direction: column;
+    align-items: flex-start !important;
+    gap: 8px !important;
+  }
+
+  [data-page-version="crea-configurator-v2"] .crea-source {
+    font-size: 11px !important;
+  }
+
+  [data-page-version="crea-configurator-v2"] .crea-card-title {
+    font-size: clamp(1.35rem, 6vw, 1.8rem) !important;
+    margin: 4px 0 !important;
+    line-height: 1.15;
+    color: #f5a623 !important;
+  }
+
+  [data-page-version="crea-configurator-v2"] .crea-meta {
+    font-size: 13px;
+    line-height: 1.45;
+  }
+
+  [data-page-version="crea-configurator-v2"] .crea-score {
+    align-self: flex-start;
+    font-size: 13px;
+    padding: 6px 10px !important;
+  }
+
+  [data-page-version="crea-configurator-v2"] .crea-recipe-grid {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+    margin-top: 12px !important;
+  }
+
+  [data-page-version="crea-configurator-v2"] .crea-recipe-block {
+    padding: 12px !important;
+    border-radius: 14px !important;
+  }
+
+  [data-page-version="crea-configurator-v2"] .crea-section-title {
+    font-size: 16px !important;
+    margin-bottom: 8px !important;
+    color: #f5a623 !important;
+  }
+
+  [data-page-version="crea-configurator-v2"] .crea-list-item {
+    font-size: 14px;
+    line-height: 1.35;
+  }
+
+  [data-page-version="crea-configurator-v2"] .crea-body {
+    font-size: 14px;
+    line-height: 1.55;
+    margin-bottom: 8px !important;
+  }
+
+  [data-page-version="crea-configurator-v2"] .crea-description {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 5;
+    line-clamp: 5;
+    overflow: hidden;
+  }
+
+  [data-page-version="crea-configurator-v2"] .crea-notes {
+    margin-top: 10px !important;
+  }
+
+  [data-page-version="crea-configurator-v2"] .crea-note-chip {
+    font-size: 12px !important;
+    padding: 6px 9px !important;
+  }
+
+  [data-page-version="crea-configurator-v2"] .crea-fallback {
+    padding: 12px !important;
+    border-radius: 14px !important;
+  }
+
+  [data-page-version="crea-configurator-v2"] .crea-fallback-text {
+    font-size: 14px;
+    margin-bottom: 8px !important;
+  }
+
+  [data-page-version="crea-configurator-v2"] .crea-generated-form {
+    grid-template-columns: 1fr !important;
+    gap: 10px !important;
+  }
+
+  .page-title { font-size: 24px; text-align: center; }
+
+  /* I bottoni inline NON devono andare a tutta larghezza */
+  button { width: auto; }
+
+  .cocktail-grid  { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+
+  .cocktail-card img  { height: 100px; }
+  .preview-card img   { height: 110px; }
+
+  .section-title { font-size: 17px; }
+
+  .hero-section { height: 65vh !important; min-height: 320px; }
+
+  .mobile-articles-title {
+    display: block;
+    font-size: 28px;
+    margin: 4px 0 14px;
+  }
+
+  .drink-card {
+    aspect-ratio: 1 / 1;
+    border-radius: 18px;
+  }
+
+  .magazine-page-mobile {
+    width: 100vw;
+    max-width: none;
+    margin-left: calc(50% - 50vw);
+    margin-right: calc(50% - 50vw);
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .content-wrapper { padding: 14px; }
+
+  .guest-register-box { padding: 14px; }
+  .guest-register-box h2 { font-size: 20px; }
+  .guest-register-box p { font-size: 13px; }
+  .guest-register-actions {
+    display: flex !important;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .guest-register-btn {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+    min-width: 118px;
+    padding: 9px 12px;
+    font-size: 13px;
+    background: #f5a623 !important;
+    color: #111 !important;
+    border: 1px solid #f5a623 !important;
+  }
+
+  .drink-page-white .drink-card-caption {
+    height: 34px !important;
+    min-height: 34px !important;
+    padding: 0 8px !important;
+  }
+  .drink-page-white:not(.vini-preview-page) .drink-card-uniform {
+    aspect-ratio: 1 / 1.28;
+  }
+  .drink-page-white .drink-card-uniform img,
+  .drink-page-white .drink-card-uniform .no-img-placeholder {
+    height: calc(100% - 34px) !important;
+  }
+  .drink-card-caption h3 {
+    font-size: 15px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    width: 100%;
+    line-height: 1.05;
+    text-align: center;
+  }
+}
+
+/* --- MOBILE PICCOLO (≤480px) --- */
+@media (max-width: 480px) {
+  .page { padding: 10px; }
+
+  [data-page-version="crea-configurator-v2"].crea-page {
+    padding: 8px;
+  }
+
+  [data-page-version="crea-configurator-v2"] .crea-title {
+    font-size: clamp(1.6rem, 8vw, 2rem) !important;
+    color: #f5a623 !important;
+  }
+
+  [data-page-version="crea-configurator-v2"] .crea-panel {
+    padding: 12px !important;
+  }
+
+  [data-page-version="crea-configurator-v2"] .crea-actions {
+    grid-template-columns: 1fr;
+  }
+
+  [data-page-version="crea-configurator-v2"] .crea-card {
+    padding: 12px !important;
+  }
+
+  [data-page-version="crea-configurator-v2"] .crea-card-title {
+    font-size: 1.45rem !important;
+    color: #f5a623 !important;
+  }
+
+  [data-page-version="crea-configurator-v2"] .crea-section-title {
+    font-size: 15px !important;
+    color: #f5a623 !important;
+  }
+
+  [data-page-version="crea-configurator-v2"] .crea-body,
+  [data-page-version="crea-configurator-v2"] .crea-meta,
+  [data-page-version="crea-configurator-v2"] .crea-list-item {
+    font-size: 13px;
+  }
+
+  [data-page-version="crea-configurator-v2"] .crea-note-chip {
+    font-size: 11px !important;
+  }
+
+  [data-page-version="crea-configurator-v2"] .crea-description {
+    -webkit-line-clamp: 4;
+    line-clamp: 4;
+  }
+
+  .drink-detail-layout {
+    display: flex;
+    flex-direction: column;
+    gap: 18px;
+  }
+
+  .drink-detail-right {
+    order: -1;
+    width: 100%;
+  }
+
+  .drink-detail-left {
+    width: 100%;
+  }
+
+  .drink-detail-cocktail-main-title {
+    display: none;
+  }
+
+  .drink-detail-mobile-cocktail-title {
+    display: block !important;
+  }
+
+  h1 { font-size: clamp(1.4rem, 5vw, 1.8rem); }
+  h2 { font-size: 16px; }
+  h3 { font-size: 13px; }
+  p, span { font-size: 12px; }
+
+  .cocktail-grid  { grid-template-columns: repeat(2, 1fr); gap: 12px; }
+  .content-grid   { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+  .grid-wrapper   { grid-template-columns: repeat(2, 1fr); gap: 8px; }
+
+  .cocktail-card img  { height: 90px; }
+  .preview-card img   { height: 90px; }
+
+  .content-wrapper { padding: 10px; border-radius: 14px; }
+
+  .btn-primary { padding: 8px 12px; font-size: 12px; }
+  .btn-small   { padding: 5px 9px;  font-size: 11px; }
+
+  .cocktail-card-body h3 { font-size: 11px; }
+  .preview-card-body h3  { font-size: 12px; }
+  .preview-card-body p   { font-size: 10px; }
+
+  .drink-page-white .drink-card-caption {
+    height: 32px !important;
+    min-height: 32px !important;
+    padding: 0 7px !important;
+  }
+  .drink-page-white:not(.vini-preview-page) .drink-card-uniform {
+    aspect-ratio: 1 / 1.36;
+  }
+  .drink-page-white .drink-card-uniform img,
+  .drink-page-white .drink-card-uniform .no-img-placeholder {
+    height: calc(100% - 32px) !important;
+  }
+  .drink-card-caption h3 { font-size: 13px; }
+
+  .section-title { font-size: 15px; }
+
+  .hero-section { height: 55vh !important; min-height: 280px; }
+
+  .mobile-articles-title {
+    font-size: 24px;
+    margin: 2px 0 12px;
+  }
+
+  .drink-card {
+    aspect-ratio: 1 / 1;
+    border-radius: 16px;
+  }
+
+  .magazine-page-mobile {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
+
+  .contact-chip { font-size: 11px; padding: 7px 10px; }
+  .venue-description { line-height: 1.6; font-size: 12px; }
+
+  /* Bottoni nel form restano grandi */
+  form button { width: 100%; }
+}
+
+/* ============================================================
+   LOGO HEADER
+   ============================================================ */
+.header { display: flex; align-items: center; gap: 10px; }
+.logo { height: 52px; width: auto; object-fit: contain; border-radius: 6px; }
+
+@media (max-width: 768px) {
+  .nav-logo span { font-size: 0.8rem !important; }
+  .logo { height: 36px; }
+}
+
+/* ============================================================
+   CREA PAGE - BACKGROUND
+   ============================================================ */
+body:has(.crea-page) {
+  background-image: url("https://www.bar.it/wp-content/uploads/2021/03/bar-4789760_1920.jpg");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  background-repeat: no-repeat;
+}
