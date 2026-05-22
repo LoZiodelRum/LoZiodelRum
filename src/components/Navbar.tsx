@@ -8,7 +8,10 @@ export default function Navbar() {
   const { user, isAdmin } = useUser();
   const navigate = useNavigate();
   const location = useLocation();
+
   const [menuOpen, setMenuOpen] = useState(false);
+  const [languageOpen, setLanguageOpen] = useState(false);
+
   const { t, i18n } = useTranslation();
 
   function closeMobileMenu() {
@@ -20,13 +23,12 @@ export default function Navbar() {
     return location.pathname.startsWith(path);
   }
 
-
   function linkStyle(path: string) {
     return {
       color: isActive(path) ? "#f5a623" : "#fff",
       textDecoration: "none",
       fontWeight: isActive(path) ? 700 : 400,
-    }
+    };
   }
 
   async function handleLogout() {
@@ -46,11 +48,11 @@ export default function Navbar() {
         width: "100vw",
         background: "rgba(0,0,0,0.97)",
         color: "#fff",
-        minHeight: "35px", // dimezza l'altezza
+        minHeight: "35px",
         display: "flex",
         justifyContent: "space-between",
         alignItems: "center",
-        padding: "6px 20px", // dimezza il padding verticale
+        padding: "6px 20px",
         zIndex: 9999,
         backdropFilter: "blur(10px)",
         boxShadow: "0 2px 16px #000a",
@@ -68,6 +70,7 @@ export default function Navbar() {
         }}
         onClick={() => {
           closeMobileMenu();
+
           if (user) {
             navigate("/home");
           } else {
@@ -79,16 +82,51 @@ export default function Navbar() {
           src="/logo.png"
           alt="Lo Zio del Rum logo"
           className="logo"
-          style={{ height: 76, width: 76, objectFit: "contain" }} // raddoppia la dimensione
+          style={{
+            height: 76,
+            width: 76,
+            objectFit: "contain",
+          }}
         />
-        <div style={{ display: "flex", flexDirection: "column", lineHeight: 1.1 }}>
-          <span style={{ fontWeight: 700, fontSize: 23, color: "#f5a623" }}>DrinkWise</span>
-          <span style={{ fontSize: 11, opacity: 0.7 }}>by</span>
-          <span style={{ fontWeight: 500, fontSize: 15 }}>Lo Zio del Rum</span>
+
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            lineHeight: 1.1,
+          }}
+        >
+          <span
+            style={{
+              fontWeight: 700,
+              fontSize: 23,
+              color: "#f5a623",
+            }}
+          >
+            DrinkWise
+          </span>
+
+          <span
+            style={{
+              fontSize: 11,
+              opacity: 0.7,
+            }}
+          >
+            by
+          </span>
+
+          <span
+            style={{
+              fontWeight: 500,
+              fontSize: 15,
+            }}
+          >
+            Lo Zio del Rum
+          </span>
         </div>
       </div>
 
-      {/* BLOCCO DESTRA */}
+      {/* MENU DESKTOP */}
       <div
         className="navbar-links-desktop"
         style={{
@@ -98,23 +136,112 @@ export default function Navbar() {
           marginLeft: "auto",
         }}
       >
-        <Link to="/home" style={linkStyle("/home")}>{t("home")}</Link>
-        <Link to="/mappa" style={linkStyle("/mappa")}>{t("map")}</Link>
-        <Link to="/drink" style={linkStyle("/drink")}>{t("drink")}</Link>
-        <Link to="/vini" style={linkStyle("/vini")}>{t("wines")}</Link>
-        <Link to="/magazine" style={linkStyle("/magazine")}>{t("magazine")}</Link>
-        <Link to="/community" style={linkStyle("/community")}>{t("community")}</Link>
-        <Link to="/crea" style={linkStyle("/crea")}>{t("create")}</Link>
-        <button onClick={() => i18n.changeLanguage("it")}>
-  IT
-</button>
+        <Link to="/home" style={linkStyle("/home")}>
+          {t("home")}
+        </Link>
 
-<button onClick={() => i18n.changeLanguage("en")}>
-  EN
-</button>
+        <Link to="/mappa" style={linkStyle("/mappa")}>
+          {t("map")}
+        </Link>
+
+        <Link to="/drink" style={linkStyle("/drink")}>
+          {t("drink")}
+        </Link>
+
+        <Link to="/vini" style={linkStyle("/vini")}>
+          {t("wines")}
+        </Link>
+
+        <Link to="/magazine" style={linkStyle("/magazine")}>
+          {t("magazine")}
+        </Link>
+
+        <Link to="/community" style={linkStyle("/community")}>
+          {t("community")}
+        </Link>
+
+        <Link to="/crea" style={linkStyle("/crea")}>
+          {t("create")}
+        </Link>
+
+        {/* SELETTORE LINGUA DESKTOP */}
+        <div
+          style={{
+            position: "relative",
+          }}
+        >
+          <button
+            onClick={() => setLanguageOpen(!languageOpen)}
+            style={{
+              background: "transparent",
+              border: "none",
+              color: "#fff",
+              cursor: "pointer",
+              fontWeight: "bold",
+              fontSize: "16px",
+              display: "flex",
+              alignItems: "center",
+              gap: "6px",
+            }}
+          >
+            {i18n.language === "it" ? "🇮🇹 IT" : "🇬🇧 EN"}
+          </button>
+
+          {languageOpen && (
+            <div
+              style={{
+                position: "absolute",
+                top: "42px",
+                right: 0,
+                background: "#111",
+                border: "1px solid #333",
+                borderRadius: "10px",
+                overflow: "hidden",
+                minWidth: "110px",
+                zIndex: 9999,
+              }}
+            >
+              <button
+                onClick={() => {
+                  i18n.changeLanguage("it");
+                  setLanguageOpen(false);
+                }}
+                style={{
+                  width: "100%",
+                  background: "transparent",
+                  border: "none",
+                  color: "#fff",
+                  padding: "12px",
+                  textAlign: "left",
+                  cursor: "pointer",
+                }}
+              >
+                🇮🇹 IT
+              </button>
+
+              <button
+                onClick={() => {
+                  i18n.changeLanguage("en");
+                  setLanguageOpen(false);
+                }}
+                style={{
+                  width: "100%",
+                  background: "transparent",
+                  border: "none",
+                  color: "#fff",
+                  padding: "12px",
+                  textAlign: "left",
+                  cursor: "pointer",
+                }}
+              >
+                🇬🇧 EN
+              </button>
+            </div>
+          )}
+        </div>
 
         {isAdmin && (
-          <Link to="/admin" style={linkStyle("/admin")}> 
+          <Link to="/admin" style={linkStyle("/admin")}>
             Pannello di Controllo
           </Link>
         )}
@@ -136,7 +263,87 @@ export default function Navbar() {
         )}
       </div>
 
-      {/* MENU HAMBURGER SOLO MOBILE */}
+      {/* BANDIERA MOBILE */}
+      <div
+        className="mobile-language-selector"
+        style={{
+          position: "relative",
+          display: "none",
+          marginLeft: "auto",
+          marginRight: "12px",
+        }}
+      >
+        <button
+          onClick={() => setLanguageOpen(!languageOpen)}
+          style={{
+            background: "transparent",
+            border: "none",
+            color: "#fff",
+            cursor: "pointer",
+            fontWeight: "bold",
+            fontSize: "18px",
+            display: "flex",
+            alignItems: "center",
+            gap: "6px",
+          }}
+        >
+          {i18n.language === "it" ? "🇮🇹 IT" : "🇬🇧 EN"}
+        </button>
+
+        {languageOpen && (
+          <div
+            style={{
+              position: "absolute",
+              top: "42px",
+              right: 0,
+              background: "#111",
+              border: "1px solid #333",
+              borderRadius: "10px",
+              overflow: "hidden",
+              minWidth: "110px",
+              zIndex: 9999,
+            }}
+          >
+            <button
+              onClick={() => {
+                i18n.changeLanguage("it");
+                setLanguageOpen(false);
+              }}
+              style={{
+                width: "100%",
+                background: "transparent",
+                border: "none",
+                color: "#fff",
+                padding: "12px",
+                textAlign: "left",
+                cursor: "pointer",
+              }}
+            >
+              🇮🇹 IT
+            </button>
+
+            <button
+              onClick={() => {
+                i18n.changeLanguage("en");
+                setLanguageOpen(false);
+              }}
+              style={{
+                width: "100%",
+                background: "transparent",
+                border: "none",
+                color: "#fff",
+                padding: "12px",
+                textAlign: "left",
+                cursor: "pointer",
+              }}
+            >
+              🇬🇧 EN
+            </button>
+          </div>
+        )}
+      </div>
+
+      {/* MENU HAMBURGER MOBILE */}
       <button
         className="navbar-hamburger-mobile"
         onClick={() => setMenuOpen((prev) => !prev)}
@@ -149,7 +356,7 @@ export default function Navbar() {
           cursor: "pointer",
           padding: 0,
           marginLeft: 10,
-          display: "none"
+          display: "none",
         }}
       >
         ☰
@@ -160,10 +367,16 @@ export default function Navbar() {
         <div
           className="mobile-menu-overlay"
           onClick={closeMobileMenu}
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.4)",
+            zIndex: 1090,
+          }}
         />
       )}
 
-      {/* MOBILE MENU SOLO MOBILE */}
+      {/* MOBILE MENU */}
       <div
         className="mobile-menu"
         style={{
@@ -182,19 +395,105 @@ export default function Navbar() {
           overflowY: "auto",
           overflowX: "hidden",
           borderLeft: "1px solid #333",
-          transform: menuOpen ? "translateX(0)" : "translateX(100%)",
+          transform: menuOpen
+            ? "translateX(0)"
+            : "translateX(100%)",
         }}
       >
-        <Link to="/home" onClick={closeMobileMenu} style={{ ...linkStyle("/home"), padding: "12px 0", borderBottom: "1px solid #333" }}>{t("home")}</Link>
-        <Link to="/mappa" onClick={closeMobileMenu} style={{ ...linkStyle("/mappa"), padding: "12px 0", borderBottom: "1px solid #333" }}>{t("map")}</Link>
-        <Link to="/drink" onClick={closeMobileMenu} style={{ ...linkStyle("/drink"), padding: "12px 0", borderBottom: "1px solid #333" }}>{t("drink")}</Link>
-        <Link to="/vini" onClick={closeMobileMenu} style={{ ...linkStyle("/vini"), padding: "12px 0", borderBottom: "1px solid #333" }}>{t("wines")}</Link>
-        <Link to="/magazine" onClick={closeMobileMenu} style={{ ...linkStyle("/magazine"), padding: "12px 0", borderBottom: "1px solid #333" }}>{t("magazine")}</Link>
-        <Link to="/community" onClick={closeMobileMenu} style={{ ...linkStyle("/community"), padding: "12px 0", borderBottom: "1px solid #333" }}>{t("community")}</Link>
-        <Link to="/crea" onClick={closeMobileMenu} style={{ ...linkStyle("/crea"), padding: "12px 0", borderBottom: "1px solid #333" }}>{t("create")}</Link>
+        <Link
+          to="/home"
+          onClick={closeMobileMenu}
+          style={{
+            ...linkStyle("/home"),
+            padding: "12px 0",
+            borderBottom: "1px solid #333",
+          }}
+        >
+          {t("home")}
+        </Link>
+
+        <Link
+          to="/mappa"
+          onClick={closeMobileMenu}
+          style={{
+            ...linkStyle("/mappa"),
+            padding: "12px 0",
+            borderBottom: "1px solid #333",
+          }}
+        >
+          {t("map")}
+        </Link>
+
+        <Link
+          to="/drink"
+          onClick={closeMobileMenu}
+          style={{
+            ...linkStyle("/drink"),
+            padding: "12px 0",
+            borderBottom: "1px solid #333",
+          }}
+        >
+          {t("drink")}
+        </Link>
+
+        <Link
+          to="/vini"
+          onClick={closeMobileMenu}
+          style={{
+            ...linkStyle("/vini"),
+            padding: "12px 0",
+            borderBottom: "1px solid #333",
+          }}
+        >
+          {t("wines")}
+        </Link>
+
+        <Link
+          to="/magazine"
+          onClick={closeMobileMenu}
+          style={{
+            ...linkStyle("/magazine"),
+            padding: "12px 0",
+            borderBottom: "1px solid #333",
+          }}
+        >
+          {t("magazine")}
+        </Link>
+
+        <Link
+          to="/community"
+          onClick={closeMobileMenu}
+          style={{
+            ...linkStyle("/community"),
+            padding: "12px 0",
+            borderBottom: "1px solid #333",
+          }}
+        >
+          {t("community")}
+        </Link>
+
+        <Link
+          to="/crea"
+          onClick={closeMobileMenu}
+          style={{
+            ...linkStyle("/crea"),
+            padding: "12px 0",
+            borderBottom: "1px solid #333",
+          }}
+        >
+          {t("create")}
+        </Link>
 
         {isAdmin && (
-          <Link to="/admin" onClick={closeMobileMenu} style={{ ...linkStyle("/admin"), padding: "12px 0", borderBottom: "1px solid #333" }}>
+          <Link
+            to="/admin"
+            onClick={closeMobileMenu}
+            style={{
+              ...linkStyle("/admin"),
+              padding: "12px 0",
+              borderBottom: "1px solid #333",
+            }}
+          >
             Pannello di Controllo
           </Link>
         )}
@@ -219,19 +518,47 @@ export default function Navbar() {
 
       {/* STYLE RESPONSIVE */}
       <style>{`
-        html, body, #root {
+        html,
+        body,
+        #root {
           overflow-x: hidden !important;
           max-width: 100vw !important;
         }
+
         @media (max-width: 900px) {
-          .navbar-links-desktop { display: none !important; }
-          .navbar-hamburger-mobile { display: block !important; }
-          .mobile-menu { display: flex !important; }
+          .navbar-links-desktop {
+            display: none !important;
+          }
+
+          .navbar-hamburger-mobile {
+            display: block !important;
+          }
+
+          .mobile-language-selector {
+            display: flex !important;
+          }
+
+          .mobile-menu {
+            display: flex !important;
+          }
         }
+
         @media (min-width: 901px) {
-          .navbar-links-desktop { display: flex !important; }
-          .navbar-hamburger-mobile { display: none !important; }
-          .mobile-menu { display: none !important; }
+          .navbar-links-desktop {
+            display: flex !important;
+          }
+
+          .navbar-hamburger-mobile {
+            display: none !important;
+          }
+
+          .mobile-language-selector {
+            display: none !important;
+          }
+
+          .mobile-menu {
+            display: none !important;
+          }
         }
       `}</style>
     </nav>
