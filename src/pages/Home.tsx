@@ -376,8 +376,8 @@ export default function Home() {
         @media (min-width: 1024px) {
           .hero-video-desktop {
             object-fit: cover !important;
-            object-position: center 38% !important;
-            transform: scale(0.95) !important;
+            object-position: center 34% !important;
+            transform: scale(0.88) !important;
             transform-origin: center center !important;
           }
         }
