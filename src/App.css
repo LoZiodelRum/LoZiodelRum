@@ -759,6 +759,7 @@ button:active { transform: scale(0.98); }
     min-height: 262px;
     max-height: 262px;
     justify-content: flex-start;
+    overflow: hidden;
   }
 
   .vini-grid .drink-card-uniform img,
@@ -766,18 +767,18 @@ button:active { transform: scale(0.98); }
     height: 216px !important;
     min-height: 216px !important;
     max-height: 216px !important;
-    padding: 4px !important;
-    object-fit: contain !important;
-    object-position: center bottom !important;
+    padding: 0 !important;
+    object-position: center center !important;
   }
 
   .vini-preview-page .vini-grid .drink-card-uniform img {
     width: 100% !important;
-    padding: 4px !important;
-    object-fit: contain !important;
-    object-position: center bottom !important;
-    transform: scale(1.06) !important;
-    transform-origin: center bottom !important;
+    height: 216px !important;
+    min-height: 216px !important;
+    max-height: 216px !important;
+    object-fit: cover !important;
+    object-position: center 52% !important;
+    transform: none !important;
   }
 
   .vini-preview-page .drink-card-caption {
@@ -805,6 +806,7 @@ button:active { transform: scale(0.98); }
     min-height: 224px;
     max-height: 224px;
     justify-content: flex-start;
+    overflow: hidden;
   }
 
   .vini-grid .drink-card-uniform img,
@@ -812,18 +814,18 @@ button:active { transform: scale(0.98); }
     height: 187px !important;
     min-height: 187px !important;
     max-height: 187px !important;
-    padding: 3px !important;
-    object-fit: contain !important;
-    object-position: center bottom !important;
+    padding: 0 !important;
+    object-position: center center !important;
   }
 
   .vini-preview-page .vini-grid .drink-card-uniform img {
     width: 100% !important;
-    padding: 3px !important;
-    object-fit: contain !important;
-    object-position: center bottom !important;
-    transform: scale(1.06) !important;
-    transform-origin: center bottom !important;
+    height: 187px !important;
+    min-height: 187px !important;
+    max-height: 187px !important;
+    object-fit: cover !important;
+    object-position: center 52% !important;
+    transform: none !important;
   }
 
   .vini-preview-page .drink-card-caption {
