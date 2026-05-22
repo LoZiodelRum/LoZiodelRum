@@ -98,28 +98,41 @@ export default function Community() {
             background: radial-gradient(circle at 90% -20%, #2a1c09 0%, rgba(7, 10, 17, 0) 42%), var(--bg);
             color: var(--text);
             min-height: 100vh;
-            padding: 20px;
+            padding: 16px;
           }
 
           .dw-community-shell {
-            max-width: 1320px;
+            max-width: 1160px;
             margin: 0 auto;
             display: grid;
-            gap: 16px;
+            gap: 12px;
           }
 
           .dw-hero {
             position: relative;
             overflow: hidden;
-            border-radius: 18px;
-            min-height: 290px;
-            padding: 26px;
+            border-radius: 14px;
+            min-height: 276px;
+            padding: 22px;
             display: grid;
             align-content: space-between;
             border: 1px solid rgba(245, 166, 35, 0.2);
             background:
               linear-gradient(105deg, rgba(7, 10, 17, 0.9) 0%, rgba(7, 10, 17, 0.68) 45%, rgba(7, 10, 17, 0.4) 100%),
-              url("https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=1800&q=80") center 42% / cover no-repeat;
+              url("https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=1800&q=80") center 45% / cover no-repeat;
+          }
+
+          .dw-hero::after {
+            content: "";
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.52));
+            pointer-events: none;
+          }
+
+          .dw-hero > div {
+            position: relative;
+            z-index: 1;
           }
 
           .dw-badge {
@@ -137,10 +150,10 @@ export default function Community() {
           }
 
           .dw-hero h1 {
-            margin: 14px 0 10px;
-            font-size: clamp(30px, 5.5vw, 48px);
-            line-height: 1.02;
-            max-width: 560px;
+            margin: 12px 0 9px;
+            font-size: clamp(30px, 5vw, 46px);
+            line-height: 1.04;
+            max-width: 540px;
           }
 
           .dw-hero h1 span { color: var(--gold); }
@@ -148,22 +161,22 @@ export default function Community() {
           .dw-hero p {
             margin: 0;
             color: #cdd5e7;
-            font-size: clamp(14px, 1.8vw, 16px);
-            max-width: 500px;
+            font-size: clamp(13px, 1.65vw, 15px);
+            max-width: 480px;
           }
 
           .dw-hero-actions {
             display: flex;
             gap: 10px;
-            margin-top: 16px;
+            margin-top: 14px;
             flex-wrap: wrap;
           }
 
           .dw-btn {
             border: none;
             border-radius: 10px;
-            padding: 9px 14px;
-            font-size: 12px;
+            padding: 8px 13px;
+            font-size: 11px;
             font-weight: 700;
             cursor: pointer;
           }
@@ -176,31 +189,36 @@ export default function Community() {
           }
 
           .dw-hero-stats {
-            margin-top: 18px;
+            margin-top: 14px;
             display: flex;
-            gap: 20px;
+            gap: 14px;
             flex-wrap: wrap;
-            font-size: 12px;
+            font-size: 11px;
           }
 
           .dw-hero-stats div {
             color: #b2bfd7;
             border-right: 1px solid rgba(178, 191, 215, 0.22);
-            padding-right: 14px;
+            padding-right: 12px;
+          }
+
+          .dw-hero-stats div:last-child {
+            border-right: none;
+            padding-right: 0;
           }
 
           .dw-main-grid {
             display: grid;
-            grid-template-columns: minmax(0, 1.66fr) minmax(280px, 0.8fr);
-            gap: 16px;
+            grid-template-columns: minmax(0, 1.72fr) minmax(286px, 0.82fr);
+            gap: 12px;
             align-items: start;
           }
 
           .dw-panel {
             background: linear-gradient(180deg, var(--panel-soft), #0c1321);
             border: 1px solid var(--line);
-            border-radius: 14px;
-            padding: 14px;
+            border-radius: 12px;
+            padding: 12px;
           }
 
           .dw-baretto-title {
@@ -223,7 +241,7 @@ export default function Community() {
           .dw-chat {
             display: grid;
             gap: 8px;
-            max-height: 210px;
+            max-height: 196px;
             overflow: auto;
             padding-right: 2px;
           }
@@ -285,7 +303,7 @@ export default function Community() {
           .dw-post img {
             display: block;
             width: 100%;
-            height: 160px;
+            height: 170px;
             object-fit: cover;
           }
 
@@ -325,7 +343,7 @@ export default function Community() {
             display: grid;
             gap: 12px;
             position: sticky;
-            top: 84px;
+            top: 76px;
           }
 
           .dw-side h3 {
@@ -366,23 +384,33 @@ export default function Community() {
 
           @media (max-width: 1023px) {
             .dw-community-page {
-              padding: 10px 10px 84px;
+              padding: 8px 8px 82px;
             }
 
             .dw-hero {
-              min-height: 240px;
-              border-radius: 14px;
-              padding: 16px;
-              background-position: center 35%;
+              min-height: 226px;
+              border-radius: 12px;
+              padding: 14px;
+              background-position: center 32%;
             }
 
             .dw-hero h1 {
-              max-width: 280px;
-              font-size: clamp(28px, 8.5vw, 38px);
+              max-width: 258px;
+              font-size: clamp(26px, 8.2vw, 36px);
+            }
+
+            .dw-badge {
+              font-size: 10px;
+              padding: 5px 9px;
+            }
+
+            .dw-hero p {
+              font-size: 12px;
             }
 
             .dw-main-grid {
               grid-template-columns: 1fr;
+              gap: 10px;
             }
 
             .dw-side {
@@ -390,7 +418,7 @@ export default function Community() {
               top: auto;
             }
 
-            .dw-post img { height: 146px; }
+            .dw-post img { height: 140px; }
 
             .dw-bottom-nav {
               display: flex;
@@ -399,11 +427,11 @@ export default function Community() {
               transform: translateX(-50%);
               bottom: 8px;
               z-index: 50;
-              width: min(100% - 18px, 380px);
-              border-radius: 14px;
+              width: min(100% - 16px, 370px);
+              border-radius: 12px;
               border: 1px solid #2a3a55;
               background: #0b1321;
-              padding: 8px;
+              padding: 7px;
               justify-content: space-between;
               box-shadow: 0 14px 36px rgba(0, 0, 0, 0.42);
             }
@@ -412,10 +440,10 @@ export default function Community() {
               border: none;
               background: transparent;
               color: #8ea0be;
-              font-size: 11px;
-              padding: 6px 8px;
+              font-size: 10px;
+              padding: 6px 7px;
               border-radius: 8px;
-              min-width: 52px;
+              min-width: 50px;
             }
 
             .dw-bottom-nav .active {
