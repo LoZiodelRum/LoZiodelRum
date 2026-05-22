@@ -4,187 +4,546 @@ import Navbar from "../components/Navbar";
 export default function Community() {
   const navigate = useNavigate();
 
+  const barettoMessages = [
+    {
+      user: "MIXOLOGY_NICK",
+      role: "Host",
+      text: "Avete provato il Japanese Imperial Cask? sente note di pesca.",
+      tone: "gold",
+    },
+    {
+      user: "ChefR",
+      role: "Pro",
+      text: "Si, in sour va meglio al 30/40%. Va usato in piccole dosi e sempre con acidita.",
+      tone: "violet",
+    },
+    {
+      user: "Lucas",
+      role: "Guest",
+      text: "Per me il Rum Sour resta imbattibile in questa fascia, prova lime fresco e miele.",
+      tone: "blue",
+    },
+    {
+      user: "Sara.M",
+      role: "New",
+      text: "Sicuro! Lo VOJO toda da assaggiare e poi posto il cocktail da settimana.",
+      tone: "green",
+    },
+  ];
+
+  const posts = [
+    {
+      id: "p1",
+      user: "Marco.cocktail",
+      badge: "Cocktail",
+      title: "Rum Sour Agricolo",
+      text: "Sperimentazione con sour rum e infusione tiepida su spezie dolci. Equilibrio tra struttura e freschezza.",
+      image:
+        "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=1200&q=80",
+      likes: 128,
+      comments: 14,
+    },
+    {
+      id: "p2",
+      user: "Chris.Forest",
+      badge: "Baretto",
+      title: "Pannaggio protagonista Cask 2025",
+      text: "Profumi netti con legno caldo in primo piano, cuore amaro e spezia in coda. Un entry level che non perdona errori.",
+      image:
+        "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80",
+      likes: 72,
+      comments: 18,
+    },
+    {
+      id: "p3",
+      user: "Luca de Santis",
+      badge: "Locale",
+      title: "Serata al Rum Barlo - Milano",
+      text: "Serata pazzesca. Carta ricca e bartender in forma. 100+ referenze, cask presentation e un Negroni al Rum sorprendente.",
+      image:
+        "https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&fit=crop&w=1200&q=80",
+      likes: 44,
+      comments: 9,
+    },
+  ];
+
+  const keywords = [
+    "Molasses Rum, soft spice",
+    "QSM-45YV - over 50YO",
+    "Longrest cask trial in terracotta",
+  ];
+
+  const ranking = [
+    { name: "MIXO.4", score: "98 sec" },
+    { name: "Chris.F", score: "95 sec" },
+    { name: "Lucas", score: "79 sec" },
+    { name: "Sara.M", score: "71 sec" },
+    { name: "Aurelio K.", score: "66 sec" },
+  ];
+
   return (
     <>
       <Navbar />
-      <div style={{
-        background: "#05080c",
-        minHeight: "100vh",
-        color: "#fff",
-        padding: 20
-      }}>
+      <div className="dw-community-page">
+        <style>{`
+          .dw-community-page {
+            --bg: #070a11;
+            --panel: #0f1523;
+            --panel-soft: #101827;
+            --line: #1f2a3f;
+            --text: #ecf0f7;
+            --muted: #8f9ab1;
+            --gold: #f5a623;
+            --gold-soft: rgba(245, 166, 35, 0.16);
+            background: radial-gradient(circle at 90% -20%, #2a1c09 0%, rgba(7, 10, 17, 0) 42%), var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 20px;
+          }
 
-      {/* HEADER */}
-      <h1 style={{ fontSize: 32, fontWeight: 700 }}>
-        Il Baretto Community
-      </h1>
+          .dw-community-shell {
+            max-width: 1320px;
+            margin: 0 auto;
+            display: grid;
+            gap: 16px;
+          }
 
-      <p style={{ color: "#aaa", marginBottom: 30 }}>
-        Il club digitale dove esperti e appassionati si incontrano
-      </p>
+          .dw-hero {
+            position: relative;
+            overflow: hidden;
+            border-radius: 18px;
+            min-height: 290px;
+            padding: 26px;
+            display: grid;
+            align-content: space-between;
+            border: 1px solid rgba(245, 166, 35, 0.2);
+            background:
+              linear-gradient(105deg, rgba(7, 10, 17, 0.9) 0%, rgba(7, 10, 17, 0.68) 45%, rgba(7, 10, 17, 0.4) 100%),
+              url("https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=1800&q=80") center 42% / cover no-repeat;
+          }
 
-      {/* BARETTO + CTA */}
-      <div className="community-mobile-stack" style={{
-        display: "grid",
-        gridTemplateColumns: "1fr 1fr",
-        gap: 20,
-        marginBottom: 40
-      }}>
+          .dw-badge {
+            display: inline-flex;
+            align-items: center;
+            width: fit-content;
+            border-radius: 999px;
+            border: 1px solid rgba(245, 166, 35, 0.35);
+            background: var(--gold-soft);
+            color: var(--gold);
+            font-size: 12px;
+            padding: 6px 10px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
+          }
 
-        {/* BARETTO */}
-        <div className="community-mobile-box" style={{
-          background: "linear-gradient(135deg,#3a2a00,#5a3e00)",
-          borderRadius: 20,
-          padding: 20
-        }}>
+          .dw-hero h1 {
+            margin: 14px 0 10px;
+            font-size: clamp(30px, 5.5vw, 48px);
+            line-height: 1.02;
+            max-width: 560px;
+          }
 
-          <div style={{ color: "#f5c76b", marginBottom: 10 }}>
-            IN EVIDENZA
+          .dw-hero h1 span { color: var(--gold); }
+
+          .dw-hero p {
+            margin: 0;
+            color: #cdd5e7;
+            font-size: clamp(14px, 1.8vw, 16px);
+            max-width: 500px;
+          }
+
+          .dw-hero-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 16px;
+            flex-wrap: wrap;
+          }
+
+          .dw-btn {
+            border: none;
+            border-radius: 10px;
+            padding: 9px 14px;
+            font-size: 12px;
+            font-weight: 700;
+            cursor: pointer;
+          }
+
+          .dw-btn-gold { background: var(--gold); color: #161207; }
+          .dw-btn-dark {
+            background: rgba(8, 12, 22, 0.82);
+            color: #d9e0ef;
+            border: 1px solid #2a374f;
+          }
+
+          .dw-hero-stats {
+            margin-top: 18px;
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            font-size: 12px;
+          }
+
+          .dw-hero-stats div {
+            color: #b2bfd7;
+            border-right: 1px solid rgba(178, 191, 215, 0.22);
+            padding-right: 14px;
+          }
+
+          .dw-main-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.66fr) minmax(280px, 0.8fr);
+            gap: 16px;
+            align-items: start;
+          }
+
+          .dw-panel {
+            background: linear-gradient(180deg, var(--panel-soft), #0c1321);
+            border: 1px solid var(--line);
+            border-radius: 14px;
+            padding: 14px;
+          }
+
+          .dw-baretto-title {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+          }
+
+          .dw-pill {
+            border-radius: 999px;
+            background: rgba(245, 166, 35, 0.08);
+            border: 1px solid rgba(245, 166, 35, 0.3);
+            color: var(--gold);
+            padding: 4px 8px;
+            font-size: 11px;
+            font-weight: 700;
+          }
+
+          .dw-chat {
+            display: grid;
+            gap: 8px;
+            max-height: 210px;
+            overflow: auto;
+            padding-right: 2px;
+          }
+
+          .dw-msg {
+            background: #111b2c;
+            border: 1px solid #25324a;
+            border-radius: 11px;
+            padding: 9px 10px;
+            font-size: 12px;
+            line-height: 1.35;
+          }
+
+          .dw-msg-top {
+            display: flex;
+            gap: 8px;
+            align-items: center;
+            margin-bottom: 4px;
+            color: #dbe5fb;
+            font-size: 11px;
+            font-weight: 700;
+          }
+
+          .tone-gold { color: #f9cf7a; }
+          .tone-violet { color: #b7a6ff; }
+          .tone-blue { color: #8bc4ff; }
+          .tone-green { color: #89d39a; }
+
+          .dw-chat-input {
+            margin-top: 10px;
+            width: 100%;
+            border-radius: 10px;
+            border: 1px solid #27354f;
+            background: #0a1221;
+            color: #8f9ab1;
+            padding: 10px 12px;
+            font-size: 12px;
+          }
+
+          .dw-feed-head {
+            margin: 14px 0 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+          }
+
+          .dw-feed {
+            display: grid;
+            gap: 12px;
+          }
+
+          .dw-post {
+            background: linear-gradient(180deg, #101827, #0d1524);
+            border: 1px solid #23314a;
+            border-radius: 14px;
+            overflow: hidden;
+          }
+
+          .dw-post img {
+            display: block;
+            width: 100%;
+            height: 160px;
+            object-fit: cover;
+          }
+
+          .dw-post-content { padding: 11px 12px 12px; }
+
+          .dw-post-head {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+            gap: 8px;
+          }
+
+          .dw-post-user { font-size: 11px; color: #9aaccc; }
+          .dw-post-title {
+            margin: 0 0 6px;
+            font-size: 17px;
+            line-height: 1.18;
+          }
+
+          .dw-post-text {
+            margin: 0;
+            color: #a5b2ca;
+            font-size: 12px;
+            line-height: 1.45;
+          }
+
+          .dw-post-actions {
+            margin-top: 10px;
+            display: flex;
+            gap: 16px;
+            color: #93a5c7;
+            font-size: 11px;
+          }
+
+          .dw-side {
+            display: grid;
+            gap: 12px;
+            position: sticky;
+            top: 84px;
+          }
+
+          .dw-side h3 {
+            margin: 0 0 9px;
+            font-size: 13px;
+            color: #f6f8fc;
+            letter-spacing: 0.01em;
+          }
+
+          .dw-side-list {
+            margin: 0;
+            padding: 0;
+            list-style: none;
+            display: grid;
+            gap: 8px;
+          }
+
+          .dw-side-list li {
+            font-size: 12px;
+            color: #a8b6ce;
+            border-radius: 9px;
+            padding: 8px;
+            border: 1px solid #24324a;
+            background: #111b2a;
+          }
+
+          .dw-ranking li {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+          }
+
+          .dw-ranking strong { color: #eef2fb; font-size: 12px; }
+
+          .dw-bottom-nav {
+            display: none;
+          }
+
+          @media (max-width: 1023px) {
+            .dw-community-page {
+              padding: 10px 10px 84px;
+            }
+
+            .dw-hero {
+              min-height: 240px;
+              border-radius: 14px;
+              padding: 16px;
+              background-position: center 35%;
+            }
+
+            .dw-hero h1 {
+              max-width: 280px;
+              font-size: clamp(28px, 8.5vw, 38px);
+            }
+
+            .dw-main-grid {
+              grid-template-columns: 1fr;
+            }
+
+            .dw-side {
+              position: static;
+              top: auto;
+            }
+
+            .dw-post img { height: 146px; }
+
+            .dw-bottom-nav {
+              display: flex;
+              position: fixed;
+              left: 50%;
+              transform: translateX(-50%);
+              bottom: 8px;
+              z-index: 50;
+              width: min(100% - 18px, 380px);
+              border-radius: 14px;
+              border: 1px solid #2a3a55;
+              background: #0b1321;
+              padding: 8px;
+              justify-content: space-between;
+              box-shadow: 0 14px 36px rgba(0, 0, 0, 0.42);
+            }
+
+            .dw-bottom-nav button {
+              border: none;
+              background: transparent;
+              color: #8ea0be;
+              font-size: 11px;
+              padding: 6px 8px;
+              border-radius: 8px;
+              min-width: 52px;
+            }
+
+            .dw-bottom-nav .active {
+              background: rgba(245, 166, 35, 0.16);
+              color: var(--gold);
+              font-weight: 700;
+            }
+          }
+        `}</style>
+
+        <div className="dw-community-shell">
+          <section className="dw-hero">
+            <div>
+              <span className="dw-badge">Community DrinkWise</span>
+              <h1>
+                Il posto dove gli <span>appassionati</span> si incontrano.
+              </h1>
+              <p>
+                Baristi, sommelier, cultori e curiosi del buon bere. Benvenuto, tua drink room.
+              </p>
+              <div className="dw-hero-actions">
+                <button className="dw-btn dw-btn-gold" onClick={() => navigate("/baretto")}>Baretto | Feed</button>
+                <button className="dw-btn dw-btn-dark" onClick={() => navigate("/crea")}>Apri lounge</button>
+              </div>
+              <div className="dw-hero-stats">
+                <div><strong>2.4k</strong> iscritti</div>
+                <div><strong>742</strong> post mensili</div>
+                <div><strong>18m</strong> media lettura</div>
+              </div>
+            </div>
+          </section>
+
+          <div className="dw-main-grid">
+            <div>
+              <section className="dw-panel">
+                <div className="dw-baretto-title">
+                  <h3 style={{ margin: 0 }}>Il Baretto</h3>
+                  <span className="dw-pill">Chat dal vivo 7su7</span>
+                </div>
+
+                <div className="dw-chat">
+                  {barettoMessages.map((item, idx) => (
+                    <div className="dw-msg" key={`${item.user}-${idx}`}>
+                      <div className="dw-msg-top">
+                        <span className={`tone-${item.tone}`}>{item.user}</span>
+                        <span>{item.role}</span>
+                      </div>
+                      <div>{item.text}</div>
+                    </div>
+                  ))}
+                </div>
+
+                <input className="dw-chat-input" readOnly value="Scrivi nel baretto..." />
+              </section>
+
+              <div className="dw-feed-head">
+                <h2 style={{ margin: 0, fontSize: 19 }}>Feed Community</h2>
+                <span className="dw-pill">Curato secondo rilevanza</span>
+              </div>
+
+              <section className="dw-feed">
+                {posts.map((post) => (
+                  <article className="dw-post" key={post.id}>
+                    <img src={post.image} alt={post.title} />
+                    <div className="dw-post-content">
+                      <div className="dw-post-head">
+                        <span className="dw-post-user">{post.user}</span>
+                        <span className="dw-pill">{post.badge}</span>
+                      </div>
+                      <h3 className="dw-post-title">{post.title}</h3>
+                      <p className="dw-post-text">{post.text}</p>
+                      <div className="dw-post-actions">
+                        <span>♡ {post.likes}</span>
+                        <span>💬 {post.comments}</span>
+                        <span>↗ condividi</span>
+                      </div>
+                    </div>
+                  </article>
+                ))}
+              </section>
+            </div>
+
+            <aside className="dw-side">
+              <section className="dw-panel">
+                <button className="dw-btn dw-btn-gold" style={{ width: "100%" }} onClick={() => navigate("/crea")}>+ Crea il tuo articolo</button>
+              </section>
+
+              <section className="dw-panel">
+                <h3>Peggy Daily | Articolo</h3>
+                <ul className="dw-side-list">
+                  <li>⭐ 4.9 | Craft Cocktail: Drink & the Choice</li>
+                  <li>⭐ 4.8 | Master Rosita Focus</li>
+                  <li>⭐ 4.7 | Rum Aged Lab 2026</li>
+                </ul>
+              </section>
+
+              <section className="dw-panel">
+                <h3>I possibili search</h3>
+                <ul className="dw-side-list">
+                  {keywords.map((term) => (
+                    <li key={term}>{term}</li>
+                  ))}
+                </ul>
+              </section>
+
+              <section className="dw-panel">
+                <h3>top survivor</h3>
+                <ul className="dw-side-list dw-ranking">
+                  {ranking.map((row) => (
+                    <li key={row.name}>
+                      <strong>{row.name}</strong>
+                      <span>{row.score}</span>
+                    </li>
+                  ))}
+                </ul>
+              </section>
+            </aside>
           </div>
-
-          <h2 style={{ marginBottom: 10 }}>
-            Il Baretto Community
-          </h2>
-
-          <p style={{ color: "#ddd", marginBottom: 20 }}>
-            Il club digitale dove esperti e appassionati scambiano consigli e storie da bancone.
-          </p>
-
-          {/* CHAT */}
-          <div style={{ display: "flex", flexDirection: "column", gap: 10 }}>
-
-            <div style={{ background: "#2a2a2a", padding: 12, borderRadius: 12 }}>
-              <b>BARTENDER_ZIO</b><br/>
-              Ragazzi, qualcuno ha provato il nuovo rum agricolo di Haiti?
-            </div>
-
-            <div style={{ background: "#2a2a2a", padding: 12, borderRadius: 12 }}>
-              <b>MIXOLOGYQUEEN</b><br/>
-              Sì! Note floreali pazzesche 🔥
-            </div>
-
-            <div style={{ background: "#2a2a2a", padding: 12, borderRadius: 12 }}>
-              <b>SANTI_COCKTAIL</b><br/>
-              Quasi quasi lo inserisco in lista…
-            </div>
-
-          </div>
-
-          <button
-            onClick={() => navigate("/baretto")}
-            style={{
-              marginTop: 20,
-              width: "100%",
-              background: "#f5a623",
-              border: "none",
-              padding: 14,
-              borderRadius: 12,
-              fontWeight: "bold",
-              cursor: "pointer"
-            }}
-          >
-            Accedi alla chat
-          </button>
         </div>
 
-        {/* CTA DESTRA */}
-        <div className="community-mobile-box" style={{
-          background: "linear-gradient(135deg,#3a2a00,#5a3e00)",
-          borderRadius: 30,
-          padding: 30,
-          color: "#fff",
-          display: "flex",
-          flexDirection: "column",
-          justifyContent: "center"
-        }}>
-          <h2 style={{
-            fontSize: 22,
-            fontWeight: 700,
-            marginBottom: 10,
-            textAlign: "center"
-          }}>
-            Non bere a caso.<br/>Bevi consapevole.
-          </h2>
-
-          <p style={{
-            fontSize: 14,
-            textAlign: "center",
-            marginBottom: 20
-          }}>
-            Entra nel mondo DrinkWise e trasforma ogni brindisi in un'esperienza.
-          </p>
-
-          <button
-            onClick={() => navigate("/crea")}
-            style={{
-              background: "#000",
-              color: "#fff",
-              padding: "12px 20px",
-              borderRadius: 30,
-              border: "none",
-              cursor: "pointer",
-              alignSelf: "center",
-              fontWeight: "bold"
-            }}
-          >
-            Crea il tuo cocktail
-          </button>
-        </div>
+        <nav className="dw-bottom-nav" aria-label="Community navigation rapida">
+          <button onClick={() => navigate("/home")}>Home</button>
+          <button onClick={() => navigate("/mappa")}>Mappa</button>
+          <button onClick={() => navigate("/drink")}>Drink</button>
+          <button className="active" onClick={() => navigate("/community")}>Community</button>
+          <button onClick={() => navigate("/dashboard")}>Panel</button>
+        </nav>
       </div>
-
-      {/* CREA POST */}
-      <div style={{
-        background: "#111",
-        borderRadius: 20,
-        padding: 15,
-        marginBottom: 30
-      }}>
-        <div style={{
-          background: "#1a1f25",
-          padding: 12,
-          borderRadius: 30,
-          marginBottom: 10,
-          color: "#888"
-        }}>
-          A cosa stai pensando?
-        </div>
-
-        <button style={{
-          background: "#f5a623",
-          border: "none",
-          padding: "10px 20px",
-          borderRadius: 20,
-          fontWeight: "bold",
-          cursor: "pointer"
-        }}>
-          Pubblica
-        </button>
-      </div>
-
-      {/* COMMUNITY GRID */}
-      <h2 style={{ marginBottom: 10 }}>
-        Dalla Community
-      </h2>
-
-      <div className="community-mobile-grid" style={{
-        display: "grid",
-        gridTemplateColumns: "1fr 1fr",
-        gap: 15
-      }}>
-
-
-        <div style={{ background: "#111", borderRadius: 20, overflow: "hidden" }}>
-          <img src="https://images.unsplash.com/photo-1582571352035-9c9b1e8d9b1c" style={{ width: "100%", borderRadius: 20 }} />
-          <div style={{ padding: 12 }}>Old Fashioned affumicato</div>
-        </div>
-
-        <div style={{ background: "#111", borderRadius: 20, overflow: "hidden" }}>
-          <img src="https://images.unsplash.com/photo-1564758564027-6a3e8a8c3c1c" style={{ width: "100%", borderRadius: 20 }} />
-          <div style={{ padding: 12 }}>Gin Tonic botanico</div>
-        </div>
-
-      </div>
-    </div>
     </>
   );
 }
