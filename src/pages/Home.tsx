@@ -361,7 +361,7 @@ export default function Home() {
           .hero-section {
             align-items: flex-end !important;
             justify-content: center !important;
-            padding: 0 28px 112px !important;
+            padding: 0 0 112px !important;
           }
           .hero-mobile-content {
             width: min(100%, 1180px) !important;
@@ -377,7 +377,7 @@ export default function Home() {
           .hero-video-desktop {
             object-fit: cover !important;
             object-position: center 34% !important;
-            transform: scale(0.88) !important;
+            transform: scale(1) !important;
             transform-origin: center center !important;
           }
         }
