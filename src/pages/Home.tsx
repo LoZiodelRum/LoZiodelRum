@@ -372,6 +372,15 @@ export default function Home() {
             margin-top: 24px !important;
           }
         }
+
+        @media (min-width: 1024px) {
+          .hero-video-desktop {
+            object-fit: cover !important;
+            object-position: center 38% !important;
+            transform: scale(0.95) !important;
+            transform-origin: center center !important;
+          }
+        }
       `}</style>
 
       <div
@@ -395,6 +404,7 @@ export default function Home() {
         }}
       >
         <video
+          className="hero-video-desktop"
           autoPlay
           muted
           loop
