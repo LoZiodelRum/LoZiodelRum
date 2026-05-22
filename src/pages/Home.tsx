@@ -31,6 +31,7 @@ export default function Home() {
   const [editingLocaleId, setEditingLocaleId] = useState<string | null>(null);
   const [localeDraft, setLocaleDraft] = useState<Partial<Locale> | null>(null);
   const [savingLocaleId, setSavingLocaleId] = useState<string | null>(null);
+  const [heroVideoFailed, setHeroVideoFailed] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -166,6 +167,22 @@ export default function Home() {
   }
 
   const heroVideoSrc = `/home-hero.mp4?v=${HOME_HERO_VIDEO_VERSION}`;
+  const heroVideoPoster =
+    "data:image/svg+xml;charset=UTF-8," +
+    encodeURIComponent(`
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 1600">
+        <defs>
+          <linearGradient id="g" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#1a130d" />
+            <stop offset="55%" stop-color="#0d0f14" />
+            <stop offset="100%" stop-color="#050608" />
+          </linearGradient>
+        </defs>
+        <rect width="1200" height="1600" fill="url(#g)" />
+        <circle cx="600" cy="620" r="220" fill="#f5a623" fill-opacity="0.10" />
+        <text x="600" y="820" text-anchor="middle" font-family="Arial, sans-serif" font-size="72" fill="#f5a623" font-weight="700">DrinkWise</text>
+      </svg>
+    `);
 
   return (
     <div
@@ -372,6 +389,8 @@ export default function Home() {
           paddingTop: 0,
           paddingBottom: "clamp(72px, 11vh, 132px)",
           borderRadius: 0,
+          backgroundColor: "#0b0b0b",
+          backgroundImage: "linear-gradient(180deg, rgba(26,19,13,1) 0%, rgba(13,15,20,1) 55%, rgba(5,6,8,1) 100%)",
         }}
       >
         <video
@@ -379,8 +398,10 @@ export default function Home() {
           muted
           loop
           playsInline
-          preload="auto"
+          preload="metadata"
+          poster={heroVideoPoster}
           aria-hidden="true"
+          onError={() => setHeroVideoFailed(true)}
           style={{
             position: "absolute",
             inset: 0,
@@ -388,10 +409,22 @@ export default function Home() {
             height: "100%",
             objectFit: "cover",
             zIndex: 0,
+            opacity: heroVideoFailed ? 0 : 1,
           }}
         >
           <source src={heroVideoSrc} type="video/mp4" />
         </video>
+        {heroVideoFailed && (
+          <div
+            aria-hidden="true"
+            style={{
+              position: "absolute",
+              inset: 0,
+              background: "linear-gradient(180deg, rgba(26,19,13,1) 0%, rgba(13,15,20,1) 55%, rgba(5,6,8,1) 100%)",
+              zIndex: 0,
+            }}
+          />
+        )}
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(0,0,0,0.22), rgba(0,0,0,0.38) 45%, rgba(0,0,0,0.86) 100%)", zIndex: 1 }} />
         <div className="hero-mobile-content" style={{ position: "relative", zIndex: 2, width: "100%", maxWidth: 1180, padding: "0 20px 6px" }}>
           <p className="hero-mobile-badge" style={{ display: "none" }}>La community del bere consapevole</p>
