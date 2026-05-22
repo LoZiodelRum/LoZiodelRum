@@ -67,12 +67,23 @@ export async function handler(event) {
     return Object.keys(value).length === 0;
   };
 
+  const normalizeCoordinate = (value) => {
+    const normalized = String(value ?? "").trim().replace(/,/g, ".");
+    if (!normalized) return null;
+    const parsed = Number(normalized);
+    return Number.isNaN(parsed) ? null : parsed;
+  };
+
   const tableCandidates = ["Locali", "locali"];
   let lastError = "Could not save locale";
 
   for (const tableName of tableCandidates) {
     try {
       let safeChanges = mode === "delete" ? null : { ...changes };
+      if (safeChanges) {
+        safeChanges.latitudine = normalizeCoordinate(safeChanges.latitudine);
+        safeChanges.longitudine = normalizeCoordinate(safeChanges.longitudine);
+      }
       if (mode === "create") {
         while (true) {
           const { data, error } = await supabaseAdmin.from(tableName).insert([safeChanges]).select("id");

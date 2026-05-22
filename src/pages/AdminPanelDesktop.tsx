@@ -184,9 +184,18 @@ export default function AdminPanel() {
       return value ?? null;
     };
 
+    const normalizeLocaliCoordinate = (value: any) => {
+      const normalized = String(value ?? "").trim().replace(/,/g, ".");
+      if (!normalized) return null;
+      const parsed = Number(normalized);
+      return Number.isNaN(parsed) ? null : parsed;
+    };
+
     const cleanData: any = {};
     Object.keys(dataToUpdate).forEach(k => {
-      cleanData[k] = normalizeValue(dataToUpdate[k]);
+      cleanData[k] = selectedTable === "Locali" && localiNumberFields.has(k)
+        ? normalizeLocaliCoordinate(dataToUpdate[k])
+        : normalizeValue(dataToUpdate[k]);
     });
 
     if (selectedTable.toLowerCase() === "vini" && cleanData.image !== undefined) {
@@ -211,7 +220,9 @@ export default function AdminPanel() {
     if (!isCreating) {
       Object.keys(cleanData).forEach((k) => {
         const current = cleanData[k];
-        const previous = normalizeValue(selectedOriginalItem?.[k]);
+        const previous = selectedTable === "Locali" && localiNumberFields.has(k)
+          ? normalizeLocaliCoordinate(selectedOriginalItem?.[k])
+          : normalizeValue(selectedOriginalItem?.[k]);
         if (JSON.stringify(current) !== JSON.stringify(previous)) {
           changedData[k] = current;
         }
@@ -1340,12 +1351,16 @@ export default function AdminPanel() {
     qualita_prezzo: ["Scarso", "Mediocre", "Sufficiente", "Buono", "Ottimo", "Eccellente"],
   };
 
+  const localiNumberFields = new Set(["latitudine", "longitudine"]);
+
   const localiEditorKeys = [
     "nome",
     "indirizzo",
     "citta",
     "provincia",
     "paese",
+    "latitudine",
+    "longitudine",
     "categoria",
     "orari",
     "price_range",
@@ -1469,6 +1484,8 @@ export default function AdminPanel() {
     specialita: "specializzazione",
     indirizzo_locale: "indirizzo_locale",
     citta_locale: "citta_locale",
+    latitudine: "latitudine",
+    longitudine: "longitudine",
   };
 
   function stringifyProfileCollection(value: unknown) {
@@ -1773,6 +1790,8 @@ export default function AdminPanel() {
         citta: "",
         provincia: "",
         paese: "",
+        latitudine: "",
+        longitudine: "",
         categoria: "",
         orari: "",
         price_range: "",
@@ -2315,6 +2334,40 @@ const inputMobileStyle = {
                               <option key={option} value={option}>{option}</option>
                             ))}
                           </select>
+                        ) : selectedTable === "Locali" && localiNumberFields.has(key) ? (
+                          <input
+                            type="number"
+                            step="any"
+                            inputMode="decimal"
+                            placeholder={key === "latitudine" ? "40.8518" : "14.2681"}
+                            value={selectedItem[key] ?? ""}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              setSelectedItem((prev: any) => ({
+                                ...prev,
+                                [key]: value,
+                              }));
+                              setSaveStatus(null);
+                            }}
+                            style={selectStyle}
+                          />
+                        ) : selectedTable === "Locali" && localiNumberFields.has(key) ? (
+                          <input
+                            type="number"
+                            step="any"
+                            inputMode="decimal"
+                            placeholder={key === "latitudine" ? "40.8518" : "14.2681"}
+                            value={selectedItem[key] ?? ""}
+                            onChange={(e) => {
+                              const value = e.target.value;
+                              setSelectedItem((prev: any) => ({
+                                ...prev,
+                                [key]: value,
+                              }));
+                              setSaveStatus(null);
+                            }}
+                            style={selectStyle}
+                          />
                         ) : isWineTable && aisSelectOptions[key] ? (
                           key === "descrizione_olfattiva" ? (
                             <details style={{ position: "relative" }}>

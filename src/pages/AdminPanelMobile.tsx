@@ -62,6 +62,8 @@ export default function AdminPanelMobile() {
     pubblicato: "Pubblicato",
     tag: "Tag",
     tempo_lettura: "Tempo di lettura (min)",
+    latitudine: "Latitudine",
+    longitudine: "Longitudine",
   };
 
   const localiSelectOptions: Record<string, string[]> = {
@@ -70,6 +72,35 @@ export default function AdminPanelMobile() {
     atmosfera: ["Scarso", "Mediocre", "Sufficiente", "Buono", "Ottimo", "Eccellente"],
     qualita_prezzo: ["Scarso", "Mediocre", "Sufficiente", "Buono", "Ottimo", "Eccellente"],
   };
+
+  const localiNumberFields = new Set(["latitudine", "longitudine"]);
+
+  const localiEditorKeyOrder = [
+    "nome",
+    "indirizzo",
+    "citta",
+    "provincia",
+    "paese",
+    "latitudine",
+    "longitudine",
+    "categoria",
+    "orari",
+    "price_range",
+    "telefono",
+    "sito",
+    "instagram",
+    "image_url",
+    "image",
+    "video_url",
+    "descrizione",
+    "descrizione_completa",
+    "qualita_drink",
+    "competenza_staff",
+    "atmosfera",
+    "qualita_prezzo",
+    "verificato",
+    "in_evidenza",
+  ];
 
   const profiliSelectOptions: Record<string, string[]> = {
     ruolo: ["utente", "bartender", "proprietario", "admin"],
@@ -167,7 +198,7 @@ export default function AdminPanelMobile() {
     function getEditorKeys() {
   try {
     if (!selectedItem) {
-      if (selectedTable === "Locali" && locali.length > 0) return Object.keys(locali[0]);
+        if (selectedTable === "Locali" && locali.length > 0) return localiEditorKeyOrder.filter((key) => key in locali[0]);
       if (selectedTable === "profili" && utenti.length > 0) return Object.keys(utenti[0]);
       if (selectedTable === "cocktail" && cocktail.length > 0) return Object.keys(cocktail[0]);
       if (selectedTable === "distillati" && distillati.length > 0) return Object.keys(distillati[0]);
@@ -238,6 +269,19 @@ Object.keys(selectedItem).forEach((key) => {
     try {
       const tableName = getTableName();
       const payload = { ...selectedItem };
+
+      if (tableName === "Locali") {
+        const normalizeCoordinate = (value: any) => {
+          const normalized = String(value ?? "").trim().replace(/,/g, ".");
+          if (!normalized) return null;
+          const parsed = Number(normalized);
+          return Number.isNaN(parsed) ? null : parsed;
+        };
+
+        localiNumberFields.forEach((field) => {
+          payload[field] = normalizeCoordinate(payload[field]);
+        });
+      }
 
 // 👉 PULIZIA AUTOMATICA IN CREAZIONE
 if (isCreating) {
@@ -405,6 +449,22 @@ if (isCreating) {
                           </option>
                         ))}
                       </select>
+                    </FieldWrap>
+                  );
+                }
+
+                if (selectedTable === "Locali" && localiNumberFields.has(key)) {
+                  return (
+                    <FieldWrap key={key} label={fieldLabelMap[key] ?? key}>
+                      <input
+                        type="number"
+                        step="any"
+                        inputMode="decimal"
+                        placeholder={key === "latitudine" ? "40.8518" : "14.2681"}
+                        value={selectedItem[key] ?? ""}
+                        onChange={e => { const value = e.target.value; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }}
+                        style={inputMobileStyle}
+                      />
                     </FieldWrap>
                   );
                 }
@@ -635,7 +695,32 @@ if (isCreating) {
   style={actionButtonStyle}
   onClick={() => {
     setSelectedTable("Locali");
-    setSelectedItem(null);
+    setSelectedItem({
+      nome: "",
+      indirizzo: "",
+      citta: "",
+      provincia: "",
+      paese: "",
+      latitudine: "",
+      longitudine: "",
+      categoria: "",
+      orari: "",
+      price_range: "",
+      telefono: "",
+      sito: "",
+      instagram: "",
+      image_url: "",
+      image: "",
+      video_url: "",
+      descrizione: "",
+      descrizione_completa: "",
+      qualita_drink: "",
+      competenza_staff: "",
+      atmosfera: "",
+      qualita_prezzo: "",
+      verificato: false,
+      in_evidenza: false,
+    });
     setIsCreating(true);
     setRightOpen(false);
   }}
