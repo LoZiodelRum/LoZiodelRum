@@ -1374,8 +1374,8 @@ button[style*="#c47a2c"] {
   .magazine-page-mobile .drink-card {
     aspect-ratio: 1 / 1.12;
     border-radius: 14px;
-    border: 2px solid rgba(255, 255, 255, 0.9) !important;
-    box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.25), 0 10px 20px rgba(0, 0, 0, 0.16);
+    border: 1.5px solid rgba(255, 255, 255, 0.55) !important;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.16);
   }
 
   .magazine-page-mobile .drink-card img {
@@ -1582,7 +1582,7 @@ button[style*="#c47a2c"] {
 
   .magazine-page-mobile .drink-card {
     border-radius: 12px;
-    border: 2px solid rgba(255, 255, 255, 0.9) !important;
+    border: 1.5px solid rgba(255, 255, 255, 0.55) !important;
   }
 
   .magazine-page-mobile .drink-card img {
