@@ -112,7 +112,7 @@ export default function Community() {
             position: relative;
             overflow: hidden;
             border-radius: 14px;
-            min-height: 276px;
+            min-height: 264px;
             padding: 22px;
             display: grid;
             align-content: space-between;
@@ -303,7 +303,7 @@ export default function Community() {
           .dw-post img {
             display: block;
             width: 100%;
-            height: 170px;
+            height: 158px;
             object-fit: cover;
           }
 
@@ -396,7 +396,7 @@ export default function Community() {
 
             .dw-hero h1 {
               max-width: 258px;
-              font-size: clamp(26px, 8.2vw, 36px);
+              font-size: clamp(24px, 7.8vw, 34px);
             }
 
             .dw-badge {
