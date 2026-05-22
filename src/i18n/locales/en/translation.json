@@ -1,4 +1,11 @@
 {
   "welcome": "Welcome to DrinkWise",
-  "magazine": "Magazine"
+  "home": "Home",
+  "map": "Map",
+  "drink": "Drinks",
+  "wines": "Wines",
+  "magazine": "Magazine",
+  "community": "Community",
+  "create": "Create",
+  "logout": "Logout"
 }
