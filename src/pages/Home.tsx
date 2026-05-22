@@ -32,6 +32,7 @@ export default function Home() {
   const [localeDraft, setLocaleDraft] = useState<Partial<Locale> | null>(null);
   const [savingLocaleId, setSavingLocaleId] = useState<string | null>(null);
   const [heroVideoFailed, setHeroVideoFailed] = useState(false);
+  const [heroVideoReady, setHeroVideoReady] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -401,6 +402,7 @@ export default function Home() {
           preload="metadata"
           poster={heroVideoPoster}
           aria-hidden="true"
+          onLoadedData={() => setHeroVideoReady(true)}
           onError={() => setHeroVideoFailed(true)}
           style={{
             position: "absolute",
@@ -409,7 +411,8 @@ export default function Home() {
             height: "100%",
             objectFit: "cover",
             zIndex: 0,
-            opacity: heroVideoFailed ? 0 : 1,
+            opacity: heroVideoFailed ? 0 : heroVideoReady ? 1 : 0,
+            transition: "opacity 240ms ease",
           }}
         >
           <source src={heroVideoSrc} type="video/mp4" />
