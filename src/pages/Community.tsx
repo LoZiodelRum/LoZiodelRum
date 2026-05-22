@@ -303,7 +303,7 @@ export default function Community() {
           .dw-post img {
             display: block;
             width: 100%;
-            height: 158px;
+            height: 150px;
             object-fit: cover;
           }
 
@@ -388,15 +388,15 @@ export default function Community() {
             }
 
             .dw-hero {
-              min-height: 226px;
+              min-height: 212px;
               border-radius: 12px;
-              padding: 14px;
+              padding: 12px;
               background-position: center 32%;
             }
 
             .dw-hero h1 {
               max-width: 258px;
-              font-size: clamp(24px, 7.8vw, 34px);
+              font-size: clamp(22px, 7.2vw, 31px);
             }
 
             .dw-badge {
@@ -418,7 +418,7 @@ export default function Community() {
               top: auto;
             }
 
-            .dw-post img { height: 140px; }
+            .dw-post img { height: 128px; }
 
             .dw-bottom-nav {
               display: flex;
