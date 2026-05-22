@@ -48,7 +48,7 @@ export default function CategoryVini() {
   if (loading) return <div className="page fade-in">Caricamento...</div>;
 
   return (
-    <div className="fade-in drink-page-white">
+    <div className="fade-in drink-page-white vini-preview-page">
       <section className="drink-section-white">
         <div className="drink-top-bar">
           <button className="drink-back-btn" onClick={() => navigate(-1)} aria-label="Torna indietro">
@@ -79,31 +79,10 @@ export default function CategoryVini() {
                     <img
                       src={imgUrl}
                       alt={item.nome}
-                      style={{
-                        width: "100%",
-                        height: "180px",
-                        objectFit: "cover",
-                        objectPosition: "center",
-                        borderRadius: "12px 12px 0 0",
-                        background: "#18181b",
-                        display: "block",
-                        margin: 0,
-                      }}
                       onError={e => { e.currentTarget.style.display = 'none'; }}
                     />
                   ) : (
-                    <div style={{
-                      width: "100%",
-                      height: "180px",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center",
-                      background: "#18181b",
-                      color: "#f5a623",
-                      borderRadius: "12px 12px 0 0",
-                      fontWeight: 600,
-                      fontSize: 15,
-                    }}>Immagine in arrivo</div>
+                    <div className="no-img-placeholder">Immagine in arrivo</div>
                   )}
                   <div className="drink-card-caption">
                     <h3 translate="no">{item.nome}</h3>

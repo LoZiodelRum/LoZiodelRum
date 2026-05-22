@@ -84,7 +84,6 @@ const mockVini = [
 export default function Vini() {
   const [vini, setVini] = useState<VinoCard[]>([]);
   const [loading, setLoading] = useState(true);
-  const [imageRatios, setImageRatios] = useState<Record<string, number>>({});
   const navigate = useNavigate();
   const { categoria } = useParams();
 
@@ -167,35 +166,6 @@ export default function Vini() {
     return (name || "").replace(/\s+/g, " ").trim();
   }
 
-  function handlePreviewImageLoad(id: string, event: React.SyntheticEvent<HTMLImageElement>) {
-    const img = event.currentTarget;
-    if (!img.naturalWidth || !img.naturalHeight) return;
-    const ratio = img.naturalWidth / img.naturalHeight;
-    setImageRatios((prev) => (prev[id] === ratio ? prev : { ...prev, [id]: ratio }));
-  }
-
-  function getBottleScale(item: VinoCard) {
-    const ratio = imageRatios[item.id] ?? 1;
-
-    if (ratio >= 1.45) return 2.05;
-    if (ratio >= 1.2) return 1.75;
-    if (ratio >= 1.0) return 1.45;
-    if (ratio >= 0.8) return 1.18;
-    return 1.03;
-  }
-
-  function getPreviewImageStyle(item: VinoCard): React.CSSProperties | undefined {
-    if (item.placeholder) return undefined;
-
-    return {
-      objectFit: "contain",
-      objectPosition: "center bottom",
-      transform: `scale(${getBottleScale(item)})`,
-      transformOrigin: "center bottom",
-      background: "#ffffff",
-    };
-  }
-
   function renderSection(title: string, list: VinoCard[], tipo: string, fillPlaceholders = true) {
     const cards = [...list];
     if (fillPlaceholders) {
@@ -260,33 +230,10 @@ export default function Vini() {
                 <img
                   src={item.immagine}
                   alt={item.nome}
-                  style={{
-                    width: "100%",
-                    height: "360px",
-objectFit: "contain",
-padding: "20px",
-background: "#fff",
-boxSizing: "border-box",
-                    objectPosition: "center",
-                    borderRadius: "12px 12px 0 0",
-                    display: "block",
-                    margin: 0,
-                  }}
                   onError={e => { e.currentTarget.style.display = 'none'; }}
                 />
               ) : (
-                <div style={{
-                  width: "100%",
-                  height: "180px",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  background: "#18181b",
-                  color: "#f5a623",
-                  borderRadius: "12px 12px 0 0",
-                  fontWeight: 600,
-                  fontSize: 15,
-                }}>Immagine in arrivo</div>
+                <div className="no-img-placeholder">Immagine in arrivo</div>
               )}
               <div className="drink-card-caption">
                 <h3>{normalizeWineName(item.nome)}</h3>
@@ -320,10 +267,6 @@ boxSizing: "border-box",
             grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
           }
 
-          .vini-preview-page .drink-card-uniform {
-            aspect-ratio: 1 / 1.46 !important;
-          }
-
           .vini-preview-page .drink-card-caption h3 {
             font-size: 15px;
             line-height: 1.15;
@@ -335,27 +278,11 @@ boxSizing: "border-box",
             word-break: break-word;
           }
 
-          .vini-preview-page .drink-card-uniform img {
-            width: 100% !important;
-            height: calc(100% - 40px) !important;
-            object-fit: contain !important;
-            object-position: center bottom !important;
-            background: #fff !important;
-          }
-
           @media (max-width: 768px) {
-            .vini-preview-page .drink-card-uniform {
-              aspect-ratio: 1 / 1.52 !important;
-            }
-
             .vini-preview-page .drink-card-caption {
               min-height: 34px !important;
               height: 34px !important;
               padding: 0 8px !important;
-            }
-
-            .vini-preview-page .drink-card-uniform img {
-              height: calc(100% - 34px) !important;
             }
           }
         `}</style>
