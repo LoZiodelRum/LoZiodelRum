@@ -263,8 +263,10 @@ export default function Vini() {
             color: #f5a623 !important;
           }
 
-          .vini-grid {
-            grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+          @media (min-width: 1024px) {
+            .vini-grid {
+              grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+            }
           }
 
           .vini-preview-page .drink-card-caption h3 {
