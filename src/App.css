@@ -751,22 +751,22 @@ button:active { transform: scale(0.98); }
 @media (max-width: 768px) {
   .vini-preview-page .vini-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 12px !important;
+    gap: 14px !important;
   }
 
   .vini-preview-page .vini-grid .drink-card-uniform {
-    height: 278px;
-    min-height: 278px;
-    max-height: 278px;
+    height: 266px;
+    min-height: 266px;
+    max-height: 266px;
     justify-content: flex-start;
   }
 
   .vini-grid .drink-card-uniform img,
   .vini-grid .drink-card-uniform .no-img-placeholder {
-    height: 230px !important;
-    min-height: 230px !important;
-    max-height: 230px !important;
-    padding: 10px !important;
+    height: 218px !important;
+    min-height: 218px !important;
+    max-height: 218px !important;
+    padding: 9px !important;
     object-position: center center !important;
   }
 
@@ -787,22 +787,22 @@ button:active { transform: scale(0.98); }
 @media (max-width: 480px) {
   .vini-preview-page .vini-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
-    gap: 10px !important;
+    gap: 12px !important;
   }
 
   .vini-preview-page .vini-grid .drink-card-uniform {
-    height: 236px;
-    min-height: 236px;
-    max-height: 236px;
+    height: 226px;
+    min-height: 226px;
+    max-height: 226px;
     justify-content: flex-start;
   }
 
   .vini-grid .drink-card-uniform img,
   .vini-grid .drink-card-uniform .no-img-placeholder {
-    height: 199px !important;
-    min-height: 199px !important;
-    max-height: 199px !important;
-    padding: 8px !important;
+    height: 189px !important;
+    min-height: 189px !important;
+    max-height: 189px !important;
+    padding: 7px !important;
     object-position: center center !important;
   }
 
