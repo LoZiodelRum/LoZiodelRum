@@ -1355,8 +1355,51 @@ button[style*="#c47a2c"] {
     max-width: none;
     margin-left: calc(50% - 50vw);
     margin-right: calc(50% - 50vw);
-    padding-left: 12px;
-    padding-right: 12px;
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+
+  .magazine-page-mobile .mobile-articles-title {
+    color: #111;
+    font-size: 30px;
+    line-height: 1.05;
+    margin: 6px 2px 12px;
+  }
+
+  .magazine-page-mobile .cocktail-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 8px;
+  }
+
+  .magazine-page-mobile .drink-card {
+    aspect-ratio: 1 / 1.12;
+    border-radius: 14px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.16);
+  }
+
+  .magazine-page-mobile .drink-card img {
+    transform: none !important;
+    border-radius: 14px;
+  }
+
+  .magazine-page-mobile .drink-card-overlay {
+    padding: 12px 11px 10px;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.08) 0%, rgba(0, 0, 0, 0.86) 72%);
+  }
+
+  .magazine-page-mobile .drink-card-overlay h3 {
+    font-size: 15px;
+    line-height: 1.2;
+  }
+
+  .magazine-page-mobile .drink-card-overlay p {
+    font-size: 11px;
+    line-height: 1.35;
+    margin-top: 4px;
+  }
+
+  .magazine-page-mobile .badge-category {
+    display: none !important;
   }
 
   .content-wrapper { padding: 14px; }
@@ -1528,8 +1571,28 @@ button[style*="#c47a2c"] {
   }
 
   .magazine-page-mobile {
-    padding-left: 12px;
-    padding-right: 12px;
+    padding-left: 6px;
+    padding-right: 6px;
+  }
+
+  .magazine-page-mobile .cocktail-grid {
+    gap: 7px;
+  }
+
+  .magazine-page-mobile .drink-card {
+    border-radius: 12px;
+  }
+
+  .magazine-page-mobile .drink-card img {
+    border-radius: 12px;
+  }
+
+  .magazine-page-mobile .drink-card-overlay {
+    padding: 11px 10px 9px;
+  }
+
+  .magazine-page-mobile .drink-card-overlay h3 {
+    font-size: 14px;
   }
 
   .contact-chip { font-size: 11px; padding: 7px 10px; }
