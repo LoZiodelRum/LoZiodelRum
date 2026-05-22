@@ -9,7 +9,7 @@ export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
   const [menuOpen, setMenuOpen] = useState(false);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   function closeMobileMenu() {
     setMenuOpen(false);
@@ -105,6 +105,13 @@ export default function Navbar() {
         <Link to="/magazine" style={linkStyle("/magazine")}>{t("magazine")}</Link>
         <Link to="/community" style={linkStyle("/community")}>Community</Link>
         <Link to="/crea" style={linkStyle("/crea")}>Crea</Link>
+        <button onClick={() => i18n.changeLanguage("it")}>
+  IT
+</button>
+
+<button onClick={() => i18n.changeLanguage("en")}>
+  EN
+</button>
 
         {isAdmin && (
           <Link to="/admin" style={linkStyle("/admin")}> 
