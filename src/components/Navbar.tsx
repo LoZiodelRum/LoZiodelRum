@@ -281,13 +281,20 @@ export default function Navbar() {
             color: "#fff",
             cursor: "pointer",
             fontWeight: "bold",
-            fontSize: "18px",
+            fontSize: "14px",
             display: "flex",
             alignItems: "center",
-            gap: "6px",
+            gap: "4px",
+            lineHeight: 1,
+            whiteSpace: "nowrap",
           }}
         >
-          {i18n.language === "it" ? "🇮🇹 IT" : "🇬🇧 EN"}
+          <span style={{ fontSize: "14px", lineHeight: 1 }}>
+            {i18n.language === "it" ? "🇮🇹" : "🇬🇧"}
+          </span>
+          <span style={{ lineHeight: 1, whiteSpace: "nowrap" }}>
+            {i18n.language === "it" ? "IT" : "EN"}
+          </span>
         </button>
 
         {languageOpen && (
