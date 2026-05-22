@@ -749,30 +749,56 @@ button:active { transform: scale(0.98); }
 }
 
 @media (max-width: 768px) {
+  .vini-preview-page .vini-grid .drink-card-uniform {
+    min-height: 276px;
+    justify-content: flex-start;
+  }
+
   .vini-grid .drink-card-uniform img,
   .vini-grid .drink-card-uniform .no-img-placeholder {
     height: 230px !important;
     min-height: 230px !important;
     max-height: 230px !important;
     padding: 14px !important;
+    object-position: center center !important;
   }
 
   .vini-preview-page .drink-card-caption {
-    display: none !important;
+    display: flex !important;
+    min-height: 46px !important;
+    height: 46px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-top: 1px solid #ececec;
+  }
+
+  .vini-preview-page .vini-grid .drink-card-uniform img {
+    filter: drop-shadow(0 8px 10px rgba(0, 0, 0, 0.18));
   }
 }
 
 @media (max-width: 480px) {
+  .vini-preview-page .vini-grid .drink-card-uniform {
+    min-height: 242px;
+    justify-content: flex-start;
+  }
+
   .vini-grid .drink-card-uniform img,
   .vini-grid .drink-card-uniform .no-img-placeholder {
     height: 205px !important;
     min-height: 205px !important;
     max-height: 205px !important;
     padding: 12px !important;
+    object-position: center center !important;
   }
 
   .vini-preview-page .drink-card-caption {
-    display: none !important;
+    display: flex !important;
+    min-height: 37px !important;
+    height: 37px !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-top: 1px solid #ececec;
   }
 }
 
@@ -1492,7 +1518,7 @@ button[style*="#c47a2c"] {
     border: 1px solid #f5a623 !important;
   }
 
-  .drink-page-white .drink-card-caption {
+  .drink-page-white:not(.vini-preview-page) .drink-card-caption {
     height: 34px !important;
     min-height: 34px !important;
     padding: 0 8px !important;
@@ -1500,8 +1526,8 @@ button[style*="#c47a2c"] {
   .drink-page-white:not(.vini-preview-page) .drink-card-uniform {
     aspect-ratio: 1 / 1.28;
   }
-  .drink-page-white .drink-card-uniform img,
-  .drink-page-white .drink-card-uniform .no-img-placeholder {
+  .drink-page-white:not(.vini-preview-page) .drink-card-uniform img,
+  .drink-page-white:not(.vini-preview-page) .drink-card-uniform .no-img-placeholder {
     height: calc(100% - 34px) !important;
   }
   .drink-card-caption h3 {
@@ -1610,7 +1636,7 @@ button[style*="#c47a2c"] {
   .preview-card-body h3  { font-size: 12px; }
   .preview-card-body p   { font-size: 10px; }
 
-  .drink-page-white .drink-card-caption {
+  .drink-page-white:not(.vini-preview-page) .drink-card-caption {
     height: 32px !important;
     min-height: 32px !important;
     padding: 0 7px !important;
@@ -1618,8 +1644,8 @@ button[style*="#c47a2c"] {
   .drink-page-white:not(.vini-preview-page) .drink-card-uniform {
     aspect-ratio: 1 / 1.36;
   }
-  .drink-page-white .drink-card-uniform img,
-  .drink-page-white .drink-card-uniform .no-img-placeholder {
+  .drink-page-white:not(.vini-preview-page) .drink-card-uniform img,
+  .drink-page-white:not(.vini-preview-page) .drink-card-uniform .no-img-placeholder {
     height: calc(100% - 32px) !important;
   }
   .drink-card-caption h3 { font-size: 13px; }
