@@ -1212,6 +1212,22 @@ export default function AdminPanel() {
     }
   }, []);
 
+  useEffect(() => {
+    setImagePreviewError(false);
+  }, [selectedItem?.id, selectedItem?.immagine, selectedTable]);
+
+  useEffect(() => {
+    if (!isMobile || typeof document === "undefined" || !document.body) return;
+    if (leftOpen || rightOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isMobile, leftOpen, rightOpen]);
+
   if (loading) return null;
   if (!isAdmin) return <div style={{ padding: 20, color: "red" }}>Accesso negato</div>;
 
@@ -1954,24 +1970,8 @@ export default function AdminPanel() {
       ? getProfiliEditorKeys(selectedItem)
       : Object.keys(selectedItem || {});
 
-  useEffect(() => {
-    setImagePreviewError(false);
-  }, [selectedItem?.id, selectedItem?.immagine, selectedTable]);
-
   // --- MOBILE/TABLET LAYOUT ---
   if (isMobile) {
-    // Blocca scroll quando un off-canvas è aperto
-    useEffect(() => {
-      if (typeof document !== "undefined" && document.body) {
-        if (leftOpen || rightOpen) {
-          document.body.style.overflow = "hidden";
-        } else {
-          document.body.style.overflow = "";
-        }
-        return () => { document.body.style.overflow = ""; };
-      }
-    }, [leftOpen, rightOpen]);
-
     // Chiudi pannelli laterali quando selezioni un elemento
     const handleMenuSelect = (cb: () => void) => {
       cb();
