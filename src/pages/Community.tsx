@@ -118,16 +118,8 @@ export default function Community() {
             align-content: space-between;
             border: 1px solid rgba(245, 166, 35, 0.2);
             background:
-              linear-gradient(105deg, rgba(7, 10, 17, 0.9) 0%, rgba(7, 10, 17, 0.68) 45%, rgba(7, 10, 17, 0.4) 100%),
+              linear-gradient(105deg, rgba(7, 10, 17, 0.55) 0%, rgba(7, 10, 17, 0.3) 45%, rgba(7, 10, 17, 0.12) 100%),
               url("https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=1800&q=80") center 45% / cover no-repeat;
-          }
-
-          .dw-hero::after {
-            content: "";
-            position: absolute;
-            inset: 0;
-            background: linear-gradient(to bottom, rgba(0, 0, 0, 0.08), rgba(0, 0, 0, 0.52));
-            pointer-events: none;
           }
 
           .dw-hero > div {
