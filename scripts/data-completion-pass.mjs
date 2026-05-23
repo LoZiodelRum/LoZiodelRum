@@ -13,7 +13,6 @@ const SUPABASE_URL =
 
 const SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY || "";
 const ANON_KEY = process.env.SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY || "";
-
 const SUPABASE_KEY = isApply ? SERVICE_ROLE_KEY : SERVICE_ROLE_KEY || ANON_KEY;
 
 if (!SUPABASE_URL || !SUPABASE_KEY) {
@@ -27,41 +26,41 @@ if (isApply && !SERVICE_ROLE_KEY) {
 }
 
 const TABLE_CONFIG = {
-  Locali: [
-    { source: "nome", target: "nome_en", lang: "en" },
-    { source: "nome", target: "nome_bg", lang: "bg" },
-    { source: "descrizione", target: "descrizione_en", lang: "en" },
-    { source: "descrizione", target: "descrizione_bg", lang: "bg" },
-    { source: "specialita", target: "specialita_en", lang: "en" },
-    { source: "specialita", target: "specialita_bg", lang: "bg" },
-  ],
   articoli: [
     { source: "titolo", target: "titolo_en", lang: "en" },
     { source: "titolo", target: "titolo_bg", lang: "bg" },
     { source: "contenuto", target: "contenuto_en", lang: "en" },
     { source: "contenuto", target: "contenuto_bg", lang: "bg" },
-    { source: "sottotitolo", target: "sottotitolo_en", lang: "en" },
-    { source: "sottotitolo", target: "sottotitolo_bg", lang: "bg" },
-    { source: "seo_title", target: "seo_title_en", lang: "en" },
-    { source: "seo_title", target: "seo_title_bg", lang: "bg" },
-    { source: "seo_description", target: "seo_description_en", lang: "en" },
-    { source: "seo_description", target: "seo_description_bg", lang: "bg" },
+    { source: ["estratto", "descrizione", "titolo"], target: "sottotitolo_en", lang: "en" },
+    { source: ["estratto", "descrizione", "titolo"], target: "sottotitolo_bg", lang: "bg" },
+    { source: "titolo", target: "seo_title_en", lang: "en" },
+    { source: "titolo", target: "seo_title_bg", lang: "bg" },
+    { source: ["descrizione", "estratto", "contenuto"], target: "seo_description_en", lang: "en" },
+    { source: ["descrizione", "estratto", "contenuto"], target: "seo_description_bg", lang: "bg" },
   ],
-  distillati: [
-    { source: "storia", target: "storia_en", lang: "en" },
-    { source: "storia", target: "storia_bg", lang: "bg" },
-    { source: "note_degustazione", target: "note_degustazione_en", lang: "en" },
-    { source: "note_degustazione", target: "note_degustazione_bg", lang: "bg" },
-    { source: "provenienza", target: "provenienza_en", lang: "en" },
-    { source: "provenienza", target: "provenienza_bg", lang: "bg" },
-  ],
-  vini: [
-    { source: "note_degustazione", target: "note_degustazione_en", lang: "en" },
-    { source: "note_degustazione", target: "note_degustazione_bg", lang: "bg" },
-    { source: "provenienza", target: "provenienza_en", lang: "en" },
-    { source: "provenienza", target: "provenienza_bg", lang: "bg" },
+  Locali: [
+    { source: "nome", target: "nome_en", lang: "en" },
+    { source: "nome", target: "nome_bg", lang: "bg" },
     { source: "descrizione", target: "descrizione_en", lang: "en" },
     { source: "descrizione", target: "descrizione_bg", lang: "bg" },
+    { source: ["specialties", "descrizione"], target: "specialita_en", lang: "en" },
+    { source: ["specialties", "descrizione"], target: "specialita_bg", lang: "bg" },
+  ],
+  distillati: [
+    { source: ["storia", "storia_de", "storia_es", "storia_fr", "curiosita", "descrizione"], target: "storia_en", lang: "en" },
+    { source: ["storia", "storia_de", "storia_es", "storia_fr", "curiosita", "descrizione"], target: "storia_bg", lang: "bg" },
+    { source: ["note_degustazione", "note_degustazione_de", "note_degustazione_es", "note_degustazione_fr", "note_aromatiche", "esame_gustativo", "descrizione"], target: "note_degustazione_en", lang: "en" },
+    { source: ["note_degustazione", "note_degustazione_de", "note_degustazione_es", "note_degustazione_fr", "note_aromatiche", "esame_gustativo", "descrizione"], target: "note_degustazione_bg", lang: "bg" },
+    { source: ["provenienza", "provenienza_de", "provenienza_es", "provenienza_fr", "regione", "paese"], target: "provenienza_en", lang: "en" },
+    { source: ["provenienza", "provenienza_de", "provenienza_es", "provenienza_fr", "regione", "paese"], target: "provenienza_bg", lang: "bg" },
+  ],
+  vini: [
+    { source: ["note_degustazione", "note_degustazione_de", "note_degustazione_es", "note_degustazione_fr", "descrizione_olfattiva", "note_personali", "abbinamenti"], target: "note_degustazione_en", lang: "en" },
+    { source: ["note_degustazione", "note_degustazione_de", "note_degustazione_es", "note_degustazione_fr", "descrizione_olfattiva", "note_personali", "abbinamenti"], target: "note_degustazione_bg", lang: "bg" },
+    { source: ["provenienza", "provenienza_de", "provenienza_es", "provenienza_fr", "zona", "denominazione", "cantina"], target: "provenienza_en", lang: "en" },
+    { source: ["provenienza", "provenienza_de", "provenienza_es", "provenienza_fr", "zona", "denominazione", "cantina"], target: "provenienza_bg", lang: "bg" },
+    { source: ["descrizione", "descrizione_de", "descrizione_es", "descrizione_fr", "descrizione_olfattiva", "note_personali"], target: "descrizione_en", lang: "en" },
+    { source: ["descrizione", "descrizione_de", "descrizione_es", "descrizione_fr", "descrizione_olfattiva", "note_personali"], target: "descrizione_bg", lang: "bg" },
   ],
 };
 
@@ -93,11 +92,25 @@ function logEvent(payload) {
 
 function buildTranslationEndpoint(input, targetLang) {
   return (
-    "https://translate.googleapis.com/translate_a/single?client=gtx&sl=it&tl=" +
+    "https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=" +
     encodeURIComponent(targetLang) +
     "&dt=t&q=" +
     encodeURIComponent(input)
   );
+}
+
+function pickSourceValue(row, source) {
+  if (Array.isArray(source)) {
+    for (const key of source) {
+      const value = row[key];
+      if (hasValue(value)) {
+        return value;
+      }
+    }
+    return null;
+  }
+
+  return row[source];
 }
 
 function isRetriableError(error) {
@@ -145,9 +158,7 @@ async function translateWithRetry({ text, targetLang, table, rowId, field }) {
         reason: String(error.message || error),
       });
 
-      if (!canRetry) {
-        throw error;
-      }
+      if (!canRetry) throw error;
       await sleep(RETRY_DELAYS_MS[attempt]);
     }
   }
@@ -155,47 +166,25 @@ async function translateWithRetry({ text, targetLang, table, rowId, field }) {
   throw new Error("Unexpected retry termination");
 }
 
-async function fetchOneRow(table, offset) {
-  const { data, error } = await supabase
-    .from(table)
-    .select("*")
-    .order("id", { ascending: true })
-    .range(offset, offset);
-
+async function fetchAllRows(table) {
+  const { data, error } = await supabase.from(table).select("*").order("id", { ascending: true });
   if (error) throw error;
-  if (!Array.isArray(data) || data.length === 0) return null;
-  return data[0];
+  return Array.isArray(data) ? data : [];
 }
 
-async function processRow(table, row) {
+async function buildPatch(table, row) {
   const cfg = TABLE_CONFIG[table] || [];
   const patch = {};
 
   for (const entry of cfg) {
-    const sourceValue = row[entry.source];
+    const sourceValue = pickSourceValue(row, entry.source);
     const targetValue = row[entry.target];
 
     if (hasValue(targetValue)) {
-      logEvent({
-        table,
-        record: row.id,
-        field: entry.target,
-        lang: entry.lang,
-        status: "skipped",
-        reason: "already-populated",
-      });
       continue;
     }
 
     if (!hasValue(sourceValue)) {
-      logEvent({
-        table,
-        record: row.id,
-        field: entry.target,
-        lang: entry.lang,
-        status: "skipped",
-        reason: "missing-source",
-      });
       continue;
     }
 
@@ -232,7 +221,7 @@ async function run() {
   console.log(`Mode: ${isDryRun ? "DRY RUN" : "APPLY"}`);
   console.log(`Tables: ${Object.keys(TABLE_CONFIG).join(", ")}`);
   console.log(`Concurrency: 1 record at a time`);
-  console.log(`Delay between records: ${RECORD_DELAY_MS}ms`);
+  console.log(`Delay between updated records: ${RECORD_DELAY_MS}ms`);
 
   const summary = {
     totalRowsScanned: 0,
@@ -242,91 +231,72 @@ async function run() {
   };
 
   for (const table of Object.keys(TABLE_CONFIG)) {
+    const rows = await fetchAllRows(table);
+
     const stats = {
-      rowsScanned: 0,
+      rowsScanned: rows.length,
       rowsWithPatch: 0,
       rowsUpdated: 0,
       fieldUpdatesApplied: 0,
       updateErrors: 0,
+      skippedNoSourceOrAlreadyFilled: 0,
     };
 
-    let offset = 0;
+    summary.totalRowsScanned += rows.length;
 
-    while (true) {
-      let row;
-      try {
-        row = await fetchOneRow(table, offset);
-      } catch (error) {
-        stats.updateErrors += 1;
-        logEvent({
-          table,
-          record: null,
-          field: null,
-          lang: null,
-          status: "read-error",
-          reason: String(error.message || error),
-          offset,
-        });
-        offset += 1;
-        await sleep(RECORD_DELAY_MS);
+    for (const row of rows) {
+      const patch = await buildPatch(table, row);
+      const patchKeys = Object.keys(patch);
+
+      if (patchKeys.length === 0) {
+        stats.skippedNoSourceOrAlreadyFilled += 1;
         continue;
       }
 
-      if (!row) break;
+      stats.rowsWithPatch += 1;
 
-      stats.rowsScanned += 1;
-      summary.totalRowsScanned += 1;
+      if (isApply) {
+        const { data: updatedRows, error: updateError } = await supabase
+          .from(table)
+          .update(patch)
+          .eq("id", row.id)
+          .select("id");
 
-      const patch = await processRow(table, row);
-      const patchKeys = Object.keys(patch);
-
-      if (patchKeys.length > 0) {
-        stats.rowsWithPatch += 1;
-
-        if (isApply) {
-          const { data: updatedRows, error: updateError } = await supabase
-            .from(table)
-            .update(patch)
-            .eq("id", row.id)
-            .select("id");
-
-          if (updateError) {
-            stats.updateErrors += 1;
-            logEvent({
-              table,
-              record: row.id,
-              field: patchKeys.join(","),
-              lang: "mixed",
-              status: "update-failed",
-              reason: updateError.message,
-            });
-          } else if (!updatedRows || updatedRows.length === 0) {
-            stats.updateErrors += 1;
-            logEvent({
-              table,
-              record: row.id,
-              field: patchKeys.join(","),
-              lang: "mixed",
-              status: "update-skipped",
-              reason: "policy-or-no-row",
-            });
-          } else {
-            stats.rowsUpdated += 1;
-            stats.fieldUpdatesApplied += patchKeys.length;
-            summary.totalRowsUpdated += 1;
-            summary.totalFieldUpdatesApplied += patchKeys.length;
-            logEvent({
-              table,
-              record: row.id,
-              field: patchKeys.join(","),
-              lang: "mixed",
-              status: "updated",
-            });
-          }
+        if (updateError) {
+          stats.updateErrors += 1;
+          logEvent({
+            table,
+            record: row.id,
+            field: patchKeys.join(","),
+            lang: "mixed",
+            status: "update-failed",
+            reason: updateError.message,
+          });
+        } else if (!updatedRows || updatedRows.length === 0) {
+          stats.updateErrors += 1;
+          logEvent({
+            table,
+            record: row.id,
+            field: patchKeys.join(","),
+            lang: "mixed",
+            status: "update-skipped",
+            reason: "policy-or-no-row",
+          });
+        } else {
+          stats.rowsUpdated += 1;
+          stats.fieldUpdatesApplied += patchKeys.length;
+          summary.totalRowsUpdated += 1;
+          summary.totalFieldUpdatesApplied += patchKeys.length;
+          logEvent({
+            table,
+            record: row.id,
+            field: patchKeys.join(","),
+            lang: "mixed",
+            status: "updated",
+          });
         }
       }
 
-      offset += 1;
       await sleep(RECORD_DELAY_MS);
     }
 
