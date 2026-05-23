@@ -158,11 +158,19 @@ export default function Community() {
           .dw-hero h1 {
             margin: 12px 0 9px;
             font-size: clamp(30px, 5vw, 46px);
-            line-height: 1.04;
+            line-height: 1.06;
             max-width: 540px;
           }
 
-          .dw-hero h1 span { color: var(--gold); }
+          .dw-hero-highlight {
+            display: inline-block;
+            color: #ffd978;
+            font-weight: 900;
+            font-size: 1.3em;
+            line-height: 0.94;
+            letter-spacing: 0.01em;
+            text-shadow: 0 6px 18px rgba(245, 166, 35, 0.3);
+          }
 
           .dw-hero p {
             margin: 0;
@@ -502,7 +510,13 @@ export default function Community() {
             .dw-hero h1 {
               max-width: 270px;
               font-size: clamp(22px, 7vw, 30px);
-              line-height: 1.08;
+              line-height: 1.12;
+            }
+
+            .dw-hero-highlight {
+              font-size: 1.38em;
+              line-height: 0.95;
+              text-shadow: 0 4px 12px rgba(245, 166, 35, 0.34);
             }
 
             .dw-badge {
@@ -644,7 +658,7 @@ export default function Community() {
             <div>
               <span className="dw-badge">Community DrinkWise</span>
               <h1>
-                Il posto dove gli <span>appassionati</span> si incontrano.
+                Il posto dove gli <span className="dw-hero-highlight">appassionati</span> si incontrano.
               </h1>
               <p>
                 Baristi, sommelier, cultori e curiosi del buon bere. Benvenuto, tua drink room.
