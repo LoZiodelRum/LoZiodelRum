@@ -112,7 +112,7 @@ export default function VinoDetail() {
 
     setLoading(true);
 
-    const vinoSelectColumns = "id, nome, nome_en, nome_bg, descrizione, descrizione_en, descrizione_bg, annata, cantina, vitigno, grado_alcolico, zona, denominazione, categoria, categoria_en, categoria_bg, abbinamenti, note_degustazione, note_degustazione_en, note_degustazione_bg, storia, temperatura_servizio, note_personali, valutazione, limpidezza, colore, consistenza, effervescenza, intensita_olfattiva, complessita, qualita_olfattiva, descrizione_olfattiva, zuccheri, alcoli, polialcoli, acidita, tannini, sali_minerali, equilibrio, intensita_gusto, persistenza, qualita_gusto, corpo, stato_evolutivo, armonia, immagine";
+    const vinoSelectColumns = "id, nome, nome_en, nome_bg, descrizione, descrizione_en, descrizione_bg, annata, cantina, vitigno, grado_alcolico, zona, denominazione, categoria, categoria_en, categoria_bg, abbinamenti, note_degustazione, note_degustazione_en, note_degustazione_bg, storia, temperatura_servizio, note_personali, valutazione, limpidezza, colore, consistenza, effervescenza, intensita_olfattiva, complessita, qualita_olfattiva, descrizione_olfattiva, zuccheri, alcoli, polialcoli, acidita, tannini, sali_minerali, equilibrio, intensita_gusto, persistenza, qualita_gusto, corpo, stato_evolutivo, armonia, immagine, image";
 
     const lower = await supabase.from("vini").select(vinoSelectColumns).eq("id", id).maybeSingle();
     if (!lower.error && lower.data) {
@@ -133,7 +133,9 @@ export default function VinoDetail() {
   }
 
   const imageUrl = useMemo(() => {
-    return typeof vino?.immagine === "string" ? vino.immagine.trim() : "";
+    const primary = typeof vino?.immagine === "string" ? vino.immagine.trim() : "";
+    if (primary) return primary;
+    return typeof vino?.image === "string" ? vino.image.trim() : "";
   }, [vino]);
 
   const translatedName = vino ? getTranslatedField(vino, "nome", i18n.language, "-") : "-";
@@ -282,7 +284,10 @@ export default function VinoDetail() {
         {imageUrl ? (
           <img className="vino-detail-hero-image" src={imageUrl} alt={translatedName} style={heroImageStyleForWine} />
         ) : (
-          <div className="vino-detail-hero-placeholder" style={heroImagePlaceholderStyle}>{t("drink.states.noImage")}</div>
+          <div className="vino-detail-hero-placeholder" style={heroImagePlaceholderStyle}>
+            <span aria-hidden="true" style={{ fontSize: 30, lineHeight: 1 }}>🍷</span>
+            <span>{t("drink.states.noImage")}</span>
+          </div>
         )}
 
         <div>
@@ -327,10 +332,13 @@ const heroImagePlaceholderStyle: React.CSSProperties = {
   width: "100%",
   height: 280,
   borderRadius: 12,
-  display: "grid",
-  placeItems: "center",
-  background: "#1e293b",
-  color: "#94a3b8",
+  display: "flex",
+  flexDirection: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  gap: 8,
+  background: "#0f172a",
+  color: "#cbd5e1",
   fontWeight: 700,
 };
 

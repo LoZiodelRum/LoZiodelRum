@@ -16,73 +16,6 @@ type VinoCard = {
   placeholder?: boolean;
 };
 
-const mockVini = [
-  {
-    id: "1",
-    name: "Barolo DOCG",
-    image: "https://images.unsplash.com/photo-1510812431401-41d2bd2722f3?w=1200",
-    category: "Rosso",
-    alcol: "14%",
-    descrizione: "Strutturato, intenso",
-  },
-  {
-    id: "2",
-    name: "Brunello di Montalcino",
-    image: "https://images.unsplash.com/photo-1506377247377-2a5b3b417ebb?w=1200",
-    category: "Rosso",
-    alcol: "14.5%",
-    descrizione: "Profondo, elegante",
-  },
-  {
-    id: "3",
-    name: "Franciacorta Brut",
-    image: "https://images.unsplash.com/photo-1516594915697-87eb3b1c14ea?w=1200",
-    category: "Bollicine",
-    alcol: "12.5%",
-    descrizione: "Fine, cremoso",
-  },
-  {
-    id: "4",
-    name: "Prosecco Superiore",
-    image: "https://images.unsplash.com/photo-1569919659476-f0852f6834b7?w=1200",
-    category: "Bollicine",
-    alcol: "11.5%",
-    descrizione: "Fresco, floreale",
-  },
-  {
-    id: "5",
-    name: "Vermentino di Gallura",
-    image: "https://images.unsplash.com/photo-1558008258-3256797b43f3?w=1200",
-    category: "Bianco",
-    alcol: "13%",
-    descrizione: "Sapido, mediterraneo",
-  },
-  {
-    id: "6",
-    name: "Gewurztraminer",
-    image: "https://images.unsplash.com/photo-1474722883778-792e7990302f?w=1200",
-    category: "Bianco",
-    alcol: "13.5%",
-    descrizione: "Aromatico, speziato",
-  },
-  {
-    id: "7",
-    name: "Chiaretto del Garda",
-    image: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=1200",
-    category: "Rosato",
-    alcol: "12.5%",
-    descrizione: "Delicato, fruttato",
-  },
-  {
-    id: "8",
-    name: "Cerasuolo d'Abruzzo",
-    image: "https://images.unsplash.com/photo-1584916201218-f4242ceb4809?w=1200",
-    category: "Rosato",
-    alcol: "13%",
-    descrizione: "Vivace, gastronomico",
-  },
-];
-
 export default function Vini() {
   const { t, i18n } = useTranslation("drink");
   const [vini, setVini] = useState<VinoCard[]>([]);
@@ -105,7 +38,7 @@ export default function Vini() {
 
     const { data, error } = await supabase
       .from("vini")
-      .select("id, nome, nome_en, nome_bg, immagine, categoria, categoria_en, categoria_bg, alcol, alcol_en, alcol_bg, grado_alcolico, descrizione, descrizione_en, descrizione_bg");
+      .select("id, nome, nome_en, nome_bg, immagine, image, categoria, categoria_en, categoria_bg, alcol, alcol_en, alcol_bg, grado_alcolico, descrizione, descrizione_en, descrizione_bg");
 
 
     if (!error && data && data.length) {
@@ -116,18 +49,8 @@ export default function Vini() {
     }
 
 
-    const fallback = [...mockVini]
-      .sort((a, b) => a.name.localeCompare(b.name))
-      .map(({ id, name, image, category, alcol, descrizione }) => ({
-        id,
-        nome: name,
-        immagine: image,
-        categoria: category,
-        alcol,
-        descrizione,
-      }));
-
-    setVini(fallback);
+    setRawViniRows([]);
+    setVini([]);
     setLoading(false);
   }
 
@@ -136,7 +59,7 @@ export default function Vini() {
       .map((vino: any) => ({
         id: String(vino.id),
         nome: getTranslatedField(vino, "nome", i18n.language, t("drink.wines.fallbackName")),
-        immagine: vino.immagine ?? null,
+        immagine: vino.immagine ?? vino.image ?? null,
         categoria: getTranslatedField(vino, "categoria", i18n.language, t("drink.wines.fallbackCategory")),
         alcol: getTranslatedField(vino, "alcol", i18n.language, vino.grado_alcolico || ""),
         descrizione: getTranslatedField(vino, "descrizione", i18n.language, ""),
@@ -249,7 +172,13 @@ export default function Vini() {
                   onError={e => { e.currentTarget.style.display = 'none'; }}
                 />
               ) : (
-                <div className="no-img-placeholder">{t("drink.states.imageComingSoon")}</div>
+                <div
+                  className="no-img-placeholder"
+                  style={{ background: "#0f172a", color: "#cbd5e1", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6 }}
+                >
+                  <span aria-hidden="true" style={{ fontSize: 22, lineHeight: 1 }}>🍷</span>
+                  <span>{t("drink.states.imageComingSoon")}</span>
+                </div>
               )}
               <div className="drink-card-caption">
                 <h3>{normalizeWineName(item.nome)}</h3>

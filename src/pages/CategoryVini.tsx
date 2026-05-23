@@ -39,14 +39,14 @@ export default function CategoryVini() {
       if (dbCategoria) {
         const res = await supabase
           .from("vini")
-          .select("id, nome, nome_en, nome_bg, immagine, categoria, categoria_en, categoria_bg")
+          .select("id, nome, nome_en, nome_bg, immagine, image, categoria, categoria_en, categoria_bg")
           .ilike("categoria", `%${dbCategoria}%`);
         data = res.data || [];
       } else if (categoria && categoria.toLowerCase() === "altri-vini") {
         // Escludi tutte le categorie principali
         const res = await supabase
           .from("vini")
-          .select("id, nome, nome_en, nome_bg, immagine, categoria, categoria_en, categoria_bg")
+          .select("id, nome, nome_en, nome_bg, immagine, image, categoria, categoria_en, categoria_bg")
           .not("categoria", "ilike", "%Rosso%")
           .not("categoria", "ilike", "%Bianco%")
           .not("categoria", "ilike", "%Rosato%")
@@ -87,7 +87,7 @@ export default function CategoryVini() {
             <p style={{ color: "#cbd5e1", marginTop: 8 }}>{t("drink.wines.states.emptyCategory")}</p>
           ) : (
             vini.map((item) => {
-              const imgUrl = item.immagine || item.immagine_url || item.image || item.img || item.foto || null;
+              const imgUrl = item.immagine || item.image || null;
               const translatedName = getTranslatedField(item, "nome", i18n.language, "-");
               return (
                 <article
@@ -103,7 +103,13 @@ export default function CategoryVini() {
                       onError={e => { e.currentTarget.style.display = 'none'; }}
                     />
                   ) : (
-                    <div className="no-img-placeholder">{t("drink.states.imageComingSoon")}</div>
+                    <div
+                      className="no-img-placeholder"
+                      style={{ background: "#0f172a", color: "#cbd5e1", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 6 }}
+                    >
+                      <span aria-hidden="true" style={{ fontSize: 22, lineHeight: 1 }}>🍷</span>
+                      <span>{t("drink.states.imageComingSoon")}</span>
+                    </div>
                   )}
                   <div className="drink-card-caption">
                     <h3 translate="no">{translatedName}</h3>
