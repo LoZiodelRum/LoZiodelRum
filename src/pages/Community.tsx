@@ -621,7 +621,7 @@ export default function Community() {
             }
 
             .dw-bottom-nav {
-              display: flex;
+              display: none;
               position: fixed;
               left: 50%;
               transform: translateX(-50%);
