@@ -157,19 +157,20 @@ export default function Community() {
 
           .dw-hero h1 {
             margin: 12px 0 9px;
-            font-size: clamp(30px, 5vw, 46px);
-            line-height: 1.06;
-            max-width: 540px;
+            font-size: clamp(28px, 4.4vw, 41px);
+            line-height: 1.1;
+            max-width: 520px;
+            letter-spacing: 0.005em;
           }
 
           .dw-hero-highlight {
             display: inline-block;
             color: #ffd978;
-            font-weight: 900;
-            font-size: 1.3em;
-            line-height: 0.94;
-            letter-spacing: 0.01em;
-            text-shadow: 0 6px 18px rgba(245, 166, 35, 0.3);
+            font-weight: 800;
+            font-size: 1.08em;
+            line-height: 1;
+            letter-spacing: 0.004em;
+            text-shadow: 0 4px 12px rgba(245, 166, 35, 0.26);
           }
 
           .dw-hero p {
@@ -509,14 +510,14 @@ export default function Community() {
 
             .dw-hero h1 {
               max-width: 270px;
-              font-size: clamp(22px, 7vw, 30px);
-              line-height: 1.12;
+              font-size: clamp(20px, 6.3vw, 27px);
+              line-height: 1.14;
             }
 
             .dw-hero-highlight {
-              font-size: 1.38em;
-              line-height: 0.95;
-              text-shadow: 0 4px 12px rgba(245, 166, 35, 0.34);
+              font-size: 1.1em;
+              line-height: 1;
+              text-shadow: 0 3px 10px rgba(245, 166, 35, 0.3);
             }
 
             .dw-badge {
