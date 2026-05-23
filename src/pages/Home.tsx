@@ -25,6 +25,8 @@ type Locale = {
 type Articolo = {
   id: string;
   titolo: string;
+  titolo_en?: string | null;
+  titolo_bg?: string | null;
   immagine: string | null;
 };
 
@@ -162,7 +164,7 @@ export default function Home() {
   async function fetchArticoli() {
     const { data, error } = await supabase
       .from("articoli")
-      .select("*")
+      .select("id, titolo, titolo_en, titolo_bg, immagine")
       .eq("pubblicato", true)
       .limit(6);
 

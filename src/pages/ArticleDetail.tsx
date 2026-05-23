@@ -93,7 +93,7 @@ export default function ArticleDetail() {
   async function load() {
     const { data } = await supabase
       .from("articoli")
-      .select("*")
+      .select("id, titolo, titolo_en, titolo_bg, descrizione, descrizione_en, descrizione_bg, categoria, categoria_en, categoria_bg, immagine, contenuto")
       .eq("id", id)
       .single();
 

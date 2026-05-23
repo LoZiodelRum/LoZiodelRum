@@ -11,7 +11,7 @@ export default function BarettoMobile() {
 
   useEffect(() => {
     const fetchRooms = async () => {
-      const { data } = await supabase.from("chat_rooms").select("*").order("updated_at", { ascending: false });
+      const { data } = await supabase.from("chat_rooms").select("id, nome, descrizione, updated_at").order("updated_at", { ascending: false });
       setRooms(data || []);
       setLoading(false);
     };

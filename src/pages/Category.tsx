@@ -20,95 +20,81 @@ export default function Category() {
   const { t, i18n } = useTranslation("drink");
 
   const [items, setItems] = useState<Item[]>([]);
+  const [cocktailRows, setCocktailRows] = useState<any[]>([]);
+  const [distillatiRows, setDistillatiRows] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     load();
-  }, [selectedType, i18n.language]);
+  }, [selectedType]);
 
-  async function load() {
-    setLoading(true);
+  useEffect(() => {
+    if (loading) return;
+    rebuildItems(selectedType, cocktailRows, distillatiRows);
+  }, [i18n.language, selectedType, cocktailRows, distillatiRows, loading]);
 
-    function getImage(obj: any) {
-      return obj.immagine || obj.immagine_url || obj.image || obj.img || null;
-    }
+  function getImage(obj: any) {
+    return obj.immagine || obj.immagine_url || obj.image || obj.img || null;
+  }
 
-    function normalize(value: any) {
-      return String(value || "").toLowerCase().trim();
-    }
+  function normalize(value: any) {
+    return String(value || "").toLowerCase().trim();
+  }
 
-    function distillatoCategoryText(d: any) {
-      const categoria = [
-        d.categoria,
-        d.tipologia,
-        d.tipo,
-        d.tipo_distillato,
-        d.categoria_distillato,
-        d.base_alcolica,
-      ]
-        .map(normalize)
-        .find((value) => value.length > 0) || "";
+  function distillatoCategoryText(d: any) {
+    const categoria = [
+      d.categoria,
+      d.tipologia,
+      d.tipo,
+      d.tipo_distillato,
+      d.categoria_distillato,
+      d.base_alcolica,
+    ]
+      .map(normalize)
+      .find((value) => value.length > 0) || "";
 
-      const nomeMarca = `${normalize(d.nome)} ${normalize(d.marca)}`.trim();
-      return `${categoria} ${nomeMarca}`.trim();
-    }
+    const nomeMarca = `${normalize(d.nome)} ${normalize(d.marca)}`.trim();
+    return `${categoria} ${nomeMarca}`.trim();
+  }
 
-    function isDistillatoLike(record: any) {
-      const cat = normalize(record?.categoria);
-      const hasDistillatoCategory = cat.includes("distillat");
-      const hasDistillatoFields = [
-        record?.distilleria,
-        record?.invecchiamento,
-        record?.tipo_botte,
-        record?.esame_visivo,
-        record?.esame_olfattivo,
-        record?.esame_gustativo,
-        record?.note_aromatiche,
-        record?.sottocategoria,
-      ].some((value) => normalize(value).length > 0);
-      return hasDistillatoCategory || hasDistillatoFields;
-    }
+  function isDistillatoLike(record: any) {
+    const cat = normalize(record?.categoria);
+    const hasDistillatoCategory = cat.includes("distillat");
+    const hasDistillatoFields = [
+      record?.distilleria,
+      record?.invecchiamento,
+      record?.tipo_botte,
+      record?.esame_visivo,
+      record?.esame_olfattivo,
+      record?.esame_gustativo,
+      record?.note_aromatiche,
+      record?.sottocategoria,
+    ].some((value) => normalize(value).length > 0);
+    return hasDistillatoCategory || hasDistillatoFields;
+  }
 
-    // RESET
+  function rebuildItems(type: string | undefined, cocktails: any[], distillati: any[]) {
     setItems([]);
 
-    // 🍸 COCKTAIL
-    if (selectedType === "cocktail") {
-      const { data, error } = await supabase.from("cocktail").select("*");
+    const currentType = type || "cocktail";
 
-      if (error) console.error(error);
+    if (currentType === "cocktail") {
+      const sorted = [...cocktails].sort((a: any, b: any) =>
+        getTranslatedField(a, "nome", i18n.language, "-").localeCompare(getTranslatedField(b, "nome", i18n.language, "-"))
+      );
 
-      if (data) {
-        const sorted = [...data].sort((a: any, b: any) =>
-          getTranslatedField(a, "nome", i18n.language, "-").localeCompare(getTranslatedField(b, "nome", i18n.language, "-"))
-        );
-
-        setItems(
-          sorted.map((c: any) => ({
-            id: c.id,
-            nome: getTranslatedField(c, "nome", i18n.language, "-"),
-            immagine: getImage(c),
-          }))
-        );
-      }
+      setItems(
+        sorted.map((c: any) => ({
+          id: c.id,
+          nome: getTranslatedField(c, "nome", i18n.language, "-"),
+          immagine: getImage(c),
+        }))
+      );
+      return;
     }
 
-    // 🥃 DISTILLATI
-    else if (selectedType === "rum" || selectedType === "whisky" || selectedType === "altri") {
-      const { data, error } = await supabase.from("distillati").select("*");
-
-      let distillatiRows: any[] = Array.isArray(data) ? data : [];
-
-      if ((!distillatiRows.length && error) || !distillatiRows.length) {
-        const { data: distillatoData } = await supabase.from("distillato").select("*");
-        if (Array.isArray(distillatoData) && distillatoData.length) {
-          distillatiRows = distillatoData;
-        }
-      }
-
-      if (error) console.error(error);
-
-      const mappedDistillati = distillatiRows.map((d: any) => ({
+    if (currentType === "rum" || currentType === "whisky" || currentType === "altri") {
+      const mappedDistillati = distillati.map((d: any) => ({
         id: d.id,
         nome: getTranslatedField(d, "nome", i18n.language, t("drink.fallbacks.distillatoName")),
         marca: d.marca || "",
@@ -116,102 +102,182 @@ export default function Category() {
         categoria_testo: distillatoCategoryText(d),
       }));
 
-      let mappedCocktailDistillati: any[] = [];
-      if (!mappedDistillati.length) {
-        const { data: cocktailData } = await supabase.from("cocktail").select("*");
-        mappedCocktailDistillati = (cocktailData || [])
-          .filter((record: any) => isDistillatoLike(record))
-          .map((d: any) => ({
-            id: d.id,
-            nome: getTranslatedField(d, "nome", i18n.language, t("drink.fallbacks.distillatoName")),
-            marca: d.marca || d.distilleria || "",
-            immagine: getImage(d),
-            categoria_testo: distillatoCategoryText(d),
-          }));
-      }
+      const mappedCocktailDistillati = cocktails
+        .filter((record: any) => isDistillatoLike(record))
+        .map((d: any) => ({
+          id: d.id,
+          nome: getTranslatedField(d, "nome", i18n.language, t("drink.fallbacks.distillatoName")),
+          marca: d.marca || d.distilleria || "",
+          immagine: getImage(d),
+          categoria_testo: distillatoCategoryText(d),
+        }));
 
       const source = mappedDistillati.length ? mappedDistillati : mappedCocktailDistillati;
 
-      if (source.length) {
-        const mapped = source.map((d: any) => ({
+      let filtered = source;
+
+      if (currentType === "rum") {
+        filtered = source.filter((d: any) =>
+          d.categoria_testo.includes("rum") ||
+          d.categoria_testo.includes("rhum") ||
+          d.categoria_testo.includes("ron") ||
+          d.categoria_testo.includes("cachaca")
+        );
+      }
+
+      if (currentType === "whisky") {
+        filtered = source.filter(
+          (d: any) =>
+            d.categoria_testo.includes("whisky") ||
+            d.categoria_testo.includes("whiskey") ||
+            d.categoria_testo.includes("scotch") ||
+            d.categoria_testo.includes("bourbon") ||
+            d.categoria_testo.includes("rye") ||
+            d.categoria_testo.includes("single malt")
+        );
+      }
+
+      if (currentType === "altri") {
+        filtered = source.filter(
+          (d: any) =>
+            !d.categoria_testo.includes("rum") &&
+            !d.categoria_testo.includes("rhum") &&
+            !d.categoria_testo.includes("ron") &&
+            !d.categoria_testo.includes("cachaca") &&
+            !d.categoria_testo.includes("whisky") &&
+            !d.categoria_testo.includes("whiskey") &&
+            !d.categoria_testo.includes("scotch") &&
+            !d.categoria_testo.includes("bourbon") &&
+            !d.categoria_testo.includes("rye") &&
+            !d.categoria_testo.includes("single malt")
+        );
+      }
+
+      const sorted = [...filtered].sort((a: any, b: any) => a.nome.localeCompare(b.nome));
+
+      setItems(
+        sorted.map((d: any) => ({
           id: d.id,
           nome: d.nome,
           marca: d.marca,
           immagine: getImage(d),
-          categoria_testo: d.categoria_testo,
-        }));
+        }))
+      );
+      return;
+    }
 
-        let filtered = mapped;
+    const sorted = [...cocktails].sort((a: any, b: any) =>
+      getTranslatedField(a, "nome", i18n.language, "-").localeCompare(getTranslatedField(b, "nome", i18n.language, "-"))
+    );
 
-        if (selectedType === "rum") {
-          filtered = mapped.filter((d: any) =>
-            d.categoria_testo.includes("rum") ||
-            d.categoria_testo.includes("rhum") ||
-            d.categoria_testo.includes("ron") ||
-            d.categoria_testo.includes("cachaca")
-          );
+    setItems(
+      sorted.map((c: any) => ({
+        id: c.id,
+        nome: getTranslatedField(c, "nome", i18n.language, "-"),
+        immagine: getImage(c),
+      }))
+    );
+  }
+
+  async function load() {
+    setLoading(true);
+
+    const cocktailSelectColumns = [
+      "id",
+      "nome",
+      "nome_en",
+      "nome_bg",
+      "immagine",
+      "immagine_url",
+      "image",
+      "img",
+      "marca",
+      "distilleria",
+      "categoria",
+      "tipologia",
+      "tipo",
+      "tipo_distillato",
+      "categoria_distillato",
+      "base_alcolica",
+      "invecchiamento",
+      "tipo_botte",
+      "esame_visivo",
+      "esame_olfattivo",
+      "esame_gustativo",
+      "note_aromatiche",
+      "sottocategoria",
+    ].join(", ");
+
+    const distillatiSelectColumns = [
+      "id",
+      "nome",
+      "nome_en",
+      "nome_bg",
+      "marca",
+      "categoria",
+      "tipologia",
+      "tipo",
+      "tipo_distillato",
+      "categoria_distillato",
+      "base_alcolica",
+      "invecchiamento",
+      "tipo_botte",
+      "esame_visivo",
+      "esame_olfattivo",
+      "esame_gustativo",
+      "note_aromatiche",
+      "sottocategoria",
+      "immagine",
+      "immagine_url",
+      "image",
+      "img",
+    ].join(", ");
+
+    // 🍸 COCKTAIL
+    if (selectedType === "cocktail") {
+      const { data, error } = await supabase.from("cocktail").select(cocktailSelectColumns);
+
+      if (error) console.error(error);
+
+      const cocktails = Array.isArray(data) ? data : [];
+      setCocktailRows(cocktails);
+      setDistillatiRows([]);
+      rebuildItems(selectedType, cocktails, []);
+    }
+
+    // 🥃 DISTILLATI
+    else if (selectedType === "rum" || selectedType === "whisky" || selectedType === "altri") {
+      const { data, error } = await supabase.from("distillati").select(distillatiSelectColumns);
+
+      let distillatiRows: any[] = Array.isArray(data) ? data : [];
+
+      if ((!distillatiRows.length && error) || !distillatiRows.length) {
+        const { data: distillatoData } = await supabase.from("distillato").select(distillatiSelectColumns);
+        if (Array.isArray(distillatoData) && distillatoData.length) {
+          distillatiRows = distillatoData;
         }
-
-        if (selectedType === "whisky") {
-          filtered = mapped.filter(
-            (d: any) =>
-              d.categoria_testo.includes("whisky") ||
-              d.categoria_testo.includes("whiskey") ||
-              d.categoria_testo.includes("scotch") ||
-              d.categoria_testo.includes("bourbon") ||
-              d.categoria_testo.includes("rye") ||
-              d.categoria_testo.includes("single malt")
-          );
-        }
-
-        if (selectedType === "altri") {
-          filtered = mapped.filter(
-            (d: any) =>
-              !d.categoria_testo.includes("rum") &&
-              !d.categoria_testo.includes("rhum") &&
-              !d.categoria_testo.includes("ron") &&
-              !d.categoria_testo.includes("cachaca") &&
-              !d.categoria_testo.includes("whisky") &&
-              !d.categoria_testo.includes("whiskey") &&
-              !d.categoria_testo.includes("scotch") &&
-              !d.categoria_testo.includes("bourbon") &&
-              !d.categoria_testo.includes("rye") &&
-              !d.categoria_testo.includes("single malt")
-          );
-        }
-
-        const sorted = [...filtered].sort((a: any, b: any) =>
-          a.nome.localeCompare(b.nome)
-        );
-
-        setItems(
-          sorted.map((d: any) => ({
-            id: d.id,
-            nome: d.nome,
-            marca: d.marca,
-            immagine: getImage(d),
-          }))
-        );
       }
+
+      if (error) console.error(error);
+
+      let cocktails: any[] = [];
+      if (!distillatiRows.length) {
+        const { data: cocktailData } = await supabase.from("cocktail").select(cocktailSelectColumns);
+        cocktails = Array.isArray(cocktailData) ? cocktailData : [];
+      }
+
+      setDistillatiRows(distillatiRows);
+      setCocktailRows(cocktails);
+      rebuildItems(selectedType, cocktails, distillatiRows);
     }
 
     // 🔁 FALLBACK → cocktail
     else {
-      const { data } = await supabase.from("cocktail").select("*");
-
-      if (data) {
-        const sorted = [...data].sort((a: any, b: any) =>
-          getTranslatedField(a, "nome", i18n.language, "-").localeCompare(getTranslatedField(b, "nome", i18n.language, "-"))
-        );
-
-        setItems(
-          sorted.map((c: any) => ({
-            id: c.id,
-            nome: getTranslatedField(c, "nome", i18n.language, "-"),
-            immagine: getImage(c),
-          }))
-        );
-      }
+      const { data } = await supabase.from("cocktail").select(cocktailSelectColumns);
+      const cocktails = Array.isArray(data) ? data : [];
+      setCocktailRows(cocktails);
+      setDistillatiRows([]);
+      rebuildItems(selectedType, cocktails, []);
     }
 
     setLoading(false);

@@ -75,7 +75,7 @@ export default function RecensioneDetail() {
 
     const { data, error } = await supabase
       .from("Recensioni")
-      .select("*")
+      .select("id, locale_id, rating, overall_rating, autore, author_name, commento, content, descrizione, titolo, title, visit_date, created_at")
       .eq("id", id)
       .single();
 

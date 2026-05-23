@@ -42,7 +42,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
     const { data: profilo } = await supabase
       .from("Profili")
-      .select("*")
+      .select("id, ruolo, status")
       .eq("id", user.id)
       .maybeSingle();
 
@@ -63,7 +63,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       const { data: recoveredProfile } = await supabase
         .from("Profili")
         .upsert([fallbackProfile], { onConflict: "id" })
-        .select("*")
+        .select("id, ruolo, status")
         .maybeSingle();
 
       if (recoveredProfile) {

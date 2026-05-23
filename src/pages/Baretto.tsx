@@ -36,7 +36,7 @@ export default function Baretto() {
   // Load chat rooms
   useEffect(() => {
     const fetchRooms = async () => {
-      const { data } = await supabase.from("chat_rooms").select("*")
+      const { data } = await supabase.from("chat_rooms").select("id, nome, descrizione, updated_at")
         .order("updated_at", { ascending: false });
       setRooms(data || []);
       setLoading(false);

@@ -10,6 +10,7 @@ export default function CategoryVini() {
   const navigate = useNavigate();
   const { t, i18n } = useTranslation("drink");
   const [vini, setVini] = useState<any[]>([]);
+  const [rawViniRows, setRawViniRows] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   function getCategoryTitle(slug?: string) {
@@ -38,25 +39,31 @@ export default function CategoryVini() {
       if (dbCategoria) {
         const res = await supabase
           .from("vini")
-          .select("*")
+          .select("id, nome, nome_en, nome_bg, immagine, categoria, categoria_en, categoria_bg")
           .ilike("categoria", `%${dbCategoria}%`);
         data = res.data || [];
       } else if (categoria && categoria.toLowerCase() === "altri-vini") {
         // Escludi tutte le categorie principali
         const res = await supabase
           .from("vini")
-          .select("*")
+          .select("id, nome, nome_en, nome_bg, immagine, categoria, categoria_en, categoria_bg")
           .not("categoria", "ilike", "%Rosso%")
           .not("categoria", "ilike", "%Bianco%")
           .not("categoria", "ilike", "%Rosato%")
           .not("categoria", "ilike", "%Bollicine%")
         data = res.data || [];
       }
+      setRawViniRows(data);
       setVini(data);
       setLoading(false);
     }
     load();
-  }, [categoria, i18n.language]);
+  }, [categoria]);
+
+  useEffect(() => {
+    if (!rawViniRows.length) return;
+    setVini(rawViniRows);
+  }, [rawViniRows, i18n.language]);
 
   if (loading) return <div className="page fade-in">{t("drink.states.loading")}</div>;
 

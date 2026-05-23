@@ -155,12 +155,12 @@ export default function AdminPanelMobile() {
     try {
       setLoadingData(true);
 
-      const { data: localiData } = await supabase.from("Locali").select("*");
-      const { data: utentiData } = await supabase.from("Profili").select("*");
-      const { data: cocktailData } = await supabase.from("cocktail").select("*");
-      const { data: distillatiData } = await supabase.from("distillati").select("*");
-      const { data: viniData } = await supabase.from("vini").select("*");
-      const { data: articoliData } = await supabase.from("articoli").select("*");
+      const { data: localiData } = await supabase.from("Locali").select("id, nome, indirizzo, citta, provincia, paese, latitudine, longitudine, categoria, orari, price_range, telefono, sito, instagram, image_url, image, video_url, descrizione, descrizione_completa, qualita_drink, competenza_staff, atmosfera, qualita_prezzo, verificato, in_evidenza, status, approvato, created_at, updated_at");
+      const { data: utentiData } = await supabase.from("Profili").select("id, nome, cognome, username, email, telefono, ruolo, status, approvato, bio_breve, avatar_url, city, paese, genere, distillato_preferito, cocktail_preferito, intensita_preferita, profilo_gustativo_preferito, famiglia_aromatica_preferita, metodo_consumo_preferito, level, points, badges, numero_recensioni, numero_locali_visitati, numero_cocktail_creati, recensioni, cocktail_creati, locali_segnalati, preferiti, instagram, tiktok, sito_web, nome_locale, esperienza_anni, specialita, certificazioni, menu_caricato, indirizzo_locale, citta_locale, partita_iva, numero_dipendenti, descrizione_locale, created_at, updated_at, ultimo_accesso, email_verificata");
+      const { data: cocktailData } = await supabase.from("cocktail").select("id, nome, nome_en, nome_bg, categoria, descrizione, descrizione_en, descrizione_bg, ingredienti, ingredienti_en, ingredienti_bg, preparazione, preparazione_en, preparazione_bg, immagine, immagine_url, created_at, updated_at");
+      const { data: distillatiData } = await supabase.from("distillati").select("id, nome, nome_en, nome_bg, categoria, marca, provenienza, provenienza_en, provenienza_bg, storia, storia_en, storia_bg, note_degustazione, note_degustazione_en, note_degustazione_bg, immagine, created_at, updated_at");
+      const { data: viniData } = await supabase.from("vini").select("id, nome, categoria, annata, cantina, vitigno, grado_alcolico, zona, denominazione, immagine, note_degustazione, note_degustazione_en, note_degustazione_bg, provenienza, provenienza_en, provenienza_bg, descrizione, descrizione_en, descrizione_bg, created_at, updated_at");
+      const { data: articoliData } = await supabase.from("articoli").select("id, slug, titolo, titolo_en, titolo_bg, sottotitolo, sottotitolo_en, sottotitolo_bg, estratto, descrizione, contenuto, contenuto_en, contenuto_bg, immagine, pubblicato, seo_title, seo_title_en, seo_title_bg, seo_description, seo_description_en, seo_description_bg, created_at, updated_at");
 
       setLocali(localiData || []);
       setUtenti(utentiData || []);

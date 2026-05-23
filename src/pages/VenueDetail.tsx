@@ -94,7 +94,7 @@ export default function VenueDetail() {
     fetchLocale();
     fetchRecensioni();
     fetchMedia();
-  }, []);
+  }, [id]);
 
   useEffect(() => {
     setImageLoadError(false);
@@ -114,7 +114,7 @@ export default function VenueDetail() {
   async function fetchLocale() {
     const { data } = await supabase
       .from("Locali")
-      .select("*")
+      .select("id, nome, indirizzo, citta, provincia, paese, telefono, sito, instagram, tiktok, descrizione, descrizione_completa, image, image_url, video_url, categoria, orari, price_range, verificato, in_evidenza, qualita_drink, competenza_staff, atmosfera, qualita_prezzo")
       .eq("id", id)
       .single();
 
@@ -125,7 +125,7 @@ export default function VenueDetail() {
   async function fetchRecensioni() {
     const { data } = await supabase
       .from("Recensioni")
-      .select("*")
+      .select("id, locale_id, commento, testo, created_at, author_name, utente_id, voto, status, servizio, qualita_drink, qualita_prezzo, atmosfera, tags")
       .eq("locale_id", id)
       .gte("created_at", REVIEWS_RESET_AT)
       .order("created_at", { ascending: false });
@@ -136,7 +136,7 @@ export default function VenueDetail() {
   async function fetchMedia() {
     const { data } = await supabase
       .from("Media")
-      .select("*")
+      .select("id, entity_id, entity_type, url_file, tipo, approvato")
       .eq("entity_id", id)
       .eq("entity_type", "locale")
       .eq("approvato", true);

@@ -571,9 +571,10 @@ export function generateCocktail(preferences: CocktailPreferences, variant = 0):
 
 async function fetchCatalog(): Promise<CatalogCocktail[]> {
   const tables = ["cocktail"];
+  const catalogColumns = "id, name, nome, ingredients, ingredienti, doses, dosi, base_alcolica, intensita_alcolica, profilo_gustativo, famiglia_aromatica, profilo_aromatico, Genere, sensazione_palato, texture, description, descrizione, technique, tecnica, glass, bicchiere, garnish, guarnizione, tasting_notes, note_degustazione";
 
   for (const tableName of tables) {
-    const { data, error } = await supabase.from(tableName).select("*");
+    const { data, error } = await supabase.from(tableName).select(catalogColumns);
     if (!error && Array.isArray(data)) {
       return data.map((record) => normalizeCatalogRecord(record));
     }

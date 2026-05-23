@@ -80,11 +80,13 @@ export default function DrinkDetail() {
   useEffect(() => {
     async function fetchDrink() {
       setLoading(true);
+      const cocktailSelectColumns = "id, nome, nome_en, nome_bg, immagine, marca, categoria, categoria_en, categoria_bg, gradazione, descrizione, descrizione_en, descrizione_bg, ingredienti, ingredienti_en, ingredienti_bg, preparazione, preparazione_en, preparazione_bg, ricetta, note_degustazione, note_degustazione_en, note_degustazione_bg, storia, storia_en, storia_bg, abbinamenti, abbinamenti_en, abbinamenti_bg, garnish, bicchiere, created_at, updated_at";
+      const distillatiSelectColumns = "id, nome, nome_en, nome_bg, immagine, marca, categoria, categoria_en, categoria_bg, gradazione, descrizione, descrizione_en, descrizione_bg, provenienza, provenienza_en, provenienza_bg, note_degustazione, note_degustazione_en, note_degustazione_bg, storia, storia_en, storia_bg, abbinamenti, abbinamenti_en, abbinamenti_bg, note_aromatiche, sensazioni_al_palato, palato, distilleria, invecchiamento, tipo_botte, esame_visivo, esame_olfattivo, esame_gustativo, sottocategoria, base_alcolica, created_at, updated_at";
       // Cerca prima nei cocktail
-      const { data, error } = await supabase.from("cocktail").select("*").eq("id", id).single();
+      const { data, error } = await supabase.from("cocktail").select(cocktailSelectColumns).eq("id", id).single();
       if (!data || error) {
         // Se non trovato, cerca nei distillati
-        const { data: distillato, error: err2 } = await supabase.from("distillati").select("*").eq("id", id).single();
+        const { data: distillato, error: err2 } = await supabase.from("distillati").select(distillatiSelectColumns).eq("id", id).single();
         if (!distillato || err2) {
           setNotFound(true);
           setLoading(false);

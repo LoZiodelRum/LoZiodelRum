@@ -27,7 +27,7 @@ export default function Magazine() {
   async function load() {
     const { data } = await supabase
       .from("articoli")
-      .select("*")
+      .select("id, titolo, titolo_en, titolo_bg, descrizione, descrizione_en, descrizione_bg, immagine, categoria, categoria_en, categoria_bg, data_creazione")
       .order("data_creazione", { ascending: false });
 
     if (data) {

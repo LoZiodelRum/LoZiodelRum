@@ -43,7 +43,7 @@ export default function ArticleBlockEdit({ articleId, onClose }: ArticleBlockEdi
   useEffect(() => {
     async function fetchArticle() {
       setLoading(true);
-      const { data, error } = await supabase.from("articoli").select("*").eq("id", articleId).single();
+      const { data, error } = await supabase.from("articoli").select("id, titolo, estratto, immagine, contenuto").eq("id", articleId).single();
       if (error || !data) {
         setError("Articolo non trovato");
         setLoading(false);

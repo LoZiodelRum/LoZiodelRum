@@ -112,14 +112,16 @@ export default function VinoDetail() {
 
     setLoading(true);
 
-    const lower = await supabase.from("vini").select("*").eq("id", id).maybeSingle();
+    const vinoSelectColumns = "id, nome, nome_en, nome_bg, descrizione, descrizione_en, descrizione_bg, annata, cantina, vitigno, grado_alcolico, zona, denominazione, categoria, categoria_en, categoria_bg, abbinamenti, note_degustazione, note_degustazione_en, note_degustazione_bg, storia, temperatura_servizio, note_personali, valutazione, limpidezza, colore, consistenza, effervescenza, intensita_olfattiva, complessita, qualita_olfattiva, descrizione_olfattiva, zuccheri, alcoli, polialcoli, acidita, tannini, sali_minerali, equilibrio, intensita_gusto, persistenza, qualita_gusto, corpo, stato_evolutivo, armonia, immagine";
+
+    const lower = await supabase.from("vini").select(vinoSelectColumns).eq("id", id).maybeSingle();
     if (!lower.error && lower.data) {
       setVino(lower.data);
       setLoading(false);
       return;
     }
 
-    const upper = await supabase.from("Vini").select("*").eq("id", id).maybeSingle();
+    const upper = await supabase.from("Vini").select(vinoSelectColumns).eq("id", id).maybeSingle();
     if (!upper.error && upper.data) {
       setVino(upper.data);
       setLoading(false);

@@ -26,29 +26,95 @@ export default function Drink() {
   const [rum, setRum] = useState<Distillato[]>([]);
   const [whisky, setWhisky] = useState<Distillato[]>([]);
   const [altri, setAltri] = useState<Distillato[]>([]);
+  const [cocktailRows, setCocktailRows] = useState<any[]>([]);
+  const [distillatiRows, setDistillatiRows] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   const navigate = useNavigate();
 
   useEffect(() => {
     load();
-  }, [i18n.language]);
+  }, []);
+
+  useEffect(() => {
+    if (!cocktailRows.length && !distillatiRows.length) return;
+    rebuildLists(cocktailRows, distillatiRows);
+  }, [cocktailRows, distillatiRows, i18n.language]);
 
   async function load() {
     setLoading(true);
 
-    const { data: cocktailData } = await supabase.from("cocktail").select("*");
-    const { data: distillatiData, error: distillatiError } = await supabase.from("distillati").select("*");
+    const cocktailSelectColumns = [
+      "id",
+      "nome",
+      "nome_en",
+      "nome_bg",
+      "immagine",
+      "immagine_url",
+      "image",
+      "img",
+      "marca",
+      "distilleria",
+      "categoria",
+      "tipologia",
+      "tipo",
+      "tipo_distillato",
+      "categoria_distillato",
+      "base_alcolica",
+      "invecchiamento",
+      "tipo_botte",
+      "esame_visivo",
+      "esame_olfattivo",
+      "esame_gustativo",
+      "note_aromatiche",
+      "sottocategoria",
+    ].join(", ");
+
+    const distillatiSelectColumns = [
+      "id",
+      "nome",
+      "nome_en",
+      "nome_bg",
+      "marca",
+      "categoria",
+      "tipologia",
+      "tipo",
+      "tipo_distillato",
+      "categoria_distillato",
+      "base_alcolica",
+      "invecchiamento",
+      "tipo_botte",
+      "esame_visivo",
+      "esame_olfattivo",
+      "esame_gustativo",
+      "note_aromatiche",
+      "sottocategoria",
+      "immagine",
+      "immagine_url",
+      "image",
+      "img",
+    ].join(", ");
+
+    const { data: cocktailData } = await supabase.from("cocktail").select(cocktailSelectColumns);
+    const { data: distillatiData, error: distillatiError } = await supabase.from("distillati").select(distillatiSelectColumns);
 
     let distillatiRows: any[] = Array.isArray(distillatiData) ? distillatiData : [];
 
     if ((!distillatiRows.length && distillatiError) || !distillatiRows.length) {
-      const { data: distillatoData } = await supabase.from("distillato").select("*");
+      const { data: distillatoData } = await supabase.from("distillato").select(distillatiSelectColumns);
       if (Array.isArray(distillatoData) && distillatoData.length) {
         distillatiRows = distillatoData;
       }
     }
 
+    setCocktailRows(Array.isArray(cocktailData) ? cocktailData : []);
+    setDistillatiRows(distillatiRows);
+    rebuildLists(Array.isArray(cocktailData) ? cocktailData : [], distillatiRows);
+
+    setLoading(false);
+  }
+
+  function rebuildLists(cocktailData: any[], sourceDistillatiRows: any[]) {
     function getImage(obj: any) {
       return obj.immagine || obj.immagine_url || obj.image || obj.img || null;
     }
@@ -89,7 +155,7 @@ export default function Drink() {
       return hasDistillatoCategory || hasDistillatoFields;
     }
 
-    if (cocktailData) {
+    if (cocktailData.length) {
       const sorted = cocktailData.sort((a: any, b: any) => {
         const aName = getTranslatedField(a, "nome", i18n.language, t("drink.title"));
         const bName = getTranslatedField(b, "nome", i18n.language, t("drink.title"));
@@ -102,9 +168,11 @@ export default function Drink() {
           immagine: getImage(c),
         }))
       );
+    } else {
+      setCocktail([]);
     }
 
-    const mappedDistillati = distillatiRows
+    const mappedDistillati = sourceDistillatiRows
       .map((d: any) => ({
         id: d.id,
         nome: getTranslatedField(d, "nome", i18n.language, t("drink.fallbacks.distillatoName")),
@@ -154,8 +222,6 @@ export default function Drink() {
       setWhisky([]);
       setAltri([]);
     }
-
-    setLoading(false);
   }
 
   if (loading) {

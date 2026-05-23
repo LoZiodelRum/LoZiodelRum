@@ -34,7 +34,7 @@ export default function UserProfile() {
     setLoading(true);
     const { data, error } = await supabase
       .from("Profili")
-      .select("*")
+      .select("id, created_at, nome, cognome, username, email, telefono, paese, genere, ruolo, bio_breve, distillato_preferito, cocktail_preferito, intensita_preferita, profilo_gustativo_preferito, famiglia_aromatica_preferita, metodo_consumo_preferito, numero_recensioni, numero_locali_visitati, numero_cocktail_creati, instagram, tiktok, sito_web, esperienza_anni, certificazioni, menu_caricato, indirizzo_locale, citta_locale, partita_iva, numero_dipendenti, descrizione_locale")
       .eq("id", id)
       .single();
     if (error) {

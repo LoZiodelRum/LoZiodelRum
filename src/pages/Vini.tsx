@@ -86,33 +86,31 @@ const mockVini = [
 export default function Vini() {
   const { t, i18n } = useTranslation("drink");
   const [vini, setVini] = useState<VinoCard[]>([]);
+  const [rawViniRows, setRawViniRows] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const { categoria } = useParams();
 
   useEffect(() => {
     void load();
-  }, [i18n.language]);
+  }, []);
+
+  useEffect(() => {
+    if (!rawViniRows.length) return;
+    rebuildVini(rawViniRows);
+  }, [rawViniRows, i18n.language]);
 
   async function load() {
     setLoading(true);
 
-    const { data, error } = await supabase.from("vini").select("*");
+    const { data, error } = await supabase
+      .from("vini")
+      .select("id, nome, nome_en, nome_bg, immagine, categoria, categoria_en, categoria_bg, alcol, alcol_en, alcol_bg, grado_alcolico, descrizione, descrizione_en, descrizione_bg");
 
 
     if (!error && data && data.length) {
-      const mapped = data
-        .map((vino: any) => ({
-          id: String(vino.id),
-          nome: getTranslatedField(vino, "nome", i18n.language, t("drink.wines.fallbackName")),
-          immagine: vino.immagine ?? null,
-          categoria: getTranslatedField(vino, "categoria", i18n.language, t("drink.wines.fallbackCategory")),
-          alcol: getTranslatedField(vino, "alcol", i18n.language, vino.grado_alcolico || ""),
-          descrizione: getTranslatedField(vino, "descrizione", i18n.language, ""),
-        }))
-        .sort((a: VinoCard, b: VinoCard) => a.nome.localeCompare(b.nome));
-
-      setVini(mapped);
+      setRawViniRows(data);
+      rebuildVini(data);
       setLoading(false);
       return;
     }
@@ -131,6 +129,21 @@ export default function Vini() {
 
     setVini(fallback);
     setLoading(false);
+  }
+
+  function rebuildVini(rows: any[]) {
+    const mapped = rows
+      .map((vino: any) => ({
+        id: String(vino.id),
+        nome: getTranslatedField(vino, "nome", i18n.language, t("drink.wines.fallbackName")),
+        immagine: vino.immagine ?? null,
+        categoria: getTranslatedField(vino, "categoria", i18n.language, t("drink.wines.fallbackCategory")),
+        alcol: getTranslatedField(vino, "alcol", i18n.language, vino.grado_alcolico || ""),
+        descrizione: getTranslatedField(vino, "descrizione", i18n.language, ""),
+      }))
+      .sort((a: VinoCard, b: VinoCard) => a.nome.localeCompare(b.nome));
+
+    setVini(mapped);
   }
 
   const rossiAll = useMemo(() => vini.filter((vino) => vino.categoria.toLowerCase().includes("rosso")), [vini]);
