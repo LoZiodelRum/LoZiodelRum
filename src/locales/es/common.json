@@ -1,0 +1,13 @@
+{
+  "appName": "DrinkWise",
+  "actions": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "close": "Close",
+    "confirm": "Confirm"
+  },
+  "status": {
+    "loading": "Loading...",
+    "error": "An error occurred"
+  }
+}

@@ -13,7 +13,18 @@ export default function Navbar() {
   const [languageOpen, setLanguageOpen] = useState(false);
 
   const { t, i18n } = useTranslation("navbar");
-  const activeLanguage = String(i18n.language || "it").toLowerCase().startsWith("en") ? "en" : "it";
+  const normalizedLanguage = String(i18n.language || "it").toLowerCase();
+  const activeLanguage = normalizedLanguage.startsWith("en")
+    ? "en"
+    : normalizedLanguage.startsWith("es")
+    ? "es"
+    : normalizedLanguage.startsWith("fr")
+    ? "fr"
+    : normalizedLanguage.startsWith("de")
+    ? "de"
+    : normalizedLanguage.startsWith("bg")
+    ? "bg"
+    : "it";
   const formatLanguageLabel = (label: string) =>
     label.replace(/\b([A-Z]{2,})\b/g, (code) => code.toLowerCase());
 
@@ -189,7 +200,19 @@ export default function Navbar() {
               gap: "6px",
             }}
           >
-            {formatLanguageLabel(activeLanguage === "it" ? t("language.shortIt") : t("language.shortEn"))}
+            {formatLanguageLabel(
+              activeLanguage === "en"
+                ? t("language.shortEn")
+                : activeLanguage === "es"
+                ? t("language.shortEs")
+                : activeLanguage === "fr"
+                ? t("language.shortFr")
+                : activeLanguage === "de"
+                ? t("language.shortDe")
+                : activeLanguage === "bg"
+                ? t("language.shortBg")
+                : t("language.shortIt")
+            )}
           </button>
 
           {languageOpen && (
@@ -240,6 +263,78 @@ export default function Navbar() {
                 }}
               >
                 {formatLanguageLabel(t("language.en"))}
+              </button>
+
+              <button
+                onClick={() => {
+                  i18n.changeLanguage("es");
+                  setLanguageOpen(false);
+                }}
+                style={{
+                  width: "100%",
+                  background: "transparent",
+                  border: "none",
+                  color: "#fff",
+                  padding: "12px",
+                  textAlign: "left",
+                  cursor: "pointer",
+                }}
+              >
+                {formatLanguageLabel(t("language.es"))}
+              </button>
+
+              <button
+                onClick={() => {
+                  i18n.changeLanguage("fr");
+                  setLanguageOpen(false);
+                }}
+                style={{
+                  width: "100%",
+                  background: "transparent",
+                  border: "none",
+                  color: "#fff",
+                  padding: "12px",
+                  textAlign: "left",
+                  cursor: "pointer",
+                }}
+              >
+                {formatLanguageLabel(t("language.fr"))}
+              </button>
+
+              <button
+                onClick={() => {
+                  i18n.changeLanguage("de");
+                  setLanguageOpen(false);
+                }}
+                style={{
+                  width: "100%",
+                  background: "transparent",
+                  border: "none",
+                  color: "#fff",
+                  padding: "12px",
+                  textAlign: "left",
+                  cursor: "pointer",
+                }}
+              >
+                {formatLanguageLabel(t("language.de"))}
+              </button>
+
+              <button
+                onClick={() => {
+                  i18n.changeLanguage("bg");
+                  setLanguageOpen(false);
+                }}
+                style={{
+                  width: "100%",
+                  background: "transparent",
+                  border: "none",
+                  color: "#fff",
+                  padding: "12px",
+                  textAlign: "left",
+                  cursor: "pointer",
+                }}
+              >
+                {formatLanguageLabel(t("language.bg"))}
               </button>
             </div>
           )}
@@ -308,10 +403,31 @@ export default function Navbar() {
               >
                 <span className="languageButtonContent">
                   <span style={{ fontSize: "14px", lineHeight: 1 }}>
-                    {activeLanguage === "it" ? "🇮🇹" : "🇬🇧"}
+                    {activeLanguage === "en"
+                      ? "🇬🇧"
+                      : activeLanguage === "es"
+                      ? "🇪🇸"
+                      : activeLanguage === "fr"
+                      ? "🇫🇷"
+                      : activeLanguage === "de"
+                      ? "🇩🇪"
+                      : activeLanguage === "bg"
+                      ? "🇧🇬"
+                      : "🇮🇹"}
                   </span>
                   <span style={{ lineHeight: 1, whiteSpace: "nowrap" }}>
-                    {(activeLanguage === "it" ? t("language.codeIt") : t("language.codeEn")).toLowerCase()}
+                    {(activeLanguage === "en"
+                      ? t("language.codeEn")
+                      : activeLanguage === "es"
+                      ? t("language.codeEs")
+                      : activeLanguage === "fr"
+                      ? t("language.codeFr")
+                      : activeLanguage === "de"
+                      ? t("language.codeDe")
+                      : activeLanguage === "bg"
+                      ? t("language.codeBg")
+                      : t("language.codeIt")
+                    ).toLowerCase()}
                   </span>
                 </span>
               </button>
@@ -366,6 +482,78 @@ export default function Navbar() {
                   }}
                 >
                   {formatLanguageLabel(t("language.en"))}
+                </button>
+
+                <button
+                  onClick={() => {
+                    i18n.changeLanguage("es");
+                    setLanguageOpen(false);
+                  }}
+                  style={{
+                    width: "100%",
+                    background: "transparent",
+                    border: "none",
+                    color: "#fff",
+                    padding: "12px",
+                    textAlign: "left",
+                    cursor: "pointer",
+                  }}
+                >
+                  {formatLanguageLabel(t("language.es"))}
+                </button>
+
+                <button
+                  onClick={() => {
+                    i18n.changeLanguage("fr");
+                    setLanguageOpen(false);
+                  }}
+                  style={{
+                    width: "100%",
+                    background: "transparent",
+                    border: "none",
+                    color: "#fff",
+                    padding: "12px",
+                    textAlign: "left",
+                    cursor: "pointer",
+                  }}
+                >
+                  {formatLanguageLabel(t("language.fr"))}
+                </button>
+
+                <button
+                  onClick={() => {
+                    i18n.changeLanguage("de");
+                    setLanguageOpen(false);
+                  }}
+                  style={{
+                    width: "100%",
+                    background: "transparent",
+                    border: "none",
+                    color: "#fff",
+                    padding: "12px",
+                    textAlign: "left",
+                    cursor: "pointer",
+                  }}
+                >
+                  {formatLanguageLabel(t("language.de"))}
+                </button>
+
+                <button
+                  onClick={() => {
+                    i18n.changeLanguage("bg");
+                    setLanguageOpen(false);
+                  }}
+                  style={{
+                    width: "100%",
+                    background: "transparent",
+                    border: "none",
+                    color: "#fff",
+                    padding: "12px",
+                    textAlign: "left",
+                    cursor: "pointer",
+                  }}
+                >
+                  {formatLanguageLabel(t("language.bg"))}
                 </button>
               </div>
             )}

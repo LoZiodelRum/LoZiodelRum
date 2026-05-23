@@ -17,10 +17,22 @@
   "language": {
     "shortIt": "🇮🇹 IT",
     "shortEn": "🇬🇧 EN",
+    "shortEs": "🇪🇸 ES",
+    "shortFr": "🇫🇷 FR",
+    "shortDe": "🇩🇪 DE",
+    "shortBg": "🇧🇬 BG",
     "codeIt": "IT",
     "codeEn": "EN",
+    "codeEs": "ES",
+    "codeFr": "FR",
+    "codeDe": "DE",
+    "codeBg": "BG",
     "it": "🇮🇹 IT",
-    "en": "🇬🇧 EN"
+    "en": "🇬🇧 EN",
+    "es": "🇪🇸 ES",
+    "fr": "🇫🇷 FR",
+    "de": "🇩🇪 DE",
+    "bg": "🇧🇬 BG"
   },
   "aria": {
     "openMenu": "Open menu"
