@@ -274,116 +274,125 @@ export default function Navbar() {
           gap: "6px",
         }}
       >
-        {/* BANDIERA MOBILE */}
-        <div
-          className="mobile-language-selector"
-          style={{
-            position: "relative",
-            display: "none",
-            marginLeft: 0,
-            marginRight: 0,
-          }}
-        >
-          <div className="mobile-language-trigger-wrapper">
-            <button
-              className="mobile-language-trigger"
-              onClick={() => setLanguageOpen(!languageOpen)}
-              style={{
-                background: "transparent",
-                border: "none",
-                color: "#fff",
-                cursor: "pointer",
-                fontWeight: "bold",
-                fontSize: "14px",
-                display: "flex",
-                alignItems: "center",
-                gap: "4px",
-                lineHeight: 1,
-                whiteSpace: "nowrap",
-              }}
-            >
-              <span style={{ fontSize: "14px", lineHeight: 1 }}>
-                {i18n.language === "it" ? "🇮🇹" : "🇬🇧"}
-              </span>
-              <span style={{ lineHeight: 1, whiteSpace: "nowrap" }}>
-                {i18n.language === "it" ? "IT" : "EN"}
-              </span>
-            </button>
-          </div>
-
-          {languageOpen && (
-            <div
-              style={{
-                position: "absolute",
-                top: "42px",
-                right: 0,
-                background: "#111",
-                border: "1px solid #333",
-                borderRadius: "10px",
-                overflow: "hidden",
-                minWidth: "110px",
-                zIndex: 9999,
-              }}
-            >
+        <div className="mobile-language-zone">
+          {/* BANDIERA MOBILE */}
+          <div
+            className="mobile-language-selector"
+            style={{
+              position: "relative",
+              display: "none",
+              marginLeft: 0,
+              marginRight: 0,
+            }}
+          >
+            <div className="mobile-language-trigger-wrapper">
               <button
-                onClick={() => {
-                  i18n.changeLanguage("it");
-                  setLanguageOpen(false);
-                }}
+                className="mobile-language-trigger"
+                onClick={() => setLanguageOpen(!languageOpen)}
                 style={{
-                  width: "100%",
                   background: "transparent",
                   border: "none",
                   color: "#fff",
-                  padding: "12px",
-                  textAlign: "left",
                   cursor: "pointer",
+                  fontWeight: "bold",
+                  fontSize: "14px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "4px",
+                  lineHeight: 1,
+                  whiteSpace: "nowrap",
                 }}
               >
-                🇮🇹 IT
-              </button>
-
-              <button
-                onClick={() => {
-                  i18n.changeLanguage("en");
-                  setLanguageOpen(false);
-                }}
-                style={{
-                  width: "100%",
-                  background: "transparent",
-                  border: "none",
-                  color: "#fff",
-                  padding: "12px",
-                  textAlign: "left",
-                  cursor: "pointer",
-                }}
-              >
-                🇬🇧 EN
+                <span style={{ fontSize: "14px", lineHeight: 1 }}>
+                  {i18n.language === "it" ? "🇮🇹" : "🇬🇧"}
+                </span>
+                <span style={{ lineHeight: 1, whiteSpace: "nowrap" }}>
+                  {i18n.language === "it" ? "IT" : "EN"}
+                </span>
               </button>
             </div>
-          )}
+
+            {languageOpen && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: "42px",
+                  right: 0,
+                  background: "#111",
+                  border: "1px solid #333",
+                  borderRadius: "10px",
+                  overflow: "hidden",
+                  minWidth: "110px",
+                  zIndex: 9999,
+                }}
+              >
+                <button
+                  onClick={() => {
+                    i18n.changeLanguage("it");
+                    setLanguageOpen(false);
+                  }}
+                  style={{
+                    width: "100%",
+                    background: "transparent",
+                    border: "none",
+                    color: "#fff",
+                    padding: "12px",
+                    textAlign: "left",
+                    cursor: "pointer",
+                  }}
+                >
+                  🇮🇹 IT
+                </button>
+
+                <button
+                  onClick={() => {
+                    i18n.changeLanguage("en");
+                    setLanguageOpen(false);
+                  }}
+                  style={{
+                    width: "100%",
+                    background: "transparent",
+                    border: "none",
+                    color: "#fff",
+                    padding: "12px",
+                    textAlign: "left",
+                    cursor: "pointer",
+                  }}
+                >
+                  🇬🇧 EN
+                </button>
+              </div>
+            )}
+          </div>
         </div>
 
-        {/* MENU HAMBURGER MOBILE */}
-        <button
-          className="navbar-hamburger-mobile"
-          onClick={() => setMenuOpen((prev) => !prev)}
-          aria-label="Apri menu"
-          style={{
-            background: "none",
-            border: "none",
-            color: "#f5a623",
-            fontSize: "26px",
-            cursor: "pointer",
-            padding: "6px 8px",
-            marginLeft: 2,
-            lineHeight: 1,
-            borderRadius: "8px",
-            display: "none",
-          }}
-        >
-          ☰
-        </button>
+        <div className="mobile-utilities-shell" aria-hidden="true">
+          <div className="mobile-notifications-slot" />
+          <div className="mobile-profile-slot" />
+        </div>
+
+        <div className="mobile-menu-trigger-zone">
+          {/* MENU HAMBURGER MOBILE */}
+          <button
+            className="navbar-hamburger-mobile"
+            onClick={() => setMenuOpen((prev) => !prev)}
+            aria-label="Apri menu"
+            style={{
+              background: "none",
+              border: "none",
+              color: "#f5a623",
+              fontSize: "26px",
+              cursor: "pointer",
+              padding: "6px 8px",
+              marginLeft: 2,
+              lineHeight: 1,
+              borderRadius: "8px",
+              display: "none",
+            }}
+          >
+            ☰
+          </button>
+        </div>
       </div>
 
       {/* OVERLAY */}
@@ -600,8 +609,21 @@ export default function Navbar() {
 
         @media (max-width: 900px) {
           .nav-container {
+            width: 100% !important;
+            left: 0 !important;
+            right: 0 !important;
+            top: 0 !important;
             padding: 4px 12px !important;
             min-height: 32px !important;
+            background: rgba(8, 11, 18, 0.7) !important;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            backdrop-filter: blur(12px) saturate(130%);
+            -webkit-backdrop-filter: blur(12px) saturate(130%);
+            transform: translateZ(0);
+            will-change: transform;
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+            z-index: 1200 !important;
           }
 
           .navbar-brand-block {
@@ -611,8 +633,11 @@ export default function Navbar() {
           }
 
           .navbar-logo {
-            height: 58px !important;
-            width: 58px !important;
+            height: 56px !important;
+            width: 56px !important;
+            min-width: 56px !important;
+            object-fit: contain !important;
+            object-position: center !important;
             transition: all 0.2s ease;
           }
 
@@ -645,6 +670,16 @@ export default function Navbar() {
             transition: all 0.2s ease;
           }
 
+          .mobile-language-zone,
+          .mobile-menu-trigger-zone {
+            display: flex;
+            align-items: center;
+          }
+
+          .mobile-utilities-shell {
+            display: none;
+          }
+
           .navbar-hamburger-mobile {
             display: flex !important;
             align-items: center !important;
@@ -653,7 +688,9 @@ export default function Navbar() {
             min-height: 36px !important;
             padding: 6px 8px !important;
             margin-left: 0 !important;
-            transition: all 0.2s ease;
+            transition: background-color 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
           }
 
           .mobile-language-selector {
@@ -680,15 +717,32 @@ export default function Navbar() {
             white-space: nowrap !important;
             padding: 6px 4px !important;
             border-radius: 8px;
-            transition: all 0.2s ease;
+            transition: background-color 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
+            touch-action: manipulation;
           }
 
           .mobile-menu {
             display: flex !important;
+            z-index: 1300 !important;
+            will-change: transform, opacity;
+            contain: paint;
+          }
+
+          .mobile-menu-overlay {
+            z-index: 1290 !important;
+            transition: opacity 0.25s ease;
+            will-change: opacity;
           }
 
           .mobile-menu-item:hover,
           .mobile-menu-item:active {
+            background: rgba(245, 166, 35, 0.12);
+          }
+
+          .navbar-hamburger-mobile:active,
+          .mobile-language-trigger:active {
+            transform: scale(0.97);
             background: rgba(245, 166, 35, 0.12);
           }
 
