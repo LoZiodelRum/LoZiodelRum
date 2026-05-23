@@ -2,6 +2,8 @@ import "../App.css";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
+import { useTranslation } from "react-i18next";
+import { getTranslatedField } from "../utils/getTranslatedField";
 
 type ReviewDetail = {
   id: string;
@@ -21,6 +23,11 @@ type ReviewDetail = {
 
 type ReviewLocale = {
   nome?: string | null;
+  nome_en?: string | null;
+  nome_bg?: string | null;
+  descrizione?: string | null;
+  descrizione_en?: string | null;
+  descrizione_bg?: string | null;
   image_url?: string | null;
   image?: string | null;
   citta?: string | null;
@@ -41,6 +48,7 @@ function formatDate(value?: string | null) {
 export default function RecensioneDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { i18n } = useTranslation();
 
   const [review, setReview] = useState<ReviewDetail | null>(null);
   const [reviewLocale, setReviewLocale] = useState<ReviewLocale | null>(null);
@@ -77,7 +85,7 @@ export default function RecensioneDetail() {
     if (localeId) {
       const { data: localeData, error: localeError } = await supabase
         .from("Locali")
-        .select("nome, image_url, image, citta, indirizzo")
+        .select("nome, nome_en, nome_bg, descrizione, descrizione_en, descrizione_bg, image_url, image, citta, indirizzo")
         .eq("id", localeId)
         .single();
 
@@ -109,7 +117,7 @@ export default function RecensioneDetail() {
     );
   }
 
-  const venueName = reviewLocale?.nome || "Locale";
+  const venueName = getTranslatedField(reviewLocale as any, "nome", i18n.language, "Locale");
   const venueImage = reviewLocale?.image_url || reviewLocale?.image || "https://via.placeholder.com/1600x900";
   const venueCity = reviewLocale?.citta || "";
   const venueAddress = reviewLocale?.indirizzo || "";

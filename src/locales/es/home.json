@@ -1,0 +1,34 @@
+{
+  "home": {
+    "errors": {
+      "localesFetch": "Error de lugares:",
+      "articlesFetch": "Error de artículos:"
+    },
+    "alerts": {
+      "adminPasswordMissing": "La contraseña de administrador no está disponible. Cierra sesión y vuelve a iniciar sesión como administrador.",
+      "localeNameRequired": "El nombre del lugar no puede estar vacío.",
+      "localeSaveFailed": "Error al guardar el lugar en el lado del servidor.",
+      "httpOnEndpoint": "HTTP {{status}} el {{endpoint}}",
+      "networkOnEndpoint": "Error de red el {{endpoint}}"
+    },
+    "heroBadge": "La comunidad de bebedores conscientes",
+    "heroTitleLine1": "Descubre lo mejor",
+    "heroTitleLine2": "lugares en el mundo",
+    "heroSubtitle": "Reseñas auténticas, experiencias únicas, cultura de la bebida. Encuentra bares de copas, bares de ron y los mejores locales de tu ciudad.",
+    "exploreButton": "Explorar lugares",
+    "mapButton": "Ver mapa",
+    "featuredVenuesTitle": "Lugares destacados",
+    "seeAll": "Ver todo",
+    "latestArticlesTitle": "Últimos artículos",
+    "communityTitle": "Únete a la comunidad",
+    "communitySubtitle": "Comparte tus experiencias, descubre nuevos lugares y contribuye a la cultura del consumo consciente.",
+    "edit": {
+      "localeNamePlaceholder": "Nombre del lugar",
+      "cityPlaceholder": "Ciudad",
+      "shortTextPlaceholder": "texto corto",
+      "saving": "Ahorro...",
+      "save": "Ahorrar",
+      "cancel": "Cancelar"
+    }
+  }
+}

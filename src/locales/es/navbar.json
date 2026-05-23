@@ -1,0 +1,40 @@
+{
+  "brand": {
+    "appName": "Bebida sabia",
+    "by": "por",
+    "signature": "Lo Zio del Ron",
+    "logoAlt": "Logotipo de Lo Zio del Rum"
+  },
+  "home": "Hogar",
+  "map": "Mapa",
+  "drink": "Beber",
+  "wines": "Vinos",
+  "magazine": "Revista",
+  "community": "Comunidad",
+  "create": "Crear",
+  "logout": "Cerrar sesión",
+  "controlPanel": "Panel de control",
+  "language": {
+    "shortIt": "🇮🇹 IT",
+    "shortEn": "🇬🇧 EN",
+    "shortEs": "🇪🇸 ES",
+    "shortFr": "🇫🇷 FR",
+    "shortDe": "🇩🇪 DE",
+    "shortBg": "🇧🇬 BG",
+    "codeIt": "IT",
+    "codeEn": "EN",
+    "codeEs": "ES",
+    "codeFr": "FR",
+    "codeDe": "DE",
+    "codeBg": "BG",
+    "it": "🇮🇹 IT",
+    "en": "🇬🇧 EN",
+    "es": "🇪🇸 ES",
+    "fr": "🇫🇷 FR",
+    "de": "🇩🇪 DE",
+    "bg": "🇧🇬 BG"
+  },
+  "aria": {
+    "openMenu": "abrir menú"
+  }
+}

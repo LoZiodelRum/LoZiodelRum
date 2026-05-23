@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import Navbar from "../components/Navbar";
+import { useTranslation } from "react-i18next";
+import { getTranslatedField } from "../utils/getTranslatedField";
 
 type Venue = {
   id: string;
@@ -10,6 +12,10 @@ type Venue = {
   citta?: string | null;
   indirizzo?: string | null;
   descrizione?: string | null;
+  nome_en?: string | null;
+  nome_bg?: string | null;
+  descrizione_en?: string | null;
+  descrizione_bg?: string | null;
   image_url?: string | null;
   image?: string | null;
 };
@@ -17,7 +23,39 @@ type Venue = {
 
 
 export default function Venues() {
+  const { i18n } = useTranslation();
   const [venues, setVenues] = useState<Venue[]>([]);
+
+  const venuesTitle = getTranslatedField(
+    {
+      label_it: "Tutti i locali",
+      label_en: "All venues",
+      label_bg: "Всички заведения",
+    },
+    "label",
+    i18n.language,
+    "Tutti i locali"
+  );
+  const resultsLabel = getTranslatedField(
+    {
+      label_it: "risultati",
+      label_en: "results",
+      label_bg: "резултати",
+    },
+    "label",
+    i18n.language,
+    "risultati"
+  );
+  const missingLocationLabel = getTranslatedField(
+    {
+      label_it: "Localita non disponibile",
+      label_en: "Location not available",
+      label_bg: "Местоположението не е налично",
+    },
+    "label",
+    i18n.language,
+    "Localita non disponibile"
+  );
 
   useEffect(() => {
     void fetchVenues();
@@ -26,7 +64,7 @@ export default function Venues() {
   async function fetchVenues() {
     const { data, error } = await supabase
       .from("Locali")
-      .select("id, nome, citta, indirizzo, descrizione, image_url, image")
+      .select("id, nome, nome_en, nome_bg, citta, indirizzo, descrizione, descrizione_en, descrizione_bg, image_url, image")
       .eq("status", "approved")
       .order("nome", { ascending: true });
 
@@ -81,8 +119,10 @@ export default function Venues() {
       `}</style>
 
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 18 }}>
-        <h1 style={{ margin: 0, color: "#f5a623" }}>Tutti i locali</h1>
-        <p style={{ margin: 0, color: "#94a3b8", fontSize: 14 }}>{venues.length} risultati</p>
+        <h1 style={{ margin: 0, color: "#f5a623" }}>{venuesTitle}</h1>
+        <p style={{ margin: 0, color: "#94a3b8", fontSize: 14 }}>
+          {venues.length} {resultsLabel}
+        </p>
       </div>
 
       <div
@@ -97,6 +137,8 @@ export default function Venues() {
         }}
       >
         {venues.map((venue) => {
+          const translatedName = getTranslatedField(venue as any, "nome", i18n.language, "-");
+          const translatedDescription = getTranslatedField(venue as any, "descrizione", i18n.language, "");
           const image = venue.image_url || venue.image || "https://via.placeholder.com/900x600?text=Locale";
           const subtitle = [venue.citta, venue.indirizzo].filter(Boolean).join(" - ");
 
@@ -118,7 +160,7 @@ export default function Venues() {
             >
               <img
                 src={image}
-                alt={venue.nome}
+                alt={translatedName}
                 style={{
                   position: "absolute",
                   inset: 0,
@@ -135,9 +177,11 @@ export default function Venues() {
                 }}
               />
               <div style={{ position: "relative", zIndex: 1, padding: 14, width: "100%" }}>
-                <h2 style={{ margin: 0, fontSize: 18 }}>{venue.nome}</h2>
-                <p style={{ margin: "4px 0 0 0", color: "#cbd5e1", fontSize: 13 }}>{subtitle || "Localita non disponibile"}</p>
-                {venue.descrizione && (
+                <h2 style={{ margin: 0, fontSize: 18 }}>{translatedName}</h2>
+                <p style={{ margin: "4px 0 0 0", color: "#cbd5e1", fontSize: 13 }}>
+                  {subtitle || missingLocationLabel}
+                </p>
+                {translatedDescription && (
                   <p
                     style={{
                       margin: "8px 0 0 0",
@@ -150,7 +194,7 @@ export default function Venues() {
                       overflow: "hidden",
                     }}
                   >
-                    {venue.descrizione}
+                    {translatedDescription}
                   </p>
                 )}
               </div>

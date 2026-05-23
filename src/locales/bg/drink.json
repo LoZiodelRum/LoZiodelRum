@@ -1,0 +1,194 @@
+{
+  "drink": {
+    "title": "Напитки",
+    "featured": "Представено",
+    "searchPlaceholder": "Търсете питие",
+    "noResults": "Няма резултати",
+    "sections": {
+      "cocktail": "Коктейли",
+      "rum": "ром",
+      "whisky": "Уиски",
+      "otherDistillates": "Други дестилати"
+    },
+    "filters": {
+      "title": "Филтри",
+      "searchPlaceholder": "Търсете питие",
+      "categories": "Категории",
+      "sorting": "Сортиране",
+      "tabs": "Раздели"
+    },
+    "sorting": {
+      "title": "Сортирай по",
+      "nameAsc": "Име A-Z",
+      "nameDesc": "Име Z-A",
+      "recent": "Най-новото"
+    },
+    "tabs": {
+      "all": "Всички",
+      "featured": "Представено",
+      "classics": "Класика",
+      "new": "Нов"
+    },
+    "cta": {
+      "seeAll": "Вижте всички",
+      "back": "← Върни се назад",
+      "backAria": "Върни се назад"
+    },
+    "states": {
+      "loading": "Зареждане...",
+      "noResults": "Няма данни",
+      "noImage": "НЯМА IMG",
+      "notFound": "Напитката не е намерена",
+      "emptyDetails": "Няма налични подробности",
+      "comingSoon": "Очаквайте скоро",
+      "imageComingSoon": "Очаквайте скоро изображение"
+    },
+    "detail": {
+      "brand": "марка:",
+      "category": "категория:",
+      "abv": "ABV:",
+      "description": "Описание",
+      "recipe": "Рецепта:",
+      "relatedTitle": "Свързани напитки",
+      "fields": {
+        "dynamic": "{{field}}:",
+        "history": "История:",
+        "secondaryIngredients": "Вторични съставки:",
+        "technique": "Техника:",
+        "method": "Метод:",
+        "prepTime": "Време за приготвяне:",
+        "difficulty": "Трудност:",
+        "serviceTemperature": "Работна температура:",
+        "distillery": "Дестилерия:",
+        "aging": "Стареене:",
+        "caskType": "Тип бъчва:",
+        "visualExam": "Визуален преглед:",
+        "olfactoryExam": "Обонятелен преглед:",
+        "gustatoryExam": "Дегустационен изпит:",
+        "aromaticNotes": "Ароматни нотки:",
+        "subcategory": "подкатегория:",
+        "alcoholBase": "Алкохолна основа:"
+      }
+    },
+    "preparation": {
+      "label": "Приготвяне:"
+    },
+    "garnish": {
+      "label": "Гарнитура:"
+    },
+    "glass": {
+      "label": "стъкло:"
+    },
+    "origin": {
+      "label": "Произход:"
+    },
+    "tastingNotes": {
+      "label": "Дегустационни бележки:"
+    },
+    "ingredients": {
+      "label": "съставки:"
+    },
+    "fallbacks": {
+      "distillatoName": "Дестилат"
+    },
+    "wines": {
+      "title": "вина",
+      "fallbackName": "Вино",
+      "fallbackCategory": "други",
+      "categories": {
+        "red": "червено",
+        "white": "Бяло",
+        "rose": "Роза",
+        "sparkling": "Пенливо",
+        "otherWines": "Други вина"
+      },
+      "cta": {
+        "backToWines": "Обратно към вината"
+      },
+      "states": {
+        "emptyCategory": "Няма налични вина в тази категория.",
+        "loadingDetail": "Зареждат се подробности за виното...",
+        "notFound": "Подробности за вино не са намерени."
+      },
+      "detail": {
+        "subtitle": "Пълен AIS профил",
+        "badges": {
+          "category": "категория:",
+          "vintage": "Реколта:",
+          "winery": "Винарна:"
+        },
+        "sections": {
+          "baseData": "Базови данни",
+          "visualExam": "Визуален преглед (AIS)",
+          "olfactoryExam": "Обонятелен преглед (AIS)",
+          "tasteOlfactoryExam": "Вкусово-обонятелен преглед (AIS)",
+          "structureEvolutionHarmony": "Структура, еволюция и хармония (AIS)"
+        },
+        "fields": {
+          "name": "Име",
+          "description": "Описание",
+          "vintage": "Винтидж",
+          "winery": "Винарна",
+          "grape": "грозде",
+          "alcoholContent": "Алкохолно съдържание",
+          "area": "Площ",
+          "denomination": "Деноминация",
+          "category": "Категория",
+          "pairings": "Сдвояване",
+          "tastingNotes": "Дегустационни бележки",
+          "history": "История",
+          "serviceTemperature": "Работна температура",
+          "personalNotes": "Лични бележки",
+          "rating": "Рейтинг",
+          "clarity": "Яснота",
+          "color": "Цвят",
+          "consistency": "Последователност",
+          "effervescence": "Ефервесценция",
+          "olfactoryIntensity": "Обонятелна интензивност",
+          "complexity": "Сложност",
+          "olfactoryQuality": "Обонятелно качество",
+          "olfactoryDescription": "Обонятелно описание",
+          "sugars": "Захари",
+          "alcohols": "алкохоли",
+          "polyalcohols": "Полиалкохоли",
+          "acidity": "Киселинност",
+          "tannins": "танини",
+          "mineralSalts": "Минерални соли",
+          "balance": "Баланс",
+          "tasteIntensity": "Интензивност на вкуса",
+          "persistence": "Упоритост",
+          "tasteQuality": "Качество на вкуса",
+          "body": "Тяло",
+          "evolutionState": "Еволюционно състояние",
+          "harmony": "Хармония"
+        }
+      }
+    },
+    "future": {
+      "reviews": {
+        "title": "Отзиви",
+        "empty": "Няма налични отзиви"
+      },
+      "pairing": {
+        "title": "Сдвояване",
+        "empty": "Няма налично сдвояване"
+      },
+      "tastingNotes": {
+        "title": "Дегустационни бележки",
+        "empty": "Няма налични бележки за дегустация"
+      },
+      "aiSuggestions": {
+        "title": "AI предложения",
+        "empty": "Няма налични предложения"
+      },
+      "communityComments": {
+        "title": "Коментари на общността",
+        "empty": "Няма налични коментари"
+      },
+      "bartenderSuggestions": {
+        "title": "Предложения за барман",
+        "empty": "Няма налични предложения за бармани"
+      }
+    }
+  }
+}

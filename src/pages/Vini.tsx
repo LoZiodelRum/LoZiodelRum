@@ -104,11 +104,11 @@ export default function Vini() {
       const mapped = data
         .map((vino: any) => ({
           id: String(vino.id),
-          nome: getTranslatedField(vino, "nome", i18n.language, vino.name || t("drink.wines.fallbackName")),
+          nome: getTranslatedField(vino, "nome", i18n.language, t("drink.wines.fallbackName")),
           immagine: vino.immagine ?? null,
-          categoria: getTranslatedField(vino, "categoria", i18n.language, (vino.categoria || vino.category || t("drink.wines.fallbackCategory")).trim()),
+          categoria: getTranslatedField(vino, "categoria", i18n.language, t("drink.wines.fallbackCategory")),
           alcol: getTranslatedField(vino, "alcol", i18n.language, vino.grado_alcolico || ""),
-          descrizione: getTranslatedField(vino, "descrizione", i18n.language, vino.description || ""),
+          descrizione: getTranslatedField(vino, "descrizione", i18n.language, ""),
         }))
         .sort((a: VinoCard, b: VinoCard) => a.nome.localeCompare(b.nome));
 
@@ -120,13 +120,13 @@ export default function Vini() {
 
     const fallback = [...mockVini]
       .sort((a, b) => a.name.localeCompare(b.name))
-      .map((vino) => ({
-        id: vino.id,
-        nome: vino.name,
-        immagine: vino.image,
-        categoria: vino.category,
-        alcol: vino.alcol,
-        descrizione: vino.descrizione,
+      .map(({ id, name, image, category, alcol, descrizione }) => ({
+        id,
+        nome: name,
+        immagine: image,
+        categoria: category,
+        alcol,
+        descrizione,
       }));
 
     setVini(fallback);

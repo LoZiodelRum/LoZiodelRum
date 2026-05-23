@@ -1,0 +1,146 @@
+{
+  "hero": {
+    "badge": "Comunidad DrinkWise",
+    "titlePrefix": "El lugar donde",
+    "titleHighlight": "entusiastas",
+    "titleSuffix": "encontrarse.",
+    "subtitle": "Bartenders, sumilleres, conocedores y curiosos amantes de las bebidas. Bienvenido a tu sala de bebidas.",
+    "ctaPrimary": "Baretto | Alimentar",
+    "ctaSecondary": "Salón abierto",
+    "stats": {
+      "members": {
+        "value": "2.4k",
+        "label": "miembros"
+      },
+      "posts": {
+        "value": "742",
+        "label": "publicaciones mensuales"
+      },
+      "read": {
+        "value": "18m",
+        "label": "lectura promedio"
+      }
+    }
+  },
+  "chat": {
+    "title": "El Baretto",
+    "liveBadge": "Chat en vivo 7/7",
+    "placeholder": "Escribe en el baretto...",
+    "sendAriaLabel": "enviar mensaje",
+    "messages": [
+      {
+        "user": "MIXOLOGÍA_NICK",
+        "role": "Anfitrión",
+        "text": "¿Has probado el barril imperial japonés? Tiene notas de melocotón."
+      },
+      {
+        "user": "ChefR",
+        "role": "Pro",
+        "text": "Sí, en ácido funciona mejor al 30/40%. Úsalo en pequeñas dosis y siempre con acidez."
+      },
+      {
+        "user": "lucas",
+        "role": "Invitado",
+        "text": "Para mí, Rum Sour se mantiene invicto en este rango, pruebe con lima fresca y miel."
+      },
+      {
+        "user": "sara.m",
+        "role": "Nuevo",
+        "text": "¡Absolutamente! Quiero probarlo y luego publicar el cóctel de la semana."
+      }
+    ]
+  },
+  "feed": {
+    "title": "Feed de la comunidad",
+    "relevanceBadge": "Seleccionado por relevancia",
+    "actions": {
+      "likes": "♡ {{count}}",
+      "comments": "💬 {{count}}",
+      "share": "↗ compartir"
+    },
+    "posts": [
+      {
+        "user": "marco.coctel",
+        "badge": "Cóctel",
+        "title": "Ron Agrícola Agricole",
+        "text": "Experimente con ron agrio e infusión de especias tibia. Equilibrio entre estructura y frescura."
+      },
+      {
+        "user": "chris.bosque",
+        "badge": "baretto",
+        "title": "Cask 2025 es el centro de atención",
+        "text": "Aromas limpios con madera cálida al principio, núcleo amargo y especias al final. Un nivel de entrada que no perdona nada."
+      },
+      {
+        "user": "luca de santis",
+        "badge": "Evento",
+        "title": "Noche en Ron Barlo - Milán",
+        "text": "Noche increíble. Menú rico y camareros en plena forma. Más de 100 etiquetas, presentación en barrica y un sorprendente Ron Negroni."
+      }
+    ]
+  },
+  "sidebar": {
+    "createArticleCta": "+ Crea tu artículo",
+    "dailyArticleTitle": "Peggy diario | Artículo",
+    "dailyItems": [
+      "⭐ 4.9 | Cóctel artesanal: bebida y elección",
+      "⭐ 4.8 | Enfoque Maestra Rosita",
+      "⭐ 4.7 | Ron Añejo Lab 2026"
+    ],
+    "searchesTitle": "Posibles búsquedas",
+    "keywords": [
+      "Melaza Ron, especias suaves",
+      "QSM-45YV - mayores de 50 años",
+      "Prueba de barrica más larga en terracota"
+    ],
+    "topSurvivorTitle": "superviviente superior",
+    "ranking": [
+      {
+        "name": "MIXO.4",
+        "score": "98 seg"
+      },
+      {
+        "name": "Chris.F",
+        "score": "95 seg"
+      },
+      {
+        "name": "lucas",
+        "score": "79 seg"
+      },
+      {
+        "name": "sara.m",
+        "score": "71 seg"
+      },
+      {
+        "name": "Aurelio k.",
+        "score": "66 seg"
+      }
+    ]
+  },
+  "bottomNav": {
+    "ariaLabel": "Navegación rápida comunitaria",
+    "home": "Hogar",
+    "map": "Mapa",
+    "drink": "Beber",
+    "community": "Comunidad",
+    "panel": "Panel"
+  },
+  "future": {
+    "notifications": {
+      "title": "Notificaciones",
+      "empty": "No hay notificaciones disponibles"
+    },
+    "chatRooms": {
+      "title": "Salas de chat",
+      "empty": "No hay habitaciones disponibles"
+    },
+    "badges": {
+      "title": "Insignias",
+      "empty": "Aún no hay insignias"
+    },
+    "events": {
+      "title": "Eventos",
+      "empty": "No hay eventos próximos"
+    }
+  }
+}

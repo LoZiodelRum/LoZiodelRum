@@ -1,0 +1,40 @@
+{
+  "brand": {
+    "appName": "DrinkWise",
+    "by": "от",
+    "signature": "Ло Зио дел Рум",
+    "logoAlt": "Лого на Lo Zio del Rum"
+  },
+  "home": "Начало",
+  "map": "Карта",
+  "drink": "пийте",
+  "wines": "вина",
+  "magazine": "Списание",
+  "community": "Общност",
+  "create": "Създавайте",
+  "logout": "Изход",
+  "controlPanel": "Контролен панел",
+  "language": {
+    "shortIt": "🇮🇹 IT",
+    "shortEn": "🇬🇧 EN",
+    "shortEs": "🇪🇸 ES",
+    "shortFr": "🇫🇷 FR",
+    "shortDe": "🇩🇪 DE",
+    "shortBg": "🇧🇬 BG",
+    "codeIt": "IT",
+    "codeEn": "EN",
+    "codeEs": "ES",
+    "codeFr": "FR",
+    "codeDe": "DE",
+    "codeBg": "BG",
+    "it": "🇮🇹 IT",
+    "en": "🇬🇧 EN",
+    "es": "🇪🇸 ES",
+    "fr": "🇫🇷 FR",
+    "de": "🇩🇪 DE",
+    "bg": "🇧🇬 BG"
+  },
+  "aria": {
+    "openMenu": "Отворете менюто"
+  }
+}

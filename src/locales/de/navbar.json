@@ -1,0 +1,40 @@
+{
+  "brand": {
+    "appName": "DrinkWise",
+    "by": "von",
+    "signature": "Lo Zio del Rum",
+    "logoAlt": "Lo Zio del Rum-Logo"
+  },
+  "home": "Heim",
+  "map": "Karte",
+  "drink": "Trinken",
+  "wines": "Weine",
+  "magazine": "Magazin",
+  "community": "Gemeinschaft",
+  "create": "Erstellen",
+  "logout": "Abmelden",
+  "controlPanel": "Bedienfeld",
+  "language": {
+    "shortIt": "🇮🇹 IT",
+    "shortEn": "🇬🇧 EN",
+    "shortEs": "🇪🇸 ES",
+    "shortFr": "🇫🇷 FR",
+    "shortDe": "🇩🇪 DE",
+    "shortBg": "🇧🇬 BG",
+    "codeIt": "IT",
+    "codeEn": "EN",
+    "codeEs": "ES",
+    "codeFr": "FR",
+    "codeDe": "DE",
+    "codeBg": "BG",
+    "it": "🇮🇹 IT",
+    "en": "🇬🇧 EN",
+    "es": "🇪🇸 ES",
+    "fr": "🇫🇷 FR",
+    "de": "🇩🇪 DE",
+    "bg": "🇧🇬 BG"
+  },
+  "aria": {
+    "openMenu": "Menü öffnen"
+  }
+}

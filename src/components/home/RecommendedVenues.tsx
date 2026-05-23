@@ -1,5 +1,7 @@
 
 import React from "react";
+import { useTranslation } from "react-i18next";
+import { getTranslatedField } from "../../utils/getTranslatedField";
 
 interface Venue {
   id: string;
@@ -14,6 +16,7 @@ interface Props {
 }
 
 export default function RecommendedVenues({ venues }: Props) {
+  const { i18n } = useTranslation();
   return (
     <section className="bg-black pt-6 pb-2 px-0">
       <div className="flex items-center justify-between px-5 mb-3">
@@ -22,6 +25,9 @@ export default function RecommendedVenues({ venues }: Props) {
       </div>
       <div className="flex gap-4 overflow-x-auto pb-2 hide-scrollbar px-4">
         {venues.map((venue) => (
+          (() => {
+            const translatedName = getTranslatedField(venue as any, "nome", i18n.language, (venue as any).name || "-");
+            return (
           <div
             key={venue.id}
             className="min-w-[260px] max-w-[260px] bg-[#18120b] rounded-2xl overflow-hidden shadow-lg relative flex-shrink-0"
@@ -29,7 +35,7 @@ export default function RecommendedVenues({ venues }: Props) {
           >
             <img
               src={venue.image}
-              alt={venue.name}
+              alt={translatedName}
               className="w-full h-36 object-cover"
               style={{ borderBottomLeftRadius: '1.25rem', borderBottomRightRadius: '1.25rem' }}
             />
@@ -40,7 +46,7 @@ export default function RecommendedVenues({ venues }: Props) {
             </div>
             <div className="p-4 pt-3">
               <div className="text-white font-extrabold text-lg leading-tight mb-1 truncate flex items-center">
-                {venue.name}
+                {translatedName}
               </div>
               <div className="flex items-center gap-1 text-yellow-500 text-sm font-medium">
                 <svg width="16" height="16" fill="none" viewBox="0 0 24 24"><path stroke="#FFD600" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" d="M12 21s-6-5.686-6-10A6 6 0 0 1 18 11c0 4.314-6 10-6 10z"/><circle cx="12" cy="11" r="2.5" fill="#FFD600"/></svg>
@@ -48,6 +54,8 @@ export default function RecommendedVenues({ venues }: Props) {
               </div>
             </div>
           </div>
+            );
+          })()
         ))}
       </div>
     </section>

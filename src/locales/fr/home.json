@@ -1,0 +1,34 @@
+{
+  "home": {
+    "errors": {
+      "localesFetch": "Erreur de sites :",
+      "articlesFetch": "Erreur d'article :"
+    },
+    "alerts": {
+      "adminPasswordMissing": "Mot de passe administrateur indisponible. Déconnectez-vous et reconnectez-vous en tant qu'administrateur.",
+      "localeNameRequired": "Le nom du lieu ne peut pas être vide.",
+      "localeSaveFailed": "La sauvegarde du site a échoué côté serveur.",
+      "httpOnEndpoint": "HTTP {{status}} le {{endpoint}}",
+      "networkOnEndpoint": "Erreur réseau sur {{endpoint}}"
+    },
+    "heroBadge": "La communauté de la consommation consciente",
+    "heroTitleLine1": "Découvrez le meilleur",
+    "heroTitleLine2": "lieux dans le monde",
+    "heroSubtitle": "Critiques authentiques, expériences uniques, culture de la boisson. Trouvez des bars à cocktails, des bars à rhum et les meilleurs lieux de votre ville.",
+    "exploreButton": "Explorer les lieux",
+    "mapButton": "Voir la carte",
+    "featuredVenuesTitle": "Lieux en vedette",
+    "seeAll": "Voir tout",
+    "latestArticlesTitle": "Derniers articles",
+    "communityTitle": "Rejoignez la communauté",
+    "communitySubtitle": "Partagez vos expériences, découvrez de nouveaux lieux et contribuez à une culture de la consommation consciente.",
+    "edit": {
+      "localeNamePlaceholder": "Nom du lieu",
+      "cityPlaceholder": "Ville",
+      "shortTextPlaceholder": "Texte court",
+      "saving": "Économie...",
+      "save": "Sauvegarder",
+      "cancel": "Annuler"
+    }
+  }
+}

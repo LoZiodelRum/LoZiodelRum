@@ -1,13 +1,13 @@
 {
   "appName": "DrinkWise",
   "actions": {
-    "save": "Save",
-    "cancel": "Cancel",
-    "close": "Close",
-    "confirm": "Confirm"
+    "save": "Запазване",
+    "cancel": "Отказ",
+    "close": "затвори",
+    "confirm": "Потвърдете"
   },
   "status": {
-    "loading": "Loading...",
-    "error": "An error occurred"
+    "loading": "Зареждане...",
+    "error": "Възникна грешка"
   }
 }

@@ -2,6 +2,8 @@ import "../App.css";
 import { Link } from "react-router-dom";
 import { MapPin, BadgeCheck, Wine } from "lucide-react";
 import { motion } from "framer-motion";
+import { useTranslation } from "react-i18next";
+import { getTranslatedField } from "../utils/getTranslatedField";
 
 const categoryLabels: any = {
   cocktail_bar: "Cocktail Bar",
@@ -18,6 +20,8 @@ const categoryColors: any = {
 };
 
 export default function VenueCard({ venue, index = 0, compact = false }: any) {
+  const { i18n } = useTranslation();
+  const translatedName = getTranslatedField(venue, "nome", i18n.language, venue?.nome || venue?.name || "-");
 
   if (compact) {
     return (
@@ -38,7 +42,7 @@ export default function VenueCard({ venue, index = 0, compact = false }: any) {
           <div className="absolute inset-0 bg-gradient-to-t from-black via-black/30 to-transparent" />
 
           <div className="absolute bottom-0 p-3 text-white">
-            <h3 className="text-sm font-bold">{venue.name}</h3>
+            <h3 className="text-sm font-bold">{translatedName}</h3>
             <p className="text-xs text-gray-300 flex items-center gap-1">
               <MapPin className="w-3 h-3" />
               {venue.city}
@@ -74,7 +78,7 @@ export default function VenueCard({ venue, index = 0, compact = false }: any) {
 
           {/* CONTENT */}
           <div className="p-4">
-            <h3 className="text-white font-semibold">{venue.name}</h3>
+            <h3 className="text-white font-semibold">{translatedName}</h3>
 
             <div className="flex justify-between text-sm mt-2">
               <span className="text-gray-400">

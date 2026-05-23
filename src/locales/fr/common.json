@@ -1,13 +1,13 @@
 {
-  "appName": "DrinkWise",
+  "appName": "Boire sagement",
   "actions": {
-    "save": "Save",
-    "cancel": "Cancel",
-    "close": "Close",
-    "confirm": "Confirm"
+    "save": "Sauvegarder",
+    "cancel": "Annuler",
+    "close": "Fermer",
+    "confirm": "Confirmer"
   },
   "status": {
-    "loading": "Loading...",
-    "error": "An error occurred"
+    "loading": "Chargement...",
+    "error": "Une erreur s'est produite"
   }
 }

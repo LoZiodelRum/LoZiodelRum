@@ -1,0 +1,146 @@
+{
+  "hero": {
+    "badge": "DrinkWise-Community",
+    "titlePrefix": "Der Ort, an dem",
+    "titleHighlight": "Enthusiasten",
+    "titleSuffix": "treffen.",
+    "subtitle": "Barkeeper, Sommeliers, Kenner und neugierige Getränkeliebhaber. Willkommen in Ihrem Getränkeraum.",
+    "ctaPrimary": "Baretto | Füttern",
+    "ctaSecondary": "Offene Lounge",
+    "stats": {
+      "members": {
+        "value": "2,4k",
+        "label": "Mitglieder"
+      },
+      "posts": {
+        "value": "742",
+        "label": "monatliche Beiträge"
+      },
+      "read": {
+        "value": "18m",
+        "label": "Durchschnittlich gelesen"
+      }
+    }
+  },
+  "chat": {
+    "title": "Der Baretto",
+    "liveBadge": "Live-Chat 7/7",
+    "placeholder": "Schreiben Sie im Baretto...",
+    "sendAriaLabel": "Nachricht senden",
+    "messages": [
+      {
+        "user": "MIXOLOGY_NICK",
+        "role": "Gastgeber",
+        "text": "Haben Sie schon einmal japanisches Imperial Cask probiert? Es hat Pfirsichnoten."
+      },
+      {
+        "user": "ChefR",
+        "role": "Profi",
+        "text": "Ja, in Sauer klappt es mit 30/40 % besser. Verwenden Sie es in kleinen Dosen und immer mit Säure."
+      },
+      {
+        "user": "Lucas",
+        "role": "Gast",
+        "text": "Für mich bleibt Rum Sour in dieser Reihe ungeschlagen, probieren Sie frische Limette und Honig."
+      },
+      {
+        "user": "Sara.M",
+        "role": "Neu",
+        "text": "Absolut! Ich möchte ihn probieren und dann den Cocktail der Woche posten."
+      }
+    ]
+  },
+  "feed": {
+    "title": "Community-Feed",
+    "relevanceBadge": "Nach Relevanz kuratiert",
+    "actions": {
+      "likes": "♡ {{count}}",
+      "comments": "💬 {{count}}",
+      "share": "↗ teilen"
+    },
+    "posts": [
+      {
+        "user": "Marco.cocktail",
+        "badge": "Cocktail",
+        "title": "Agricole Rum Sour",
+        "text": "Experimentieren Sie mit saurem Rum und warmem Gewürzaufguss. Balance zwischen Struktur und Frische."
+      },
+      {
+        "user": "Chris.Forest",
+        "badge": "Baretto",
+        "title": "Cask 2025 steht im Rampenlicht",
+        "text": "Klare Aromen mit warmem Holz im Vordergrund, bitterem Kern und Gewürzen im Abgang. Ein Einstiegsmodell, das nichts verzeiht."
+      },
+      {
+        "user": "Luca de Santis",
+        "badge": "Veranstaltungsort",
+        "title": "Nacht im Rum Barlo - Mailand",
+        "text": "Toller Abend. Reichhaltige Speisekarte und Barkeeper in Topform. 100+ labels, cask presentation and a surprising Rum Negroni."
+      }
+    ]
+  },
+  "sidebar": {
+    "createArticleCta": "+ Erstellen Sie Ihren Artikel",
+    "dailyArticleTitle": "Peggy Daily | Artikel",
+    "dailyItems": [
+      "⭐ 4,9 | Craft Cocktail: Getränk und die Wahl",
+      "⭐ 4,8 | Meister Rosita Focus",
+      "⭐ 4,7 | Rum Aged Lab 2026"
+    ],
+    "searchesTitle": "Mögliche Suchanfragen",
+    "keywords": [
+      "Melasse-Rum, milde Würze",
+      "QSM-45YV – über 50 Jahre alt",
+      "Längster Fassversuch in Terrakotta"
+    ],
+    "topSurvivorTitle": "Top-Überlebender",
+    "ranking": [
+      {
+        "name": "MIXO.4",
+        "score": "98 Sek"
+      },
+      {
+        "name": "Chris.F",
+        "score": "95 Sek"
+      },
+      {
+        "name": "Lucas",
+        "score": "79 Sek"
+      },
+      {
+        "name": "Sara.M",
+        "score": "71 Sek"
+      },
+      {
+        "name": "Aurelio K.",
+        "score": "66 Sek"
+      }
+    ]
+  },
+  "bottomNav": {
+    "ariaLabel": "Community-Schnellnavigation",
+    "home": "Heim",
+    "map": "Karte",
+    "drink": "Trinken",
+    "community": "Gemeinschaft",
+    "panel": "Panel"
+  },
+  "future": {
+    "notifications": {
+      "title": "Benachrichtigungen",
+      "empty": "Keine Benachrichtigungen verfügbar"
+    },
+    "chatRooms": {
+      "title": "Chatrooms",
+      "empty": "Keine Zimmer verfügbar"
+    },
+    "badges": {
+      "title": "Abzeichen",
+      "empty": "Noch keine Abzeichen"
+    },
+    "events": {
+      "title": "Veranstaltungen",
+      "empty": "Keine bevorstehenden Veranstaltungen"
+    }
+  }
+}

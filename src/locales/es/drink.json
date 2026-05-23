@@ -1,0 +1,194 @@
+{
+  "drink": {
+    "title": "Bebidas",
+    "featured": "Presentado",
+    "searchPlaceholder": "buscar una bebida",
+    "noResults": "Sin resultados",
+    "sections": {
+      "cocktail": "Cócteles",
+      "rum": "Ron",
+      "whisky": "Whisky",
+      "otherDistillates": "Otros destilados"
+    },
+    "filters": {
+      "title": "Filtros",
+      "searchPlaceholder": "buscar una bebida",
+      "categories": "Categorías",
+      "sorting": "Clasificación",
+      "tabs": "Secciones"
+    },
+    "sorting": {
+      "title": "Ordenar por",
+      "nameAsc": "Nombre A-Z",
+      "nameDesc": "Nombre Z-A",
+      "recent": "Más reciente"
+    },
+    "tabs": {
+      "all": "Todo",
+      "featured": "Presentado",
+      "classics": "Clásicos",
+      "new": "Nuevo"
+    },
+    "cta": {
+      "seeAll": "Ver todo",
+      "back": "← Volver",
+      "backAria": "Volver"
+    },
+    "states": {
+      "loading": "Cargando...",
+      "noResults": "Sin datos",
+      "noImage": "SIN IMG",
+      "notFound": "bebida no encontrada",
+      "emptyDetails": "No hay detalles disponibles",
+      "comingSoon": "Muy pronto",
+      "imageComingSoon": "Imagen próximamente"
+    },
+    "detail": {
+      "brand": "Marca:",
+      "category": "Categoría:",
+      "abv": "ABV:",
+      "description": "Descripción",
+      "recipe": "Receta:",
+      "relatedTitle": "Bebidas relacionadas",
+      "fields": {
+        "dynamic": "{{field}}:",
+        "history": "Historia:",
+        "secondaryIngredients": "Ingredientes secundarios:",
+        "technique": "Técnica:",
+        "method": "Método:",
+        "prepTime": "Tiempo de preparación:",
+        "difficulty": "Dificultad:",
+        "serviceTemperature": "Temperatura de servicio:",
+        "distillery": "Destilería:",
+        "aging": "Envejecimiento:",
+        "caskType": "Tipo de barrica:",
+        "visualExam": "Examen visual:",
+        "olfactoryExam": "Examen olfativo:",
+        "gustatoryExam": "Examen gustativo:",
+        "aromaticNotes": "Notas aromáticas:",
+        "subcategory": "Subcategoría:",
+        "alcoholBase": "Base alcohólica:"
+      }
+    },
+    "preparation": {
+      "label": "Preparación:"
+    },
+    "garnish": {
+      "label": "Guarnación:"
+    },
+    "glass": {
+      "label": "Vaso:"
+    },
+    "origin": {
+      "label": "Origen:"
+    },
+    "tastingNotes": {
+      "label": "Notas de cata:"
+    },
+    "ingredients": {
+      "label": "Ingredientes:"
+    },
+    "fallbacks": {
+      "distillatoName": "Destilar"
+    },
+    "wines": {
+      "title": "Vinos",
+      "fallbackName": "Vino",
+      "fallbackCategory": "Otro",
+      "categories": {
+        "red": "Rojo",
+        "white": "Blanco",
+        "rose": "Rosa",
+        "sparkling": "Espumoso",
+        "otherWines": "Otros vinos"
+      },
+      "cta": {
+        "backToWines": "Volver a vinos"
+      },
+      "states": {
+        "emptyCategory": "No hay vinos disponibles en esta categoría.",
+        "loadingDetail": "Cargando detalle del vino...",
+        "notFound": "Detalle del vino no encontrado."
+      },
+      "detail": {
+        "subtitle": "Perfil AIS completo",
+        "badges": {
+          "category": "Categoría:",
+          "vintage": "Antiguo:",
+          "winery": "Lagar:"
+        },
+        "sections": {
+          "baseData": "datos básicos",
+          "visualExam": "Examen visual (AIS)",
+          "olfactoryExam": "Examen olfativo (AIS)",
+          "tasteOlfactoryExam": "Examen gusto-olfativo (AIS)",
+          "structureEvolutionHarmony": "Estructura, evolución y armonía (AIS)"
+        },
+        "fields": {
+          "name": "Nombre",
+          "description": "Descripción",
+          "vintage": "Antiguo",
+          "winery": "Lagar",
+          "grape": "Uva",
+          "alcoholContent": "Contenido de alcohol",
+          "area": "Área",
+          "denomination": "Denominación",
+          "category": "Categoría",
+          "pairings": "Maridajes",
+          "tastingNotes": "Notas de cata",
+          "history": "Historia",
+          "serviceTemperature": "Temperatura de servicio",
+          "personalNotes": "Notas personales",
+          "rating": "Clasificación",
+          "clarity": "Claridad",
+          "color": "Color",
+          "consistency": "Consistencia",
+          "effervescence": "Efervescencia",
+          "olfactoryIntensity": "Intensidad olfativa",
+          "complexity": "Complejidad",
+          "olfactoryQuality": "Calidad olfativa",
+          "olfactoryDescription": "Descripción olfativa",
+          "sugars": "Azúcares",
+          "alcohols": "alcoholes",
+          "polyalcohols": "Polialcoholes",
+          "acidity": "Acidez",
+          "tannins": "taninos",
+          "mineralSalts": "Sales minerales",
+          "balance": "Balance",
+          "tasteIntensity": "Intensidad gustativa",
+          "persistence": "Persistencia",
+          "tasteQuality": "Calidad gustativa",
+          "body": "Cuerpo",
+          "evolutionState": "Estado de evolución",
+          "harmony": "Armonía"
+        }
+      }
+    },
+    "future": {
+      "reviews": {
+        "title": "Reseñas",
+        "empty": "No hay reseñas disponibles"
+      },
+      "pairing": {
+        "title": "Emparejamiento",
+        "empty": "No hay emparejamiento disponible"
+      },
+      "tastingNotes": {
+        "title": "Notas de cata",
+        "empty": "No hay notas de cata disponibles"
+      },
+      "aiSuggestions": {
+        "title": "sugerencias de IA",
+        "empty": "No hay sugerencias disponibles"
+      },
+      "communityComments": {
+        "title": "Comentarios de la comunidad",
+        "empty": "No hay comentarios disponibles"
+      },
+      "bartenderSuggestions": {
+        "title": "Sugerencias de camarero",
+        "empty": "No hay sugerencias de bartender disponibles."
+      }
+    }
+  }
+}

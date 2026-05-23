@@ -1,0 +1,146 @@
+{
+  "hero": {
+    "badge": "Communauté DrinkWise",
+    "titlePrefix": "L'endroit où",
+    "titleHighlight": "passionnés",
+    "titleSuffix": "rencontrer.",
+    "subtitle": "Barmans, sommeliers, connaisseurs et curieux amateurs de boissons. Bienvenue dans votre buvette.",
+    "ctaPrimary": "Baretto | Alimentation",
+    "ctaSecondary": "Salon ouvert",
+    "stats": {
+      "members": {
+        "value": "2,4k",
+        "label": "membres"
+      },
+      "posts": {
+        "value": "742",
+        "label": "messages mensuels"
+      },
+      "read": {
+        "value": "18m",
+        "label": "lecture moyenne"
+      }
+    }
+  },
+  "chat": {
+    "title": "Le Baretto",
+    "liveBadge": "Chat en direct 7j/7",
+    "placeholder": "Écrivez au baretto...",
+    "sendAriaLabel": "Envoyer un message",
+    "messages": [
+      {
+        "user": "MIXOLOGIE_NICK",
+        "role": "Hôte",
+        "text": "Avez-vous essayé le fût impérial japonais ? Il a des notes de pêche."
+      },
+      {
+        "user": "ChefR",
+        "role": "Pro",
+        "text": "Oui, en acide ça marche mieux à 30/40%. Utilisez-le à petites doses et toujours avec de l'acidité."
+      },
+      {
+        "user": "Lucas",
+        "role": "Invité",
+        "text": "Pour moi, le Rum Sour reste invaincu dans cette gamme, essayez le citron vert frais et le miel."
+      },
+      {
+        "user": "Sara.M",
+        "role": "Nouveau",
+        "text": "Absolument! J'ai envie d'y goûter puis de poster le cocktail de la semaine."
+      }
+    ]
+  },
+  "feed": {
+    "title": "Flux communautaire",
+    "relevanceBadge": "Organisé par pertinence",
+    "actions": {
+      "likes": "♡ {{count}}",
+      "comments": "💬 {{count}}",
+      "share": "↗ partager"
+    },
+    "posts": [
+      {
+        "user": "Marco.cocktail",
+        "badge": "Cocktail",
+        "title": "Rhum Agricole Aigre",
+        "text": "Expérimentez avec du rhum aigre et une infusion d'épices chaudes. Equilibre entre structure et fraîcheur."
+      },
+      {
+        "user": "Chris.Forest",
+        "badge": "Baretto",
+        "title": "Le Cask 2025 à l'honneur",
+        "text": "Arômes nets avec du bois chaud à l'avant, un noyau amer et des épices en finale. Une entrée de gamme qui ne pardonne rien."
+      },
+      {
+        "user": "Luca de Santis",
+        "badge": "Lieu",
+        "title": "Nuit au Rhum Barlo - Milan",
+        "text": "Soirée incroyable. Menu riche et barmans au top de leur forme. Plus de 100 étiquettes, présentation en fût et un Rhum Negroni surprenant."
+      }
+    ]
+  },
+  "sidebar": {
+    "createArticleCta": "+ Créez votre article",
+    "dailyArticleTitle": "Peggy Quotidien | Article",
+    "dailyItems": [
+      "⭐4.9 | Cocktail artisanal : boisson et choix",
+      "⭐ 4.8 | Maître Rosita Focus",
+      "⭐4.7 | Rhum Vieilli Lab 2026"
+    ],
+    "searchesTitle": "Recherches possibles",
+    "keywords": [
+      "Mélasse Rhum, épices douces",
+      "QSM-45YV - plus de 50 ans",
+      "Essai de fût Longrest en terre cuite"
+    ],
+    "topSurvivorTitle": "meilleur survivant",
+    "ranking": [
+      {
+        "name": "MIXO.4",
+        "score": "98 secondes"
+      },
+      {
+        "name": "Chris.F",
+        "score": "95 secondes"
+      },
+      {
+        "name": "Lucas",
+        "score": "79 secondes"
+      },
+      {
+        "name": "Sara.M",
+        "score": "71 secondes"
+      },
+      {
+        "name": "Aurélio K.",
+        "score": "66 secondes"
+      }
+    ]
+  },
+  "bottomNav": {
+    "ariaLabel": "Navigation rapide de la communauté",
+    "home": "Maison",
+    "map": "Carte",
+    "drink": "Boire",
+    "community": "Communauté",
+    "panel": "Panneau"
+  },
+  "future": {
+    "notifications": {
+      "title": "Notifications",
+      "empty": "Aucune notification disponible"
+    },
+    "chatRooms": {
+      "title": "Salons de discussion",
+      "empty": "Aucune chambre disponible"
+    },
+    "badges": {
+      "title": "Insignes",
+      "empty": "Pas encore de badge"
+    },
+    "events": {
+      "title": "Événements",
+      "empty": "Aucun événement à venir"
+    }
+  }
+}

@@ -1,0 +1,34 @@
+{
+  "home": {
+    "errors": {
+      "localesFetch": "Veranstaltungsortfehler:",
+      "articlesFetch": "Artikelfehler:"
+    },
+    "alerts": {
+      "adminPasswordMissing": "Admin-Passwort nicht verfügbar. Melden Sie sich ab und erneut als Administrator an.",
+      "localeNameRequired": "Der Name des Veranstaltungsortes darf nicht leer sein.",
+      "localeSaveFailed": "Das Speichern des Veranstaltungsortes ist serverseitig fehlgeschlagen.",
+      "httpOnEndpoint": "HTTP {{status}} auf {{endpoint}}",
+      "networkOnEndpoint": "Netzwerkfehler auf {{endpoint}}"
+    },
+    "heroBadge": "Die achtsame Trinkgemeinschaft",
+    "heroTitleLine1": "Entdecken Sie das Beste",
+    "heroTitleLine2": "Veranstaltungsorte der Welt",
+    "heroSubtitle": "Authentische Bewertungen, einzigartige Erlebnisse, Trinkkultur. Finden Sie Cocktailbars, Rumbars und Top-Veranstaltungsorte in Ihrer Stadt.",
+    "exploreButton": "Entdecken Sie Veranstaltungsorte",
+    "mapButton": "Karte anzeigen",
+    "featuredVenuesTitle": "Ausgewählte Veranstaltungsorte",
+    "seeAll": "Alle anzeigen",
+    "latestArticlesTitle": "Neueste Artikel",
+    "communityTitle": "Treten Sie der Community bei",
+    "communitySubtitle": "Teilen Sie Ihre Erfahrungen, entdecken Sie neue Veranstaltungsorte und tragen Sie zu einer achtsamen Trinkkultur bei.",
+    "edit": {
+      "localeNamePlaceholder": "Name des Veranstaltungsortes",
+      "cityPlaceholder": "Stadt",
+      "shortTextPlaceholder": "Kurzer Text",
+      "saving": "Sparen...",
+      "save": "Speichern",
+      "cancel": "Stornieren"
+    }
+  }
+}

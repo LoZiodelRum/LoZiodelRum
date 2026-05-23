@@ -1,13 +1,13 @@
 {
-  "appName": "DrinkWise",
+  "appName": "Bebida sabia",
   "actions": {
-    "save": "Save",
-    "cancel": "Cancel",
-    "close": "Close",
-    "confirm": "Confirm"
+    "save": "Ahorrar",
+    "cancel": "Cancelar",
+    "close": "Cerca",
+    "confirm": "Confirmar"
   },
   "status": {
-    "loading": "Loading...",
-    "error": "An error occurred"
+    "loading": "Cargando...",
+    "error": "Se produjo un error"
   }
 }

@@ -7,5 +7,18 @@
   "magazine": "Magazine",
   "community": "Community",
   "create": "Crea",
-  "logout": "Logout"
+  "logout": "Logout",
+  "loading": "Caricamento...",
+  "noArticles": "Nessun articolo",
+  "articlesTitle": "Articoli",
+  "articleFallback": "Articolo",
+  "save": "Salva",
+  "saved": "Salvato ✅",
+  "deleteArticleConfirm": "Eliminare articolo?",
+  "deleteArticle": "Elimina articolo",
+  "editArticle": "Modifica articolo",
+  "cancel": "Annulla",
+  "uploadError": "Errore upload",
+  "saveError": "Errore salvataggio",
+  "articleImageAlt": "Immagine articolo"
 }

@@ -1,0 +1,34 @@
+{
+  "home": {
+    "errors": {
+      "localesFetch": "Грешка в местата:",
+      "articlesFetch": "Грешка в статиите:"
+    },
+    "alerts": {
+      "adminPasswordMissing": "Паролата на администратора е недостъпна. Излезте и влезте отново като администратор.",
+      "localeNameRequired": "Името на мястото не може да бъде празно.",
+      "localeSaveFailed": "Запазването на място не бе успешно от страната на сървъра.",
+      "httpOnEndpoint": "HTTP {{status}} на {{endpoint}}",
+      "networkOnEndpoint": "Мрежова грешка на {{endpoint}}"
+    },
+    "heroBadge": "Внимателната пиеща общност",
+    "heroTitleLine1": "Открийте най-доброто",
+    "heroTitleLine2": "места в света",
+    "heroSubtitle": "Автентични отзиви, уникални преживявания, култура на пиене. Намерете коктейл барове, ром барове и топ места във вашия град.",
+    "exploreButton": "Разгледайте местата",
+    "mapButton": "Вижте картата",
+    "featuredVenuesTitle": "Представени места",
+    "seeAll": "Вижте всички",
+    "latestArticlesTitle": "Последни статии",
+    "communityTitle": "Присъединете се към общността",
+    "communitySubtitle": "Споделете своя опит, открийте нови места и допринесете за осъзната култура на пиене.",
+    "edit": {
+      "localeNamePlaceholder": "Име на мястото",
+      "cityPlaceholder": "град",
+      "shortTextPlaceholder": "Кратък текст",
+      "saving": "Запазва се...",
+      "save": "Запазване",
+      "cancel": "Отказ"
+    }
+  }
+}

@@ -44,7 +44,6 @@ export default function Category() {
         d.tipo,
         d.tipo_distillato,
         d.categoria_distillato,
-        d.category,
         d.base_alcolica,
       ]
         .map(normalize)
@@ -111,7 +110,7 @@ export default function Category() {
 
       const mappedDistillati = distillatiRows.map((d: any) => ({
         id: d.id,
-        nome: getTranslatedField(d, "nome", i18n.language, d.name || t("drink.fallbacks.distillatoName")),
+        nome: getTranslatedField(d, "nome", i18n.language, t("drink.fallbacks.distillatoName")),
         marca: d.marca || "",
         immagine: getImage(d),
         categoria_testo: distillatoCategoryText(d),
@@ -124,7 +123,7 @@ export default function Category() {
           .filter((record: any) => isDistillatoLike(record))
           .map((d: any) => ({
             id: d.id,
-            nome: getTranslatedField(d, "nome", i18n.language, d.name || t("drink.fallbacks.distillatoName")),
+            nome: getTranslatedField(d, "nome", i18n.language, t("drink.fallbacks.distillatoName")),
             marca: d.marca || d.distilleria || "",
             immagine: getImage(d),
             categoria_testo: distillatoCategoryText(d),

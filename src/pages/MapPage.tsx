@@ -5,6 +5,8 @@ import { supabase } from "../lib/supabaseClient";
 import Navbar from "../components/Navbar";
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
+import { useTranslation } from "react-i18next";
+import { getTranslatedField } from "../utils/getTranslatedField";
 
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
@@ -30,6 +32,8 @@ const customIcon = L.icon({
 type Venue = {
   id: string;
   nome: string;
+  nome_en?: string;
+  nome_bg?: string;
   citta: string;
   indirizzo?: string;
   latitudine: number;
@@ -38,6 +42,7 @@ type Venue = {
 };
 
 export default function MapPage() {
+  const { i18n } = useTranslation();
   const [venues, setVenues] = useState<Venue[]>([]);
   const [mapCenter, setMapCenter] = useState<[number, number]>([41.9028, 12.4964]);
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
@@ -49,7 +54,7 @@ export default function MapPage() {
   async function fetchVenues() {
     const { data } = await supabase
       .from("Locali")
-      .select("id, nome, citta, indirizzo, latitudine, longitudine, image_url");
+      .select("id, nome, nome_en, nome_bg, citta, indirizzo, descrizione, descrizione_en, descrizione_bg, latitudine, longitudine, image_url");
 
     if (!data) return;
 
@@ -143,10 +148,12 @@ export default function MapPage() {
             </button>
             <img
               src={selectedVenue.image_url || "/fallback.jpg"}
-              alt={selectedVenue.nome}
+              alt={getTranslatedField(selectedVenue as any, "nome", i18n.language, "-")}
               style={{ width: "100%", height: 70, objectFit: "cover", borderRadius: 6, marginBottom: 8 }}
             />
-            <div style={{ fontWeight: 700, fontSize: 17, marginBottom: 2 }}>{selectedVenue.nome}</div>
+            <div style={{ fontWeight: 700, fontSize: 17, marginBottom: 2 }}>
+              {getTranslatedField(selectedVenue as any, "nome", i18n.language, "-")}
+            </div>
             <div style={{ fontSize: 13, opacity: 0.8, textAlign: "center" }}>
               {selectedVenue.indirizzo}, {selectedVenue.citta}
             </div>

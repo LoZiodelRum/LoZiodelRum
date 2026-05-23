@@ -4,6 +4,8 @@ import { supabase } from "../lib/supabaseClient";
 import { useParams } from "react-router-dom";
 import { useUser } from "../context/UserContext"; // ✅ AGGIUNTO
 import Navbar from "../components/Navbar";
+import { useTranslation } from "react-i18next";
+import { getTranslatedField } from "../utils/getTranslatedField";
 
 import { hero, overlay, heroBox, badge, title, subtitle, meta, articleWrapper } from "./articleDetailStyles";
 
@@ -56,7 +58,7 @@ function isImageUrl(url: string) {
 }
 
 // Rendering contenuto articolo: ogni riga con solo url immagine -> <img>, resto testo
-function renderArticleContent(raw: string) {
+function renderArticleContent(raw: string, imageAlt: string) {
   const content = raw || "";
   const lines = content.split(/\r?\n/);
   return lines.map((line, idx) => {
@@ -66,7 +68,7 @@ function renderArticleContent(raw: string) {
         <img
           key={`img-line-${idx}`}
           src={trimmed}
-          alt="Immagine articolo"
+          alt={imageAlt}
           style={{ maxWidth: "100%", height: "auto", borderRadius: 16, margin: "24px 0", display: "block" }}
           loading="lazy"
         />
@@ -80,6 +82,7 @@ export default function ArticleDetail() {
   const { id } = useParams();
   const { role } = useUser(); // ✅
   const isAdmin = role === "admin"; // ✅
+  const { t, i18n } = useTranslation("translation");
 
   const [data, setData] = useState<any>(null);
   const [form, setForm] = useState<any>(null); // ✅
@@ -109,18 +112,18 @@ export default function ArticleDetail() {
       .eq("id", form.id);
 
     if (error) {
-      alert("Errore salvataggio");
+      alert(t("saveError"));
       return;
     }
 
     setData(form);
-    alert("Salvato ✅");
+    alert(t("saved"));
   }
   // ...existing code...
 
   // ✅ DELETE
   async function handleDelete() {
-    const ok = confirm("Eliminare articolo?");
+    const ok = confirm(t("deleteArticleConfirm"));
     if (!ok) return;
 
     await supabase.from("articoli").delete().eq("id", form.id);
@@ -141,7 +144,7 @@ export default function ArticleDetail() {
       .upload(fileName, file);
 
     if (error) {
-      alert("Errore upload");
+      alert(t("uploadError"));
       setUploading(false);
       return;
     }
@@ -166,7 +169,7 @@ export default function ArticleDetail() {
         <Navbar />
         {/* NOTA: Nessun menu laterale custom/mobile drawer viene montato qui. Solo Navbar gestisce il menu mobile. */}
       {!data ? (
-        <div className="page fade-in" style={{ padding: 40 }}>Caricamento...</div>
+          <div className="page fade-in" style={{ padding: 40 }}>{t("loading")}</div>
       ) : (
         <main>
           <div className="page page-full-bleed fade-in">
@@ -234,11 +237,11 @@ export default function ArticleDetail() {
               <div style={overlay} />
 
               <div className="article-hero-box" style={heroBox}>
-                <span style={badge}>{data.categoria}</span>
+                <span style={badge}>{getTranslatedField(data as any, "categoria", i18n.language, data.categoria)}</span>
 
-                <h1 className="article-hero-title" style={title}>{data.titolo}</h1>
+                <h1 className="article-hero-title" style={title}>{getTranslatedField(data as any, "titolo", i18n.language, data.titolo)}</h1>
 
-                <p className="article-hero-subtitle" style={subtitle}>{data.descrizione}</p>
+                <p className="article-hero-subtitle" style={subtitle}>{getTranslatedField(data as any, "descrizione", i18n.language, data.descrizione)}</p>
 
                 <div style={meta}>
                   <span>Lo Zio del Rum</span>
@@ -250,7 +253,10 @@ export default function ArticleDetail() {
             <div className="article-wrapper" style={{ ...articleWrapper, width: '100%', maxWidth: '100vw', overflowX: 'hidden' }}>
               <div className="article-box" style={articleBox}>
                 <div className="article-content" style={articleContent}>
-                  {renderArticleContent(data.contenuto || "")}
+                  {renderArticleContent(
+                    getTranslatedField(data as any, "contenuto", i18n.language, data.contenuto || ""),
+                    t("articleImageAlt")
+                  )}
                 </div>
               </div>
             </div>
