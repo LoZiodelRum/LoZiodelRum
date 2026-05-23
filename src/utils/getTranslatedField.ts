@@ -15,10 +15,10 @@ function hasValue(value: unknown): boolean {
 
 function buildCandidates(baseField: string, language: SupportedLanguage): string[] {
   if (language === "it") {
-    return [`${baseField}_it`, baseField];
+    return [baseField, `${baseField}_it`];
   }
 
-  return [`${baseField}_${language}`, `${baseField}_it`, baseField];
+  return [`${baseField}_${language}`, baseField, `${baseField}_it`];
 }
 
 export function getTranslatedField(
