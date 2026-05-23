@@ -369,11 +369,6 @@ export default function Navbar() {
           </div>
         </div>
 
-        <div className="mobile-utilities-shell" aria-hidden="true">
-          <div className="mobile-notifications-slot" />
-          <div className="mobile-profile-slot" />
-        </div>
-
         <div className="mobile-menu-trigger-zone">
           {/* MENU HAMBURGER MOBILE */}
           <button
@@ -387,7 +382,7 @@ export default function Navbar() {
               fontSize: "26px",
               cursor: "pointer",
               padding: "6px 8px",
-              marginLeft: 2,
+              marginLeft: 0,
               lineHeight: 1,
               borderRadius: "8px",
               display: "none",
@@ -616,7 +611,7 @@ export default function Navbar() {
             left: 0 !important;
             right: 0 !important;
             top: 0 !important;
-            padding: 4px 12px !important;
+            padding: 4px 9px !important;
             min-height: 32px !important;
             background: rgba(8, 11, 18, 0.7) !important;
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
@@ -632,6 +627,7 @@ export default function Navbar() {
           .navbar-brand-block {
             gap: 6px !important;
             margin-right: 0 !important;
+            align-items: center !important;
             transition: all 0.2s ease;
           }
 
@@ -641,6 +637,7 @@ export default function Navbar() {
             min-width: 56px !important;
             object-fit: contain !important;
             object-position: center !important;
+            transform: translateY(0.5px);
             transition: all 0.2s ease;
           }
 
@@ -669,7 +666,8 @@ export default function Navbar() {
             display: flex !important;
             margin-left: auto !important;
             align-items: center !important;
-            gap: 6px !important;
+            gap: 4px !important;
+            flex-shrink: 0;
             transition: all 0.2s ease;
           }
 
@@ -679,17 +677,13 @@ export default function Navbar() {
             align-items: center;
           }
 
-          .mobile-utilities-shell {
-            display: none;
-          }
-
           .navbar-hamburger-mobile {
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
-            min-width: 36px !important;
-            min-height: 36px !important;
-            padding: 6px 8px !important;
+            min-width: 38px !important;
+            min-height: 38px !important;
+            padding: 7px 9px !important;
             margin-left: 0 !important;
             transition: background-color 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
             -webkit-tap-highlight-color: transparent;
@@ -701,7 +695,7 @@ export default function Navbar() {
             margin-left: 0 !important;
             margin-right: 0 !important;
             align-items: center !important;
-            transform: translateX(4px);
+            transform: translateX(2px);
             transition: all 0.2s ease;
           }
 
