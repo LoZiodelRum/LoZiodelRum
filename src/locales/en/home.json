@@ -1,0 +1,34 @@
+{
+  "home": {
+    "errors": {
+      "localesFetch": "Venues error:",
+      "articlesFetch": "Articles error:"
+    },
+    "alerts": {
+      "adminPasswordMissing": "Admin password unavailable. Log out and sign in again as admin.",
+      "localeNameRequired": "Venue name cannot be empty.",
+      "localeSaveFailed": "Venue save failed on server side.",
+      "httpOnEndpoint": "HTTP {{status}} on {{endpoint}}",
+      "networkOnEndpoint": "Network error on {{endpoint}}"
+    },
+    "heroBadge": "The mindful drinking community",
+    "heroTitleLine1": "Discover the best",
+    "heroTitleLine2": "venues in the world",
+    "heroSubtitle": "Authentic reviews, unique experiences, drinking culture. Find cocktail bars, rum bars and top venues in your city.",
+    "exploreButton": "Explore Venues",
+    "mapButton": "View Map",
+    "featuredVenuesTitle": "Featured Venues",
+    "seeAll": "See all",
+    "latestArticlesTitle": "Latest Articles",
+    "communityTitle": "Join the community",
+    "communitySubtitle": "Share your experiences, discover new venues and contribute to mindful drinking culture.",
+    "edit": {
+      "localeNamePlaceholder": "Venue name",
+      "cityPlaceholder": "City",
+      "shortTextPlaceholder": "Short text",
+      "saving": "Saving...",
+      "save": "Save",
+      "cancel": "Cancel"
+    }
+  }
+}

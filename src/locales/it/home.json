@@ -1,0 +1,34 @@
+{
+  "home": {
+    "errors": {
+      "localesFetch": "Errore locali:",
+      "articlesFetch": "Errore articoli:"
+    },
+    "alerts": {
+      "adminPasswordMissing": "Password admin non disponibile. Esci e rientra come admin.",
+      "localeNameRequired": "Il nome del locale non puo essere vuoto.",
+      "localeSaveFailed": "Salvataggio locale fallito lato server.",
+      "httpOnEndpoint": "HTTP {{status}} su {{endpoint}}",
+      "networkOnEndpoint": "Errore di rete su {{endpoint}}"
+    },
+    "heroBadge": "La community del bere consapevole",
+    "heroTitleLine1": "Scopri i migliori",
+    "heroTitleLine2": "locali del mondo",
+    "heroSubtitle": "Recensioni autentiche, esperienze uniche, cultura del bere. Trova cocktail bar, rum bar e locali d'eccellenza nella tua citta.",
+    "exploreButton": "Esplora Locali",
+    "mapButton": "Vedi Mappa",
+    "featuredVenuesTitle": "Locali in evidenza",
+    "seeAll": "Vedi tutti",
+    "latestArticlesTitle": "Ultimi Articoli",
+    "communityTitle": "Unisciti alla community",
+    "communitySubtitle": "Condividi le tue esperienze, scopri nuovi locali e contribuisci alla cultura del bere consapevole.",
+    "edit": {
+      "localeNamePlaceholder": "Nome locale",
+      "cityPlaceholder": "Citta",
+      "shortTextPlaceholder": "Testo breve",
+      "saving": "Salvataggio...",
+      "save": "Salva",
+      "cancel": "Annulla"
+    }
+  }
+}

@@ -3,6 +3,7 @@ import "../App.css";
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, MapPin } from "lucide-react";
+import { useTranslation } from "react-i18next";
 
 import { supabase } from "../lib/supabaseClient";
 import { useUser } from "../context/UserContext";
@@ -26,6 +27,7 @@ const HOME_HERO_VIDEO_VERSION = "2026-04-15-07";
 
 export default function Home() {
   const { isAdmin } = useUser();
+  const { t } = useTranslation("home");
   const [locali, setLocali] = useState<Locale[]>([]);
   const [articoli, setArticoli] = useState<Articolo[]>([]);
   const [editingLocaleId, setEditingLocaleId] = useState<string | null>(null);
@@ -48,7 +50,7 @@ export default function Home() {
       .limit(6);
 
     if (error) {
-      console.error("Errore locali:", error);
+      console.error(t("home.errors.localesFetch"), error);
       return;
     }
 
@@ -79,7 +81,7 @@ export default function Home() {
       "";
 
     if (!adminPassword) {
-      alert("Password admin non disponibile. Esci e rientra come admin.");
+      alert(t("home.alerts.adminPasswordMissing"));
       return;
     }
 
@@ -91,7 +93,7 @@ export default function Home() {
     };
 
     if (!changes.nome) {
-      alert("Il nome del locale non puo essere vuoto.");
+      alert(t("home.alerts.localeNameRequired"));
       return;
     }
 
@@ -102,7 +104,7 @@ export default function Home() {
       "/.netlify/functions/admin-save-locale",
     ];
 
-    let lastMessage = "Salvataggio locale fallito lato server.";
+    let lastMessage = t("home.alerts.localeSaveFailed");
 
     for (const endpoint of endpoints) {
       try {
@@ -125,9 +127,9 @@ export default function Home() {
           break;
         }
 
-        lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
+        lastMessage = payload?.message || t("home.alerts.httpOnEndpoint", { status: response.status, endpoint });
       } catch (e: any) {
-        lastMessage = e?.message || `Errore di rete su ${endpoint}`;
+        lastMessage = e?.message || t("home.alerts.networkOnEndpoint", { endpoint });
       }
     }
 
@@ -160,7 +162,7 @@ export default function Home() {
       .limit(6);
 
     if (error) {
-      console.error("Errore articoli:", error);
+      console.error(t("home.errors.articlesFetch"), error);
       return;
     }
 
@@ -440,13 +442,13 @@ export default function Home() {
         )}
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(0,0,0,0.22), rgba(0,0,0,0.38) 45%, rgba(0,0,0,0.86) 100%)", zIndex: 1 }} />
         <div className="hero-mobile-content" style={{ position: "relative", zIndex: 2, width: "100%", maxWidth: 1180, padding: "0 20px 6px" }}>
-          <p className="hero-mobile-badge" style={{ display: "none" }}>La community del bere consapevole</p>
+          <p className="hero-mobile-badge" style={{ display: "none" }}>{t("home.heroBadge")}</p>
           <h1 className="hero-mobile-title" style={{ fontSize: "clamp(20px, 4vw, 32px)", marginBottom: 20, fontWeight: 800, lineHeight: 1.2, display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
-            <span className="hero-mobile-title-line" style={{ color: "#ffffff" }}>Scopri i migliori</span>
-            <span className="hero-mobile-title-line" style={{ color: "#f5a623" }}>locali del mondo</span>
+            <span className="hero-mobile-title-line" style={{ color: "#ffffff" }}>{t("home.heroTitleLine1")}</span>
+            <span className="hero-mobile-title-line" style={{ color: "#f5a623" }}>{t("home.heroTitleLine2")}</span>
           </h1>
           <p className="hero-mobile-subtitle" style={{ opacity: 0.85, marginBottom: 30, fontSize: "clamp(14px, 2.5vw, 18px)" }}>
-            Recensioni autentiche, esperienze uniche, cultura del bere. Trova cocktail bar, rum bar e locali d'eccellenza nella tua citta.
+            {t("home.heroSubtitle")}
           </p>
         </div>
       </div>
@@ -469,7 +471,7 @@ export default function Home() {
           }}
         >
           <ArrowRight size={20} strokeWidth={2.5} />
-          Esplora Locali
+          {t("home.exploreButton")}
         </button>
         <button
           onClick={() => navigate("/mappa")}
@@ -488,16 +490,16 @@ export default function Home() {
           }}
         >
           <MapPin size={20} strokeWidth={2.5} />
-          Vedi Mappa
+          {t("home.mapButton")}
         </button>
       </div>
 
       <section className="content-section content-section-first locali-section" style={{ padding: "40px 60px", maxWidth: 1400, margin: "68px auto 0" }}>
         <div className="section-header" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 28 }}>
           <div>
-            <h2 className="section-title" style={{ fontSize: "clamp(24px, 4vw, 32px)", margin: 0 }}>Locali in evidenza</h2>
+            <h2 className="section-title" style={{ fontSize: "clamp(24px, 4vw, 32px)", margin: 0 }}>{t("home.featuredVenuesTitle")}</h2>
           </div>
-          <Link className="section-link" to="/venues" style={{ color: "#f5a623", textDecoration: "none" }}>Vedi tutti</Link>
+          <Link className="section-link" to="/venues" style={{ color: "#f5a623", textDecoration: "none" }}>{t("home.seeAll")}</Link>
         </div>
         <div className="section-grid locali-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 20 }}>
           {locali.map((l) => (
@@ -534,19 +536,19 @@ export default function Home() {
                     <input
                       value={localeDraft.nome ?? ""}
                       onChange={(e) => setLocaleDraft((prev) => ({ ...(prev || {}), nome: e.target.value }))}
-                      placeholder="Nome locale"
+                      placeholder={t("home.edit.localeNamePlaceholder")}
                       style={{ borderRadius: 8, border: "1px solid #334155", background: "rgba(2,6,23,0.72)", color: "#fff", padding: "6px 8px", fontSize: 13 }}
                     />
                     <input
                       value={localeDraft.citta ?? ""}
                       onChange={(e) => setLocaleDraft((prev) => ({ ...(prev || {}), citta: e.target.value }))}
-                      placeholder="Citta"
+                      placeholder={t("home.edit.cityPlaceholder")}
                       style={{ borderRadius: 8, border: "1px solid #334155", background: "rgba(2,6,23,0.72)", color: "#fff", padding: "6px 8px", fontSize: 13 }}
                     />
                     <textarea
                       value={localeDraft.descrizione ?? ""}
                       onChange={(e) => setLocaleDraft((prev) => ({ ...(prev || {}), descrizione: e.target.value }))}
-                      placeholder="Testo breve"
+                      placeholder={t("home.edit.shortTextPlaceholder")}
                       rows={2}
                       style={{ borderRadius: 8, border: "1px solid #334155", background: "rgba(2,6,23,0.72)", color: "#fff", padding: "6px 8px", fontSize: 12, resize: "none" }}
                     />
@@ -557,14 +559,14 @@ export default function Home() {
                         disabled={savingLocaleId === l.id}
                         style={{ border: "none", borderRadius: 8, background: "#16a34a", color: "#fff", fontWeight: 700, fontSize: 12, padding: "6px 10px", cursor: "pointer", opacity: savingLocaleId === l.id ? 0.7 : 1 }}
                       >
-                        {savingLocaleId === l.id ? "Salvataggio..." : "Salva"}
+                        {savingLocaleId === l.id ? t("home.edit.saving") : t("home.edit.save")}
                       </button>
                       <button
                         type="button"
                         onClick={cancelLocaleEdit}
                         style={{ border: "1px solid #64748b", borderRadius: 8, background: "rgba(15,23,42,0.8)", color: "#fff", fontWeight: 600, fontSize: 12, padding: "6px 10px", cursor: "pointer" }}
                       >
-                        Annulla
+                        {t("home.edit.cancel")}
                       </button>
                     </div>
                   </div>
@@ -587,7 +589,7 @@ export default function Home() {
 
       <section className="content-section" style={{ padding: "40px 60px", maxWidth: 1400, margin: "0 auto" }}>
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 28 }}>
-          <h2 className="section-title" style={{ fontSize: "clamp(24px, 4vw, 32px)", margin: 0 }}>Ultimi Articoli</h2>
+          <h2 className="section-title" style={{ fontSize: "clamp(24px, 4vw, 32px)", margin: 0 }}>{t("home.latestArticlesTitle")}</h2>
         </div>
         <div className="section-grid" style={{ display: "grid", gridTemplateColumns: "repeat(4, minmax(0, 1fr))", gap: 20 }}>
           {articoli.map((a) => (
@@ -618,9 +620,9 @@ export default function Home() {
       </section>
 
       <section className="content-section community-section" style={{ padding: "40px 60px", maxWidth: 1400, margin: "0 auto", textAlign: "center" }}>
-        <h2 style={{ fontSize: "clamp(28px, 5vw, 44px)", marginBottom: 16, fontWeight: 800 }}>Unisciti alla community</h2>
+        <h2 style={{ fontSize: "clamp(28px, 5vw, 44px)", marginBottom: 16, fontWeight: 800 }}>{t("home.communityTitle")}</h2>
         <p style={{ fontSize: "clamp(14px, 2vw, 18px)", color: "#aaa", maxWidth: 600, margin: "0 auto 32px", lineHeight: 1.6 }}>
-          Condividi le tue esperienze, scopri nuovi locali e contribuisci alla cultura del bere consapevole.
+          {t("home.communitySubtitle")}
         </p>
       </section>
 
