@@ -3,6 +3,7 @@ import Navbar from "../components/Navbar";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useParams, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 type Item = {
   id: string;
@@ -15,6 +16,7 @@ export default function Category() {
   const { categoria, tipo } = useParams();
   const selectedType = categoria || tipo;
   const navigate = useNavigate();
+  const { t } = useTranslation("drink");
 
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
@@ -108,7 +110,7 @@ export default function Category() {
 
       const mappedDistillati = distillatiRows.map((d: any) => ({
         id: d.id,
-        nome: d.nome || d.name || "Distillato",
+        nome: d.nome || d.name || t("drink.fallbacks.distillatoName"),
         marca: d.marca || "",
         immagine: getImage(d),
         categoria_testo: distillatoCategoryText(d),
@@ -121,7 +123,7 @@ export default function Category() {
           .filter((record: any) => isDistillatoLike(record))
           .map((d: any) => ({
             id: d.id,
-            nome: d.nome || d.name || "Distillato",
+            nome: d.nome || d.name || t("drink.fallbacks.distillatoName"),
             marca: d.marca || d.distilleria || "",
             immagine: getImage(d),
             categoria_testo: distillatoCategoryText(d),
@@ -216,7 +218,7 @@ export default function Category() {
   }
 
   if (loading) {
-    return <div className="page fade-in">Caricamento...</div>;
+    return <div className="page fade-in">{t("drink.states.loading")}</div>;
   }
 
   return (
@@ -224,7 +226,7 @@ export default function Category() {
       <Navbar />
       <div className="fade-in drink-page-white" style={{ marginTop: 32 }}>
         <section className="drink-section-white">
-          <h1 className="drink-page-heading" style={{ marginBottom: 14 }}>{getTitle(selectedType)}</h1>
+          <h1 className="drink-page-heading" style={{ marginBottom: 14 }}>{t(`drink.sections.${getTitle(selectedType)}`)}</h1>
           <div className="drink-grid-uniform">
             {items.map((item) => (
               <article
@@ -235,7 +237,7 @@ export default function Category() {
                 {item.immagine ? (
                   <img src={item.immagine} alt={item.nome} />
                 ) : (
-                  <div className="no-img-placeholder">NO IMG</div>
+                  <div className="no-img-placeholder">{t("drink.states.noImage")}</div>
                 )}
                 <div className="drink-card-caption">
                   <h3 translate="no">{item.nome}</h3>
@@ -252,9 +254,9 @@ export default function Category() {
 /* ---------- HELPERS ---------- */
 
 function getTitle(tipo: any) {
-  if (tipo === "cocktail") return "Coktail";
-  if (tipo === "rum") return "Rum";
-  if (tipo === "whisky") return "Whisky";
-  if (tipo === "altri") return "Altri distillati";
-  return "Coktail";
+  if (tipo === "cocktail") return "cocktail";
+  if (tipo === "rum") return "rum";
+  if (tipo === "whisky") return "whisky";
+  if (tipo === "altri") return "otherDistillates";
+  return "cocktail";
 }

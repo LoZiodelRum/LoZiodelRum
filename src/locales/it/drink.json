@@ -1,9 +1,76 @@
 {
-  "filters": {
-    "title": "Filtri",
-    "searchPlaceholder": "Cerca un drink"
-  },
-  "detail": {
-    "relatedTitle": "Drink correlati"
+  "drink": {
+    "title": "Drink",
+    "featured": "In evidenza",
+    "searchPlaceholder": "Cerca un drink",
+    "noResults": "Nessun risultato",
+    "sections": {
+      "cocktail": "Cocktail",
+      "rum": "Rum",
+      "whisky": "Whisky",
+      "otherDistillates": "Altri distillati"
+    },
+    "filters": {
+      "title": "Filtri",
+      "searchPlaceholder": "Cerca un drink",
+      "categories": "Categorie",
+      "sorting": "Ordinamento",
+      "tabs": "Sezioni"
+    },
+    "sorting": {
+      "title": "Ordina per",
+      "nameAsc": "Nome A-Z",
+      "nameDesc": "Nome Z-A",
+      "recent": "Più recenti"
+    },
+    "tabs": {
+      "all": "Tutti",
+      "featured": "In evidenza",
+      "classics": "Classici",
+      "new": "Nuovi"
+    },
+    "cta": {
+      "seeAll": "Vedi tutti",
+      "back": "← Torna indietro"
+    },
+    "states": {
+      "loading": "Caricamento...",
+      "noResults": "Nessun dato",
+      "noImage": "NO IMG",
+      "notFound": "Drink non trovato",
+      "emptyDetails": "Nessun dettaglio disponibile"
+    },
+    "detail": {
+      "brand": "Marca:",
+      "category": "Categoria:",
+      "abv": "Gradazione:",
+      "description": "Descrizione",
+      "recipe": "Ricetta:",
+      "relatedTitle": "Drink correlati"
+    },
+    "ingredients": {
+      "label": "Ingredienti:"
+    },
+    "fallbacks": {
+      "distillatoName": "Distillato"
+    },
+    "future": {
+      "reviews": {
+        "title": "Recensioni",
+        "empty": "Nessuna recensione disponibile"
+      },
+      "pairing": {
+        "title": "Pairing",
+        "empty": "Nessun pairing disponibile"
+      },
+      "tastingNotes": {
+        "title": "Note di degustazione",
+        "empty": "Nessuna nota di degustazione"
+      },
+      "aiSuggestions": {
+        "title": "Suggerimenti AI",
+        "empty": "Nessun suggerimento disponibile"
+      }
+    }
   }
 }

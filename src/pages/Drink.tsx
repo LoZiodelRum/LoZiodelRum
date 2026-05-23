@@ -3,6 +3,7 @@ import "../App.css";
 import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 type Cocktail = {
   id: string;
@@ -19,6 +20,7 @@ type Distillato = {
 };
 
 export default function Drink() {
+  const { t } = useTranslation("drink");
   const [cocktail, setCocktail] = useState<Cocktail[]>([]);
   const [rum, setRum] = useState<Distillato[]>([]);
   const [whisky, setWhisky] = useState<Distillato[]>([]);
@@ -95,7 +97,7 @@ export default function Drink() {
     const mappedDistillati = distillatiRows
       .map((d: any) => ({
         id: d.id,
-        nome: d.nome || d.name || "Distillato",
+        nome: d.nome || d.name || t("drink.fallbacks.distillatoName"),
         marca: d.marca || "",
         categoria: distillatoCategoryText(d),
         immagine: getImage(d),
@@ -106,7 +108,7 @@ export default function Drink() {
       .filter((record: any) => isDistillatoLike(record))
       .map((c: any) => ({
         id: c.id,
-        nome: c.nome || c.name || "Distillato",
+        nome: c.nome || c.name || t("drink.fallbacks.distillatoName"),
         marca: c.marca || c.distilleria || "",
         categoria: distillatoCategoryText(c),
         immagine: getImage(c),
@@ -147,7 +149,7 @@ export default function Drink() {
   }
 
   if (loading) {
-    return <div className="page fade-in">Caricamento...</div>;
+    return <div className="page fade-in">{t("drink.states.loading")}</div>;
   }
 
   function renderSection(title: string, list: any[], tipo: string) {
@@ -156,12 +158,12 @@ export default function Drink() {
         <div className="drink-section-header" style={{ justifyContent: 'flex-end' }}>
           <h2 className="drink-section-title" style={{ marginRight: 'auto' }}>{title}</h2>
           <button className="btn-primary btn-small" style={{ marginLeft: 'auto' }} onClick={() => navigate(`/categoria/${tipo}`)}>
-            Vedi tutti
+            {t("drink.cta.seeAll")}
           </button>
         </div>
 
         {!list.length ? (
-          <p style={{ textAlign: "center", color: "#999" }}>Nessun dato</p>
+          <p style={{ textAlign: "center", color: "#999" }}>{t("drink.states.noResults")}</p>
         ) : (
           <div className="drink-grid-uniform">
             {list.map((item) => (
@@ -169,7 +171,7 @@ export default function Drink() {
                 {item.immagine ? (
                   <img src={item.immagine} alt={item.nome} />
                 ) : (
-                  <div className="no-img-placeholder">NO IMG</div>
+                  <div className="no-img-placeholder">{t("drink.states.noImage")}</div>
                 )}
                 <div className="drink-card-caption">
                   <h3 translate="no">{item.nome}</h3>
@@ -191,10 +193,10 @@ export default function Drink() {
       `}</style>
       <Navbar />
       <div className="fade-in drink-page-white" style={{ paddingTop: 32 }}>
-        {renderSection("Cocktail", cocktail, "cocktail")}
-        {renderSection("Rum", rum, "rum")}
-        {renderSection("Whisky", whisky, "whisky")}
-        {renderSection("Altri distillati", altri, "altri")}
+        {renderSection(t("drink.sections.cocktail"), cocktail, "cocktail")}
+        {renderSection(t("drink.sections.rum"), rum, "rum")}
+        {renderSection(t("drink.sections.whisky"), whisky, "whisky")}
+        {renderSection(t("drink.sections.otherDistillates"), altri, "altri")}
       </div>
     </>
   );

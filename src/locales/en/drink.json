@@ -1,9 +1,76 @@
 {
-  "filters": {
-    "title": "Filters",
-    "searchPlaceholder": "Search a drink"
-  },
-  "detail": {
-    "relatedTitle": "Related drinks"
+  "drink": {
+    "title": "Drinks",
+    "featured": "Featured",
+    "searchPlaceholder": "Search a drink",
+    "noResults": "No results",
+    "sections": {
+      "cocktail": "Cocktails",
+      "rum": "Rum",
+      "whisky": "Whisky",
+      "otherDistillates": "Other distillates"
+    },
+    "filters": {
+      "title": "Filters",
+      "searchPlaceholder": "Search a drink",
+      "categories": "Categories",
+      "sorting": "Sorting",
+      "tabs": "Sections"
+    },
+    "sorting": {
+      "title": "Sort by",
+      "nameAsc": "Name A-Z",
+      "nameDesc": "Name Z-A",
+      "recent": "Most recent"
+    },
+    "tabs": {
+      "all": "All",
+      "featured": "Featured",
+      "classics": "Classics",
+      "new": "New"
+    },
+    "cta": {
+      "seeAll": "See all",
+      "back": "← Go back"
+    },
+    "states": {
+      "loading": "Loading...",
+      "noResults": "No data",
+      "noImage": "NO IMG",
+      "notFound": "Drink not found",
+      "emptyDetails": "No details available"
+    },
+    "detail": {
+      "brand": "Brand:",
+      "category": "Category:",
+      "abv": "ABV:",
+      "description": "Description",
+      "recipe": "Recipe:",
+      "relatedTitle": "Related drinks"
+    },
+    "ingredients": {
+      "label": "Ingredients:"
+    },
+    "fallbacks": {
+      "distillatoName": "Distillate"
+    },
+    "future": {
+      "reviews": {
+        "title": "Reviews",
+        "empty": "No reviews available"
+      },
+      "pairing": {
+        "title": "Pairing",
+        "empty": "No pairing available"
+      },
+      "tastingNotes": {
+        "title": "Tasting notes",
+        "empty": "No tasting notes available"
+      },
+      "aiSuggestions": {
+        "title": "AI suggestions",
+        "empty": "No suggestions available"
+      }
+    }
   }
 }

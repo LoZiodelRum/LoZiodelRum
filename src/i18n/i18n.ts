@@ -9,6 +9,8 @@ import itHome from "../locales/it/home.json";
 import enHome from "../locales/en/home.json";
 import itCommunity from "../locales/it/community.json";
 import enCommunity from "../locales/en/community.json";
+import itDrink from "../locales/it/drink.json";
+import enDrink from "../locales/en/drink.json";
 
 i18n.use(initReactI18next).init({
   resources: {
@@ -17,16 +19,18 @@ i18n.use(initReactI18next).init({
       navbar: itNavbar,
       home: itHome,
       community: itCommunity,
+      drink: itDrink,
     },
     en: {
       translation: en,
       navbar: enNavbar,
       home: enHome,
       community: enCommunity,
+      drink: enDrink,
     },
   },
 
-  ns: ["translation", "navbar", "home", "community"],
+  ns: ["translation", "navbar", "home", "community", "drink"],
   defaultNS: "translation",
 
   lng: "it",

@@ -4,6 +4,7 @@ import Navbar from "../components/Navbar";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
+import { useTranslation } from "react-i18next";
 
 type Drink = {
   id: string;
@@ -21,6 +22,7 @@ type Drink = {
 export default function DrinkDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t } = useTranslation("drink");
   const [drink, setDrink] = useState<Drink | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
@@ -48,39 +50,39 @@ export default function DrinkDetail() {
     fetchDrink();
   }, [id]);
 
-  if (loading) return <div className="page fade-in">Caricamento...</div>;
-  if (notFound || !drink) return <div className="page fade-in">Drink non trovato</div>;
+  if (loading) return <div className="page fade-in">{t("drink.states.loading")}</div>;
+  if (notFound || !drink) return <div className="page fade-in">{t("drink.states.notFound")}</div>;
 
   return (
     <>
       <Navbar />
       <div className="page fade-in" style={{ maxWidth: 800, margin: "0 auto", padding: 20, paddingTop: 86 }}>
       <button className="btn-primary" style={{ marginBottom: 20 }} onClick={() => navigate(-1)}>
-        ← Torna indietro
+        {t("drink.cta.back")}
       </button>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 40 }}>
         <div style={{ flex: 1, minWidth: 260 }}>
           {drink.immagine ? (
             <img src={drink.immagine} alt={drink.nome} style={{ width: "100%", borderRadius: 16, marginBottom: 20 }} />
           ) : (
-            <div className="no-img-placeholder" style={{ marginBottom: 20 }}>NO IMG</div>
+            <div className="no-img-placeholder" style={{ marginBottom: 20 }}>{t("drink.states.noImage")}</div>
           )}
         </div>
         <div style={{ flex: 2, minWidth: 260 }}>
           <h1 style={{ fontSize: "2rem", color: "#f5a623", marginBottom: 10 }}>{drink.nome}</h1>
-          {drink.marca && <div style={{ color: "#666", marginBottom: 10 }}><b>Marca:</b> {drink.marca}</div>}
-          {drink.categoria && <div style={{ color: "#666", marginBottom: 10 }}><b>Categoria:</b> {drink.categoria}</div>}
-          {drink.gradazione && <div style={{ color: "#666", marginBottom: 10 }}><b>Gradazione:</b> {drink.gradazione}</div>}
+          {drink.marca && <div style={{ color: "#666", marginBottom: 10 }}><b>{t("drink.detail.brand")}</b> {drink.marca}</div>}
+          {drink.categoria && <div style={{ color: "#666", marginBottom: 10 }}><b>{t("drink.detail.category")}</b> {drink.categoria}</div>}
+          {drink.gradazione && <div style={{ color: "#666", marginBottom: 10 }}><b>{t("drink.detail.abv")}</b> {drink.gradazione}</div>}
           {drink.descrizione && <div style={{ marginBottom: 16 }}>{drink.descrizione}</div>}
           {drink.ingredienti && (
             <div style={{ marginBottom: 16 }}>
-              <b>Ingredienti:</b>
+              <b>{t("drink.ingredients.label")}</b>
               <div>{drink.ingredienti}</div>
             </div>
           )}
           {drink.ricetta && (
             <div style={{ marginBottom: 16 }}>
-              <b>Ricetta:</b>
+              <b>{t("drink.detail.recipe")}</b>
               <div>{drink.ricetta}</div>
             </div>
           )}
