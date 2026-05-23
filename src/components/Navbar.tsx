@@ -277,7 +277,7 @@ export default function Navbar() {
         <div className="mobile-language-zone">
           {/* BANDIERA MOBILE */}
           <div
-            className="mobile-language-selector"
+            className="mobile-language-selector languageSelectorWrapper"
             style={{
               position: "relative",
               display: "none",
@@ -287,7 +287,7 @@ export default function Navbar() {
           >
             <div className="mobile-language-trigger-wrapper">
               <button
-                className="mobile-language-trigger"
+                className="mobile-language-trigger languageButton"
                 onClick={() => setLanguageOpen(!languageOpen)}
                 style={{
                   background: "transparent",
@@ -303,17 +303,23 @@ export default function Navbar() {
                   whiteSpace: "nowrap",
                 }}
               >
-                <span style={{ fontSize: "14px", lineHeight: 1 }}>
-                  {i18n.language === "it" ? "🇮🇹" : "🇬🇧"}
+                <span className="languageButtonContent">
+                  <span style={{ fontSize: "14px", lineHeight: 1 }}>
+                    {i18n.language === "it" ? "🇮🇹" : "🇬🇧"}
+                  </span>
+                  <span style={{ lineHeight: 1, whiteSpace: "nowrap" }}>
+                    {i18n.language === "it" ? "IT" : "EN"}
+                  </span>
                 </span>
-                <span style={{ lineHeight: 1, whiteSpace: "nowrap" }}>
-                  {i18n.language === "it" ? "IT" : "EN"}
+                <span className="languageChevron" aria-hidden="true">
+                  ▾
                 </span>
               </button>
             </div>
 
             {languageOpen && (
               <div
+                className="futureDropdownContainer"
                 style={{
                   position: "absolute",
                   top: "42px",
@@ -711,15 +717,51 @@ export default function Navbar() {
           .mobile-language-trigger {
             display: flex !important;
             align-items: center !important;
-            gap: 4px !important;
+            gap: 6px !important;
             font-size: 14px !important;
             line-height: 1 !important;
             white-space: nowrap !important;
-            padding: 6px 4px !important;
-            border-radius: 8px;
+            padding: 8px 8px !important;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.12);
+            background: rgba(255, 255, 255, 0.03);
             transition: background-color 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
             -webkit-tap-highlight-color: transparent;
             touch-action: manipulation;
+          }
+
+          .languageSelectorWrapper {
+            overflow: visible;
+          }
+
+          .languageButton {
+            min-height: 34px;
+            min-width: 74px;
+            justify-content: space-between;
+          }
+
+          .languageButtonContent {
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+            white-space: nowrap;
+            overflow: hidden;
+          }
+
+          .languageChevron {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            line-height: 1;
+            opacity: 0.82;
+            margin-left: 2px;
+            transform: translateY(1px);
+            flex-shrink: 0;
+          }
+
+          .futureDropdownContainer {
+            margin-top: 2px;
           }
 
           .mobile-menu {
@@ -744,6 +786,11 @@ export default function Navbar() {
           .mobile-language-trigger:active {
             transform: scale(0.97);
             background: rgba(245, 166, 35, 0.12);
+          }
+
+          .mobile-language-trigger:hover {
+            background: rgba(245, 166, 35, 0.08);
+            border-color: rgba(245, 166, 35, 0.28);
           }
 
           .mobile-logout-btn:hover,
