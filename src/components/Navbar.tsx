@@ -13,6 +13,8 @@ export default function Navbar() {
   const [languageOpen, setLanguageOpen] = useState(false);
 
   const { t, i18n } = useTranslation("navbar");
+  const formatLanguageLabel = (label: string) =>
+    label.replace(/\b([A-Z]{2,})\b/g, (code) => code.toLowerCase());
 
   function closeMobileMenu() {
     setMenuOpen(false);
@@ -179,14 +181,14 @@ export default function Navbar() {
               border: "none",
               color: "#fff",
               cursor: "pointer",
-              fontWeight: "bold",
+              fontWeight: 400,
               fontSize: "16px",
               display: "flex",
               alignItems: "center",
               gap: "6px",
             }}
           >
-            {i18n.language === "it" ? t("language.shortIt") : t("language.shortEn")}
+            {formatLanguageLabel(i18n.language === "it" ? t("language.shortIt") : t("language.shortEn"))}
           </button>
 
           {languageOpen && (
@@ -218,7 +220,7 @@ export default function Navbar() {
                   cursor: "pointer",
                 }}
               >
-                {t("language.it")}
+                {formatLanguageLabel(t("language.it"))}
               </button>
 
               <button
@@ -236,7 +238,7 @@ export default function Navbar() {
                   cursor: "pointer",
                 }}
               >
-                {t("language.en")}
+                {formatLanguageLabel(t("language.en"))}
               </button>
             </div>
           )}
@@ -294,7 +296,7 @@ export default function Navbar() {
                   border: "none",
                   color: "#fff",
                   cursor: "pointer",
-                  fontWeight: "bold",
+                  fontWeight: 400,
                   fontSize: "14px",
                   display: "flex",
                   alignItems: "center",
@@ -308,7 +310,7 @@ export default function Navbar() {
                     {i18n.language === "it" ? "🇮🇹" : "🇬🇧"}
                   </span>
                   <span style={{ lineHeight: 1, whiteSpace: "nowrap" }}>
-                    {i18n.language === "it" ? t("language.codeIt") : t("language.codeEn")}
+                    {(i18n.language === "it" ? t("language.codeIt") : t("language.codeEn")).toLowerCase()}
                   </span>
                 </span>
               </button>
@@ -344,7 +346,7 @@ export default function Navbar() {
                     cursor: "pointer",
                   }}
                 >
-                  {t("language.it")}
+                  {formatLanguageLabel(t("language.it"))}
                 </button>
 
                 <button
@@ -362,7 +364,7 @@ export default function Navbar() {
                     cursor: "pointer",
                   }}
                 >
-                  {t("language.en")}
+                  {formatLanguageLabel(t("language.en"))}
                 </button>
               </div>
             )}
