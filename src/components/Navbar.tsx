@@ -13,6 +13,7 @@ export default function Navbar() {
   const [languageOpen, setLanguageOpen] = useState(false);
 
   const { t, i18n } = useTranslation("navbar");
+  const activeLanguage = String(i18n.language || "it").toLowerCase().startsWith("en") ? "en" : "it";
   const formatLanguageLabel = (label: string) =>
     label.replace(/\b([A-Z]{2,})\b/g, (code) => code.toLowerCase());
 
@@ -188,7 +189,7 @@ export default function Navbar() {
               gap: "6px",
             }}
           >
-            {formatLanguageLabel(i18n.language === "it" ? t("language.shortIt") : t("language.shortEn"))}
+            {formatLanguageLabel(activeLanguage === "it" ? t("language.shortIt") : t("language.shortEn"))}
           </button>
 
           {languageOpen && (
@@ -307,10 +308,10 @@ export default function Navbar() {
               >
                 <span className="languageButtonContent">
                   <span style={{ fontSize: "14px", lineHeight: 1 }}>
-                    {i18n.language === "it" ? "🇮🇹" : "🇬🇧"}
+                    {activeLanguage === "it" ? "🇮🇹" : "🇬🇧"}
                   </span>
                   <span style={{ lineHeight: 1, whiteSpace: "nowrap" }}>
-                    {(i18n.language === "it" ? t("language.codeIt") : t("language.codeEn")).toLowerCase()}
+                    {(activeLanguage === "it" ? t("language.codeIt") : t("language.codeEn")).toLowerCase()}
                   </span>
                 </span>
               </button>

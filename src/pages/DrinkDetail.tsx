@@ -22,6 +22,9 @@ type Drink = {
 
 const technicalFieldLabelMap: Record<string, string> = {
   preparazione: "drink.preparation.label",
+  note_degustazione: "drink.future.tastingNotes.title",
+  storia: "drink.detail.fields.history",
+  abbinamenti: "drink.future.pairing.title",
   garnish: "drink.garnish.label",
   bicchiere: "drink.glass.label",
   origine: "drink.origin.label",
@@ -93,7 +96,15 @@ export default function DrinkDetail() {
   const translatedAbv = getTranslatedField(drink, "gradazione", i18n.language, "");
   const translatedDescription = getTranslatedField(drink, "descrizione", i18n.language, "");
   const translatedIngredients = getTranslatedField(drink, "ingredienti", i18n.language, "");
-  const translatedRecipe = getTranslatedField(drink, "ricetta", i18n.language, "");
+  const translatedPreparation = getTranslatedField(
+    drink,
+    "preparazione",
+    i18n.language,
+    getTranslatedField(drink, "ricetta", i18n.language, "")
+  );
+  const translatedTastingNotes = getTranslatedField(drink, "note_degustazione", i18n.language, "");
+  const translatedHistory = getTranslatedField(drink, "storia", i18n.language, "");
+  const translatedPairings = getTranslatedField(drink, "abbinamenti", i18n.language, "");
 
   const languageSuffixRegex = /_(it|en|es|de|fr|bg)$/i;
 
@@ -124,17 +135,51 @@ export default function DrinkDetail() {
               <div>{translatedIngredients}</div>
             </div>
           )}
-          {translatedRecipe && (
+          {translatedPreparation && (
             <div style={{ marginBottom: 16 }}>
-              <b>{t("drink.detail.recipe")}</b>
-              <div>{translatedRecipe}</div>
+              <b>{t("drink.preparation.label")}</b>
+              <div>{translatedPreparation}</div>
+            </div>
+          )}
+          {translatedTastingNotes && (
+            <div style={{ marginBottom: 16 }}>
+              <b>{t("drink.future.tastingNotes.title")}</b>
+              <div>{translatedTastingNotes}</div>
+            </div>
+          )}
+          {translatedHistory && (
+            <div style={{ marginBottom: 16 }}>
+              <b>{t("drink.detail.fields.history")}</b>
+              <div>{translatedHistory}</div>
+            </div>
+          )}
+          {translatedPairings && (
+            <div style={{ marginBottom: 16 }}>
+              <b>{t("drink.future.pairing.title")}</b>
+              <div>{translatedPairings}</div>
             </div>
           )}
           {/* Mostra tutti gli altri campi utili */}
           {Object.entries(drink)
             .filter(
               ([k]) =>
-                !["id", "nome", "immagine", "marca", "categoria", "gradazione", "descrizione", "ingredienti", "ricetta", "created_at", "updated_at"].includes(k) &&
+                ![
+                  "id",
+                  "nome",
+                  "immagine",
+                  "marca",
+                  "categoria",
+                  "gradazione",
+                  "descrizione",
+                  "ingredienti",
+                  "ricetta",
+                  "preparazione",
+                  "note_degustazione",
+                  "storia",
+                  "abbinamenti",
+                  "created_at",
+                  "updated_at",
+                ].includes(k) &&
                 !languageSuffixRegex.test(k) &&
                 getTranslatedField(drink, k, i18n.language, "").trim().length > 0
             )

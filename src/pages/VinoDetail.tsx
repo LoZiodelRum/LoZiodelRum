@@ -9,6 +9,7 @@ type VinoRecord = Record<string, any>;
 
 const baseFields: Array<{ key: string; labelKey: string }> = [
   { key: "nome", labelKey: "drink.wines.detail.fields.name" },
+  { key: "descrizione", labelKey: "drink.wines.detail.fields.description" },
   { key: "annata", labelKey: "drink.wines.detail.fields.vintage" },
   { key: "cantina", labelKey: "drink.wines.detail.fields.winery" },
   { key: "vitigno", labelKey: "drink.wines.detail.fields.grape" },
@@ -17,6 +18,8 @@ const baseFields: Array<{ key: string; labelKey: string }> = [
   { key: "denominazione", labelKey: "drink.wines.detail.fields.denomination" },
   { key: "categoria", labelKey: "drink.wines.detail.fields.category" },
   { key: "abbinamenti", labelKey: "drink.wines.detail.fields.pairings" },
+  { key: "note_degustazione", labelKey: "drink.wines.detail.fields.tastingNotes" },
+  { key: "storia", labelKey: "drink.wines.detail.fields.history" },
   { key: "temperatura_servizio", labelKey: "drink.wines.detail.fields.serviceTemperature" },
   { key: "note_personali", labelKey: "drink.wines.detail.fields.personalNotes" },
   { key: "valutazione", labelKey: "drink.wines.detail.fields.rating" },

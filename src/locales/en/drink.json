@@ -52,6 +52,7 @@
       "relatedTitle": "Related drinks",
       "fields": {
         "dynamic": "{{field}}:",
+        "history": "History:",
         "secondaryIngredients": "Secondary ingredients:",
         "technique": "Technique:",
         "method": "Method:",
@@ -125,6 +126,7 @@
         },
         "fields": {
           "name": "Name",
+          "description": "Description",
           "vintage": "Vintage",
           "winery": "Winery",
           "grape": "Grape",
@@ -133,6 +135,8 @@
           "denomination": "Denomination",
           "category": "Category",
           "pairings": "Pairings",
+          "tastingNotes": "Tasting notes",
+          "history": "History",
           "serviceTemperature": "Service temperature",
           "personalNotes": "Personal notes",
           "rating": "Rating",

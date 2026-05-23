@@ -52,6 +52,7 @@
       "relatedTitle": "Drink correlati",
       "fields": {
         "dynamic": "{{field}}:",
+        "history": "Storia:",
         "secondaryIngredients": "Ingredienti secondari:",
         "technique": "Tecnica:",
         "method": "Metodo:",
@@ -125,6 +126,7 @@
         },
         "fields": {
           "name": "Nome",
+          "description": "Descrizione",
           "vintage": "Annata",
           "winery": "Cantina",
           "grape": "Vitigno",
@@ -133,6 +135,8 @@
           "denomination": "Denominazione",
           "category": "Categoria",
           "pairings": "Abbinamenti",
+          "tastingNotes": "Note di degustazione",
+          "history": "Storia",
           "serviceTemperature": "Temperatura servizio",
           "personalNotes": "Note personali",
           "rating": "Valutazione",
