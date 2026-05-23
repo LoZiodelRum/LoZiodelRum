@@ -220,7 +220,7 @@ export default function Community() {
           .dw-hero-stats {
             margin-top: 14px;
             display: grid;
-            grid-template-columns: repeat(3, minmax(0, 1fr));
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 8px;
             font-size: 11px;
             max-width: 540px;
@@ -673,7 +673,6 @@ export default function Community() {
               <div className="dw-hero-stats">
                 <div><strong>{t("hero.stats.members.value")}</strong> {t("hero.stats.members.label")}</div>
                 <div><strong>{t("hero.stats.posts.value")}</strong> {t("hero.stats.posts.label")}</div>
-                <div><strong>{t("hero.stats.read.value")}</strong> {t("hero.stats.read.label")}</div>
               </div>
             </div>
           </section>
