@@ -106,7 +106,7 @@ export default function Vini() {
           id: String(vino.id),
           nome: getTranslatedField(vino, "nome", i18n.language, vino.name || t("drink.wines.fallbackName")),
           immagine: vino.immagine ?? null,
-          categoria: (vino.categoria || vino.category || t("drink.wines.fallbackCategory")).trim(),
+          categoria: getTranslatedField(vino, "categoria", i18n.language, (vino.categoria || vino.category || t("drink.wines.fallbackCategory")).trim()),
           alcol: getTranslatedField(vino, "alcol", i18n.language, vino.grado_alcolico || ""),
           descrizione: getTranslatedField(vino, "descrizione", i18n.language, vino.description || ""),
         }))

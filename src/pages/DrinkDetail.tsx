@@ -56,6 +56,19 @@ function formatFieldKeyLabel(key: string) {
   return withSpaces.charAt(0).toUpperCase() + withSpaces.slice(1);
 }
 
+function getFirstTranslatedField(
+  record: Record<string, any> | null,
+  fields: string[],
+  language: string,
+  fallback = ""
+) {
+  for (const field of fields) {
+    const value = getTranslatedField(record, field, language, "");
+    if (value.trim().length > 0) return value;
+  }
+  return fallback;
+}
+
 export default function DrinkDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -94,17 +107,15 @@ export default function DrinkDetail() {
   const translatedBrand = getTranslatedField(drink, "marca", i18n.language, "");
   const translatedCategory = getTranslatedField(drink, "categoria", i18n.language, "");
   const translatedAbv = getTranslatedField(drink, "gradazione", i18n.language, "");
-  const translatedDescription = getTranslatedField(drink, "descrizione", i18n.language, "");
-  const translatedIngredients = getTranslatedField(drink, "ingredienti", i18n.language, "");
-  const translatedPreparation = getTranslatedField(
-    drink,
-    "preparazione",
-    i18n.language,
-    getTranslatedField(drink, "ricetta", i18n.language, "")
-  );
-  const translatedTastingNotes = getTranslatedField(drink, "note_degustazione", i18n.language, "");
-  const translatedHistory = getTranslatedField(drink, "storia", i18n.language, "");
-  const translatedPairings = getTranslatedField(drink, "abbinamenti", i18n.language, "");
+  const translatedDescription = getFirstTranslatedField(drink, ["descrizione", "description"], i18n.language, "");
+  const translatedIngredients = getFirstTranslatedField(drink, ["ingredienti", "ingredients"], i18n.language, "");
+  const translatedPreparation = getFirstTranslatedField(drink, ["preparazione", "ricetta", "recipe"], i18n.language, "");
+  const translatedTastingNotes = getFirstTranslatedField(drink, ["note_degustazione", "degustazione", "tasting_notes", "tastingnotes"], i18n.language, "");
+  const translatedHistory = getFirstTranslatedField(drink, ["storia", "history"], i18n.language, "");
+  const translatedPairings = getFirstTranslatedField(drink, ["abbinamenti", "pairing", "pairings"], i18n.language, "");
+  const translatedOrigin = getFirstTranslatedField(drink, ["provenienza", "origine", "origin"], i18n.language, "");
+  const translatedAromaticNotes = getFirstTranslatedField(drink, ["note_aromatiche", "aromatic_notes"], i18n.language, "");
+  const translatedPalate = getFirstTranslatedField(drink, ["sensazioni_al_palato", "palato"], i18n.language, "");
 
   const languageSuffixRegex = /_(it|en|es|de|fr|bg)$/i;
 
@@ -159,6 +170,24 @@ export default function DrinkDetail() {
               <div>{translatedPairings}</div>
             </div>
           )}
+          {translatedOrigin && (
+            <div style={{ marginBottom: 16 }}>
+              <b>{t("drink.origin.label")}</b>
+              <div>{translatedOrigin}</div>
+            </div>
+          )}
+          {translatedAromaticNotes && (
+            <div style={{ marginBottom: 16 }}>
+              <b>{t("drink.detail.fields.aromaticNotes")}</b>
+              <div>{translatedAromaticNotes}</div>
+            </div>
+          )}
+          {translatedPalate && (
+            <div style={{ marginBottom: 16 }}>
+              <b>{t("drink.detail.fields.dynamic", { field: "Sensazioni al palato" })}</b>
+              <div>{translatedPalate}</div>
+            </div>
+          )}
           {/* Mostra tutti gli altri campi utili */}
           {Object.entries(drink)
             .filter(
@@ -177,6 +206,19 @@ export default function DrinkDetail() {
                   "note_degustazione",
                   "storia",
                   "abbinamenti",
+                  "provenienza",
+                  "origine",
+                  "note_aromatiche",
+                  "sensazioni_al_palato",
+                  "palato",
+                  "description",
+                  "ingredients",
+                  "recipe",
+                  "history",
+                  "pairing",
+                  "pairings",
+                  "origin",
+                  "aromatic_notes",
                   "created_at",
                   "updated_at",
                 ].includes(k) &&

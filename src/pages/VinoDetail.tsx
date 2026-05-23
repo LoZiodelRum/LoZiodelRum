@@ -58,6 +58,18 @@ const finaleFields: Array<{ key: string; labelKey: string }> = [
   { key: "armonia", labelKey: "drink.wines.detail.fields.harmony" },
 ];
 
+const fieldAliases: Record<string, string[]> = {
+  nome: ["nome", "name"],
+  descrizione: ["descrizione", "description"],
+  categoria: ["categoria", "category"],
+  abbinamenti: ["abbinamenti", "pairing", "pairings"],
+  note_degustazione: ["note_degustazione", "degustazione", "tasting_notes", "tastingnotes"],
+  storia: ["storia", "history"],
+  zona: ["zona", "provenienza", "origine", "origin"],
+  intensita_gusto: ["intensita_gusto", "sensazioni_al_palato", "palato"],
+  note_aromatiche: ["note_aromatiche", "aromatic_notes"],
+};
+
 function normalizeValue(raw: unknown): string {
   if (raw === null || raw === undefined || raw === "") return "-";
 
@@ -127,6 +139,15 @@ export default function VinoDetail() {
   const translatedVintage = vino ? getTranslatedField(vino, "annata", i18n.language, "-") : "-";
   const translatedWinery = vino ? getTranslatedField(vino, "cantina", i18n.language, "-") : "-";
 
+  function getTranslatedFieldWithAliases(record: VinoRecord | null, key: string, fallback = "-") {
+    const aliases = fieldAliases[key] || [key];
+    for (const alias of aliases) {
+      const value = getTranslatedField(record, alias, i18n.language, "");
+      if (value.trim().length > 0) return value;
+    }
+    return fallback;
+  }
+
   const heroImageStyleForWine = useMemo(() => {
     return {
       ...heroImageStyle,
@@ -145,7 +166,7 @@ export default function VinoDetail() {
           {fields.map((field) => (
             <article key={field.key} className="vino-detail-card" style={cardStyle}>
               <h3 className="vino-detail-label" style={labelStyle}>{t(field.labelKey)}</h3>
-              <p className="vino-detail-value" style={valueStyle}>{normalizeValue(getTranslatedField(vino, field.key, i18n.language, "-"))}</p>
+              <p className="vino-detail-value" style={valueStyle}>{normalizeValue(getTranslatedFieldWithAliases(vino, field.key, "-"))}</p>
             </article>
           ))}
         </div>
