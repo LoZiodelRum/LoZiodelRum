@@ -100,6 +100,10 @@ export default function DrinkDetail() {
     fetchDrink();
   }, [id]);
 
+  useEffect(() => {
+    console.log(drink);
+  }, [drink]);
+
   if (loading) return <div className="page fade-in">{t("drink.states.loading")}</div>;
   if (notFound || !drink) return <div className="page fade-in">{t("drink.states.notFound")}</div>;
 
