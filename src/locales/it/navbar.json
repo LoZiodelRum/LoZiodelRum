@@ -1,4 +1,10 @@
 {
+  "brand": {
+    "appName": "DrinkWise",
+    "by": "by",
+    "signature": "Lo Zio del Rum",
+    "logoAlt": "Logo Lo Zio del Rum"
+  },
   "home": "Home",
   "map": "Mappa",
   "drink": "Drink",
@@ -7,5 +13,16 @@
   "community": "Community",
   "create": "Crea",
   "logout": "Logout",
-  "controlPanel": "Pannello di Controllo"
+  "controlPanel": "Pannello di Controllo",
+  "language": {
+    "shortIt": "🇮🇹 IT",
+    "shortEn": "🇬🇧 EN",
+    "codeIt": "IT",
+    "codeEn": "EN",
+    "it": "🇮🇹 IT",
+    "en": "🇬🇧 EN"
+  },
+  "aria": {
+    "openMenu": "Apri menu"
+  }
 }

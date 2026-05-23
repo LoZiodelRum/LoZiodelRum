@@ -12,7 +12,7 @@ export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [languageOpen, setLanguageOpen] = useState(false);
 
-  const { t, i18n } = useTranslation();
+  const { t, i18n } = useTranslation("navbar");
 
   function closeMobileMenu() {
     setMenuOpen(false);
@@ -81,7 +81,7 @@ export default function Navbar() {
       >
         <img
           src="/logo.png"
-          alt="Lo Zio del Rum logo"
+          alt={t("brand.logoAlt")}
           className="logo navbar-logo"
           style={{
             height: 76,
@@ -105,7 +105,7 @@ export default function Navbar() {
               color: "#f5a623",
             }}
           >
-            DrinkWise
+            {t("brand.appName")}
           </span>
 
           <span
@@ -114,7 +114,7 @@ export default function Navbar() {
               opacity: 0.7,
             }}
           >
-            by
+            {t("brand.by")}
           </span>
 
           <span
@@ -123,7 +123,7 @@ export default function Navbar() {
               fontSize: 15,
             }}
           >
-            Lo Zio del Rum
+            {t("brand.signature")}
           </span>
         </div>
       </div>
@@ -186,7 +186,7 @@ export default function Navbar() {
               gap: "6px",
             }}
           >
-            {i18n.language === "it" ? "🇮🇹 IT" : "🇬🇧 EN"}
+            {i18n.language === "it" ? t("language.shortIt") : t("language.shortEn")}
           </button>
 
           {languageOpen && (
@@ -218,7 +218,7 @@ export default function Navbar() {
                   cursor: "pointer",
                 }}
               >
-                🇮🇹 IT
+                {t("language.it")}
               </button>
 
               <button
@@ -236,7 +236,7 @@ export default function Navbar() {
                   cursor: "pointer",
                 }}
               >
-                🇬🇧 EN
+                {t("language.en")}
               </button>
             </div>
           )}
@@ -244,7 +244,7 @@ export default function Navbar() {
 
         {isAdmin && (
           <Link to="/admin" style={linkStyle("/admin")}>
-            Pannello di Controllo
+            {t("controlPanel")}
           </Link>
         )}
 
@@ -260,7 +260,7 @@ export default function Navbar() {
               font: "inherit",
             }}
           >
-            Logout
+            {t("logout")}
           </button>
         )}
       </div>
@@ -308,7 +308,7 @@ export default function Navbar() {
                     {i18n.language === "it" ? "🇮🇹" : "🇬🇧"}
                   </span>
                   <span style={{ lineHeight: 1, whiteSpace: "nowrap" }}>
-                    {i18n.language === "it" ? "IT" : "EN"}
+                    {i18n.language === "it" ? t("language.codeIt") : t("language.codeEn")}
                   </span>
                 </span>
               </button>
@@ -344,7 +344,7 @@ export default function Navbar() {
                     cursor: "pointer",
                   }}
                 >
-                  🇮🇹 IT
+                  {t("language.it")}
                 </button>
 
                 <button
@@ -362,7 +362,7 @@ export default function Navbar() {
                     cursor: "pointer",
                   }}
                 >
-                  🇬🇧 EN
+                  {t("language.en")}
                 </button>
               </div>
             )}
@@ -374,7 +374,7 @@ export default function Navbar() {
           <button
             className="navbar-hamburger-mobile"
             onClick={() => setMenuOpen((prev) => !prev)}
-            aria-label="Apri menu"
+            aria-label={t("aria.openMenu")}
             style={{
               background: "none",
               border: "none",
@@ -452,7 +452,7 @@ export default function Navbar() {
             WebkitTapHighlightColor: "transparent",
           }}
         >
-          {t("home")}
+            {t("home")}
         </Link>
 
         <Link
@@ -469,7 +469,7 @@ export default function Navbar() {
             WebkitTapHighlightColor: "transparent",
           }}
         >
-          {t("map")}
+            {t("map")}
         </Link>
 
         <Link
@@ -486,7 +486,7 @@ export default function Navbar() {
             WebkitTapHighlightColor: "transparent",
           }}
         >
-          {t("drink")}
+            {t("drink")}
         </Link>
 
         <Link
@@ -503,7 +503,7 @@ export default function Navbar() {
             WebkitTapHighlightColor: "transparent",
           }}
         >
-          {t("wines")}
+            {t("wines")}
         </Link>
 
         <Link
@@ -520,7 +520,7 @@ export default function Navbar() {
             WebkitTapHighlightColor: "transparent",
           }}
         >
-          {t("magazine")}
+            {t("magazine")}
         </Link>
 
         <Link
@@ -537,7 +537,7 @@ export default function Navbar() {
             WebkitTapHighlightColor: "transparent",
           }}
         >
-          {t("community")}
+            {t("community")}
         </Link>
 
         <Link
@@ -554,7 +554,7 @@ export default function Navbar() {
             WebkitTapHighlightColor: "transparent",
           }}
         >
-          {t("create")}
+            {t("create")}
         </Link>
 
         {isAdmin && (
@@ -572,7 +572,7 @@ export default function Navbar() {
               WebkitTapHighlightColor: "transparent",
             }}
           >
-            Pannello di Controllo
+            {t("controlPanel")}
           </Link>
         )}
 
@@ -591,7 +591,7 @@ export default function Navbar() {
               transition: "all 0.2s ease",
             }}
           >
-            Logout
+            {t("logout")}
           </button>
         )}
       </div>
