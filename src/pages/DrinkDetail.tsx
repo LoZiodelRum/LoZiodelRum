@@ -122,6 +122,7 @@ export default function DrinkDetail() {
   const translatedPalate = getFirstTranslatedField(drink, ["sensazioni_al_palato", "palato"], i18n.language, "");
 
   const languageSuffixRegex = /_(it|en|es|de|fr|bg)$/i;
+  const isItalianUi = String(i18n.language || "it").toLowerCase().startsWith("it");
 
   return (
     <>
@@ -188,7 +189,7 @@ export default function DrinkDetail() {
           )}
           {translatedPalate && (
             <div style={{ marginBottom: 16 }}>
-              <b>{t("drink.detail.fields.dynamic", { field: "Sensazioni al palato" })}</b>
+              <b>{t("drink.detail.fields.palate", { defaultValue: isItalianUi ? "Sensazioni al palato" : "Palate" })}</b>
               <div>{translatedPalate}</div>
             </div>
           )}
@@ -227,13 +228,19 @@ export default function DrinkDetail() {
                   "updated_at",
                 ].includes(k) &&
                 !languageSuffixRegex.test(k) &&
+                (technicalFieldLabelMap[k] || isItalianUi) &&
                 getTranslatedField(drink, k, i18n.language, "").trim().length > 0
             )
             .map(([k]) => {
               const translatedValue = getTranslatedField(drink, k, i18n.language, "-");
               return (
                 <div key={k} style={{ marginBottom: 10 }}>
-                  <b>{technicalFieldLabelMap[k] ? t(technicalFieldLabelMap[k]) : t("drink.detail.fields.dynamic", { field: formatFieldKeyLabel(k) })}</b> {translatedValue}
+                  <b>
+                    {technicalFieldLabelMap[k]
+                      ? t(technicalFieldLabelMap[k])
+                      : t("drink.detail.fields.dynamic", { field: formatFieldKeyLabel(k) })}
+                  </b>{" "}
+                  {translatedValue}
                 </div>
               );
             })}

@@ -16,12 +16,6 @@ export default function Navbar() {
   const normalizedLanguage = String(i18n.language || "it").toLowerCase();
   const activeLanguage = normalizedLanguage.startsWith("en")
     ? "en"
-    : normalizedLanguage.startsWith("es")
-    ? "es"
-    : normalizedLanguage.startsWith("fr")
-    ? "fr"
-    : normalizedLanguage.startsWith("de")
-    ? "de"
     : normalizedLanguage.startsWith("bg")
     ? "bg"
     : "it";
@@ -203,12 +197,6 @@ export default function Navbar() {
             {formatLanguageLabel(
               activeLanguage === "en"
                 ? t("language.shortEn")
-                : activeLanguage === "es"
-                ? t("language.shortEs")
-                : activeLanguage === "fr"
-                ? t("language.shortFr")
-                : activeLanguage === "de"
-                ? t("language.shortDe")
                 : activeLanguage === "bg"
                 ? t("language.shortBg")
                 : t("language.shortIt")
@@ -263,60 +251,6 @@ export default function Navbar() {
                 }}
               >
                 {formatLanguageLabel(t("language.en"))}
-              </button>
-
-              <button
-                onClick={() => {
-                  i18n.changeLanguage("es");
-                  setLanguageOpen(false);
-                }}
-                style={{
-                  width: "100%",
-                  background: "transparent",
-                  border: "none",
-                  color: "#fff",
-                  padding: "12px",
-                  textAlign: "left",
-                  cursor: "pointer",
-                }}
-              >
-                {formatLanguageLabel(t("language.es"))}
-              </button>
-
-              <button
-                onClick={() => {
-                  i18n.changeLanguage("fr");
-                  setLanguageOpen(false);
-                }}
-                style={{
-                  width: "100%",
-                  background: "transparent",
-                  border: "none",
-                  color: "#fff",
-                  padding: "12px",
-                  textAlign: "left",
-                  cursor: "pointer",
-                }}
-              >
-                {formatLanguageLabel(t("language.fr"))}
-              </button>
-
-              <button
-                onClick={() => {
-                  i18n.changeLanguage("de");
-                  setLanguageOpen(false);
-                }}
-                style={{
-                  width: "100%",
-                  background: "transparent",
-                  border: "none",
-                  color: "#fff",
-                  padding: "12px",
-                  textAlign: "left",
-                  cursor: "pointer",
-                }}
-              >
-                {formatLanguageLabel(t("language.de"))}
               </button>
 
               <button
@@ -405,12 +339,6 @@ export default function Navbar() {
                   <span style={{ fontSize: "14px", lineHeight: 1 }}>
                     {activeLanguage === "en"
                       ? "🇬🇧"
-                      : activeLanguage === "es"
-                      ? "🇪🇸"
-                      : activeLanguage === "fr"
-                      ? "🇫🇷"
-                      : activeLanguage === "de"
-                      ? "🇩🇪"
                       : activeLanguage === "bg"
                       ? "🇧🇬"
                       : "🇮🇹"}
@@ -418,12 +346,6 @@ export default function Navbar() {
                   <span style={{ lineHeight: 1, whiteSpace: "nowrap" }}>
                     {(activeLanguage === "en"
                       ? t("language.codeEn")
-                      : activeLanguage === "es"
-                      ? t("language.codeEs")
-                      : activeLanguage === "fr"
-                      ? t("language.codeFr")
-                      : activeLanguage === "de"
-                      ? t("language.codeDe")
                       : activeLanguage === "bg"
                       ? t("language.codeBg")
                       : t("language.codeIt")
@@ -482,60 +404,6 @@ export default function Navbar() {
                   }}
                 >
                   {formatLanguageLabel(t("language.en"))}
-                </button>
-
-                <button
-                  onClick={() => {
-                    i18n.changeLanguage("es");
-                    setLanguageOpen(false);
-                  }}
-                  style={{
-                    width: "100%",
-                    background: "transparent",
-                    border: "none",
-                    color: "#fff",
-                    padding: "12px",
-                    textAlign: "left",
-                    cursor: "pointer",
-                  }}
-                >
-                  {formatLanguageLabel(t("language.es"))}
-                </button>
-
-                <button
-                  onClick={() => {
-                    i18n.changeLanguage("fr");
-                    setLanguageOpen(false);
-                  }}
-                  style={{
-                    width: "100%",
-                    background: "transparent",
-                    border: "none",
-                    color: "#fff",
-                    padding: "12px",
-                    textAlign: "left",
-                    cursor: "pointer",
-                  }}
-                >
-                  {formatLanguageLabel(t("language.fr"))}
-                </button>
-
-                <button
-                  onClick={() => {
-                    i18n.changeLanguage("de");
-                    setLanguageOpen(false);
-                  }}
-                  style={{
-                    width: "100%",
-                    background: "transparent",
-                    border: "none",
-                    color: "#fff",
-                    padding: "12px",
-                    textAlign: "left",
-                    cursor: "pointer",
-                  }}
-                >
-                  {formatLanguageLabel(t("language.de"))}
                 </button>
 
                 <button

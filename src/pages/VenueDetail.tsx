@@ -66,7 +66,7 @@ const REVIEWS_RESET_AT = "2026-04-12T00:00:00.000Z";
 export default function VenueDetail() {
   const { id } = useParams();
   const { isAdmin, user } = useUser();
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const [locale, setLocale] = useState<Locale | null>(null);
   const [form, setForm] = useState<any>(null);
@@ -719,8 +719,8 @@ export default function VenueDetail() {
           <h2 className="section-title" style={sectionTitleStyle}>{tr("Valutazioni", "Ratings", "Оценки")}</h2>
           <div className="grid-wrapper" style={{ gap: 20, marginTop: 32 }}>
             {[
-              { label: "Qualità Drink", value: locale.qualita_drink },
-              { label: "Competenza Staff", value: locale.competenza_staff },
+              { label: t("venueDetail.ratings.qualityDrink", { defaultValue: tr("Qualità Drink", "Drink Quality", "Качество на напитките") }), value: locale.qualita_drink },
+              { label: t("venueDetail.ratings.staffCompetence", { defaultValue: tr("Competenza Staff", "Staff Competence", "Компетентност на персонала") }), value: locale.competenza_staff },
               { label: "Atmosfera", value: locale.atmosfera },
               { label: "Qualità/Prezzo", value: locale.qualita_prezzo },
             ].map((item) => (
@@ -822,7 +822,7 @@ export default function VenueDetail() {
             {/* BARRE DISTRIBUZIONE */}
             {reviewAverage > 0 && (
               <div>
-                <p className="rvb-section-title">Distribuzione voti</p>
+                <p className="rvb-section-title">{t("venueDetail.reviews.voteDistribution", { defaultValue: tr("Distribuzione voti", "Vote distribution", "Разпределение на оценките") })}</p>
                 <div style={{ display: "grid", gap: 4 }}>
                   {reviewDistribution.map((row) => {
                     const width = maxDistributionCount > 0 ? (row.count / maxDistributionCount) * 100 : 0;

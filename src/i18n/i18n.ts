@@ -3,39 +3,21 @@ import { initReactI18next } from "react-i18next";
 
 import it from "./locales/it/translation.json";
 import en from "./locales/en/translation.json";
-import es from "./locales/es/translation.json";
-import fr from "./locales/fr/translation.json";
-import de from "./locales/de/translation.json";
 import bg from "./locales/bg/translation.json";
 import itNavbar from "../locales/it/navbar.json";
 import enNavbar from "../locales/en/navbar.json";
-import esNavbar from "../locales/es/navbar.json";
-import frNavbar from "../locales/fr/navbar.json";
-import deNavbar from "../locales/de/navbar.json";
 import bgNavbar from "../locales/bg/navbar.json";
 import itHome from "../locales/it/home.json";
 import enHome from "../locales/en/home.json";
-import esHome from "../locales/es/home.json";
-import frHome from "../locales/fr/home.json";
-import deHome from "../locales/de/home.json";
 import bgHome from "../locales/bg/home.json";
 import itCommunity from "../locales/it/community.json";
 import enCommunity from "../locales/en/community.json";
-import esCommunity from "../locales/es/community.json";
-import frCommunity from "../locales/fr/community.json";
-import deCommunity from "../locales/de/community.json";
 import bgCommunity from "../locales/bg/community.json";
 import itDrink from "../locales/it/drink.json";
 import enDrink from "../locales/en/drink.json";
-import esDrink from "../locales/es/drink.json";
-import frDrink from "../locales/fr/drink.json";
-import deDrink from "../locales/de/drink.json";
 import bgDrink from "../locales/bg/drink.json";
 import itCommon from "../locales/it/common.json";
 import enCommon from "../locales/en/common.json";
-import esCommon from "../locales/es/common.json";
-import frCommon from "../locales/fr/common.json";
-import deCommon from "../locales/de/common.json";
 import bgCommon from "../locales/bg/common.json";
 
 const LANGUAGE_STORAGE_KEY = "drinkwise-language";
@@ -91,30 +73,6 @@ i18n.use(initReactI18next).init({
       community: enCommunity,
       drink: enDrink,
       common: enCommon,
-    },
-    es: {
-      translation: es,
-      navbar: esNavbar,
-      home: esHome,
-      community: esCommunity,
-      drink: esDrink,
-      common: esCommon,
-    },
-    fr: {
-      translation: fr,
-      navbar: frNavbar,
-      home: frHome,
-      community: frCommunity,
-      drink: frDrink,
-      common: frCommon,
-    },
-    de: {
-      translation: de,
-      navbar: deNavbar,
-      home: deHome,
-      community: deCommunity,
-      drink: deDrink,
-      common: deCommon,
     },
     bg: {
       translation: bg,
