@@ -60,6 +60,7 @@ export default function Navbar() {
     >
       {/* BLOCCO SINISTRO */}
       <div
+        className="navbar-brand-block"
         style={{
           display: "flex",
           alignItems: "center",
@@ -81,7 +82,7 @@ export default function Navbar() {
         <img
           src="/logo.png"
           alt="Lo Zio del Rum logo"
-          className="logo"
+          className="logo navbar-logo"
           style={{
             height: 76,
             width: 76,
@@ -90,6 +91,7 @@ export default function Navbar() {
         />
 
         <div
+          className="navbar-brand-text"
           style={{
             display: "flex",
             flexDirection: "column",
@@ -263,111 +265,126 @@ export default function Navbar() {
         )}
       </div>
 
-      {/* BANDIERA MOBILE */}
       <div
-        className="mobile-language-selector"
+        className="mobile-nav-controls"
         style={{
-          position: "relative",
           display: "none",
           marginLeft: "auto",
-          marginRight: "12px",
+          alignItems: "center",
+          gap: "6px",
         }}
       >
-        <button
-          onClick={() => setLanguageOpen(!languageOpen)}
+        {/* BANDIERA MOBILE */}
+        <div
+          className="mobile-language-selector"
           style={{
-            background: "transparent",
-            border: "none",
-            color: "#fff",
-            cursor: "pointer",
-            fontWeight: "bold",
-            fontSize: "14px",
-            display: "flex",
-            alignItems: "center",
-            gap: "4px",
-            lineHeight: 1,
-            whiteSpace: "nowrap",
+            position: "relative",
+            display: "none",
+            marginLeft: 0,
+            marginRight: 0,
           }}
         >
-          <span style={{ fontSize: "14px", lineHeight: 1 }}>
-            {i18n.language === "it" ? "🇮🇹" : "🇬🇧"}
-          </span>
-          <span style={{ lineHeight: 1, whiteSpace: "nowrap" }}>
-            {i18n.language === "it" ? "IT" : "EN"}
-          </span>
-        </button>
-
-        {languageOpen && (
-          <div
-            style={{
-              position: "absolute",
-              top: "42px",
-              right: 0,
-              background: "#111",
-              border: "1px solid #333",
-              borderRadius: "10px",
-              overflow: "hidden",
-              minWidth: "110px",
-              zIndex: 9999,
-            }}
-          >
+          <div className="mobile-language-trigger-wrapper">
             <button
-              onClick={() => {
-                i18n.changeLanguage("it");
-                setLanguageOpen(false);
-              }}
+              className="mobile-language-trigger"
+              onClick={() => setLanguageOpen(!languageOpen)}
               style={{
-                width: "100%",
                 background: "transparent",
                 border: "none",
                 color: "#fff",
-                padding: "12px",
-                textAlign: "left",
                 cursor: "pointer",
+                fontWeight: "bold",
+                fontSize: "14px",
+                display: "flex",
+                alignItems: "center",
+                gap: "4px",
+                lineHeight: 1,
+                whiteSpace: "nowrap",
               }}
             >
-              🇮🇹 IT
-            </button>
-
-            <button
-              onClick={() => {
-                i18n.changeLanguage("en");
-                setLanguageOpen(false);
-              }}
-              style={{
-                width: "100%",
-                background: "transparent",
-                border: "none",
-                color: "#fff",
-                padding: "12px",
-                textAlign: "left",
-                cursor: "pointer",
-              }}
-            >
-              🇬🇧 EN
+              <span style={{ fontSize: "14px", lineHeight: 1 }}>
+                {i18n.language === "it" ? "🇮🇹" : "🇬🇧"}
+              </span>
+              <span style={{ lineHeight: 1, whiteSpace: "nowrap" }}>
+                {i18n.language === "it" ? "IT" : "EN"}
+              </span>
             </button>
           </div>
-        )}
-      </div>
 
-      {/* MENU HAMBURGER MOBILE */}
-      <button
-        className="navbar-hamburger-mobile"
-        onClick={() => setMenuOpen((prev) => !prev)}
-        aria-label="Apri menu"
-        style={{
-          background: "none",
-          border: "none",
-          color: "#f5a623",
-          fontSize: "28px",
-          cursor: "pointer",
-          padding: 0,
-          marginLeft: 10,
-          display: "none",
-        }}
-      >
-        ☰
-      </button>
+          {languageOpen && (
+            <div
+              style={{
+                position: "absolute",
+                top: "42px",
+                right: 0,
+                background: "#111",
+                border: "1px solid #333",
+                borderRadius: "10px",
+                overflow: "hidden",
+                minWidth: "110px",
+                zIndex: 9999,
+              }}
+            >
+              <button
+                onClick={() => {
+                  i18n.changeLanguage("it");
+                  setLanguageOpen(false);
+                }}
+                style={{
+                  width: "100%",
+                  background: "transparent",
+                  border: "none",
+                  color: "#fff",
+                  padding: "12px",
+                  textAlign: "left",
+                  cursor: "pointer",
+                }}
+              >
+                🇮🇹 IT
+              </button>
+
+              <button
+                onClick={() => {
+                  i18n.changeLanguage("en");
+                  setLanguageOpen(false);
+                }}
+                style={{
+                  width: "100%",
+                  background: "transparent",
+                  border: "none",
+                  color: "#fff",
+                  padding: "12px",
+                  textAlign: "left",
+                  cursor: "pointer",
+                }}
+              >
+                🇬🇧 EN
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* MENU HAMBURGER MOBILE */}
+        <button
+          className="navbar-hamburger-mobile"
+          onClick={() => setMenuOpen((prev) => !prev)}
+          aria-label="Apri menu"
+          style={{
+            background: "none",
+            border: "none",
+            color: "#f5a623",
+            fontSize: "26px",
+            cursor: "pointer",
+            padding: "6px 8px",
+            marginLeft: 2,
+            lineHeight: 1,
+            borderRadius: "8px",
+            display: "none",
+          }}
+        >
+          ☰
+        </button>
+      </div>
 
       {/* OVERLAY */}
       {menuOpen && (
@@ -533,16 +550,88 @@ export default function Navbar() {
         }
 
         @media (max-width: 900px) {
+          .nav-container {
+            padding: 4px 12px !important;
+            min-height: 32px !important;
+          }
+
+          .navbar-brand-block {
+            gap: 6px !important;
+            margin-right: 0 !important;
+            transition: all 0.2s ease;
+          }
+
+          .navbar-logo {
+            height: 58px !important;
+            width: 58px !important;
+            transition: all 0.2s ease;
+          }
+
+          .navbar-brand-text {
+            line-height: 1.04 !important;
+            transition: all 0.2s ease;
+          }
+
+          .navbar-brand-text span:nth-child(1) {
+            font-size: 20px !important;
+          }
+
+          .navbar-brand-text span:nth-child(2) {
+            font-size: 10px !important;
+          }
+
+          .navbar-brand-text span:nth-child(3) {
+            font-size: 13px !important;
+          }
+
           .navbar-links-desktop {
             display: none !important;
           }
 
+          .mobile-nav-controls {
+            display: flex !important;
+            margin-left: auto !important;
+            align-items: center !important;
+            gap: 6px !important;
+            transition: all 0.2s ease;
+          }
+
           .navbar-hamburger-mobile {
-            display: block !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            min-width: 36px !important;
+            min-height: 36px !important;
+            padding: 6px 8px !important;
+            margin-left: 0 !important;
+            transition: all 0.2s ease;
           }
 
           .mobile-language-selector {
             display: flex !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+            align-items: center !important;
+            transition: all 0.2s ease;
+          }
+
+          .mobile-language-trigger-wrapper {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+          }
+
+          .mobile-language-trigger {
+            display: flex !important;
+            align-items: center !important;
+            gap: 4px !important;
+            font-size: 14px !important;
+            line-height: 1 !important;
+            white-space: nowrap !important;
+            padding: 6px 4px !important;
+            border-radius: 8px;
+            transition: all 0.2s ease;
           }
 
           .mobile-menu {
@@ -553,6 +642,10 @@ export default function Navbar() {
         @media (min-width: 901px) {
           .navbar-links-desktop {
             display: flex !important;
+          }
+
+          .mobile-nav-controls {
+            display: none !important;
           }
 
           .navbar-hamburger-mobile {
