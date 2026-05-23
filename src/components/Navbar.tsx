@@ -394,7 +394,9 @@ export default function Navbar() {
           style={{
             position: "fixed",
             inset: 0,
-            background: "rgba(0,0,0,0.4)",
+            background: "rgba(0,0,0,0.36)",
+            backdropFilter: "blur(3px)",
+            WebkitBackdropFilter: "blur(3px)",
             zIndex: 1090,
           }}
         />
@@ -410,99 +412,139 @@ export default function Navbar() {
           width: "80vw",
           maxWidth: "300px",
           height: "calc(100vh - 70px)",
-          background: "rgba(0,0,0,0.97)",
+          background: "rgba(10,10,12,0.96)",
           display: "none",
           flexDirection: "column",
-          padding: "18px",
+          padding: "16px 14px",
           zIndex: 1100,
-          transition: "transform 0.3s cubic-bezier(.4,0,.2,1)",
+          transition: "transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease",
           overflowY: "auto",
           overflowX: "hidden",
-          borderLeft: "1px solid #333",
+          borderLeft: "1px solid #2f2f36",
+          borderTopLeftRadius: "16px",
+          borderBottomLeftRadius: "16px",
+          boxShadow: "-14px 0 34px rgba(0,0,0,0.42)",
+          opacity: menuOpen ? 1 : 0,
+          pointerEvents: menuOpen ? "auto" : "none",
           transform: menuOpen
-            ? "translateX(0)"
-            : "translateX(100%)",
+            ? "translateX(0) translateY(0)"
+            : "translateX(100%) translateY(8px)",
         }}
       >
         <Link
+          className="mobile-menu-item"
           to="/home"
           onClick={closeMobileMenu}
           style={{
             ...linkStyle("/home"),
-            padding: "12px 0",
+            padding: "13px 10px",
+            borderRadius: "10px",
+            marginBottom: "4px",
             borderBottom: "1px solid #333",
+            transition: "all 0.2s ease",
+            WebkitTapHighlightColor: "transparent",
           }}
         >
           {t("home")}
         </Link>
 
         <Link
+          className="mobile-menu-item"
           to="/mappa"
           onClick={closeMobileMenu}
           style={{
             ...linkStyle("/mappa"),
-            padding: "12px 0",
+            padding: "13px 10px",
+            borderRadius: "10px",
+            marginBottom: "4px",
             borderBottom: "1px solid #333",
+            transition: "all 0.2s ease",
+            WebkitTapHighlightColor: "transparent",
           }}
         >
           {t("map")}
         </Link>
 
         <Link
+          className="mobile-menu-item"
           to="/drink"
           onClick={closeMobileMenu}
           style={{
             ...linkStyle("/drink"),
-            padding: "12px 0",
+            padding: "13px 10px",
+            borderRadius: "10px",
+            marginBottom: "4px",
             borderBottom: "1px solid #333",
+            transition: "all 0.2s ease",
+            WebkitTapHighlightColor: "transparent",
           }}
         >
           {t("drink")}
         </Link>
 
         <Link
+          className="mobile-menu-item"
           to="/vini"
           onClick={closeMobileMenu}
           style={{
             ...linkStyle("/vini"),
-            padding: "12px 0",
+            padding: "13px 10px",
+            borderRadius: "10px",
+            marginBottom: "4px",
             borderBottom: "1px solid #333",
+            transition: "all 0.2s ease",
+            WebkitTapHighlightColor: "transparent",
           }}
         >
           {t("wines")}
         </Link>
 
         <Link
+          className="mobile-menu-item"
           to="/magazine"
           onClick={closeMobileMenu}
           style={{
             ...linkStyle("/magazine"),
-            padding: "12px 0",
+            padding: "13px 10px",
+            borderRadius: "10px",
+            marginBottom: "4px",
             borderBottom: "1px solid #333",
+            transition: "all 0.2s ease",
+            WebkitTapHighlightColor: "transparent",
           }}
         >
           {t("magazine")}
         </Link>
 
         <Link
+          className="mobile-menu-item"
           to="/community"
           onClick={closeMobileMenu}
           style={{
             ...linkStyle("/community"),
-            padding: "12px 0",
+            padding: "13px 10px",
+            borderRadius: "10px",
+            marginBottom: "4px",
             borderBottom: "1px solid #333",
+            transition: "all 0.2s ease",
+            WebkitTapHighlightColor: "transparent",
           }}
         >
           {t("community")}
         </Link>
 
         <Link
+          className="mobile-menu-item"
           to="/crea"
           onClick={closeMobileMenu}
           style={{
             ...linkStyle("/crea"),
-            padding: "12px 0",
+            padding: "13px 10px",
+            borderRadius: "10px",
+            marginBottom: "4px",
             borderBottom: "1px solid #333",
+            transition: "all 0.2s ease",
+            WebkitTapHighlightColor: "transparent",
           }}
         >
           {t("create")}
@@ -510,12 +552,17 @@ export default function Navbar() {
 
         {isAdmin && (
           <Link
+            className="mobile-menu-item"
             to="/admin"
             onClick={closeMobileMenu}
             style={{
               ...linkStyle("/admin"),
-              padding: "12px 0",
+              padding: "13px 10px",
+              borderRadius: "10px",
+              marginBottom: "4px",
               borderBottom: "1px solid #333",
+              transition: "all 0.2s ease",
+              WebkitTapHighlightColor: "transparent",
             }}
           >
             Pannello di Controllo
@@ -524,15 +571,17 @@ export default function Navbar() {
 
         {user && (
           <button
+            className="mobile-menu-item mobile-logout-btn"
             onClick={handleLogout}
             style={{
-              marginTop: "10px",
+              marginTop: "12px",
               background: "#222",
               border: "1px solid #444",
               color: "#fff",
-              borderRadius: "8px",
-              padding: "10px 12px",
+              borderRadius: "10px",
+              padding: "12px 12px",
               cursor: "pointer",
+              transition: "all 0.2s ease",
             }}
           >
             Logout
@@ -636,6 +685,17 @@ export default function Navbar() {
 
           .mobile-menu {
             display: flex !important;
+          }
+
+          .mobile-menu-item:hover,
+          .mobile-menu-item:active {
+            background: rgba(245, 166, 35, 0.12);
+          }
+
+          .mobile-logout-btn:hover,
+          .mobile-logout-btn:active {
+            border-color: #5d5d69;
+            background: #2a2a2d;
           }
         }
 
