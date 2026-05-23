@@ -2,12 +2,24 @@ import "../App.css";
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
+import { useTranslation } from "react-i18next";
 
 export default function CategoryVini() {
   const { categoria } = useParams();
   const navigate = useNavigate();
+  const { t } = useTranslation("drink");
   const [vini, setVini] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
+  function getCategoryTitle(slug?: string) {
+    const normalized = String(slug || "").toLowerCase();
+    if (normalized === "rossi") return t("drink.wines.categories.red");
+    if (normalized === "bianchi") return t("drink.wines.categories.white");
+    if (normalized === "rosati") return t("drink.wines.categories.rose");
+    if (normalized === "bollicine") return t("drink.wines.categories.sparkling");
+    if (normalized === "altri-vini") return t("drink.wines.categories.otherWines");
+    return t("drink.wines.title");
+  }
 
   useEffect(() => {
     async function load() {
@@ -45,26 +57,26 @@ export default function CategoryVini() {
     load();
   }, [categoria]);
 
-  if (loading) return <div className="page fade-in">Caricamento...</div>;
+  if (loading) return <div className="page fade-in">{t("drink.states.loading")}</div>;
 
   return (
     <div className="fade-in drink-page-white vini-preview-page">
       <section className="drink-section-white">
         <div className="drink-top-bar">
-          <button className="drink-back-btn" onClick={() => navigate(-1)} aria-label="Torna indietro">
+          <button className="drink-back-btn" onClick={() => navigate(-1)} aria-label={t("drink.cta.backAria") }>
             ←
           </button>
-          <h1 className="drink-page-heading">{categoria ? categoria.charAt(0).toUpperCase() + categoria.slice(1) : "Vini"}</h1>
+          <h1 className="drink-page-heading">{getCategoryTitle(categoria)}</h1>
         </div>
         <div className="drink-section-header" style={{ justifyContent: 'flex-end', marginBottom: 18 }}>
-          <h2 className="drink-section-title" style={{ marginRight: 'auto' }}>Vini</h2>
+          <h2 className="drink-section-title" style={{ marginRight: 'auto' }}>{t("drink.wines.title")}</h2>
           <button className="btn-primary btn-small" style={{ marginLeft: 'auto' }} onClick={() => navigate('/vini')}>
-            Vedi tutti
+            {t("drink.cta.seeAll")}
           </button>
         </div>
         <div className="drink-grid-uniform vini-grid">
           {vini.length === 0 ? (
-            <p style={{ color: "#cbd5e1", marginTop: 8 }}>Nessun vino disponibile in questa categoria.</p>
+            <p style={{ color: "#cbd5e1", marginTop: 8 }}>{t("drink.wines.states.emptyCategory")}</p>
           ) : (
             vini.map((item) => {
               const imgUrl = item.immagine || item.immagine_url || item.image || item.img || item.foto || null;
@@ -82,7 +94,7 @@ export default function CategoryVini() {
                       onError={e => { e.currentTarget.style.display = 'none'; }}
                     />
                   ) : (
-                    <div className="no-img-placeholder">Immagine in arrivo</div>
+                    <div className="no-img-placeholder">{t("drink.states.imageComingSoon")}</div>
                   )}
                   <div className="drink-card-caption">
                     <h3 translate="no">{item.nome}</h3>

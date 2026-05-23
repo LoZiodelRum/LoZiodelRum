@@ -2,55 +2,56 @@ import "../App.css";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
+import { useTranslation } from "react-i18next";
 
 type VinoRecord = Record<string, any>;
 
-const baseFields: Array<{ key: string; label: string }> = [
-  { key: "nome", label: "Nome" },
-  { key: "annata", label: "Annata" },
-  { key: "cantina", label: "Cantina" },
-  { key: "vitigno", label: "Vitigno" },
-  { key: "grado_alcolico", label: "Grado alcolico" },
-  { key: "zona", label: "Zona" },
-  { key: "denominazione", label: "Denominazione" },
-  { key: "categoria", label: "Categoria" },
-  { key: "abbinamenti", label: "Abbinamenti" },
-  { key: "temperatura_servizio", label: "Temperatura servizio" },
-  { key: "note_personali", label: "Note personali" },
-  { key: "valutazione", label: "Valutazione" },
+const baseFields: Array<{ key: string; labelKey: string }> = [
+  { key: "nome", labelKey: "drink.wines.detail.fields.name" },
+  { key: "annata", labelKey: "drink.wines.detail.fields.vintage" },
+  { key: "cantina", labelKey: "drink.wines.detail.fields.winery" },
+  { key: "vitigno", labelKey: "drink.wines.detail.fields.grape" },
+  { key: "grado_alcolico", labelKey: "drink.wines.detail.fields.alcoholContent" },
+  { key: "zona", labelKey: "drink.wines.detail.fields.area" },
+  { key: "denominazione", labelKey: "drink.wines.detail.fields.denomination" },
+  { key: "categoria", labelKey: "drink.wines.detail.fields.category" },
+  { key: "abbinamenti", labelKey: "drink.wines.detail.fields.pairings" },
+  { key: "temperatura_servizio", labelKey: "drink.wines.detail.fields.serviceTemperature" },
+  { key: "note_personali", labelKey: "drink.wines.detail.fields.personalNotes" },
+  { key: "valutazione", labelKey: "drink.wines.detail.fields.rating" },
 ];
 
-const visivoFields: Array<{ key: string; label: string }> = [
-  { key: "limpidezza", label: "Limpidezza" },
-  { key: "colore", label: "Colore" },
-  { key: "consistenza", label: "Consistenza" },
-  { key: "effervescenza", label: "Effervescenza" },
+const visivoFields: Array<{ key: string; labelKey: string }> = [
+  { key: "limpidezza", labelKey: "drink.wines.detail.fields.clarity" },
+  { key: "colore", labelKey: "drink.wines.detail.fields.color" },
+  { key: "consistenza", labelKey: "drink.wines.detail.fields.consistency" },
+  { key: "effervescenza", labelKey: "drink.wines.detail.fields.effervescence" },
 ];
 
-const olfattivoFields: Array<{ key: string; label: string }> = [
-  { key: "intensita_olfattiva", label: "Intensita olfattiva" },
-  { key: "complessita", label: "Complessita" },
-  { key: "qualita_olfattiva", label: "Qualita olfattiva" },
-  { key: "descrizione_olfattiva", label: "Descrizione olfattiva" },
+const olfattivoFields: Array<{ key: string; labelKey: string }> = [
+  { key: "intensita_olfattiva", labelKey: "drink.wines.detail.fields.olfactoryIntensity" },
+  { key: "complessita", labelKey: "drink.wines.detail.fields.complexity" },
+  { key: "qualita_olfattiva", labelKey: "drink.wines.detail.fields.olfactoryQuality" },
+  { key: "descrizione_olfattiva", labelKey: "drink.wines.detail.fields.olfactoryDescription" },
 ];
 
-const gustoOlfattivoFields: Array<{ key: string; label: string }> = [
-  { key: "zuccheri", label: "Zuccheri" },
-  { key: "alcoli", label: "Alcoli" },
-  { key: "polialcoli", label: "Polialcoli" },
-  { key: "acidita", label: "Acidita" },
-  { key: "tannini", label: "Tannini" },
-  { key: "sali_minerali", label: "Sali minerali" },
+const gustoOlfattivoFields: Array<{ key: string; labelKey: string }> = [
+  { key: "zuccheri", labelKey: "drink.wines.detail.fields.sugars" },
+  { key: "alcoli", labelKey: "drink.wines.detail.fields.alcohols" },
+  { key: "polialcoli", labelKey: "drink.wines.detail.fields.polyalcohols" },
+  { key: "acidita", labelKey: "drink.wines.detail.fields.acidity" },
+  { key: "tannini", labelKey: "drink.wines.detail.fields.tannins" },
+  { key: "sali_minerali", labelKey: "drink.wines.detail.fields.mineralSalts" },
 ];
 
-const finaleFields: Array<{ key: string; label: string }> = [
-  { key: "equilibrio", label: "Equilibrio" },
-  { key: "intensita_gusto", label: "Intensita gusto" },
-  { key: "persistenza", label: "Persistenza" },
-  { key: "qualita_gusto", label: "Qualita gusto" },
-  { key: "corpo", label: "Corpo" },
-  { key: "stato_evolutivo", label: "Stato evolutivo" },
-  { key: "armonia", label: "Armonia" },
+const finaleFields: Array<{ key: string; labelKey: string }> = [
+  { key: "equilibrio", labelKey: "drink.wines.detail.fields.balance" },
+  { key: "intensita_gusto", labelKey: "drink.wines.detail.fields.tasteIntensity" },
+  { key: "persistenza", labelKey: "drink.wines.detail.fields.persistence" },
+  { key: "qualita_gusto", labelKey: "drink.wines.detail.fields.tasteQuality" },
+  { key: "corpo", labelKey: "drink.wines.detail.fields.body" },
+  { key: "stato_evolutivo", labelKey: "drink.wines.detail.fields.evolutionState" },
+  { key: "armonia", labelKey: "drink.wines.detail.fields.harmony" },
 ];
 
 function normalizeValue(raw: unknown): string {
@@ -78,6 +79,7 @@ function normalizeValue(raw: unknown): string {
 export default function VinoDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
+  const { t } = useTranslation("drink");
 
   const [vino, setVino] = useState<VinoRecord | null>(null);
   const [loading, setLoading] = useState(true);
@@ -126,14 +128,14 @@ export default function VinoDetail() {
     };
   }, []);
 
-  function renderSection(title: string, fields: Array<{ key: string; label: string }>) {
+  function renderSection(title: string, fields: Array<{ key: string; labelKey: string }>) {
     return (
       <section className="vino-detail-section" style={sectionStyle}>
         <h2 className="vino-detail-section-title" style={sectionTitleStyle}>{title}</h2>
         <div className="vino-detail-grid" style={gridStyle}>
           {fields.map((field) => (
             <article key={field.key} className="vino-detail-card" style={cardStyle}>
-              <h3 className="vino-detail-label" style={labelStyle}>{field.label}</h3>
+              <h3 className="vino-detail-label" style={labelStyle}>{t(field.labelKey)}</h3>
               <p className="vino-detail-value" style={valueStyle}>{normalizeValue(vino?.[field.key])}</p>
             </article>
           ))}
@@ -143,17 +145,17 @@ export default function VinoDetail() {
   }
 
   if (loading) {
-    return <div className="page fade-in">Caricamento scheda vino...</div>;
+    return <div className="page fade-in">{t("drink.wines.states.loadingDetail")}</div>;
   }
 
   if (!vino) {
     return (
       <div className="page fade-in" style={{ maxWidth: 1100, margin: "0 auto", padding: 24 }}>
         <button className="btn-primary" onClick={() => navigate("/vini")} style={{ marginBottom: 20 }}>
-          Torna ai vini
+          {t("drink.wines.cta.backToWines")}
         </button>
         <div style={notFoundStyle}>
-          Scheda vino non trovata.
+          {t("drink.wines.states.notFound")}
         </div>
       </div>
     );
@@ -241,32 +243,32 @@ export default function VinoDetail() {
         }
       `}</style>
       <button className="btn-primary vino-detail-back-btn" onClick={() => navigate("/vini")} style={{ marginBottom: 16 }}>
-        Torna ai vini
+        {t("drink.wines.cta.backToWines")}
       </button>
 
       <section className="vino-detail-hero" style={heroStyle}>
         {imageUrl ? (
           <img className="vino-detail-hero-image" src={imageUrl} alt={normalizeValue(vino?.nome)} style={heroImageStyleForWine} />
         ) : (
-          <div className="vino-detail-hero-placeholder" style={heroImagePlaceholderStyle}>NO IMG</div>
+          <div className="vino-detail-hero-placeholder" style={heroImagePlaceholderStyle}>{t("drink.states.noImage")}</div>
         )}
 
         <div>
           <h1 className="vino-detail-title" style={heroTitleStyle}>{normalizeValue(vino?.nome)}</h1>
-          <p className="vino-detail-sub" style={heroSubStyle}>Scheda completa AIS</p>
+          <p className="vino-detail-sub" style={heroSubStyle}>{t("drink.wines.detail.subtitle")}</p>
           <div className="vino-detail-meta" style={heroMetaStyle}>
-            <span className="vino-detail-badge" style={badgeStyle}>Categoria: {normalizeValue(vino?.categoria)}</span>
-            <span className="vino-detail-badge" style={badgeStyle}>Annata: {normalizeValue(vino?.annata)}</span>
-            <span className="vino-detail-badge" style={badgeStyle}>Cantina: {normalizeValue(vino?.cantina)}</span>
+            <span className="vino-detail-badge" style={badgeStyle}>{t("drink.wines.detail.badges.category")} {normalizeValue(vino?.categoria)}</span>
+            <span className="vino-detail-badge" style={badgeStyle}>{t("drink.wines.detail.badges.vintage")} {normalizeValue(vino?.annata)}</span>
+            <span className="vino-detail-badge" style={badgeStyle}>{t("drink.wines.detail.badges.winery")} {normalizeValue(vino?.cantina)}</span>
           </div>
         </div>
       </section>
 
-      {renderSection("Dati Base", baseFields)}
-      {renderSection("Esame Visivo (AIS)", visivoFields)}
-      {renderSection("Esame Olfattivo (AIS)", olfattivoFields)}
-      {renderSection("Esame Gusto-Olfattivo (AIS)", gustoOlfattivoFields)}
-      {renderSection("Struttura, Evoluzione e Armonia (AIS)", finaleFields)}
+      {renderSection(t("drink.wines.detail.sections.baseData"), baseFields)}
+      {renderSection(t("drink.wines.detail.sections.visualExam"), visivoFields)}
+      {renderSection(t("drink.wines.detail.sections.olfactoryExam"), olfattivoFields)}
+      {renderSection(t("drink.wines.detail.sections.tasteOlfactoryExam"), gustoOlfattivoFields)}
+      {renderSection(t("drink.wines.detail.sections.structureEvolutionHarmony"), finaleFields)}
     </div>
   );
 }

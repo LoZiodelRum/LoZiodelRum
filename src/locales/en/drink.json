@@ -31,14 +31,17 @@
     },
     "cta": {
       "seeAll": "See all",
-      "back": "← Go back"
+      "back": "← Go back",
+      "backAria": "Go back"
     },
     "states": {
       "loading": "Loading...",
       "noResults": "No data",
       "noImage": "NO IMG",
       "notFound": "Drink not found",
-      "emptyDetails": "No details available"
+      "emptyDetails": "No details available",
+      "comingSoon": "Coming soon",
+      "imageComingSoon": "Image coming soon"
     },
     "detail": {
       "brand": "Brand:",
@@ -46,13 +49,116 @@
       "abv": "ABV:",
       "description": "Description",
       "recipe": "Recipe:",
-      "relatedTitle": "Related drinks"
+      "relatedTitle": "Related drinks",
+      "fields": {
+        "dynamic": "{{field}}:",
+        "secondaryIngredients": "Secondary ingredients:",
+        "technique": "Technique:",
+        "method": "Method:",
+        "prepTime": "Prep time:",
+        "difficulty": "Difficulty:",
+        "serviceTemperature": "Service temperature:",
+        "distillery": "Distillery:",
+        "aging": "Aging:",
+        "caskType": "Cask type:",
+        "visualExam": "Visual exam:",
+        "olfactoryExam": "Olfactory exam:",
+        "gustatoryExam": "Gustatory exam:",
+        "aromaticNotes": "Aromatic notes:",
+        "subcategory": "Subcategory:",
+        "alcoholBase": "Alcohol base:"
+      }
+    },
+    "preparation": {
+      "label": "Preparation:"
+    },
+    "garnish": {
+      "label": "Garnish:"
+    },
+    "glass": {
+      "label": "Glass:"
+    },
+    "origin": {
+      "label": "Origin:"
+    },
+    "tastingNotes": {
+      "label": "Tasting notes:"
     },
     "ingredients": {
       "label": "Ingredients:"
     },
     "fallbacks": {
       "distillatoName": "Distillate"
+    },
+    "wines": {
+      "title": "Wines",
+      "fallbackName": "Wine",
+      "fallbackCategory": "Other",
+      "categories": {
+        "red": "Red",
+        "white": "White",
+        "rose": "Rose",
+        "sparkling": "Sparkling",
+        "otherWines": "Other wines"
+      },
+      "cta": {
+        "backToWines": "Back to wines"
+      },
+      "states": {
+        "emptyCategory": "No wines available in this category.",
+        "loadingDetail": "Loading wine detail...",
+        "notFound": "Wine detail not found."
+      },
+      "detail": {
+        "subtitle": "Full AIS profile",
+        "badges": {
+          "category": "Category:",
+          "vintage": "Vintage:",
+          "winery": "Winery:"
+        },
+        "sections": {
+          "baseData": "Base data",
+          "visualExam": "Visual exam (AIS)",
+          "olfactoryExam": "Olfactory exam (AIS)",
+          "tasteOlfactoryExam": "Taste-olfactory exam (AIS)",
+          "structureEvolutionHarmony": "Structure, evolution and harmony (AIS)"
+        },
+        "fields": {
+          "name": "Name",
+          "vintage": "Vintage",
+          "winery": "Winery",
+          "grape": "Grape",
+          "alcoholContent": "Alcohol content",
+          "area": "Area",
+          "denomination": "Denomination",
+          "category": "Category",
+          "pairings": "Pairings",
+          "serviceTemperature": "Service temperature",
+          "personalNotes": "Personal notes",
+          "rating": "Rating",
+          "clarity": "Clarity",
+          "color": "Color",
+          "consistency": "Consistency",
+          "effervescence": "Effervescence",
+          "olfactoryIntensity": "Olfactory intensity",
+          "complexity": "Complexity",
+          "olfactoryQuality": "Olfactory quality",
+          "olfactoryDescription": "Olfactory description",
+          "sugars": "Sugars",
+          "alcohols": "Alcohols",
+          "polyalcohols": "Polyalcohols",
+          "acidity": "Acidity",
+          "tannins": "Tannins",
+          "mineralSalts": "Mineral salts",
+          "balance": "Balance",
+          "tasteIntensity": "Taste intensity",
+          "persistence": "Persistence",
+          "tasteQuality": "Taste quality",
+          "body": "Body",
+          "evolutionState": "Evolution state",
+          "harmony": "Harmony"
+        }
+      }
     },
     "future": {
       "reviews": {
@@ -70,6 +176,14 @@
       "aiSuggestions": {
         "title": "AI suggestions",
         "empty": "No suggestions available"
+      },
+      "communityComments": {
+        "title": "Community comments",
+        "empty": "No comments available"
+      },
+      "bartenderSuggestions": {
+        "title": "Bartender suggestions",
+        "empty": "No bartender suggestions available"
       }
     }
   }

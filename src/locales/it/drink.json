@@ -31,14 +31,17 @@
     },
     "cta": {
       "seeAll": "Vedi tutti",
-      "back": "← Torna indietro"
+      "back": "← Torna indietro",
+      "backAria": "Torna indietro"
     },
     "states": {
       "loading": "Caricamento...",
       "noResults": "Nessun dato",
       "noImage": "NO IMG",
       "notFound": "Drink non trovato",
-      "emptyDetails": "Nessun dettaglio disponibile"
+      "emptyDetails": "Nessun dettaglio disponibile",
+      "comingSoon": "In arrivo",
+      "imageComingSoon": "Immagine in arrivo"
     },
     "detail": {
       "brand": "Marca:",
@@ -46,13 +49,116 @@
       "abv": "Gradazione:",
       "description": "Descrizione",
       "recipe": "Ricetta:",
-      "relatedTitle": "Drink correlati"
+      "relatedTitle": "Drink correlati",
+      "fields": {
+        "dynamic": "{{field}}:",
+        "secondaryIngredients": "Ingredienti secondari:",
+        "technique": "Tecnica:",
+        "method": "Metodo:",
+        "prepTime": "Tempo preparazione:",
+        "difficulty": "Difficolta:",
+        "serviceTemperature": "Temperatura servizio:",
+        "distillery": "Distilleria:",
+        "aging": "Invecchiamento:",
+        "caskType": "Tipo botte:",
+        "visualExam": "Esame visivo:",
+        "olfactoryExam": "Esame olfattivo:",
+        "gustatoryExam": "Esame gustativo:",
+        "aromaticNotes": "Note aromatiche:",
+        "subcategory": "Sottocategoria:",
+        "alcoholBase": "Base alcolica:"
+      }
+    },
+    "preparation": {
+      "label": "Preparazione:"
+    },
+    "garnish": {
+      "label": "Garnish:"
+    },
+    "glass": {
+      "label": "Bicchiere:"
+    },
+    "origin": {
+      "label": "Origine:"
+    },
+    "tastingNotes": {
+      "label": "Tasting notes:"
     },
     "ingredients": {
       "label": "Ingredienti:"
     },
     "fallbacks": {
       "distillatoName": "Distillato"
+    },
+    "wines": {
+      "title": "Vini",
+      "fallbackName": "Vino",
+      "fallbackCategory": "Altro",
+      "categories": {
+        "red": "Rossi",
+        "white": "Bianchi",
+        "rose": "Rosati",
+        "sparkling": "Bollicine",
+        "otherWines": "Altri vini"
+      },
+      "cta": {
+        "backToWines": "Torna ai vini"
+      },
+      "states": {
+        "emptyCategory": "Nessun vino disponibile in questa categoria.",
+        "loadingDetail": "Caricamento scheda vino...",
+        "notFound": "Scheda vino non trovata."
+      },
+      "detail": {
+        "subtitle": "Scheda completa AIS",
+        "badges": {
+          "category": "Categoria:",
+          "vintage": "Annata:",
+          "winery": "Cantina:"
+        },
+        "sections": {
+          "baseData": "Dati Base",
+          "visualExam": "Esame Visivo (AIS)",
+          "olfactoryExam": "Esame Olfattivo (AIS)",
+          "tasteOlfactoryExam": "Esame Gusto-Olfattivo (AIS)",
+          "structureEvolutionHarmony": "Struttura, Evoluzione e Armonia (AIS)"
+        },
+        "fields": {
+          "name": "Nome",
+          "vintage": "Annata",
+          "winery": "Cantina",
+          "grape": "Vitigno",
+          "alcoholContent": "Grado alcolico",
+          "area": "Zona",
+          "denomination": "Denominazione",
+          "category": "Categoria",
+          "pairings": "Abbinamenti",
+          "serviceTemperature": "Temperatura servizio",
+          "personalNotes": "Note personali",
+          "rating": "Valutazione",
+          "clarity": "Limpidezza",
+          "color": "Colore",
+          "consistency": "Consistenza",
+          "effervescence": "Effervescenza",
+          "olfactoryIntensity": "Intensita olfattiva",
+          "complexity": "Complessita",
+          "olfactoryQuality": "Qualita olfattiva",
+          "olfactoryDescription": "Descrizione olfattiva",
+          "sugars": "Zuccheri",
+          "alcohols": "Alcoli",
+          "polyalcohols": "Polialcoli",
+          "acidity": "Acidita",
+          "tannins": "Tannini",
+          "mineralSalts": "Sali minerali",
+          "balance": "Equilibrio",
+          "tasteIntensity": "Intensita gusto",
+          "persistence": "Persistenza",
+          "tasteQuality": "Qualita gusto",
+          "body": "Corpo",
+          "evolutionState": "Stato evolutivo",
+          "harmony": "Armonia"
+        }
+      }
     },
     "future": {
       "reviews": {
@@ -70,6 +176,14 @@
       "aiSuggestions": {
         "title": "Suggerimenti AI",
         "empty": "Nessun suggerimento disponibile"
+      },
+      "communityComments": {
+        "title": "Commenti community",
+        "empty": "Nessun commento disponibile"
+      },
+      "bartenderSuggestions": {
+        "title": "Suggerimenti bartender",
+        "empty": "Nessun suggerimento bartender disponibile"
       }
     }
   }

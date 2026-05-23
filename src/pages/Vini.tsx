@@ -3,6 +3,7 @@ import "../App.css";
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useNavigate, useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 type VinoCard = {
   id: string;
@@ -82,6 +83,7 @@ const mockVini = [
 ];
 
 export default function Vini() {
+  const { t } = useTranslation("drink");
   const [vini, setVini] = useState<VinoCard[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -101,9 +103,9 @@ export default function Vini() {
       const mapped = data
         .map((vino: any) => ({
           id: String(vino.id),
-          nome: vino.nome || vino.name || "Vino",
+          nome: vino.nome || vino.name || t("drink.wines.fallbackName"),
           immagine: vino.immagine ?? null,
-          categoria: (vino.categoria || vino.category || "Altro").trim(),
+          categoria: (vino.categoria || vino.category || t("drink.wines.fallbackCategory")).trim(),
           alcol: vino.alcol || vino.grado_alcolico || "",
           descrizione: vino.descrizione || vino.description || "",
         }))
@@ -151,15 +153,15 @@ export default function Vini() {
   const altri = useMemo(() => altriAll.slice(0, 6), [altriAll]);
 
   const categoryConfig: Record<string, { title: string; items: VinoCard[] }> = {
-    rossi: { title: "Rossi", items: rossiAll },
-    bianchi: { title: "Bianchi", items: bianchiAll },
-    rosati: { title: "Rosati", items: rosatiAll },
-    bollicine: { title: "Bollicine", items: bollicineAll },
-    "altri-vini": { title: "Altri vini", items: altriAll },
+    rossi: { title: t("drink.wines.categories.red"), items: rossiAll },
+    bianchi: { title: t("drink.wines.categories.white"), items: bianchiAll },
+    rosati: { title: t("drink.wines.categories.rose"), items: rosatiAll },
+    bollicine: { title: t("drink.wines.categories.sparkling"), items: bollicineAll },
+    "altri-vini": { title: t("drink.wines.categories.otherWines"), items: altriAll },
   };
 
   if (loading) {
-    return <div className="page fade-in">Caricamento...</div>;
+    return <div className="page fade-in">{t("drink.states.loading")}</div>;
   }
 
   function normalizeWineName(name: string) {
@@ -172,7 +174,7 @@ export default function Vini() {
       while (cards.length < 6) {
         cards.push({
           id: `placeholder-${tipo}-${cards.length}`,
-          nome: "In arrivo",
+          nome: t("drink.states.comingSoon"),
           immagine: null,
           categoria: "",
           alcol: "",
@@ -190,7 +192,7 @@ export default function Vini() {
           <div className="drink-section-header">
             <h2 className="drink-section-title">{title}</h2>
           </div>
-          <p style={{ color: "#cbd5e1", marginTop: 8 }}>Nessun vino disponibile in questa categoria.</p>
+          <p style={{ color: "#cbd5e1", marginTop: 8 }}>{t("drink.wines.states.emptyCategory")}</p>
         </section>
       );
     }
@@ -203,7 +205,7 @@ export default function Vini() {
           <h2 className="drink-section-title">{title}</h2>
           {!isCategoryPage && (
             <button className="btn-primary btn-small" onClick={() => navigate(`/vini/categoria/${tipo}`)}>
-              Vedi tutti
+              {t("drink.cta.seeAll")}
             </button>
           )}
         </div>
@@ -233,7 +235,7 @@ export default function Vini() {
                   onError={e => { e.currentTarget.style.display = 'none'; }}
                 />
               ) : (
-                <div className="no-img-placeholder">Immagine in arrivo</div>
+                <div className="no-img-placeholder">{t("drink.states.imageComingSoon")}</div>
               )}
               <div className="drink-card-caption">
                 <h3>{normalizeWineName(item.nome)}</h3>
@@ -292,11 +294,11 @@ export default function Vini() {
           ? renderSection(categoryConfig[categoria].title, categoryConfig[categoria].items, categoria, false)
           : (
             <>
-              {renderSection("Rossi", rossi, "rossi")}
-              {renderSection("Bianchi", bianchi, "bianchi")}
-              {renderSection("Rosati", rosati, "rosati")}
-              {renderSection("Bollicine", bollicine, "bollicine")}
-              {renderSection("Altri vini", altri, "altri-vini")}
+              {renderSection(t("drink.wines.categories.red"), rossi, "rossi")}
+              {renderSection(t("drink.wines.categories.white"), bianchi, "bianchi")}
+              {renderSection(t("drink.wines.categories.rose"), rosati, "rosati")}
+              {renderSection(t("drink.wines.categories.sparkling"), bollicine, "bollicine")}
+              {renderSection(t("drink.wines.categories.otherWines"), altri, "altri-vini")}
             </>
           )}
       </div>

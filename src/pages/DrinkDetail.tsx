@@ -19,6 +19,39 @@ type Drink = {
   [key: string]: any;
 };
 
+const technicalFieldLabelMap: Record<string, string> = {
+  preparazione: "drink.preparation.label",
+  garnish: "drink.garnish.label",
+  bicchiere: "drink.glass.label",
+  origine: "drink.origin.label",
+  tasting_notes: "drink.tastingNotes.label",
+  tastingnotes: "drink.tastingNotes.label",
+  pairing: "drink.future.pairing.title",
+  ingredienti_secondari: "drink.detail.fields.secondaryIngredients",
+  tecnica: "drink.detail.fields.technique",
+  metodo: "drink.detail.fields.method",
+  tempo_preparazione: "drink.detail.fields.prepTime",
+  difficolta: "drink.detail.fields.difficulty",
+  temperatura_servizio: "drink.detail.fields.serviceTemperature",
+  distilleria: "drink.detail.fields.distillery",
+  invecchiamento: "drink.detail.fields.aging",
+  tipo_botte: "drink.detail.fields.caskType",
+  esame_visivo: "drink.detail.fields.visualExam",
+  esame_olfattivo: "drink.detail.fields.olfactoryExam",
+  esame_gustativo: "drink.detail.fields.gustatoryExam",
+  note_aromatiche: "drink.detail.fields.aromaticNotes",
+  sottocategoria: "drink.detail.fields.subcategory",
+  base_alcolica: "drink.detail.fields.alcoholBase",
+  ai_suggestions: "drink.future.aiSuggestions.title",
+  bartender_suggestions: "drink.future.bartenderSuggestions.title",
+  community_comments: "drink.future.communityComments.title",
+};
+
+function formatFieldKeyLabel(key: string) {
+  const withSpaces = key.replace(/_/g, " ").trim();
+  return withSpaces.charAt(0).toUpperCase() + withSpaces.slice(1);
+}
+
 export default function DrinkDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -95,7 +128,7 @@ export default function DrinkDetail() {
             )
             .map(([k, v]) => (
               <div key={k} style={{ marginBottom: 10 }}>
-                <b>{k.charAt(0).toUpperCase() + k.slice(1)}:</b> {String(v)}
+                <b>{technicalFieldLabelMap[k] ? t(technicalFieldLabelMap[k]) : t("drink.detail.fields.dynamic", { field: formatFieldKeyLabel(k) })}</b> {String(v)}
               </div>
             ))}
         </div>
