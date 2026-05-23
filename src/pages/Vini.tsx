@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { getTranslatedField } from "../utils/getTranslatedField";
 
 type VinoCard = {
   id: string;
@@ -83,7 +84,7 @@ const mockVini = [
 ];
 
 export default function Vini() {
-  const { t } = useTranslation("drink");
+  const { t, i18n } = useTranslation("drink");
   const [vini, setVini] = useState<VinoCard[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
@@ -91,7 +92,7 @@ export default function Vini() {
 
   useEffect(() => {
     void load();
-  }, []);
+  }, [i18n.language]);
 
   async function load() {
     setLoading(true);
@@ -103,11 +104,11 @@ export default function Vini() {
       const mapped = data
         .map((vino: any) => ({
           id: String(vino.id),
-          nome: vino.nome || vino.name || t("drink.wines.fallbackName"),
+          nome: getTranslatedField(vino, "nome", i18n.language, vino.name || t("drink.wines.fallbackName")),
           immagine: vino.immagine ?? null,
           categoria: (vino.categoria || vino.category || t("drink.wines.fallbackCategory")).trim(),
-          alcol: vino.alcol || vino.grado_alcolico || "",
-          descrizione: vino.descrizione || vino.description || "",
+          alcol: getTranslatedField(vino, "alcol", i18n.language, vino.grado_alcolico || ""),
+          descrizione: getTranslatedField(vino, "descrizione", i18n.language, vino.description || ""),
         }))
         .sort((a: VinoCard, b: VinoCard) => a.nome.localeCompare(b.nome));
 
@@ -231,7 +232,7 @@ export default function Vini() {
               {item.immagine ? (
                 <img
                   src={item.immagine}
-                  alt={item.nome}
+                  alt={normalizeWineName(item.nome)}
                   onError={e => { e.currentTarget.style.display = 'none'; }}
                 />
               ) : (

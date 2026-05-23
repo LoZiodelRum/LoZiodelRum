@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { getTranslatedField } from "../utils/getTranslatedField";
 
 type Cocktail = {
   id: string;
@@ -20,7 +21,7 @@ type Distillato = {
 };
 
 export default function Drink() {
-  const { t } = useTranslation("drink");
+  const { t, i18n } = useTranslation("drink");
   const [cocktail, setCocktail] = useState<Cocktail[]>([]);
   const [rum, setRum] = useState<Distillato[]>([]);
   const [whisky, setWhisky] = useState<Distillato[]>([]);
@@ -31,7 +32,7 @@ export default function Drink() {
 
   useEffect(() => {
     load();
-  }, []);
+  }, [i18n.language]);
 
   async function load() {
     setLoading(true);
@@ -90,14 +91,24 @@ export default function Drink() {
     }
 
     if (cocktailData) {
-      const sorted = cocktailData.sort((a: any, b: any) => a.nome.localeCompare(b.nome));
-      setCocktail(sorted.slice(0, 6).map((c: any) => ({ id: c.id, nome: c.nome, immagine: getImage(c) })));
+      const sorted = cocktailData.sort((a: any, b: any) => {
+        const aName = getTranslatedField(a, "nome", i18n.language, t("drink.title"));
+        const bName = getTranslatedField(b, "nome", i18n.language, t("drink.title"));
+        return aName.localeCompare(bName);
+      });
+      setCocktail(
+        sorted.slice(0, 6).map((c: any) => ({
+          id: c.id,
+          nome: getTranslatedField(c, "nome", i18n.language, t("drink.title")),
+          immagine: getImage(c),
+        }))
+      );
     }
 
     const mappedDistillati = distillatiRows
       .map((d: any) => ({
         id: d.id,
-        nome: d.nome || d.name || t("drink.fallbacks.distillatoName"),
+        nome: getTranslatedField(d, "nome", i18n.language, d.name || t("drink.fallbacks.distillatoName")),
         marca: d.marca || "",
         categoria: distillatoCategoryText(d),
         immagine: getImage(d),
@@ -108,7 +119,7 @@ export default function Drink() {
       .filter((record: any) => isDistillatoLike(record))
       .map((c: any) => ({
         id: c.id,
-        nome: c.nome || c.name || t("drink.fallbacks.distillatoName"),
+        nome: getTranslatedField(c, "nome", i18n.language, c.name || t("drink.fallbacks.distillatoName")),
         marca: c.marca || c.distilleria || "",
         categoria: distillatoCategoryText(c),
         immagine: getImage(c),

@@ -3,11 +3,12 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import { useTranslation } from "react-i18next";
+import { getTranslatedField } from "../utils/getTranslatedField";
 
 export default function CategoryVini() {
   const { categoria } = useParams();
   const navigate = useNavigate();
-  const { t } = useTranslation("drink");
+  const { t, i18n } = useTranslation("drink");
   const [vini, setVini] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -55,7 +56,7 @@ export default function CategoryVini() {
       setLoading(false);
     }
     load();
-  }, [categoria]);
+  }, [categoria, i18n.language]);
 
   if (loading) return <div className="page fade-in">{t("drink.states.loading")}</div>;
 
@@ -80,6 +81,7 @@ export default function CategoryVini() {
           ) : (
             vini.map((item) => {
               const imgUrl = item.immagine || item.immagine_url || item.image || item.img || item.foto || null;
+              const translatedName = getTranslatedField(item, "nome", i18n.language, "-");
               return (
                 <article
                   key={item.id}
@@ -90,14 +92,14 @@ export default function CategoryVini() {
                   {imgUrl ? (
                     <img
                       src={imgUrl}
-                      alt={item.nome}
+                      alt={translatedName}
                       onError={e => { e.currentTarget.style.display = 'none'; }}
                     />
                   ) : (
                     <div className="no-img-placeholder">{t("drink.states.imageComingSoon")}</div>
                   )}
                   <div className="drink-card-caption">
-                    <h3 translate="no">{item.nome}</h3>
+                    <h3 translate="no">{translatedName}</h3>
                   </div>
                 </article>
               );

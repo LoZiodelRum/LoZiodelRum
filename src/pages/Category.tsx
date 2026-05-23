@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { getTranslatedField } from "../utils/getTranslatedField";
 
 type Item = {
   id: string;
@@ -16,14 +17,14 @@ export default function Category() {
   const { categoria, tipo } = useParams();
   const selectedType = categoria || tipo;
   const navigate = useNavigate();
-  const { t } = useTranslation("drink");
+  const { t, i18n } = useTranslation("drink");
 
   const [items, setItems] = useState<Item[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     load();
-  }, [selectedType]);
+  }, [selectedType, i18n.language]);
 
   async function load() {
     setLoading(true);
@@ -80,13 +81,13 @@ export default function Category() {
 
       if (data) {
         const sorted = [...data].sort((a: any, b: any) =>
-          a.nome.localeCompare(b.nome)
+          getTranslatedField(a, "nome", i18n.language, "-").localeCompare(getTranslatedField(b, "nome", i18n.language, "-"))
         );
 
         setItems(
           sorted.map((c: any) => ({
             id: c.id,
-            nome: c.nome,
+            nome: getTranslatedField(c, "nome", i18n.language, "-"),
             immagine: getImage(c),
           }))
         );
@@ -110,7 +111,7 @@ export default function Category() {
 
       const mappedDistillati = distillatiRows.map((d: any) => ({
         id: d.id,
-        nome: d.nome || d.name || t("drink.fallbacks.distillatoName"),
+        nome: getTranslatedField(d, "nome", i18n.language, d.name || t("drink.fallbacks.distillatoName")),
         marca: d.marca || "",
         immagine: getImage(d),
         categoria_testo: distillatoCategoryText(d),
@@ -123,7 +124,7 @@ export default function Category() {
           .filter((record: any) => isDistillatoLike(record))
           .map((d: any) => ({
             id: d.id,
-            nome: d.nome || d.name || t("drink.fallbacks.distillatoName"),
+            nome: getTranslatedField(d, "nome", i18n.language, d.name || t("drink.fallbacks.distillatoName")),
             marca: d.marca || d.distilleria || "",
             immagine: getImage(d),
             categoria_testo: distillatoCategoryText(d),
@@ -201,13 +202,13 @@ export default function Category() {
 
       if (data) {
         const sorted = [...data].sort((a: any, b: any) =>
-          a.nome.localeCompare(b.nome)
+          getTranslatedField(a, "nome", i18n.language, "-").localeCompare(getTranslatedField(b, "nome", i18n.language, "-"))
         );
 
         setItems(
           sorted.map((c: any) => ({
             id: c.id,
-            nome: c.nome,
+            nome: getTranslatedField(c, "nome", i18n.language, "-"),
             immagine: getImage(c),
           }))
         );

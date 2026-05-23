@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import { useTranslation } from "react-i18next";
+import { getTranslatedField } from "../utils/getTranslatedField";
 
 type VinoRecord = Record<string, any>;
 
@@ -79,7 +80,7 @@ function normalizeValue(raw: unknown): string {
 export default function VinoDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { t } = useTranslation("drink");
+  const { t, i18n } = useTranslation("drink");
 
   const [vino, setVino] = useState<VinoRecord | null>(null);
   const [loading, setLoading] = useState(true);
@@ -118,6 +119,11 @@ export default function VinoDetail() {
     return typeof vino?.immagine === "string" ? vino.immagine.trim() : "";
   }, [vino]);
 
+  const translatedName = vino ? getTranslatedField(vino, "nome", i18n.language, "-") : "-";
+  const translatedCategory = vino ? getTranslatedField(vino, "categoria", i18n.language, "-") : "-";
+  const translatedVintage = vino ? getTranslatedField(vino, "annata", i18n.language, "-") : "-";
+  const translatedWinery = vino ? getTranslatedField(vino, "cantina", i18n.language, "-") : "-";
+
   const heroImageStyleForWine = useMemo(() => {
     return {
       ...heroImageStyle,
@@ -136,7 +142,7 @@ export default function VinoDetail() {
           {fields.map((field) => (
             <article key={field.key} className="vino-detail-card" style={cardStyle}>
               <h3 className="vino-detail-label" style={labelStyle}>{t(field.labelKey)}</h3>
-              <p className="vino-detail-value" style={valueStyle}>{normalizeValue(vino?.[field.key])}</p>
+              <p className="vino-detail-value" style={valueStyle}>{normalizeValue(getTranslatedField(vino, field.key, i18n.language, "-"))}</p>
             </article>
           ))}
         </div>
@@ -248,18 +254,18 @@ export default function VinoDetail() {
 
       <section className="vino-detail-hero" style={heroStyle}>
         {imageUrl ? (
-          <img className="vino-detail-hero-image" src={imageUrl} alt={normalizeValue(vino?.nome)} style={heroImageStyleForWine} />
+          <img className="vino-detail-hero-image" src={imageUrl} alt={translatedName} style={heroImageStyleForWine} />
         ) : (
           <div className="vino-detail-hero-placeholder" style={heroImagePlaceholderStyle}>{t("drink.states.noImage")}</div>
         )}
 
         <div>
-          <h1 className="vino-detail-title" style={heroTitleStyle}>{normalizeValue(vino?.nome)}</h1>
+          <h1 className="vino-detail-title" style={heroTitleStyle}>{translatedName}</h1>
           <p className="vino-detail-sub" style={heroSubStyle}>{t("drink.wines.detail.subtitle")}</p>
           <div className="vino-detail-meta" style={heroMetaStyle}>
-            <span className="vino-detail-badge" style={badgeStyle}>{t("drink.wines.detail.badges.category")} {normalizeValue(vino?.categoria)}</span>
-            <span className="vino-detail-badge" style={badgeStyle}>{t("drink.wines.detail.badges.vintage")} {normalizeValue(vino?.annata)}</span>
-            <span className="vino-detail-badge" style={badgeStyle}>{t("drink.wines.detail.badges.winery")} {normalizeValue(vino?.cantina)}</span>
+            <span className="vino-detail-badge" style={badgeStyle}>{t("drink.wines.detail.badges.category")} {translatedCategory}</span>
+            <span className="vino-detail-badge" style={badgeStyle}>{t("drink.wines.detail.badges.vintage")} {translatedVintage}</span>
+            <span className="vino-detail-badge" style={badgeStyle}>{t("drink.wines.detail.badges.winery")} {translatedWinery}</span>
           </div>
         </div>
       </section>

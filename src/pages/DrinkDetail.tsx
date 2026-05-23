@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import { useTranslation } from "react-i18next";
+import { getTranslatedField } from "../utils/getTranslatedField";
 
 type Drink = {
   id: string;
@@ -55,7 +56,7 @@ function formatFieldKeyLabel(key: string) {
 export default function DrinkDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { t } = useTranslation("drink");
+  const { t, i18n } = useTranslation("drink");
   const [drink, setDrink] = useState<Drink | null>(null);
   const [loading, setLoading] = useState(true);
   const [notFound, setNotFound] = useState(false);
@@ -86,6 +87,16 @@ export default function DrinkDetail() {
   if (loading) return <div className="page fade-in">{t("drink.states.loading")}</div>;
   if (notFound || !drink) return <div className="page fade-in">{t("drink.states.notFound")}</div>;
 
+  const translatedName = getTranslatedField(drink, "nome", i18n.language, "-");
+  const translatedBrand = getTranslatedField(drink, "marca", i18n.language, "");
+  const translatedCategory = getTranslatedField(drink, "categoria", i18n.language, "");
+  const translatedAbv = getTranslatedField(drink, "gradazione", i18n.language, "");
+  const translatedDescription = getTranslatedField(drink, "descrizione", i18n.language, "");
+  const translatedIngredients = getTranslatedField(drink, "ingredienti", i18n.language, "");
+  const translatedRecipe = getTranslatedField(drink, "ricetta", i18n.language, "");
+
+  const languageSuffixRegex = /_(it|en|es|de|fr|bg)$/i;
+
   return (
     <>
       <Navbar />
@@ -96,41 +107,45 @@ export default function DrinkDetail() {
       <div style={{ display: "flex", flexWrap: "wrap", gap: 40 }}>
         <div style={{ flex: 1, minWidth: 260 }}>
           {drink.immagine ? (
-            <img src={drink.immagine} alt={drink.nome} style={{ width: "100%", borderRadius: 16, marginBottom: 20 }} />
+            <img src={drink.immagine} alt={translatedName} style={{ width: "100%", borderRadius: 16, marginBottom: 20 }} />
           ) : (
             <div className="no-img-placeholder" style={{ marginBottom: 20 }}>{t("drink.states.noImage")}</div>
           )}
         </div>
         <div style={{ flex: 2, minWidth: 260 }}>
-          <h1 style={{ fontSize: "2rem", color: "#f5a623", marginBottom: 10 }}>{drink.nome}</h1>
-          {drink.marca && <div style={{ color: "#666", marginBottom: 10 }}><b>{t("drink.detail.brand")}</b> {drink.marca}</div>}
-          {drink.categoria && <div style={{ color: "#666", marginBottom: 10 }}><b>{t("drink.detail.category")}</b> {drink.categoria}</div>}
-          {drink.gradazione && <div style={{ color: "#666", marginBottom: 10 }}><b>{t("drink.detail.abv")}</b> {drink.gradazione}</div>}
-          {drink.descrizione && <div style={{ marginBottom: 16 }}>{drink.descrizione}</div>}
-          {drink.ingredienti && (
+          <h1 style={{ fontSize: "2rem", color: "#f5a623", marginBottom: 10 }}>{translatedName}</h1>
+          {translatedBrand && <div style={{ color: "#666", marginBottom: 10 }}><b>{t("drink.detail.brand")}</b> {translatedBrand}</div>}
+          {translatedCategory && <div style={{ color: "#666", marginBottom: 10 }}><b>{t("drink.detail.category")}</b> {translatedCategory}</div>}
+          {translatedAbv && <div style={{ color: "#666", marginBottom: 10 }}><b>{t("drink.detail.abv")}</b> {translatedAbv}</div>}
+          {translatedDescription && <div style={{ marginBottom: 16 }}>{translatedDescription}</div>}
+          {translatedIngredients && (
             <div style={{ marginBottom: 16 }}>
               <b>{t("drink.ingredients.label")}</b>
-              <div>{drink.ingredienti}</div>
+              <div>{translatedIngredients}</div>
             </div>
           )}
-          {drink.ricetta && (
+          {translatedRecipe && (
             <div style={{ marginBottom: 16 }}>
               <b>{t("drink.detail.recipe")}</b>
-              <div>{drink.ricetta}</div>
+              <div>{translatedRecipe}</div>
             </div>
           )}
           {/* Mostra tutti gli altri campi utili */}
           {Object.entries(drink)
             .filter(
-              ([k, v]) =>
+              ([k]) =>
                 !["id", "nome", "immagine", "marca", "categoria", "gradazione", "descrizione", "ingredienti", "ricetta", "created_at", "updated_at"].includes(k) &&
-                v && String(v).trim().length > 0
+                !languageSuffixRegex.test(k) &&
+                getTranslatedField(drink, k, i18n.language, "").trim().length > 0
             )
-            .map(([k, v]) => (
-              <div key={k} style={{ marginBottom: 10 }}>
-                <b>{technicalFieldLabelMap[k] ? t(technicalFieldLabelMap[k]) : t("drink.detail.fields.dynamic", { field: formatFieldKeyLabel(k) })}</b> {String(v)}
-              </div>
-            ))}
+            .map(([k]) => {
+              const translatedValue = getTranslatedField(drink, k, i18n.language, "-");
+              return (
+                <div key={k} style={{ marginBottom: 10 }}>
+                  <b>{technicalFieldLabelMap[k] ? t(technicalFieldLabelMap[k]) : t("drink.detail.fields.dynamic", { field: formatFieldKeyLabel(k) })}</b> {translatedValue}
+                </div>
+              );
+            })}
         </div>
       </div>
       </div>
