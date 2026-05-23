@@ -34,11 +34,16 @@ type ReviewLocale = {
   indirizzo?: string | null;
 };
 
-function formatDate(value?: string | null) {
-  if (!value) return "Data non disponibile";
+function formatDate(value: string | null | undefined, language: string, fallback: string) {
+  if (!value) return fallback;
   const parsed = new Date(value);
-  if (Number.isNaN(parsed.getTime())) return "Data non disponibile";
-  return new Intl.DateTimeFormat("it-IT", {
+  if (Number.isNaN(parsed.getTime())) return fallback;
+  const locale = String(language || "it").toLowerCase().startsWith("bg")
+    ? "bg-BG"
+    : String(language || "it").toLowerCase().startsWith("en")
+      ? "en-GB"
+      : "it-IT";
+  return new Intl.DateTimeFormat(locale, {
     day: "2-digit",
     month: "long",
     year: "numeric",
@@ -49,6 +54,8 @@ export default function RecensioneDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { i18n } = useTranslation();
+  const tr = (it: string, en: string, bg: string) =>
+    getTranslatedField({ label_it: it, label_en: en, label_bg: bg }, "label", i18n.language, it);
 
   const [review, setReview] = useState<ReviewDetail | null>(null);
   const [reviewLocale, setReviewLocale] = useState<ReviewLocale | null>(null);
@@ -103,27 +110,27 @@ export default function RecensioneDetail() {
   }
 
   if (loading) {
-    return <div className="page fade-in">Caricamento recensione...</div>;
+    return <div className="page fade-in">{tr("Caricamento recensione...", "Loading review...", "Зареждане на рецензия...")}</div>;
   }
 
   if (!review) {
     return (
       <div className="page fade-in" style={{ color: "#fff" }}>
-        <h1 style={{ marginBottom: 12 }}>Recensione non trovata</h1>
+        <h1 style={{ marginBottom: 12 }}>{tr("Recensione non trovata", "Review not found", "Рецензията не е намерена")}</h1>
         <button className="btn-primary" onClick={() => navigate(-1)}>
-          Torna indietro
+          {tr("Torna indietro", "Go back", "Назад")}
         </button>
       </div>
     );
   }
 
-  const venueName = getTranslatedField(reviewLocale as any, "nome", i18n.language, "Locale");
+  const venueName = getTranslatedField(reviewLocale as any, "nome", i18n.language, tr("Locale", "Venue", "Заведение"));
   const venueImage = reviewLocale?.image_url || reviewLocale?.image || "https://via.placeholder.com/1600x900";
   const venueCity = reviewLocale?.citta || "";
   const venueAddress = reviewLocale?.indirizzo || "";
-  const title = review.titolo || review.title || `Recensione di ${venueName}`;
-  const content = review.commento || review.content || review.descrizione || "Nessun testo disponibile.";
-  const author = review.autore || review.author_name || "Utente";
+  const title = review.titolo || review.title || `${tr("Recensione di", "Review by", "Рецензия от")} ${venueName}`;
+  const content = review.commento || review.content || review.descrizione || tr("Nessun testo disponibile.", "No text available.", "Няма наличен текст.");
+  const author = review.autore || review.author_name || tr("Utente", "User", "Потребител");
   const dateValue = review.visit_date || review.created_at;
 
   return (
@@ -154,7 +161,7 @@ export default function RecensioneDetail() {
             onClick={() => navigate(-1)}
             style={{ marginBottom: 18 }}
           >
-            Torna indietro
+            {tr("Torna indietro", "Go back", "Назад")}
           </button>
           <h1 style={{ margin: 0, fontSize: "clamp(28px, 5vw, 52px)", color: "#fff" }}>{venueName}</h1>
           <p style={{ marginTop: 8, color: "#e5e5e5" }}>{[venueCity, venueAddress].filter(Boolean).join(" - ")}</p>
@@ -174,7 +181,7 @@ export default function RecensioneDetail() {
             <h2 style={{ margin: 0, color: "#fff", fontSize: "clamp(22px, 3vw, 34px)" }}>{title}</h2>
           </div>
 
-          <p style={{ color: "#c9c9c9", marginBottom: 18 }}>{`Di ${author} - ${formatDate(dateValue)}`}</p>
+          <p style={{ color: "#c9c9c9", marginBottom: 18 }}>{`${tr("Di", "By", "От")} ${author} - ${formatDate(dateValue, i18n.language, tr("Data non disponibile", "Date not available", "Няма налична дата"))}`}</p>
           <p style={{ color: "#ececec", margin: 0, lineHeight: 1.75, whiteSpace: "pre-wrap" }}>{content}</p>
         </div>
       </section>

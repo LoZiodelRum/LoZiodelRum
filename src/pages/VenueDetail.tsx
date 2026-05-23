@@ -4,6 +4,8 @@ import { Link, useParams } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import { useUser } from "../context/UserContext"; // ✅ AGGIUNTO
 import Navbar from "../components/Navbar";
+import { useTranslation } from "react-i18next";
+import { getTranslatedField } from "../utils/getTranslatedField";
 
 type Locale = {
   id: string;
@@ -64,6 +66,7 @@ const REVIEWS_RESET_AT = "2026-04-12T00:00:00.000Z";
 export default function VenueDetail() {
   const { id } = useParams();
   const { isAdmin, user } = useUser();
+  const { i18n } = useTranslation();
 
   const [locale, setLocale] = useState<Locale | null>(null);
   const [form, setForm] = useState<any>(null);
@@ -395,7 +398,18 @@ export default function VenueDetail() {
     }
   }
 
-  if (!locale) return <div className="page fade-in">Caricamento...</div>;
+  if (!locale) {
+    const loadingLabel = getTranslatedField(
+      { label_it: "Caricamento...", label_en: "Loading...", label_bg: "Зареждане..." },
+      "label",
+      i18n.language,
+      "Caricamento..."
+    );
+    return <div className="page fade-in">{loadingLabel}</div>;
+  }
+
+  const tr = (it: string, en: string, bg: string) =>
+    getTranslatedField({ label_it: it, label_en: en, label_bg: bg }, "label", i18n.language, it);
 
   const placeholder = (value: string | null | undefined, label: string) =>
     value && value !== "" ? value : `Non disponibile (${label})`;
@@ -421,7 +435,7 @@ export default function VenueDetail() {
   const imageMain = normalizeImageUrl(locale.image_url) || normalizeImageUrl(locale.image) || firstMediaImage;
   const videoMain =
     locale.video_url || media.find((m) => m.tipo === "video")?.url_file || "";
-  const categoria = locale.categoria || "Categoria non disponibile";
+  const categoria = locale.categoria || tr("Categoria non disponibile", "Category not available", "Категорията не е налична");
   const fullAddress = [locale.indirizzo, locale.citta, locale.provincia, locale.paese]
     .filter(Boolean)
     .join(", ");
@@ -474,11 +488,11 @@ export default function VenueDetail() {
     : 0;
 
   const reviewDistribution = [
-    { label: "Eccellente", stars: 5, count: 0, color: "#16a34a" },
-    { label: "Buono", stars: 4, count: 0, color: "#22c55e" },
-    { label: "Nella media", stars: 3, count: 0, color: "#eab308" },
-    { label: "Scarso", stars: 2, count: 0, color: "#f97316" },
-    { label: "Terribile", stars: 1, count: 0, color: "#ef4444" },
+    { label: tr("Eccellente", "Excellent", "Отлично"), stars: 5, count: 0, color: "#16a34a" },
+    { label: tr("Buono", "Good", "Добро"), stars: 4, count: 0, color: "#22c55e" },
+    { label: tr("Nella media", "Average", "Средно"), stars: 3, count: 0, color: "#eab308" },
+    { label: tr("Scarso", "Poor", "Слабо"), stars: 2, count: 0, color: "#f97316" },
+    { label: tr("Terribile", "Terrible", "Ужасно"), stars: 1, count: 0, color: "#ef4444" },
   ];
 
   ratedReviews.forEach((score) => {
@@ -491,14 +505,14 @@ export default function VenueDetail() {
 
   const reviewLabel =
     reviewAverage >= 4.5
-      ? "Eccellente"
+      ? tr("Eccellente", "Excellent", "Отлично")
       : reviewAverage >= 3.8
-        ? "Buono"
+        ? tr("Buono", "Good", "Добро")
         : reviewAverage >= 3
-          ? "Nella media"
+          ? tr("Nella media", "Average", "Средно")
           : reviewAverage >= 2
-            ? "Scarso"
-            : "Terribile";
+            ? tr("Scarso", "Poor", "Слабо")
+            : tr("Terribile", "Terrible", "Ужасно");
 
   const reviewMetrics = [
     { label: "Servizio", value: reviewAverage },
@@ -655,8 +669,8 @@ export default function VenueDetail() {
             <div className="venue-meta-row">
               <span className="badge-category">{categoria}</span>
               <span className="badge-category">{placeholder(locale.price_range, "fascia prezzo")}</span>
-              {verified && <span className="badge-category gold-badge">Verificato</span>}
-              {featured && <span className="badge-category gold-badge">In evidenza</span>}
+              {verified && <span className="badge-category gold-badge">{tr("Verificato", "Verified", "Проверено")}</span>}
+              {featured && <span className="badge-category gold-badge">{tr("In evidenza", "Featured", "Представено")}</span>}
               <span className="badge-category">{placeholder(locale.orari, "orari")}</span>
             </div>
           </div>
@@ -664,7 +678,7 @@ export default function VenueDetail() {
 
         {/* CONTATTI & SOCIAL */}
         <div className="content-wrapper venue-section">
-          <h2 className="section-title" style={sectionTitleStyle}>Contatti e Social</h2>
+          <h2 className="section-title" style={sectionTitleStyle}>{tr("Contatti e Social", "Contacts and Social", "Контакти и социални мрежи")}</h2>
           <div className="venue-meta-row">
             {locale.telefono && (
               <a className="contact-chip" href={`tel:${locale.telefono}`}>
@@ -696,13 +710,13 @@ export default function VenueDetail() {
                 TikTok
               </a>
             )}
-            {!locale.telefono && !website && !locale.instagram && !locale.tiktok && <p>Nessun contatto disponibile.</p>}
+            {!locale.telefono && !website && !locale.instagram && !locale.tiktok && <p>{tr("Nessun contatto disponibile.", "No contacts available.", "Няма налични контакти.")}</p>}
           </div>
         </div>
 
         {/* VALUTAZIONI */}
         <div className="content-wrapper venue-section">
-          <h2 className="section-title" style={sectionTitleStyle}>Valutazioni</h2>
+          <h2 className="section-title" style={sectionTitleStyle}>{tr("Valutazioni", "Ratings", "Оценки")}</h2>
           <div className="grid-wrapper" style={{ gap: 20, marginTop: 32 }}>
             {[
               { label: "Qualità Drink", value: locale.qualita_drink },
@@ -720,21 +734,21 @@ export default function VenueDetail() {
 
         {/* DESCRIZIONE */}
         <div className="content-wrapper venue-section">
-          <h2 className="section-title" style={sectionTitleStyle}>Descrizione</h2>
+          <h2 className="section-title" style={sectionTitleStyle}>{tr("Descrizione", "Description", "Описание")}</h2>
           <p className="venue-description">
-            {locale.descrizione_completa || locale.descrizione || "Descrizione non disponibile"}
+            {locale.descrizione_completa || locale.descrizione || tr("Descrizione non disponibile", "Description not available", "Няма налично описание")}
           </p>
         </div>
 
         {/* MEDIA */}
         <div className="content-wrapper venue-section">
-          <h2 className="section-title" style={sectionTitleStyle}>Foto e Video</h2>
+          <h2 className="section-title" style={sectionTitleStyle}>{tr("Foto e Video", "Photos and Videos", "Снимки и видеа")}</h2>
 
           {videoMain && (
             <video className="venue-main-video" src={videoMain} controls />
           )}
 
-          {media.length === 0 && <p>Nessun contenuto disponibile</p>}
+          {media.length === 0 && <p>{tr("Nessun contenuto disponibile", "No content available", "Няма налично съдържание")}</p>}
 
           <div className="grid-wrapper" style={{ gap: 10, marginTop: 40 }}>
             {media.map((m) => {
@@ -759,7 +773,7 @@ export default function VenueDetail() {
         <div className="content-wrapper venue-section" style={{ marginBottom: 60 }}>
           <div className="venue-review-box">
             <div className="venue-review-head">
-              <h2 style={{ margin: 0, fontSize: "clamp(18px, 3.2vw, 28px)", fontWeight: 800 }}>Recensioni</h2>
+              <h2 style={{ margin: 0, fontSize: "clamp(18px, 3.2vw, 28px)", fontWeight: 800 }}>{tr("Recensioni", "Reviews", "Рецензии")}</h2>
               <button
                 onClick={() => setIsReviewModalOpen(true)}
                 style={{
@@ -780,7 +794,7 @@ export default function VenueDetail() {
                   (e.target as HTMLButtonElement).style.background = "transparent";
                 }}
               >
-                Racconta la tua esperienza
+                {tr("Racconta la tua esperienza", "Share your experience", "Разкажете за вашето изживяване")}
               </button>
             </div>
 
@@ -795,13 +809,13 @@ export default function VenueDetail() {
                     {reviewLabel}
                   </div>
                   <div style={{ fontSize: 11, color: "#666" }}>
-                    Basato su {recensioni.length} {recensioni.length === 1 ? "recensione" : "recensioni"}
+                    {tr("Basato su", "Based on", "На база на")} {recensioni.length} {recensioni.length === 1 ? tr("recensione", "review", "рецензия") : tr("recensioni", "reviews", "рецензии")}
                   </div>
                 </div>
               </div>
             ) : (
               <div style={{ textAlign: "center", margin: "8px 0", fontSize: 13, color: "#999" }}>
-                Nessuna recensione ancora
+                {tr("Nessuna recensione ancora", "No reviews yet", "Все още няма рецензии")}
               </div>
             )}
 
@@ -830,7 +844,7 @@ export default function VenueDetail() {
             {reviewAverage > 0 && (
               <div>
                 <div className="rvb-divider" />
-                <p className="rvb-section-title">Valutazioni dettagliate</p>
+                <p className="rvb-section-title">{tr("Valutazioni dettagliate", "Detailed ratings", "Подробни оценки")}</p>
                 <div style={{ display: "grid", gap: 4 }}>
                   {[
                     { label: "👤 Servizio", value: avgServizio },
