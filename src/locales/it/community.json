@@ -1,9 +1,146 @@
 {
-  "heroTitle": "Il posto dove gli {{highlight}} si incontrano.",
-  "heroTitleHighlight": "appassionati",
-  "heroSubtitle": "Baristi, sommelier, cultori e curiosi del buon bere.",
-  "heroStatMembers": "iscritti",
-  "heroStatPosts": "post mensili",
-  "heroStatReadTime": "media lettura",
-  "feedTitle": "Feed Community"
+  "hero": {
+    "badge": "Community DrinkWise",
+    "titlePrefix": "Il posto dove gli",
+    "titleHighlight": "appassionati",
+    "titleSuffix": "si incontrano.",
+    "subtitle": "Baristi, sommelier, cultori e curiosi del buon bere. Benvenuto, tua drink room.",
+    "ctaPrimary": "Baretto | Feed",
+    "ctaSecondary": "Apri lounge",
+    "stats": {
+      "members": {
+        "value": "2.4k",
+        "label": "iscritti"
+      },
+      "posts": {
+        "value": "742",
+        "label": "post mensili"
+      },
+      "read": {
+        "value": "18m",
+        "label": "media lettura"
+      }
+    }
+  },
+  "chat": {
+    "title": "Il Baretto",
+    "liveBadge": "Chat dal vivo 7su7",
+    "placeholder": "Scrivi nel baretto...",
+    "sendAriaLabel": "Invia messaggio",
+    "messages": [
+      {
+        "user": "MIXOLOGY_NICK",
+        "role": "Host",
+        "text": "Avete provato il Japanese Imperial Cask? sente note di pesca."
+      },
+      {
+        "user": "ChefR",
+        "role": "Pro",
+        "text": "Si, in sour va meglio al 30/40%. Va usato in piccole dosi e sempre con acidita."
+      },
+      {
+        "user": "Lucas",
+        "role": "Guest",
+        "text": "Per me il Rum Sour resta imbattibile in questa fascia, prova lime fresco e miele."
+      },
+      {
+        "user": "Sara.M",
+        "role": "New",
+        "text": "Sicuro! Lo VOJO toda da assaggiare e poi posto il cocktail da settimana."
+      }
+    ]
+  },
+  "feed": {
+    "title": "Feed Community",
+    "relevanceBadge": "Curato secondo rilevanza",
+    "actions": {
+      "likes": "♡ {{count}}",
+      "comments": "💬 {{count}}",
+      "share": "↗ condividi"
+    },
+    "posts": [
+      {
+        "user": "Marco.cocktail",
+        "badge": "Cocktail",
+        "title": "Rum Sour Agricolo",
+        "text": "Sperimentazione con sour rum e infusione tiepida su spezie dolci. Equilibrio tra struttura e freschezza."
+      },
+      {
+        "user": "Chris.Forest",
+        "badge": "Baretto",
+        "title": "Pannaggio protagonista Cask 2025",
+        "text": "Profumi netti con legno caldo in primo piano, cuore amaro e spezia in coda. Un entry level che non perdona errori."
+      },
+      {
+        "user": "Luca de Santis",
+        "badge": "Locale",
+        "title": "Serata al Rum Barlo - Milano",
+        "text": "Serata pazzesca. Carta ricca e bartender in forma. 100+ referenze, cask presentation e un Negroni al Rum sorprendente."
+      }
+    ]
+  },
+  "sidebar": {
+    "createArticleCta": "+ Crea il tuo articolo",
+    "dailyArticleTitle": "Peggy Daily | Articolo",
+    "dailyItems": [
+      "⭐ 4.9 | Craft Cocktail: Drink & the Choice",
+      "⭐ 4.8 | Master Rosita Focus",
+      "⭐ 4.7 | Rum Aged Lab 2026"
+    ],
+    "searchesTitle": "I possibili search",
+    "keywords": [
+      "Molasses Rum, soft spice",
+      "QSM-45YV - over 50YO",
+      "Longrest cask trial in terracotta"
+    ],
+    "topSurvivorTitle": "top survivor",
+    "ranking": [
+      {
+        "name": "MIXO.4",
+        "score": "98 sec"
+      },
+      {
+        "name": "Chris.F",
+        "score": "95 sec"
+      },
+      {
+        "name": "Lucas",
+        "score": "79 sec"
+      },
+      {
+        "name": "Sara.M",
+        "score": "71 sec"
+      },
+      {
+        "name": "Aurelio K.",
+        "score": "66 sec"
+      }
+    ]
+  },
+  "bottomNav": {
+    "ariaLabel": "Community navigation rapida",
+    "home": "Home",
+    "map": "Mappa",
+    "drink": "Drink",
+    "community": "Community",
+    "panel": "Panel"
+  },
+  "future": {
+    "notifications": {
+      "title": "Notifiche",
+      "empty": "Nessuna notifica disponibile"
+    },
+    "chatRooms": {
+      "title": "Stanze chat",
+      "empty": "Nessuna stanza disponibile"
+    },
+    "badges": {
+      "title": "Badge",
+      "empty": "Nessun badge ancora"
+    },
+    "events": {
+      "title": "Eventi",
+      "empty": "Nessun evento in programma"
+    }
+  }
 }

@@ -1,32 +1,34 @@
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import Navbar from "../components/Navbar";
 
 export default function Community() {
   const navigate = useNavigate();
+  const { t } = useTranslation("community");
 
   const barettoMessages = [
     {
-      user: "MIXOLOGY_NICK",
-      role: "Host",
-      text: "Avete provato il Japanese Imperial Cask? sente note di pesca.",
+      user: t("chat.messages.0.user"),
+      role: t("chat.messages.0.role"),
+      text: t("chat.messages.0.text"),
       tone: "gold",
     },
     {
-      user: "ChefR",
-      role: "Pro",
-      text: "Si, in sour va meglio al 30/40%. Va usato in piccole dosi e sempre con acidita.",
+      user: t("chat.messages.1.user"),
+      role: t("chat.messages.1.role"),
+      text: t("chat.messages.1.text"),
       tone: "violet",
     },
     {
-      user: "Lucas",
-      role: "Guest",
-      text: "Per me il Rum Sour resta imbattibile in questa fascia, prova lime fresco e miele.",
+      user: t("chat.messages.2.user"),
+      role: t("chat.messages.2.role"),
+      text: t("chat.messages.2.text"),
       tone: "blue",
     },
     {
-      user: "Sara.M",
-      role: "New",
-      text: "Sicuro! Lo VOJO toda da assaggiare e poi posto il cocktail da settimana.",
+      user: t("chat.messages.3.user"),
+      role: t("chat.messages.3.role"),
+      text: t("chat.messages.3.text"),
       tone: "green",
     },
   ];
@@ -34,10 +36,10 @@ export default function Community() {
   const posts = [
     {
       id: "p1",
-      user: "Marco.cocktail",
-      badge: "Cocktail",
-      title: "Rum Sour Agricolo",
-      text: "Sperimentazione con sour rum e infusione tiepida su spezie dolci. Equilibrio tra struttura e freschezza.",
+      user: t("feed.posts.0.user"),
+      badge: t("feed.posts.0.badge"),
+      title: t("feed.posts.0.title"),
+      text: t("feed.posts.0.text"),
       image:
         "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?auto=format&fit=crop&w=1200&q=80",
       likes: 128,
@@ -45,10 +47,10 @@ export default function Community() {
     },
     {
       id: "p2",
-      user: "Chris.Forest",
-      badge: "Baretto",
-      title: "Pannaggio protagonista Cask 2025",
-      text: "Profumi netti con legno caldo in primo piano, cuore amaro e spezia in coda. Un entry level che non perdona errori.",
+      user: t("feed.posts.1.user"),
+      badge: t("feed.posts.1.badge"),
+      title: t("feed.posts.1.title"),
+      text: t("feed.posts.1.text"),
       image:
         "https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1200&q=80",
       likes: 72,
@@ -56,10 +58,10 @@ export default function Community() {
     },
     {
       id: "p3",
-      user: "Luca de Santis",
-      badge: "Locale",
-      title: "Serata al Rum Barlo - Milano",
-      text: "Serata pazzesca. Carta ricca e bartender in forma. 100+ referenze, cask presentation e un Negroni al Rum sorprendente.",
+      user: t("feed.posts.2.user"),
+      badge: t("feed.posts.2.badge"),
+      title: t("feed.posts.2.title"),
+      text: t("feed.posts.2.text"),
       image:
         "https://images.unsplash.com/photo-1470337458703-46ad1756a187?auto=format&fit=crop&w=1200&q=80",
       likes: 44,
@@ -68,17 +70,17 @@ export default function Community() {
   ];
 
   const keywords = [
-    "Molasses Rum, soft spice",
-    "QSM-45YV - over 50YO",
-    "Longrest cask trial in terracotta",
+    t("sidebar.keywords.0"),
+    t("sidebar.keywords.1"),
+    t("sidebar.keywords.2"),
   ];
 
   const ranking = [
-    { name: "MIXO.4", score: "98 sec" },
-    { name: "Chris.F", score: "95 sec" },
-    { name: "Lucas", score: "79 sec" },
-    { name: "Sara.M", score: "71 sec" },
-    { name: "Aurelio K.", score: "66 sec" },
+    { name: t("sidebar.ranking.0.name"), score: t("sidebar.ranking.0.score") },
+    { name: t("sidebar.ranking.1.name"), score: t("sidebar.ranking.1.score") },
+    { name: t("sidebar.ranking.2.name"), score: t("sidebar.ranking.2.score") },
+    { name: t("sidebar.ranking.3.name"), score: t("sidebar.ranking.3.score") },
+    { name: t("sidebar.ranking.4.name"), score: t("sidebar.ranking.4.score") },
   ];
 
   return (
@@ -657,21 +659,21 @@ export default function Community() {
         <div className="dw-community-shell">
           <section className="dw-hero">
             <div>
-              <span className="dw-badge">Community DrinkWise</span>
+              <span className="dw-badge">{t("hero.badge")}</span>
               <h1>
-                Il posto dove gli <span className="dw-hero-highlight">appassionati</span> si incontrano.
+                {t("hero.titlePrefix")} <span className="dw-hero-highlight">{t("hero.titleHighlight")}</span> {t("hero.titleSuffix")}
               </h1>
               <p>
-                Baristi, sommelier, cultori e curiosi del buon bere. Benvenuto, tua drink room.
+                {t("hero.subtitle")}
               </p>
               <div className="dw-hero-actions">
-                <button className="dw-btn dw-btn-gold" onClick={() => navigate("/baretto")}>Baretto | Feed</button>
-                <button className="dw-btn dw-btn-dark" onClick={() => navigate("/crea")}>Apri lounge</button>
+                <button className="dw-btn dw-btn-gold" onClick={() => navigate("/baretto")}>{t("hero.ctaPrimary")}</button>
+                <button className="dw-btn dw-btn-dark" onClick={() => navigate("/crea")}>{t("hero.ctaSecondary")}</button>
               </div>
               <div className="dw-hero-stats">
-                <div><strong>2.4k</strong> iscritti</div>
-                <div><strong>742</strong> post mensili</div>
-                <div><strong>18m</strong> media lettura</div>
+                <div><strong>{t("hero.stats.members.value")}</strong> {t("hero.stats.members.label")}</div>
+                <div><strong>{t("hero.stats.posts.value")}</strong> {t("hero.stats.posts.label")}</div>
+                <div><strong>{t("hero.stats.read.value")}</strong> {t("hero.stats.read.label")}</div>
               </div>
             </div>
           </section>
@@ -680,8 +682,8 @@ export default function Community() {
             <div>
               <section className="dw-panel">
                 <div className="dw-baretto-title">
-                  <h3 style={{ margin: 0 }}>Il Baretto</h3>
-                  <span className="dw-pill">Chat dal vivo 7su7</span>
+                  <h3 style={{ margin: 0 }}>{t("chat.title")}</h3>
+                  <span className="dw-pill">{t("chat.liveBadge")}</span>
                 </div>
 
                 <div className="dw-chat">
@@ -702,16 +704,16 @@ export default function Community() {
                 </div>
 
                 <div className="dw-chat-compose">
-                  <input className="dw-chat-input" readOnly value="Scrivi nel baretto..." />
-                  <button className="dw-chat-send" type="button" aria-label="Invia messaggio">
+                  <input className="dw-chat-input" readOnly value={t("chat.placeholder")} />
+                  <button className="dw-chat-send" type="button" aria-label={t("chat.sendAriaLabel")}>
                     ↗
                   </button>
                 </div>
               </section>
 
               <div className="dw-feed-head">
-                <h2 style={{ margin: 0, fontSize: 19 }}>Feed Community</h2>
-                <span className="dw-pill">Curato secondo rilevanza</span>
+                <h2 style={{ margin: 0, fontSize: 19 }}>{t("feed.title")}</h2>
+                <span className="dw-pill">{t("feed.relevanceBadge")}</span>
               </div>
 
               <section className="dw-feed">
@@ -726,9 +728,9 @@ export default function Community() {
                       <h3 className="dw-post-title">{post.title}</h3>
                       <p className="dw-post-text">{post.text}</p>
                       <div className="dw-post-actions">
-                        <span>♡ {post.likes}</span>
-                        <span>💬 {post.comments}</span>
-                        <span>↗ condividi</span>
+                        <span>{t("feed.actions.likes", { count: post.likes })}</span>
+                        <span>{t("feed.actions.comments", { count: post.comments })}</span>
+                        <span>{t("feed.actions.share")}</span>
                       </div>
                     </div>
                   </article>
@@ -738,20 +740,20 @@ export default function Community() {
 
             <aside className="dw-side">
               <section className="dw-panel">
-                <button className="dw-btn dw-btn-gold" style={{ width: "100%" }} onClick={() => navigate("/crea")}>+ Crea il tuo articolo</button>
+                <button className="dw-btn dw-btn-gold" style={{ width: "100%" }} onClick={() => navigate("/crea")}>{t("sidebar.createArticleCta")}</button>
               </section>
 
               <section className="dw-panel">
-                <h3>Peggy Daily | Articolo</h3>
+                <h3>{t("sidebar.dailyArticleTitle")}</h3>
                 <ul className="dw-side-list">
-                  <li>⭐ 4.9 | Craft Cocktail: Drink & the Choice</li>
-                  <li>⭐ 4.8 | Master Rosita Focus</li>
-                  <li>⭐ 4.7 | Rum Aged Lab 2026</li>
+                  <li>{t("sidebar.dailyItems.0")}</li>
+                  <li>{t("sidebar.dailyItems.1")}</li>
+                  <li>{t("sidebar.dailyItems.2")}</li>
                 </ul>
               </section>
 
               <section className="dw-panel">
-                <h3>I possibili search</h3>
+                <h3>{t("sidebar.searchesTitle")}</h3>
                 <ul className="dw-side-list">
                   {keywords.map((term) => (
                     <li key={term}>{term}</li>
@@ -760,7 +762,7 @@ export default function Community() {
               </section>
 
               <section className="dw-panel">
-                <h3>top survivor</h3>
+                <h3>{t("sidebar.topSurvivorTitle")}</h3>
                 <ul className="dw-side-list dw-ranking">
                   {ranking.map((row) => (
                     <li key={row.name}>
@@ -774,12 +776,12 @@ export default function Community() {
           </div>
         </div>
 
-        <nav className="dw-bottom-nav" aria-label="Community navigation rapida">
-          <button onClick={() => navigate("/home")}>Home</button>
-          <button onClick={() => navigate("/mappa")}>Mappa</button>
-          <button onClick={() => navigate("/drink")}>Drink</button>
-          <button className="active" onClick={() => navigate("/community")}>Community</button>
-          <button onClick={() => navigate("/dashboard")}>Panel</button>
+        <nav className="dw-bottom-nav" aria-label={t("bottomNav.ariaLabel")}>
+          <button onClick={() => navigate("/home")}>{t("bottomNav.home")}</button>
+          <button onClick={() => navigate("/mappa")}>{t("bottomNav.map")}</button>
+          <button onClick={() => navigate("/drink")}>{t("bottomNav.drink")}</button>
+          <button className="active" onClick={() => navigate("/community")}>{t("bottomNav.community")}</button>
+          <button onClick={() => navigate("/dashboard")}>{t("bottomNav.panel")}</button>
         </nav>
       </div>
     </>

@@ -1,9 +1,146 @@
 {
-  "heroTitle": "The place where {{highlight}} meet.",
-  "heroTitleHighlight": "enthusiasts",
-  "heroSubtitle": "Bartenders, sommeliers, connoisseurs and curious drink lovers.",
-  "heroStatMembers": "members",
-  "heroStatPosts": "monthly posts",
-  "heroStatReadTime": "avg read",
-  "feedTitle": "Community Feed"
+  "hero": {
+    "badge": "DrinkWise Community",
+    "titlePrefix": "The place where",
+    "titleHighlight": "enthusiasts",
+    "titleSuffix": "meet.",
+    "subtitle": "Bartenders, sommeliers, connoisseurs and curious drink lovers. Welcome to your drink room.",
+    "ctaPrimary": "Baretto | Feed",
+    "ctaSecondary": "Open lounge",
+    "stats": {
+      "members": {
+        "value": "2.4k",
+        "label": "members"
+      },
+      "posts": {
+        "value": "742",
+        "label": "monthly posts"
+      },
+      "read": {
+        "value": "18m",
+        "label": "avg read"
+      }
+    }
+  },
+  "chat": {
+    "title": "The Baretto",
+    "liveBadge": "Live chat 7/7",
+    "placeholder": "Write in the baretto...",
+    "sendAriaLabel": "Send message",
+    "messages": [
+      {
+        "user": "MIXOLOGY_NICK",
+        "role": "Host",
+        "text": "Have you tried Japanese Imperial Cask? It has peach notes."
+      },
+      {
+        "user": "ChefR",
+        "role": "Pro",
+        "text": "Yes, in sour it works better at 30/40%. Use it in small doses and always with acidity."
+      },
+      {
+        "user": "Lucas",
+        "role": "Guest",
+        "text": "For me Rum Sour stays unbeaten in this range, try fresh lime and honey."
+      },
+      {
+        "user": "Sara.M",
+        "role": "New",
+        "text": "Absolutely! I want to taste it and then post the cocktail of the week."
+      }
+    ]
+  },
+  "feed": {
+    "title": "Community Feed",
+    "relevanceBadge": "Curated by relevance",
+    "actions": {
+      "likes": "♡ {{count}}",
+      "comments": "💬 {{count}}",
+      "share": "↗ share"
+    },
+    "posts": [
+      {
+        "user": "Marco.cocktail",
+        "badge": "Cocktail",
+        "title": "Agricole Rum Sour",
+        "text": "Experiment with sour rum and warm spice infusion. Balance between structure and freshness."
+      },
+      {
+        "user": "Chris.Forest",
+        "badge": "Baretto",
+        "title": "Cask 2025 takes the spotlight",
+        "text": "Clean aromas with warm wood in front, bitter core and spice in the finish. An entry level that forgives nothing."
+      },
+      {
+        "user": "Luca de Santis",
+        "badge": "Venue",
+        "title": "Night at Rum Barlo - Milan",
+        "text": "Amazing evening. Rich menu and bartenders in top form. 100+ labels, cask presentation and a surprising Rum Negroni."
+      }
+    ]
+  },
+  "sidebar": {
+    "createArticleCta": "+ Create your article",
+    "dailyArticleTitle": "Peggy Daily | Article",
+    "dailyItems": [
+      "⭐ 4.9 | Craft Cocktail: Drink & the Choice",
+      "⭐ 4.8 | Master Rosita Focus",
+      "⭐ 4.7 | Rum Aged Lab 2026"
+    ],
+    "searchesTitle": "Possible searches",
+    "keywords": [
+      "Molasses Rum, soft spice",
+      "QSM-45YV - over 50YO",
+      "Longrest cask trial in terracotta"
+    ],
+    "topSurvivorTitle": "top survivor",
+    "ranking": [
+      {
+        "name": "MIXO.4",
+        "score": "98 sec"
+      },
+      {
+        "name": "Chris.F",
+        "score": "95 sec"
+      },
+      {
+        "name": "Lucas",
+        "score": "79 sec"
+      },
+      {
+        "name": "Sara.M",
+        "score": "71 sec"
+      },
+      {
+        "name": "Aurelio K.",
+        "score": "66 sec"
+      }
+    ]
+  },
+  "bottomNav": {
+    "ariaLabel": "Community quick navigation",
+    "home": "Home",
+    "map": "Map",
+    "drink": "Drink",
+    "community": "Community",
+    "panel": "Panel"
+  },
+  "future": {
+    "notifications": {
+      "title": "Notifications",
+      "empty": "No notifications available"
+    },
+    "chatRooms": {
+      "title": "Chat rooms",
+      "empty": "No rooms available"
+    },
+    "badges": {
+      "title": "Badges",
+      "empty": "No badges yet"
+    },
+    "events": {
+      "title": "Events",
+      "empty": "No upcoming events"
+    }
+  }
 }
