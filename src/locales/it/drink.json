@@ -1,0 +1,9 @@
+{
+  "filters": {
+    "title": "Filtri",
+    "searchPlaceholder": "Cerca un drink"
+  },
+  "detail": {
+    "relatedTitle": "Drink correlati"
+  }
+}

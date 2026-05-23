@@ -1,0 +1,9 @@
+{
+  "filters": {
+    "title": "Filters",
+    "searchPlaceholder": "Search a drink"
+  },
+  "detail": {
+    "relatedTitle": "Related drinks"
+  }
+}
