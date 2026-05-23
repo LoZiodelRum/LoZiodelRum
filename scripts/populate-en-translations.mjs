@@ -81,6 +81,13 @@ const CONCEPTS = [
   },
 ];
 
+const MAPPED_TARGET_KEYS = new Set(
+  CONCEPTS.flatMap((concept) => [
+    ...concept.targetCandidates,
+    ...concept.sourceCandidates.map((sourceKey) => `${sourceKey}_en`),
+  ])
+);
+
 function hasValue(v) {
   return typeof v === "string" ? v.trim().length > 0 : v !== null && v !== undefined;
 }
@@ -187,6 +194,39 @@ async function run() {
 
         if (Object.prototype.hasOwnProperty.call(patch, targetKey)) {
           touched.push({ concept: concept.name, sourceKey, targetKey });
+          tableStats.fields[targetKey] = (tableStats.fields[targetKey] || 0) + 1;
+          tableStats.fieldUpdates += 1;
+        }
+      }
+
+      // Fallback auto-pass for fields not covered by explicit concept mapping:
+      // for any '<field>_en' column, use '<field>' as source when available.
+      for (const targetKey of Object.keys(row)) {
+        if (!targetKey.endsWith("_en")) continue;
+        if (MAPPED_TARGET_KEYS.has(targetKey)) continue;
+        if (Object.prototype.hasOwnProperty.call(patch, targetKey)) continue;
+
+        const targetHasValue = hasValue(row[targetKey]);
+        if (targetHasValue) continue;
+
+        const sourceKey = targetKey.slice(0, -3);
+        if (!Object.prototype.hasOwnProperty.call(row, sourceKey)) continue;
+
+        const sourceVal = row[sourceKey];
+        if (typeof sourceVal !== "string" || !sourceVal.trim()) continue;
+
+        if (isApply) {
+          try {
+            patch[targetKey] = await translateItToEn(sourceVal);
+          } catch (err) {
+            console.error(`[${table}] translate failed for row ${row.id}, field ${sourceKey}:`, err.message);
+          }
+        } else {
+          patch[targetKey] = "<to-be-translated>";
+        }
+
+        if (Object.prototype.hasOwnProperty.call(patch, targetKey)) {
+          touched.push({ concept: "auto_unmapped", sourceKey, targetKey });
           tableStats.fields[targetKey] = (tableStats.fields[targetKey] || 0) + 1;
           tableStats.fieldUpdates += 1;
         }
