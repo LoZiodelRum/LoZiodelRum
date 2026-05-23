@@ -311,9 +311,6 @@ export default function Navbar() {
                     {i18n.language === "it" ? "IT" : "EN"}
                   </span>
                 </span>
-                <span className="languageChevron" aria-hidden="true">
-                  ▾
-                </span>
               </button>
             </div>
 
@@ -704,6 +701,7 @@ export default function Navbar() {
             margin-left: 0 !important;
             margin-right: 0 !important;
             align-items: center !important;
+            transform: translateX(4px);
             transition: all 0.2s ease;
           }
 
@@ -736,8 +734,8 @@ export default function Navbar() {
 
           .languageButton {
             min-height: 34px;
-            min-width: 74px;
-            justify-content: space-between;
+            min-width: 64px;
+            justify-content: center;
           }
 
           .languageButtonContent {
@@ -746,18 +744,6 @@ export default function Navbar() {
             gap: 4px;
             white-space: nowrap;
             overflow: hidden;
-          }
-
-          .languageChevron {
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 10px;
-            line-height: 1;
-            opacity: 0.82;
-            margin-left: 2px;
-            transform: translateY(1px);
-            flex-shrink: 0;
           }
 
           .futureDropdownContainer {
