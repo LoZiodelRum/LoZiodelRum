@@ -18,12 +18,12 @@ type VinoCard = {
 };
 
 const VINI_SELECT_ATTEMPTS = [
+  "*",
   "id, nome, nome_en, nome_bg, immagine, image, categoria, categoria_en, categoria_bg, alcol, alcol_en, alcol_bg, grado_alcolico, descrizione, descrizione_en, descrizione_bg",
   "id, nome, nome_en, nome_bg, immagine, categoria, categoria_en, categoria_bg, alcol, alcol_en, alcol_bg, grado_alcolico, descrizione, descrizione_en, descrizione_bg",
   "id, nome, nome_en, nome_bg, immagine, categoria, categoria_en, categoria_bg, grado_alcolico, descrizione, descrizione_en, descrizione_bg",
   "id, nome, nome_en, nome_bg, immagine, categoria, grado_alcolico, descrizione",
   "id, nome, immagine, categoria, grado_alcolico, descrizione",
-  "*",
 ];
 
 export default function Vini() {

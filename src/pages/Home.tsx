@@ -118,7 +118,6 @@ export default function Home() {
 
     const adminPassword =
       localStorage.getItem("adminPassword") ||
-      import.meta.env.VITE_ADMIN_PASSWORD ||
       "";
 
     if (!adminPassword) {

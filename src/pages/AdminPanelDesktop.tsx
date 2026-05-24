@@ -77,7 +77,7 @@ export default function AdminPanel() {
     if (typeof window !== "undefined" && window.localStorage) {
       adminPassword = localStorage.getItem("adminPassword") || "";
     }
-    adminPassword = adminPassword || import.meta.env.VITE_ADMIN_PASSWORD || "";
+    adminPassword = adminPassword || "";
 
     let utentiData: any[] | null = null;
     if (adminPassword) {
@@ -226,7 +226,7 @@ export default function AdminPanel() {
     if (typeof window !== "undefined" && window.localStorage) {
       adminPassword = localStorage.getItem("adminPassword") || "";
     }
-    adminPassword = adminPassword || import.meta.env.VITE_ADMIN_PASSWORD || "";
+    adminPassword = adminPassword || "";
 
     const {
       data: { session },
@@ -864,7 +864,7 @@ export default function AdminPanel() {
     if (typeof window !== "undefined" && window.localStorage) {
       adminPassword = localStorage.getItem("adminPassword") || "";
     }
-    adminPassword = adminPassword || import.meta.env.VITE_ADMIN_PASSWORD || "";
+    adminPassword = adminPassword || "";
 
     const hasValidId = selectedItem.id !== undefined && selectedItem.id !== null && String(selectedItem.id).trim() !== "";
     const fallbackSlug = typeof selectedItem?.slug === "string" ? selectedItem.slug.trim() : "";

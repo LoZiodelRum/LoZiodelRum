@@ -6,11 +6,11 @@ import { useTranslation } from "react-i18next";
 import { getTranslatedField } from "../utils/getTranslatedField";
 
 const VINI_SELECT_ATTEMPTS = [
+  "*",
   "id, nome, nome_en, nome_bg, immagine, image, categoria, categoria_en, categoria_bg",
   "id, nome, nome_en, nome_bg, immagine, categoria, categoria_en, categoria_bg",
   "id, nome, nome_en, nome_bg, immagine, categoria",
   "id, nome, immagine, categoria",
-  "*",
 ];
 
 export default function CategoryVini() {

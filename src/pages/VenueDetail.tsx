@@ -147,7 +147,6 @@ export default function VenueDetail() {
   async function handleSave() {
     const adminPassword =
       localStorage.getItem("adminPassword") ||
-      import.meta.env.VITE_ADMIN_PASSWORD ||
       "";
 
     let error: any = null;
@@ -230,7 +229,6 @@ export default function VenueDetail() {
 
     const adminPassword =
       localStorage.getItem("adminPassword") ||
-      import.meta.env.VITE_ADMIN_PASSWORD ||
       "";
 
     let error: any = null;
