@@ -80,24 +80,27 @@ export default function DrinkDetail() {
   useEffect(() => {
     async function fetchDrink() {
       setLoading(true);
-      const cocktailSelectColumns = "id, nome, nome_en, nome_bg, immagine, marca, categoria, categoria_en, categoria_bg, gradazione, descrizione, descrizione_en, descrizione_bg, ingredienti, ingredienti_en, ingredienti_bg, preparazione, preparazione_en, preparazione_bg, ricetta, note_degustazione, note_degustazione_en, note_degustazione_bg, storia, storia_en, storia_bg, abbinamenti, abbinamenti_en, abbinamenti_bg, garnish, bicchiere, created_at, updated_at";
-      const distillatiSelectColumns = "id, nome, nome_en, nome_bg, immagine, marca, categoria, categoria_en, categoria_bg, gradazione, descrizione, descrizione_en, descrizione_bg, provenienza, provenienza_en, provenienza_bg, note_degustazione, note_degustazione_en, note_degustazione_bg, storia, storia_en, storia_bg, abbinamenti, abbinamenti_en, abbinamenti_bg, note_aromatiche, sensazioni_al_palato, palato, distilleria, invecchiamento, tipo_botte, esame_visivo, esame_olfattivo, esame_gustativo, sottocategoria, base_alcolica, created_at, updated_at";
-      // Cerca prima nei cocktail
-      const { data, error } = await supabase.from("cocktail").select(cocktailSelectColumns).eq("id", id).single();
-      if (!data || error) {
-        // Se non trovato, cerca nei distillati
-        const { data: distillato, error: err2 } = await supabase.from("distillati").select(distillatiSelectColumns).eq("id", id).single();
-        if (!distillato || err2) {
-          setNotFound(true);
-          setLoading(false);
+      try {
+        // Il detail deve leggere il record completo: i campi visibili cambiano tra cocktail e distillati.
+        const cocktailResult = await supabase.from("cocktail").select("*").eq("id", id).maybeSingle();
+        if (cocktailResult.data) {
+          setDrink(cocktailResult.data);
           return;
-        } else {
-          setDrink(distillato);
         }
-      } else {
-        setDrink(data);
+
+        const distillatoResult = await supabase.from("distillati").select("*").eq("id", id).maybeSingle();
+        if (distillatoResult.data) {
+          setDrink(distillatoResult.data);
+          return;
+        }
+
+        setNotFound(true);
+      } catch (error) {
+        console.error("Drink detail load failed:", error);
+        setNotFound(true);
+      } finally {
+        setLoading(false);
       }
-      setLoading(false);
     }
     fetchDrink();
   }, [id]);
@@ -122,6 +125,7 @@ export default function DrinkDetail() {
   const translatedOrigin = getFirstTranslatedField(drink, ["provenienza", "origine", "origin"], i18n.language, "");
   const translatedAromaticNotes = getFirstTranslatedField(drink, ["note_aromatiche", "aromatic_notes"], i18n.language, "");
   const translatedPalate = getFirstTranslatedField(drink, ["sensazioni_al_palato", "palato"], i18n.language, "");
+  const imageUrl = drink.immagine || drink.immagine_url || drink.image || drink.img || null;
 
   const languageSuffixRegex = /_(it|en|es|de|fr|bg)$/i;
   const isItalianUi = String(i18n.language || "it").toLowerCase().startsWith("it");
@@ -135,8 +139,8 @@ export default function DrinkDetail() {
       </button>
       <div style={{ display: "flex", flexWrap: "wrap", gap: 40 }}>
         <div style={{ flex: 1, minWidth: 260 }}>
-          {drink.immagine ? (
-            <img src={drink.immagine} alt={translatedName} style={{ width: "100%", borderRadius: 16, marginBottom: 20 }} />
+          {imageUrl ? (
+            <img src={imageUrl} alt={translatedName} style={{ width: "100%", borderRadius: 16, marginBottom: 20 }} />
           ) : (
             <div className="no-img-placeholder" style={{ marginBottom: 20 }}>{t("drink.states.noImage")}</div>
           )}
