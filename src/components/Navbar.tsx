@@ -189,7 +189,7 @@ export default function Navbar() {
             flexShrink: 0,
           }}
         >
-          {t("logout")}
+          Esci
         </button>
 
         {/* SELETTORE LINGUA DESKTOP */}
@@ -651,7 +651,7 @@ export default function Navbar() {
             transition: "all 0.2s ease",
           }}
         >
-          {t("logout")}
+          Esci
         </button>
       </div>
 
