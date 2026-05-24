@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, MapPin } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import { supabase } from "../lib/supabaseClient";
+import { publicSupabase as supabase } from "../lib/supabaseClient";
 import { useUser } from "../context/UserContext";
 import { getTranslatedField } from "../utils/getTranslatedField";
 
@@ -50,18 +50,49 @@ export default function Home() {
   }, []);
 
   async function fetchLocali() {
-    const { data, error } = await supabase
+    const columns = "id, nome, nome_en, nome_bg, citta, descrizione, descrizione_en, descrizione_bg, descrizione_completa, image_url, image";
+
+    let rows: any[] = [];
+    let error: any = null;
+
+    const approved = await supabase
       .from("Locali")
-      .select("id, nome, nome_en, nome_bg, citta, descrizione, descrizione_en, descrizione_bg, descrizione_completa, image_url")
+      .select(columns)
       .eq("status", "approved")
       .limit(6);
 
-    if (error) {
+    if (!approved.error && Array.isArray(approved.data) && approved.data.length) {
+      rows = approved.data;
+    } else {
+      error = approved.error;
+      const fallback = await supabase
+        .from("Locali")
+        .select(columns)
+        .limit(6);
+
+      if (!fallback.error) {
+        rows = Array.isArray(fallback.data) ? fallback.data : [];
+      } else {
+        const fallbackAll = await supabase
+          .from("Locali")
+          .select("*")
+          .limit(6);
+
+        if (!fallbackAll.error) {
+          rows = Array.isArray(fallbackAll.data) ? fallbackAll.data : [];
+        } else {
+          error = fallbackAll.error;
+        }
+      }
+    }
+
+    if (error && !rows.length) {
       console.error(t("home.errors.localesFetch"), error);
+      setLocali([]);
       return;
     }
 
-    setLocali(data ?? []);
+    setLocali(rows.map((row: any) => ({ ...row, image_url: row.image_url ?? row.image ?? null })));
   }
 
   function startLocaleEdit(locale: Locale) {
@@ -162,18 +193,52 @@ export default function Home() {
   }
 
   async function fetchArticoli() {
-    const { data, error } = await supabase
-      .from("articoli")
-      .select("id, titolo, titolo_en, titolo_bg, immagine")
-      .eq("pubblicato", true)
-      .limit(6);
+    const columnsAttempts = [
+      "id, titolo, titolo_en, titolo_bg, immagine, image, created_at",
+      "id, titolo, titolo_en, titolo_bg, immagine, created_at",
+      "id, titolo, titolo_en, titolo_bg, immagine, image",
+      "id, titolo, titolo_en, titolo_bg, immagine",
+      "id, titolo, immagine",
+      "*",
+    ];
 
-    if (error) {
-      console.error(t("home.errors.articlesFetch"), error);
+    let rows: any[] = [];
+    let lastError: any = null;
+
+    for (const columns of columnsAttempts) {
+      const withPublished = await supabase
+        .from("articoli")
+        .select(columns)
+        .eq("pubblicato", true)
+        .limit(6);
+
+      if (!withPublished.error) {
+        rows = Array.isArray(withPublished.data) ? withPublished.data : [];
+        if (rows.length) break;
+      } else {
+        lastError = withPublished.error;
+      }
+
+      const withoutPublished = await supabase
+        .from("articoli")
+        .select(columns)
+        .limit(6);
+
+      if (!withoutPublished.error) {
+        rows = Array.isArray(withoutPublished.data) ? withoutPublished.data : [];
+        break;
+      }
+
+      lastError = withoutPublished.error;
+    }
+
+    if (lastError && !rows.length) {
+      console.error(t("home.errors.articlesFetch"), lastError);
+      setArticoli([]);
       return;
     }
 
-    setArticoli(data ?? []);
+    setArticoli(rows.map((row: any) => ({ ...row, immagine: row.immagine ?? row.image ?? null })));
   }
 
   const heroVideoSrc = `/home-hero.mp4?v=${HOME_HERO_VIDEO_VERSION}`;

@@ -1,11 +1,12 @@
 import "../App.css";
 import { useEffect, useState } from "react";
-import { supabase } from "../lib/supabaseClient";
+import { supabase, publicSupabase } from "../lib/supabaseClient";
 import { useParams } from "react-router-dom";
 import { useUser } from "../context/UserContext"; // ✅ AGGIUNTO
 import Navbar from "../components/Navbar";
 import { useTranslation } from "react-i18next";
 import { getTranslatedField } from "../utils/getTranslatedField";
+import { SUPABASE_ANON_KEY, SUPABASE_URL } from "../lib/supabaseClient";
 
 import { hero, overlay, heroBox, badge, title, subtitle, meta, articleWrapper } from "./articleDetailStyles";
 
@@ -87,18 +88,39 @@ export default function ArticleDetail() {
   const [data, setData] = useState<any>(null);
   const [form, setForm] = useState<any>(null); // ✅
   const [uploading, setUploading] = useState(false); // ✅
+  const [loading, setLoading] = useState(true);
   useEffect(() => {
     load();
   }, [id]);
   async function load() {
-    const { data } = await supabase
-      .from("articoli")
-      .select("id, titolo, titolo_en, titolo_bg, descrizione, descrizione_en, descrizione_bg, categoria, categoria_en, categoria_bg, immagine, contenuto")
-      .eq("id", id)
-      .single();
+    if (!id) {
+      setData(null);
+      setForm(null);
+      setLoading(false);
+      return;
+    }
 
-    setData(data);
-    setForm(data); // ✅
+    setLoading(true);
+
+    try {
+      const response = await fetch(`${SUPABASE_URL}/rest/v1/articoli?select=*&id=eq.${encodeURIComponent(id)}`, {
+        headers: {
+          apikey: SUPABASE_ANON_KEY,
+          Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+        },
+      });
+
+      const payload = response.ok ? await response.json().catch(() => []) : [];
+      const loaded = Array.isArray(payload) ? payload[0] ?? null : null;
+      setData(loaded);
+      setForm(loaded);
+    } catch (error) {
+      console.error("Article detail load failed:", error);
+      setData(null);
+      setForm(null);
+    } finally {
+      setLoading(false);
+    }
   }
 
   // ✅ SAVE
@@ -168,8 +190,10 @@ export default function ArticleDetail() {
     <>
         <Navbar />
         {/* NOTA: Nessun menu laterale custom/mobile drawer viene montato qui. Solo Navbar gestisce il menu mobile. */}
-      {!data ? (
+        {loading ? (
           <div className="page fade-in" style={{ padding: 40 }}>{t("loading")}</div>
+        ) : !data ? (
+          <div className="page fade-in" style={{ padding: 40 }}>{t("notFound", { defaultValue: "Articolo non trovato" })}</div>
       ) : (
         <main>
           <div className="page page-full-bleed fade-in">

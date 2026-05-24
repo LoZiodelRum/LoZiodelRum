@@ -6,6 +6,22 @@ import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTranslatedField } from "../utils/getTranslatedField";
 
+const COCKTAIL_SELECT_ATTEMPTS = [
+  "id, nome, nome_en, nome_bg, immagine, immagine_url, image, img, marca, distilleria, categoria, tipologia, tipo, tipo_distillato, categoria_distillato, base_alcolica, invecchiamento, tipo_botte, esame_visivo, esame_olfattivo, esame_gustativo, note_aromatiche, sottocategoria",
+  "id, nome, nome_en, nome_bg, immagine, marca, distilleria, categoria, tipologia, tipo, tipo_distillato, categoria_distillato, base_alcolica, invecchiamento, tipo_botte, esame_visivo, esame_olfattivo, esame_gustativo, note_aromatiche, sottocategoria",
+  "id, nome, nome_en, nome_bg, immagine, categoria, marca, distilleria",
+  "id, nome, immagine, categoria",
+  "*",
+];
+
+const DISTILLATI_SELECT_ATTEMPTS = [
+  "id, nome, nome_en, nome_bg, marca, categoria, tipologia, tipo, tipo_distillato, categoria_distillato, base_alcolica, invecchiamento, tipo_botte, esame_visivo, esame_olfattivo, esame_gustativo, note_aromatiche, sottocategoria, immagine, immagine_url, image, img",
+  "id, nome, nome_en, nome_bg, marca, categoria, tipologia, tipo, tipo_distillato, categoria_distillato, base_alcolica, invecchiamento, tipo_botte, esame_visivo, esame_olfattivo, esame_gustativo, note_aromatiche, sottocategoria, immagine",
+  "id, nome, nome_en, nome_bg, marca, categoria, immagine",
+  "id, nome, marca, categoria, immagine",
+  "*",
+];
+
 type Cocktail = {
   id: string;
   nome: string;
@@ -44,74 +60,38 @@ export default function Drink() {
   async function load() {
     setLoading(true);
 
-    const cocktailSelectColumns = [
-      "id",
-      "nome",
-      "nome_en",
-      "nome_bg",
-      "immagine",
-      "immagine_url",
-      "image",
-      "img",
-      "marca",
-      "distilleria",
-      "categoria",
-      "tipologia",
-      "tipo",
-      "tipo_distillato",
-      "categoria_distillato",
-      "base_alcolica",
-      "invecchiamento",
-      "tipo_botte",
-      "esame_visivo",
-      "esame_olfattivo",
-      "esame_gustativo",
-      "note_aromatiche",
-      "sottocategoria",
-    ].join(", ");
-
-    const distillatiSelectColumns = [
-      "id",
-      "nome",
-      "nome_en",
-      "nome_bg",
-      "marca",
-      "categoria",
-      "tipologia",
-      "tipo",
-      "tipo_distillato",
-      "categoria_distillato",
-      "base_alcolica",
-      "invecchiamento",
-      "tipo_botte",
-      "esame_visivo",
-      "esame_olfattivo",
-      "esame_gustativo",
-      "note_aromatiche",
-      "sottocategoria",
-      "immagine",
-      "immagine_url",
-      "image",
-      "img",
-    ].join(", ");
-
-    const { data: cocktailData } = await supabase.from("cocktail").select(cocktailSelectColumns);
-    const { data: distillatiData, error: distillatiError } = await supabase.from("distillati").select(distillatiSelectColumns);
-
-    let distillatiRows: any[] = Array.isArray(distillatiData) ? distillatiData : [];
-
-    if ((!distillatiRows.length && distillatiError) || !distillatiRows.length) {
-      const { data: distillatoData } = await supabase.from("distillato").select(distillatiSelectColumns);
-      if (Array.isArray(distillatoData) && distillatoData.length) {
-        distillatiRows = distillatoData;
+    try {
+      async function selectWithFallback(tableName: "cocktail" | "distillati" | "distillato", attempts: string[]) {
+        for (const columns of attempts) {
+          const result = await supabase.from(tableName).select(columns);
+          if (!result.error) {
+            return Array.isArray(result.data) ? result.data : [];
+          }
+        }
+        return [];
       }
+
+      const cocktailData = await selectWithFallback("cocktail", COCKTAIL_SELECT_ATTEMPTS);
+      let distillatiRows: any[] = await selectWithFallback("distillati", DISTILLATI_SELECT_ATTEMPTS);
+
+      if (!distillatiRows.length) {
+        distillatiRows = await selectWithFallback("distillato", DISTILLATI_SELECT_ATTEMPTS);
+      }
+
+      setCocktailRows(cocktailData);
+      setDistillatiRows(distillatiRows);
+      rebuildLists(cocktailData, distillatiRows);
+    } catch (error) {
+      console.error("Drink load failed:", error);
+      setCocktailRows([]);
+      setDistillatiRows([]);
+      setCocktail([]);
+      setRum([]);
+      setWhisky([]);
+      setAltri([]);
+    } finally {
+      setLoading(false);
     }
-
-    setCocktailRows(Array.isArray(cocktailData) ? cocktailData : []);
-    setDistillatiRows(distillatiRows);
-    rebuildLists(Array.isArray(cocktailData) ? cocktailData : [], distillatiRows);
-
-    setLoading(false);
   }
 
   function rebuildLists(cocktailData: any[], sourceDistillatiRows: any[]) {
@@ -131,6 +111,10 @@ export default function Drink() {
         d.tipo_distillato,
         d.categoria_distillato,
         d.base_alcolica,
+        d.nome,
+        d.nome_en,
+        d.nome_bg,
+        d.sottocategoria,
       ]
         .map(normalize)
         .find((value) => value.length > 0) || "";

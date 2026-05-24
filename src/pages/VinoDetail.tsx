@@ -1,7 +1,7 @@
 import "../App.css";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { supabase } from "../lib/supabaseClient";
+import { SUPABASE_ANON_KEY, SUPABASE_URL, publicSupabase } from "../lib/supabaseClient";
 import { useTranslation } from "react-i18next";
 import { getTranslatedField } from "../utils/getTranslatedField";
 
@@ -112,20 +112,36 @@ export default function VinoDetail() {
 
     setLoading(true);
 
-    const vinoSelectColumns = "id, nome, nome_en, nome_bg, descrizione, descrizione_en, descrizione_bg, annata, cantina, vitigno, grado_alcolico, zona, denominazione, categoria, categoria_en, categoria_bg, abbinamenti, note_degustazione, note_degustazione_en, note_degustazione_bg, storia, temperatura_servizio, note_personali, valutazione, limpidezza, colore, consistenza, effervescenza, intensita_olfattiva, complessita, qualita_olfattiva, descrizione_olfattiva, zuccheri, alcoli, polialcoli, acidita, tannini, sali_minerali, equilibrio, intensita_gusto, persistenza, qualita_gusto, corpo, stato_evolutivo, armonia, immagine, image";
+    try {
+      const fetchVino = async (tableName: "vini" | "Vini") => {
+        const response = await fetch(`${SUPABASE_URL}/rest/v1/${tableName}?select=*&id=eq.${encodeURIComponent(id)}`, {
+          headers: {
+            apikey: SUPABASE_ANON_KEY,
+            Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+          },
+        });
 
-    const lower = await supabase.from("vini").select(vinoSelectColumns).eq("id", id).maybeSingle();
-    if (!lower.error && lower.data) {
-      setVino(lower.data);
-      setLoading(false);
-      return;
-    }
+        if (!response.ok) return null;
 
-    const upper = await supabase.from("Vini").select(vinoSelectColumns).eq("id", id).maybeSingle();
-    if (!upper.error && upper.data) {
-      setVino(upper.data);
-      setLoading(false);
-      return;
+        const payload = await response.json().catch(() => []);
+        return Array.isArray(payload) ? payload[0] ?? null : null;
+      };
+
+      const lower = await fetchVino("vini");
+      if (lower) {
+        setVino(lower);
+        setLoading(false);
+        return;
+      }
+
+      const upper = await fetchVino("Vini");
+      if (upper) {
+        setVino(upper);
+        setLoading(false);
+        return;
+      }
+    } catch (error) {
+      console.error("Wine detail load failed:", error);
     }
 
     setVino(null);

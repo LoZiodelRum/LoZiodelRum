@@ -5,6 +5,14 @@ import { supabase } from "../lib/supabaseClient";
 import { useTranslation } from "react-i18next";
 import { getTranslatedField } from "../utils/getTranslatedField";
 
+const VINI_SELECT_ATTEMPTS = [
+  "id, nome, nome_en, nome_bg, immagine, image, categoria, categoria_en, categoria_bg",
+  "id, nome, nome_en, nome_bg, immagine, categoria, categoria_en, categoria_bg",
+  "id, nome, nome_en, nome_bg, immagine, categoria",
+  "id, nome, immagine, categoria",
+  "*",
+];
+
 export default function CategoryVini() {
   const { categoria } = useParams();
   const navigate = useNavigate();
@@ -26,33 +34,35 @@ export default function CategoryVini() {
   useEffect(() => {
     async function load() {
       setLoading(true);
-      // Mappa i parametri url ai valori reali del db
-      let dbCategoria = categoria;
-      if (categoria) {
-        if (categoria.toLowerCase() === "rossi") dbCategoria = "Rosso";
-        else if (categoria.toLowerCase() === "bianchi") dbCategoria = "Bianco";
-        else if (categoria.toLowerCase() === "rosati") dbCategoria = "Rosato";
-        else if (categoria.toLowerCase() === "bollicine") dbCategoria = "Bollicine";
-        else if (categoria.toLowerCase() === "altri-vini") dbCategoria = null; // gestito sotto
+
+      function normalize(value: any) {
+        return String(value || "").toLowerCase().trim();
       }
-      let data = [];
-      if (dbCategoria) {
-        const res = await supabase
-          .from("vini")
-          .select("id, nome, nome_en, nome_bg, immagine, image, categoria, categoria_en, categoria_bg")
-          .ilike("categoria", `%${dbCategoria}%`);
-        data = res.data || [];
-      } else if (categoria && categoria.toLowerCase() === "altri-vini") {
-        // Escludi tutte le categorie principali
-        const res = await supabase
-          .from("vini")
-          .select("id, nome, nome_en, nome_bg, immagine, image, categoria, categoria_en, categoria_bg")
-          .not("categoria", "ilike", "%Rosso%")
-          .not("categoria", "ilike", "%Bianco%")
-          .not("categoria", "ilike", "%Rosato%")
-          .not("categoria", "ilike", "%Bollicine%")
-        data = res.data || [];
+
+      function categorySlugFor(vino: any): string {
+        const haystack = [vino.categoria, vino.categoria_en, vino.categoria_bg].map(normalize).join(" ");
+        if (haystack.includes("ross") || haystack.includes("red")) return "rossi";
+        if (haystack.includes("bian") || haystack.includes("whit")) return "bianchi";
+        if (haystack.includes("rosa") || haystack.includes("rose")) return "rosati";
+        if (haystack.includes("bollic") || haystack.includes("spark") || haystack.includes("champ")) return "bollicine";
+        return "altri-vini";
       }
+
+      let allRows: any[] = [];
+      for (const columns of VINI_SELECT_ATTEMPTS) {
+        const res = await supabase.from("vini").select(columns);
+        if (!res.error) {
+          allRows = Array.isArray(res.data) ? res.data : [];
+          break;
+        }
+      }
+
+      const slug = String(categoria || "").toLowerCase();
+      const data = allRows.filter((row) => {
+        if (!slug) return true;
+        return categorySlugFor(row) === slug;
+      });
+
       setRawViniRows(data);
       setVini(data);
       setLoading(false);

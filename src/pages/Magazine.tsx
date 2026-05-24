@@ -1,7 +1,7 @@
 import Navbar from "../components/Navbar";
 import "../App.css";
 import { useEffect, useState } from "react";
-import { supabase } from "../lib/supabaseClient";
+import { publicSupabase as supabase } from "../lib/supabaseClient";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTranslatedField } from "../utils/getTranslatedField";
@@ -17,7 +17,6 @@ type Article = {
 
 export default function Magazine() {
   const [articles, setArticles] = useState<Article[]>([]);
-  const fallbackArticleImage = "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=1600";
   const { t, i18n } = useTranslation("translation");
 
   useEffect(() => {
@@ -25,14 +24,54 @@ export default function Magazine() {
   }, []);
 
   async function load() {
-    const { data } = await supabase
-      .from("articoli")
-      .select("id, titolo, titolo_en, titolo_bg, descrizione, descrizione_en, descrizione_bg, immagine, categoria, categoria_en, categoria_bg, data_creazione")
-      .order("data_creazione", { ascending: false });
+    const queryAttempts = [
+      async () => supabase
+        .from("articoli")
+        .select("id, titolo, titolo_en, titolo_bg, descrizione, descrizione_en, descrizione_bg, immagine, image, categoria, categoria_en, categoria_bg, created_at")
+        .order("created_at", { ascending: false }),
+      async () => supabase
+        .from("articoli")
+        .select("id, titolo, titolo_en, titolo_bg, descrizione, descrizione_en, descrizione_bg, immagine, categoria, categoria_en, categoria_bg, data_creazione")
+        .order("data_creazione", { ascending: false }),
+      async () => supabase
+        .from("articoli")
+        .select("id, titolo, titolo_en, titolo_bg, descrizione, descrizione_en, descrizione_bg, immagine, categoria, categoria_en, categoria_bg"),
+      async () => supabase
+        .from("articoli")
+        .select("id, titolo, descrizione, immagine, categoria"),
+      async () => supabase
+        .from("articoli")
+        .select("*"),
+    ];
 
-    if (data) {
-      setArticles(data);
+    let rows: any[] = [];
+    let lastSuccessfulRows: any[] = [];
+    let lastError: any = null;
+
+    for (const runAttempt of queryAttempts) {
+      const result = await runAttempt();
+      if (result.error) {
+        lastError = result.error;
+        continue;
+      }
+
+      const dataRows = Array.isArray(result.data) ? result.data : [];
+      lastSuccessfulRows = dataRows;
+      if (dataRows.length > 0) {
+        rows = dataRows;
+        break;
+      }
     }
+
+    if (!rows.length) {
+      rows = lastSuccessfulRows;
+    }
+
+    if (!rows.length && lastError) {
+      console.error("Magazine load failed:", lastError);
+    }
+
+    setArticles(rows.map((a: any) => ({ ...a, immagine: a.immagine || a.image || null })));
   }
 
   if (!articles.length) {
@@ -51,7 +90,7 @@ export default function Magazine() {
           <Link
             to={`/magazine/${hero.id}`}
             className="magazine-hero"
-            style={{ backgroundImage: `url(${hero.immagine || fallbackArticleImage})` }}
+            style={hero.immagine ? { backgroundImage: `url(${hero.immagine})` } : { background: "#0f172a" }}
           >
             <div className="magazine-hero-overlay">
               {hero.categoria && <span className="badge-category">{getTranslatedField(hero as any, "categoria", i18n.language, hero.categoria)}</span>}
@@ -65,11 +104,17 @@ export default function Magazine() {
         <div className="cocktail-grid">
           {others.map((a) => (
             <Link key={a.id} to={`/magazine/${a.id}`} className="drink-card">
-              <img
-                src={a.immagine || fallbackArticleImage}
-                alt={getTranslatedField(a as any, "titolo", i18n.language, t("articleFallback"))}
-                style={{ transform: "scale(0.9)", transformOrigin: "center" }}
-              />
+              {a.immagine ? (
+                <img
+                  src={a.immagine}
+                  alt={getTranslatedField(a as any, "titolo", i18n.language, t("articleFallback"))}
+                  style={{ transform: "scale(0.9)", transformOrigin: "center" }}
+                />
+              ) : (
+                <div className="no-img-placeholder" style={{ background: "#0f172a", color: "#cbd5e1", minHeight: 220 }}>
+                  {t("drink.states.noImage", { defaultValue: "No image" })}
+                </div>
+              )}
               <div className="drink-card-overlay">
                 {a.categoria && <span className="badge-category">{getTranslatedField(a as any, "categoria", i18n.language, a.categoria)}</span>}
                 <h3>{getTranslatedField(a as any, "titolo", i18n.language, t("articleFallback"))}</h3>

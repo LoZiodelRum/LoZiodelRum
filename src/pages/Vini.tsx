@@ -10,11 +10,21 @@ type VinoCard = {
   id: string;
   nome: string;
   immagine?: string | null;
+  categorySlug: "rossi" | "bianchi" | "rosati" | "bollicine" | "altri-vini";
   categoria: string;
   alcol: string;
   descrizione: string;
   placeholder?: boolean;
 };
+
+const VINI_SELECT_ATTEMPTS = [
+  "id, nome, nome_en, nome_bg, immagine, image, categoria, categoria_en, categoria_bg, alcol, alcol_en, alcol_bg, grado_alcolico, descrizione, descrizione_en, descrizione_bg",
+  "id, nome, nome_en, nome_bg, immagine, categoria, categoria_en, categoria_bg, alcol, alcol_en, alcol_bg, grado_alcolico, descrizione, descrizione_en, descrizione_bg",
+  "id, nome, nome_en, nome_bg, immagine, categoria, categoria_en, categoria_bg, grado_alcolico, descrizione, descrizione_en, descrizione_bg",
+  "id, nome, nome_en, nome_bg, immagine, categoria, grado_alcolico, descrizione",
+  "id, nome, immagine, categoria, grado_alcolico, descrizione",
+  "*",
+];
 
 export default function Vini() {
   const { t, i18n } = useTranslation("drink");
@@ -36,14 +46,18 @@ export default function Vini() {
   async function load() {
     setLoading(true);
 
-    const { data, error } = await supabase
-      .from("vini")
-      .select("id, nome, nome_en, nome_bg, immagine, image, categoria, categoria_en, categoria_bg, alcol, alcol_en, alcol_bg, grado_alcolico, descrizione, descrizione_en, descrizione_bg");
+    let rows: any[] = [];
+    for (const columns of VINI_SELECT_ATTEMPTS) {
+      const result = await supabase.from("vini").select(columns);
+      if (!result.error) {
+        rows = Array.isArray(result.data) ? result.data : [];
+        break;
+      }
+    }
 
-
-    if (!error && data && data.length) {
-      setRawViniRows(data);
-      rebuildVini(data);
+    if (rows.length) {
+      setRawViniRows(rows);
+      rebuildVini(rows);
       setLoading(false);
       return;
     }
@@ -55,11 +69,28 @@ export default function Vini() {
   }
 
   function rebuildVini(rows: any[]) {
+    function normalize(value: any) {
+      return String(value || "").toLowerCase().trim();
+    }
+
+    function categorySlugFor(vino: any): "rossi" | "bianchi" | "rosati" | "bollicine" | "altri-vini" {
+      const haystack = [vino.categoria, vino.categoria_en, vino.categoria_bg]
+        .map(normalize)
+        .join(" ");
+
+      if (haystack.includes("ross") || haystack.includes("red")) return "rossi";
+      if (haystack.includes("bian") || haystack.includes("whit")) return "bianchi";
+      if (haystack.includes("rosa") || haystack.includes("rose")) return "rosati";
+      if (haystack.includes("bollic") || haystack.includes("spark") || haystack.includes("champ")) return "bollicine";
+      return "altri-vini";
+    }
+
     const mapped = rows
       .map((vino: any) => ({
         id: String(vino.id),
         nome: getTranslatedField(vino, "nome", i18n.language, t("drink.wines.fallbackName")),
         immagine: vino.immagine ?? vino.image ?? null,
+        categorySlug: categorySlugFor(vino),
         categoria: getTranslatedField(vino, "categoria", i18n.language, t("drink.wines.fallbackCategory")),
         alcol: getTranslatedField(vino, "alcol", i18n.language, vino.grado_alcolico || ""),
         descrizione: getTranslatedField(vino, "descrizione", i18n.language, ""),
@@ -69,19 +100,11 @@ export default function Vini() {
     setVini(mapped);
   }
 
-  const rossiAll = useMemo(() => vini.filter((vino) => vino.categoria.toLowerCase().includes("rosso")), [vini]);
-  const bianchiAll = useMemo(() => vini.filter((vino) => vino.categoria.toLowerCase().includes("bianco")), [vini]);
-  const rosatiAll = useMemo(() => vini.filter((vino) => vino.categoria.toLowerCase().includes("rosat")), [vini]);
-  const bollicineAll = useMemo(() => vini.filter((vino) => vino.categoria.toLowerCase().includes("bollic")), [vini]);
-  const altriAll = useMemo(
-    () => vini.filter((vino) =>
-      !vino.categoria.toLowerCase().includes("rosso") &&
-      !vino.categoria.toLowerCase().includes("bianco") &&
-      !vino.categoria.toLowerCase().includes("rosat") &&
-      !vino.categoria.toLowerCase().includes("bollic")
-    ),
-    [vini]
-  );
+  const rossiAll = useMemo(() => vini.filter((vino) => vino.categorySlug === "rossi"), [vini]);
+  const bianchiAll = useMemo(() => vini.filter((vino) => vino.categorySlug === "bianchi"), [vini]);
+  const rosatiAll = useMemo(() => vini.filter((vino) => vino.categorySlug === "rosati"), [vini]);
+  const bollicineAll = useMemo(() => vini.filter((vino) => vino.categorySlug === "bollicine"), [vini]);
+  const altriAll = useMemo(() => vini.filter((vino) => vino.categorySlug === "altri-vini"), [vini]);
 
   const rossi = useMemo(() => rossiAll.slice(0, 6), [rossiAll]);
   const bianchi = useMemo(() => bianchiAll.slice(0, 6), [bianchiAll]);
@@ -113,6 +136,7 @@ export default function Vini() {
           id: `placeholder-${tipo}-${cards.length}`,
           nome: t("drink.states.comingSoon"),
           immagine: null,
+          categorySlug: "altri-vini",
           categoria: "",
           alcol: "",
           descrizione: "",
