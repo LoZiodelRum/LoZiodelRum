@@ -138,9 +138,8 @@ export default function Venues() {
       >
         {venues.map((venue) => {
           const translatedName = getTranslatedField(venue as any, "nome", i18n.language, "-");
-          const translatedDescription = getTranslatedField(venue as any, "descrizione", i18n.language, "");
           const image = venue.image_url || venue.image || "https://via.placeholder.com/900x600?text=Locale";
-          const subtitle = [venue.citta, venue.indirizzo].filter(Boolean).join(" - ");
+          const subtitle = [venue.indirizzo, venue.citta].filter(Boolean).join(" - ");
 
           return (
             <Link
@@ -181,22 +180,6 @@ export default function Venues() {
                 <p style={{ margin: "4px 0 0 0", color: "#cbd5e1", fontSize: 13 }}>
                   {subtitle || missingLocationLabel}
                 </p>
-                {translatedDescription && (
-                  <p
-                    style={{
-                      margin: "8px 0 0 0",
-                      color: "#e2e8f0",
-                      fontSize: 12,
-                      lineHeight: 1.35,
-                      display: "-webkit-box",
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: "vertical",
-                      overflow: "hidden",
-                    }}
-                  >
-                    {translatedDescription}
-                  </p>
-                )}
               </div>
             </Link>
           );
