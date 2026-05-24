@@ -174,6 +174,26 @@ export default function Navbar() {
           {t("create")}
         </Link>
 
+        {user && (
+          <button
+            onClick={handleLogout}
+            style={{
+              background: "none",
+              border: "none",
+              color: "#fff",
+              cursor: "pointer",
+              padding: 0,
+              font: "inherit",
+              display: "inline-flex",
+              alignItems: "center",
+              whiteSpace: "nowrap",
+              flexShrink: 0,
+            }}
+          >
+            {t("logout")}
+          </button>
+        )}
+
         {/* SELETTORE LINGUA DESKTOP */}
         <div
           style={{
@@ -278,26 +298,6 @@ export default function Navbar() {
           <Link to="/admin" style={linkStyle("/admin")}>
             {t("controlPanel")}
           </Link>
-        )}
-
-        {user && (
-          <button
-            onClick={handleLogout}
-            style={{
-              background: "none",
-              border: "none",
-              color: "#fff",
-              cursor: "pointer",
-              padding: 0,
-              font: "inherit",
-              display: "inline-flex",
-              alignItems: "center",
-              whiteSpace: "nowrap",
-              flexShrink: 0,
-            }}
-          >
-            {t("logout")}
-          </button>
         )}
       </div>
 
