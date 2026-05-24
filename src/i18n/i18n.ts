@@ -4,24 +4,30 @@ import { initReactI18next } from "react-i18next";
 import it from "./locales/it/translation.json";
 import en from "./locales/en/translation.json";
 import bg from "./locales/bg/translation.json";
+import es from "./locales/es/translation.json";
 import itNavbar from "../locales/it/navbar.json";
 import enNavbar from "../locales/en/navbar.json";
 import bgNavbar from "../locales/bg/navbar.json";
+import esNavbar from "../locales/es/navbar.json";
 import itHome from "../locales/it/home.json";
 import enHome from "../locales/en/home.json";
 import bgHome from "../locales/bg/home.json";
+import esHome from "../locales/es/home.json";
 import itCommunity from "../locales/it/community.json";
 import enCommunity from "../locales/en/community.json";
 import bgCommunity from "../locales/bg/community.json";
+import esCommunity from "../locales/es/community.json";
 import itDrink from "../locales/it/drink.json";
 import enDrink from "../locales/en/drink.json";
 import bgDrink from "../locales/bg/drink.json";
+import esDrink from "../locales/es/drink.json";
 import itCommon from "../locales/it/common.json";
 import enCommon from "../locales/en/common.json";
 import bgCommon from "../locales/bg/common.json";
+import esCommon from "../locales/es/common.json";
 
 const LANGUAGE_STORAGE_KEY = "drinkwise-language";
-const SUPPORTED_LANGUAGES = ["it", "en", "bg"] as const;
+const SUPPORTED_LANGUAGES = ["it", "en", "bg", "es"] as const;
 
 function normalizeLanguage(input?: string | null): (typeof SUPPORTED_LANGUAGES)[number] {
   const short = String(input || "it").toLowerCase().split(/[-_]/)[0];
@@ -81,6 +87,14 @@ i18n.use(initReactI18next).init({
       community: bgCommunity,
       drink: bgDrink,
       common: bgCommon,
+    },
+    es: {
+      translation: es,
+      navbar: esNavbar,
+      home: esHome,
+      community: esCommunity,
+      drink: esDrink,
+      common: esCommon,
     },
   },
 
