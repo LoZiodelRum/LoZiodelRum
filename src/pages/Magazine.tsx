@@ -11,12 +11,12 @@ type Article = {
   titolo: string;
   titolo_en?: string | null;
   titolo_bg?: string | null;
+  sottotitolo?: string | null;
+  sottotitolo_en?: string | null;
+  sottotitolo_bg?: string | null;
   descrizione: string;
   descrizione_en?: string | null;
   descrizione_bg?: string | null;
-  estratto?: string | null;
-  estratto_en?: string | null;
-  estratto_bg?: string | null;
   immagine: string;
   categoria: string;
   data_creazione: string;
@@ -42,14 +42,14 @@ function pickArticlePreview(article: Article, language?: string): string {
   const normalized = normalizeArticleLanguage(language);
 
   if (normalized === "en") {
-    return article.descrizione_en || article.estratto_en || article.descrizione || article.estratto || "";
+    return article.sottotitolo_en || article.sottotitolo || article.descrizione || "";
   }
 
   if (normalized === "bg") {
-    return article.descrizione_bg || article.estratto_bg || article.descrizione || article.estratto || "";
+    return article.sottotitolo_bg || article.sottotitolo || article.descrizione || "";
   }
 
-  return article.descrizione || article.estratto || "";
+  return article.sottotitolo || article.descrizione || "";
 }
 
 export default function Magazine() {
@@ -78,7 +78,7 @@ export default function Magazine() {
 
     setArticles(rows.map((a: any) => ({
       ...a,
-      descrizione: a.descrizione || a.estratto || a.contenuto || "",
+      descrizione: a.descrizione || "",
       immagine: a.immagine || a.image || null,
     })));
   }
@@ -127,7 +127,19 @@ export default function Magazine() {
               <div className="drink-card-overlay">
                 {a.categoria && <span className="badge-category">{getTranslatedField(a as any, "categoria", currentLanguage, a.categoria)}</span>}
                 <h3>{pickArticleTitle(a, currentLanguage) || t("articleFallback")}</h3>
-                {pickArticlePreview(a, currentLanguage) && <p>{pickArticlePreview(a, currentLanguage)}</p>}
+                {pickArticlePreview(a, currentLanguage) && (
+                  <p
+                    style={{
+                      display: "-webkit-box",
+                      WebkitLineClamp: 2,
+                      WebkitBoxOrient: "vertical",
+                      overflow: "hidden",
+                      textOverflow: "ellipsis",
+                    }}
+                  >
+                    {pickArticlePreview(a, currentLanguage)}
+                  </p>
+                )}
               </div>
             </Link>
           ))}
