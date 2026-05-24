@@ -117,23 +117,51 @@ export default function AdminPanel() {
       utentiData = (fallbackUsers.data as any[]) || [];
     }
 
-    const { data: articoliData } = await supabase.from("articoli").select(ADMIN_ARTICOLI_COLUMNS);
-    const { data: cocktailData } = await supabase.from("cocktail").select(ADMIN_COCKTAIL_COLUMNS);
-    const { data: distillatiData } = await supabase.from("distillati").select(ADMIN_DISTILLATI_COLUMNS);
-    let viniData: any[] | null = null;
-    let detectedWineTable = "vini";
-
-    const viniTryLower = await supabase.from("vini").select(ADMIN_VINI_COLUMNS);
-    if (!viniTryLower.error) {
-      viniData = viniTryLower.data || [];
-      detectedWineTable = "vini";
-    } else {
-      const viniTryUpper = await supabase.from("Vini").select(ADMIN_VINI_COLUMNS);
-      if (!viniTryUpper.error) {
-        viniData = viniTryUpper.data || [];
-        detectedWineTable = "Vini";
+    type SelectResult = { data: any[]; error: any; table: string; columns: string };
+    async function selectWithFallback(tableNames: string[], columnAttempts: string[]): Promise<SelectResult> {
+      let lastError: any = null;
+      for (const tableName of tableNames) {
+        for (const columns of columnAttempts) {
+          const result = await supabase.from(tableName).select(columns);
+          if (!result.error) {
+            return {
+              data: Array.isArray(result.data) ? result.data : [],
+              error: null,
+              table: tableName,
+              columns,
+            };
+          }
+          lastError = result.error;
+        }
       }
+
+      return {
+        data: [],
+        error: lastError,
+        table: tableNames[0] || "",
+        columns: columnAttempts[columnAttempts.length - 1] || "*",
+      };
     }
+
+    const articoliResult = await selectWithFallback(["articoli", "Articles"], [ADMIN_ARTICOLI_COLUMNS, "*"]);
+    const cocktailResult = await selectWithFallback(["cocktail", "cocktails"], [ADMIN_COCKTAIL_COLUMNS, "*"]);
+    const distillatiResult = await selectWithFallback(["distillati", "distillato"], [ADMIN_DISTILLATI_COLUMNS, "*"]);
+    const viniResult = await selectWithFallback(["vini", "Vini"], [ADMIN_VINI_COLUMNS, "*"]);
+
+    const articoliData = articoliResult.data;
+    const cocktailData = cocktailResult.data;
+    const distillatiData = distillatiResult.data;
+    const viniData = viniResult.data;
+    const detectedWineTable = viniResult.table || "vini";
+
+    console.log("cocktail:", cocktailData);
+    console.log("distillati:", distillatiData);
+    console.log("vini:", viniData);
+    console.log("articoli:", articoliData);
+    console.log("cocktail error:", cocktailResult.error);
+    console.log("distillati error:", distillatiResult.error);
+    console.log("vini error:", viniResult.error);
+    console.log("articoli error:", articoliResult.error);
 
     const normalizeRole = (value: unknown) => String(value || "utente").trim().toLowerCase();
     const normalizeApproved = (user: any) => {
@@ -157,17 +185,17 @@ export default function AdminPanel() {
     setBartender(safeUsers.filter(u => u?.ruolo === "bartender"));
     setProprietari(safeUsers.filter(u => u?.ruolo === "proprietario"));
 
-    setArticoli(articoliData || []);
+    setArticoli(Array.isArray(articoliData) ? articoliData : []);
     setCocktail(safeCocktail);
-    setDistillati(distillatiData || []);
-    setVini(viniData || []);
+    setDistillati(Array.isArray(distillatiData) ? distillatiData : []);
+    setVini(Array.isArray(viniData) ? viniData : []);
     setWineTableName(detectedWineTable);
 
     setKpi({
       utenti: safeUsers.length,
       locali: (localiData || []).length,
-      drink: (safeCocktail.length || 0) + (distillatiData?.length || 0),
-      articoli: (articoliData || []).length,
+      drink: safeCocktail.length + (Array.isArray(distillatiData) ? distillatiData.length : 0),
+      articoli: Array.isArray(articoliData) ? articoliData.length : 0,
     });
   }
 
