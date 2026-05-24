@@ -25,6 +25,7 @@ import ArticleDetail from "./pages/ArticleDetail";
 import Community from "./pages/Community";
 import Crea from "./pages/Crea";
 import AdminPanel from "./pages/AdminPanel";
+import Bancone from "./pages/Bancone";
 import VenueDetail from "./pages/VenueDetail";
 import Venues from "./pages/Venues";
 
@@ -80,6 +81,9 @@ export default function App() {
 
           {/* COMMUNITY */}
           <Route path="/community" element={<ProtectedRoute><Community /></ProtectedRoute>} />
+
+          {/* BANCONE */}
+          <Route path="/bancone" element={<ProtectedRoute><Bancone /></ProtectedRoute>} />
 
           {/* 🔥 BARETTO SWITCH */}
           <Route
