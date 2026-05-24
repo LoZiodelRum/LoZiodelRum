@@ -114,7 +114,7 @@ export default function AdminPanel() {
 
     let utentiError: any = null;
     if (!utentiData || (Array.isArray(utentiData) && utentiData.length === 0)) {
-      const fallbackUsers = await supabase.from("Profili").select(ADMIN_PROFILI_COLUMNS);
+      const fallbackUsers = await supabase.from("Profili").select("*");
       if (!fallbackUsers.error) {
         utentiData = Array.isArray(fallbackUsers.data) ? fallbackUsers.data : [];
       } else {
@@ -153,10 +153,10 @@ export default function AdminPanel() {
       };
     }
 
-    const articoliResult = await selectWithFallback(["articoli", "Articles"], [ADMIN_ARTICOLI_COLUMNS, "*"]);
-    const cocktailResult = await selectWithFallback(["cocktail", "cocktails"], [ADMIN_COCKTAIL_COLUMNS, "*"]);
-    const distillatiResult = await selectWithFallback(["distillati", "distillato"], [ADMIN_DISTILLATI_COLUMNS, "*"]);
-    const viniResult = await selectWithFallback(["vini", "Vini"], [ADMIN_VINI_COLUMNS, "*"]);
+    const articoliResult = await selectWithFallback(["articoli", "Articles"], ["*"]);
+    const cocktailResult = await selectWithFallback(["cocktail", "cocktails"], ["*"]);
+    const distillatiResult = await selectWithFallback(["distillati", "distillato"], ["*"]);
+    const viniResult = await selectWithFallback(["vini", "Vini"], ["*"]);
 
     const articoliData = articoliResult.data;
     const cocktailData = cocktailResult.data;
@@ -164,16 +164,15 @@ export default function AdminPanel() {
     const viniData = viniResult.data;
     const detectedWineTable = viniResult.table || "vini";
 
-    console.log("cocktail:", cocktailData);
-    console.log("distillati:", distillatiData);
-    console.log("vini:", viniData);
-    console.log("articoli:", articoliData);
-    console.log("utenti:", utentiData);
-    console.log("cocktail error:", cocktailResult.error);
-    console.log("distillati error:", distillatiResult.error);
-    console.log("vini error:", viniResult.error);
-    console.log("articoli error:", articoliResult.error);
-    console.log("utenti error:", utentiError);
+    if (utentiError || cocktailResult.error || distillatiResult.error || viniResult.error || articoliResult.error) {
+      console.error("Admin load warnings", {
+        utentiError,
+        cocktailError: cocktailResult.error,
+        distillatiError: distillatiResult.error,
+        viniError: viniResult.error,
+        articoliError: articoliResult.error,
+      });
+    }
 
     const normalizeRole = (value: unknown) => String(value || "utente").trim().toLowerCase();
     const normalizeApproved = (user: any) => {

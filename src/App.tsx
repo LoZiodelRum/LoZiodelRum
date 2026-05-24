@@ -55,6 +55,8 @@ export default function App() {
       <Routes>
         {/* AUTH SENZA NAVBAR (fullscreen) */}
         <Route path="/" element={<Auth />} />
+        <Route path="/login" element={<Auth />} />
+        <Route path="/register" element={<Auth />} />
         {/* Tutte le altre pagine wrappate da MainLayout che contiene la Navbar */}
         <Route element={<MainLayout />}>
           <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />

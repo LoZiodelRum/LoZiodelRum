@@ -160,7 +160,7 @@ export default function AdminPanelMobile() {
       let utentiError: any = null;
       const utentiTryStrict = await supabase
         .from("Profili")
-        .select("id, nome, cognome, username, email, telefono, ruolo, status, approvato, bio_breve, avatar_url, city, paese, genere, distillato_preferito, cocktail_preferito, intensita_preferita, profilo_gustativo_preferito, famiglia_aromatica_preferita, metodo_consumo_preferito, level, points, badges, numero_recensioni, numero_locali_visitati, numero_cocktail_creati, recensioni, cocktail_creati, locali_segnalati, preferiti, instagram, tiktok, sito_web, nome_locale, esperienza_anni, specialita, certificazioni, menu_caricato, indirizzo_locale, citta_locale, partita_iva, numero_dipendenti, descrizione_locale, created_at, updated_at, ultimo_accesso, email_verificata");
+        .select("*");
 
       if (!utentiTryStrict.error) {
         utentiData = Array.isArray(utentiTryStrict.data) ? utentiTryStrict.data : [];
@@ -190,28 +190,24 @@ export default function AdminPanelMobile() {
       const cocktailResult = await selectWithFallback(
         ["cocktail", "cocktails"],
         [
-          "id, nome, nome_en, nome_bg, categoria, descrizione, descrizione_en, descrizione_bg, ingredienti, ingredienti_en, ingredienti_bg, preparazione, preparazione_en, preparazione_bg, immagine, immagine_url, created_at, updated_at",
           "*",
         ]
       );
       const distillatiResult = await selectWithFallback(
         ["distillati", "distillato"],
         [
-          "id, nome, nome_en, nome_bg, categoria, marca, provenienza, provenienza_en, provenienza_bg, storia, storia_en, storia_bg, note_degustazione, note_degustazione_en, note_degustazione_bg, immagine, created_at, updated_at",
           "*",
         ]
       );
       const viniResult = await selectWithFallback(
         ["vini", "Vini"],
         [
-          "id, nome, categoria, annata, cantina, vitigno, grado_alcolico, zona, denominazione, immagine, note_degustazione, note_degustazione_en, note_degustazione_bg, provenienza, provenienza_en, provenienza_bg, descrizione, descrizione_en, descrizione_bg, created_at, updated_at",
           "*",
         ]
       );
       const articoliResult = await selectWithFallback(
         ["articoli", "Articles"],
         [
-          "id, slug, titolo, titolo_en, titolo_bg, sottotitolo, sottotitolo_en, sottotitolo_bg, estratto, descrizione, contenuto, contenuto_en, contenuto_bg, immagine, pubblicato, seo_title, seo_title_en, seo_title_bg, seo_description, seo_description_en, seo_description_bg, created_at, updated_at",
           "*",
         ]
       );
@@ -221,16 +217,15 @@ export default function AdminPanelMobile() {
       const viniData = viniResult.data;
       const articoliData = articoliResult.data;
 
-      console.log("cocktail:", cocktailData);
-      console.log("distillati:", distillatiData);
-      console.log("vini:", viniData);
-      console.log("articoli:", articoliData);
-      console.log("cocktail error:", cocktailResult.error);
-      console.log("distillati error:", distillatiResult.error);
-      console.log("vini error:", viniResult.error);
-      console.log("articoli error:", articoliResult.error);
-      console.log("utenti:", utentiData);
-      console.log("utenti error:", utentiError);
+      if (utentiError || cocktailResult.error || distillatiResult.error || viniResult.error || articoliResult.error) {
+        console.error("Admin mobile load warnings", {
+          utentiError,
+          cocktailError: cocktailResult.error,
+          distillatiError: distillatiResult.error,
+          viniError: viniResult.error,
+          articoliError: articoliResult.error,
+        });
+      }
 
       setLocali(localiData || []);
       setUtenti(Array.isArray(utentiData) ? utentiData : []);

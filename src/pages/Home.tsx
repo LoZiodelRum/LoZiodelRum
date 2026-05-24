@@ -197,12 +197,12 @@ export default function Home() {
 
   async function fetchArticoli() {
     const columnsAttempts = [
+      "*",
       "id, titolo, titolo_en, titolo_bg, immagine, image, created_at",
       "id, titolo, titolo_en, titolo_bg, immagine, created_at",
       "id, titolo, titolo_en, titolo_bg, immagine, image",
       "id, titolo, titolo_en, titolo_bg, immagine",
       "id, titolo, immagine",
-      "*",
     ];
 
     let rows: any[] = [];
