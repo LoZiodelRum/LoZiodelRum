@@ -1,6 +1,6 @@
 import "../App.css";
 import { useEffect, useState } from "react";
-import { supabase, publicSupabase } from "../lib/supabaseClient";
+import { supabase } from "../lib/supabaseClient";
 import { useParams } from "react-router-dom";
 import { useUser } from "../context/UserContext"; // ✅ AGGIUNTO
 import Navbar from "../components/Navbar";

@@ -5,7 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { ArrowRight, MapPin } from "lucide-react";
 import { useTranslation } from "react-i18next";
 
-import { publicSupabase as supabase } from "../lib/supabaseClient";
+import { supabase } from "../lib/supabaseClient";
 import { useUser } from "../context/UserContext";
 import { getTranslatedField } from "../utils/getTranslatedField";
 

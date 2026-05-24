@@ -1,7 +1,7 @@
 import "../App.css";
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
-import { SUPABASE_ANON_KEY, SUPABASE_URL, publicSupabase } from "../lib/supabaseClient";
+import { SUPABASE_ANON_KEY, SUPABASE_URL } from "../lib/supabaseClient";
 import { useTranslation } from "react-i18next";
 import { getTranslatedField } from "../utils/getTranslatedField";
 

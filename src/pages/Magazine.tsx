@@ -1,10 +1,10 @@
 import Navbar from "../components/Navbar";
 import "../App.css";
 import { useEffect, useState } from "react";
-import { publicSupabase as supabase } from "../lib/supabaseClient";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTranslatedField } from "../utils/getTranslatedField";
+import { SUPABASE_ANON_KEY, SUPABASE_URL } from "../lib/supabaseClient";
 
 type Article = {
   id: string;
@@ -24,54 +24,25 @@ export default function Magazine() {
   }, []);
 
   async function load() {
-    const queryAttempts = [
-      async () => supabase
-        .from("articoli")
-        .select("id, titolo, titolo_en, titolo_bg, descrizione, descrizione_en, descrizione_bg, immagine, image, categoria, categoria_en, categoria_bg, created_at")
-        .order("created_at", { ascending: false }),
-      async () => supabase
-        .from("articoli")
-        .select("id, titolo, titolo_en, titolo_bg, descrizione, descrizione_en, descrizione_bg, immagine, categoria, categoria_en, categoria_bg, data_creazione")
-        .order("data_creazione", { ascending: false }),
-      async () => supabase
-        .from("articoli")
-        .select("id, titolo, titolo_en, titolo_bg, descrizione, descrizione_en, descrizione_bg, immagine, categoria, categoria_en, categoria_bg"),
-      async () => supabase
-        .from("articoli")
-        .select("id, titolo, descrizione, immagine, categoria"),
-      async () => supabase
-        .from("articoli")
-        .select("*"),
-    ];
-
     let rows: any[] = [];
-    let lastSuccessfulRows: any[] = [];
-    let lastError: any = null;
 
-    for (const runAttempt of queryAttempts) {
-      const result = await runAttempt();
-      if (result.error) {
-        lastError = result.error;
-        continue;
-      }
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/articoli?select=*`, {
+      headers: {
+        apikey: SUPABASE_ANON_KEY,
+        Authorization: `Bearer ${SUPABASE_ANON_KEY}`,
+      },
+    });
 
-      const dataRows = Array.isArray(result.data) ? result.data : [];
-      lastSuccessfulRows = dataRows;
-      if (dataRows.length > 0) {
-        rows = dataRows;
-        break;
-      }
+    if (response.ok) {
+      const dataRows = await response.json().catch(() => []);
+      rows = Array.isArray(dataRows) ? dataRows : [];
     }
 
-    if (!rows.length) {
-      rows = lastSuccessfulRows;
-    }
-
-    if (!rows.length && lastError) {
-      console.error("Magazine load failed:", lastError);
-    }
-
-    setArticles(rows.map((a: any) => ({ ...a, immagine: a.immagine || a.image || null })));
+    setArticles(rows.map((a: any) => ({
+      ...a,
+      descrizione: a.descrizione || a.estratto || a.contenuto || "",
+      immagine: a.immagine || a.image || null,
+    })));
   }
 
   if (!articles.length) {
