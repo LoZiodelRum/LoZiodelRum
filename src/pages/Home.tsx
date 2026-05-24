@@ -58,7 +58,8 @@ export default function Home() {
     const approved = await supabase
       .from("Locali")
       .select(columns)
-      .eq("status", "approved")
+      .or("status.eq.approved,approvato.eq.true")
+      .order("created_at", { ascending: false })
       .limit(6);
 
     if (!approved.error && Array.isArray(approved.data) && approved.data.length) {
@@ -68,6 +69,7 @@ export default function Home() {
       const fallback = await supabase
         .from("Locali")
         .select(columns)
+        .order("created_at", { ascending: false })
         .limit(6);
 
       if (!fallback.error) {
@@ -76,6 +78,7 @@ export default function Home() {
         const fallbackAll = await supabase
           .from("Locali")
           .select("*")
+          .order("created_at", { ascending: false })
           .limit(6);
 
         if (!fallbackAll.error) {

@@ -65,7 +65,7 @@ export default function Venues() {
     const { data, error } = await supabase
       .from("Locali")
       .select("id, nome, nome_en, nome_bg, citta, indirizzo, descrizione, descrizione_en, descrizione_bg, image_url, image")
-      .eq("status", "approved")
+      .or("status.eq.approved,approvato.eq.true")
       .order("nome", { ascending: true });
 
     if (error) {
