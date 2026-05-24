@@ -435,8 +435,22 @@ export default function VenueDetail() {
   const imageMain = normalizeImageUrl(locale.image_url) || normalizeImageUrl(locale.image) || firstMediaImage;
   const videoMain =
     locale.video_url || media.find((m) => m.tipo === "video")?.url_file || "";
-  const categoria = locale.categoria || tr("Categoria non disponibile", "Category not available", "Категорията не е налична");
-  const fullAddress = [locale.indirizzo, locale.citta, locale.provincia, locale.paese]
+  const localeName = getTranslatedField(locale as any, "nome", i18n.language, locale.nome || "-");
+  const indirizzo = getTranslatedField(locale as any, "indirizzo", i18n.language, locale.indirizzo || "");
+  const citta = getTranslatedField(locale as any, "citta", i18n.language, locale.citta || "");
+  const provincia = getTranslatedField(locale as any, "provincia", i18n.language, locale.provincia || "");
+  const paese = getTranslatedField(locale as any, "paese", i18n.language, locale.paese || "");
+  const categoria = getTranslatedField(
+    locale as any,
+    "categoria",
+    i18n.language,
+    locale.categoria || tr("Categoria non disponibile", "Category not available", "Категорията не е налична")
+  );
+  const orari = getTranslatedField(locale as any, "orari", i18n.language, locale.orari || "");
+  const priceRange = getTranslatedField(locale as any, "price_range", i18n.language, locale.price_range || "");
+  const descrizioneCompleta = getTranslatedField(locale as any, "descrizione_completa", i18n.language, locale.descrizione_completa || "");
+  const descrizioneBreve = getTranslatedField(locale as any, "descrizione", i18n.language, locale.descrizione || "");
+  const fullAddress = [indirizzo, citta, provincia, paese]
     .filter(Boolean)
     .join(", ");
   const verified = toBool(locale.verificato);
@@ -655,23 +669,23 @@ export default function VenueDetail() {
         <div className="venue-hero">
           <img
             src={imageLoadError ? placeholderHero : (imageMain || placeholderHero)}
-            alt={locale.nome}
+            alt={localeName}
             onError={() => setImageLoadError(true)}
           />
         </div>
 
         <div className="content-wrapper venue-section venue-header-panel">
           <div className="venue-hero-info">
-            <h1>{locale.nome}</h1>
+            <h1>{localeName}</h1>
 
-            <p>{fullAddress || placeholder(locale.indirizzo, "indirizzo")}</p>
+            <p>{fullAddress || placeholder(indirizzo, "indirizzo")}</p>
 
             <div className="venue-meta-row">
               <span className="badge-category">{categoria}</span>
-              <span className="badge-category">{placeholder(locale.price_range, "fascia prezzo")}</span>
+              <span className="badge-category">{placeholder(priceRange, "fascia prezzo")}</span>
               {verified && <span className="badge-category gold-badge">{tr("Verificato", "Verified", "Проверено")}</span>}
               {featured && <span className="badge-category gold-badge">{tr("In evidenza", "Featured", "Представено")}</span>}
-              <span className="badge-category">{placeholder(locale.orari, "orari")}</span>
+              <span className="badge-category">{placeholder(orari, "orari")}</span>
             </div>
           </div>
         </div>
@@ -736,7 +750,7 @@ export default function VenueDetail() {
         <div className="content-wrapper venue-section">
           <h2 className="section-title" style={sectionTitleStyle}>{tr("Descrizione", "Description", "Описание")}</h2>
           <p className="venue-description">
-            {locale.descrizione_completa || locale.descrizione || tr("Descrizione non disponibile", "Description not available", "Няма налично описание")}
+            {descrizioneCompleta || descrizioneBreve || tr("Descrizione non disponibile", "Description not available", "Няма налично описание")}
           </p>
         </div>
 
