@@ -15,6 +15,31 @@ function Auth() {
   const [showRegister, setShowRegister] = useState(false);
 
 
+  async function resolveEmailByUsername(loginRaw: string): Promise<string | null> {
+    const usernameValue = loginRaw.trim();
+    if (!usernameValue) return null;
+
+    // First try exact match, then case-insensitive match to support legacy usernames.
+    const exact = await supabase
+      .from("Profili")
+      .select("email")
+      .eq("username", usernameValue)
+      .maybeSingle();
+
+    const exactEmail = String(exact.data?.email || "").trim().toLowerCase();
+    if (exactEmail) return exactEmail;
+
+    const insensitive = await supabase
+      .from("Profili")
+      .select("email")
+      .ilike("username", usernameValue)
+      .limit(1)
+      .maybeSingle();
+
+    const insensitiveEmail = String(insensitive.data?.email || "").trim().toLowerCase();
+    return insensitiveEmail || null;
+  }
+
   async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
@@ -26,14 +51,9 @@ function Auth() {
     if (loginValue.includes("@")) {
       candidateEmails.push(loginValue);
     } else {
-      // Cerca email per username
-      const { data: profileByUsername, error } = await supabase
-        .from("Profili")
-        .select("email")
-        .eq("username", loginRaw)
-        .maybeSingle();
-      console.log("Risultato ricerca username:", profileByUsername, error);
-      const resolvedEmail = String(profileByUsername?.email || "").trim().toLowerCase();
+      // Cerca email reale del profilo per consentire login con username storico.
+      const resolvedEmail = await resolveEmailByUsername(loginRaw);
+      console.log("Risultato ricerca username:", resolvedEmail);
       if (resolvedEmail) {
         candidateEmails.push(resolvedEmail);
       }

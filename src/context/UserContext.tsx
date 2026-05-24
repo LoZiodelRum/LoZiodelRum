@@ -26,6 +26,29 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   // Logica admin key/password rimossa
 
+  function normalizeRole(value: unknown): string {
+    return String(value || "").trim().toLowerCase();
+  }
+
+  async function loadProfile(userId: string) {
+    const primary = await supabase
+      .from("Profili")
+      .select("id, ruolo, status")
+      .eq("id", userId)
+      .maybeSingle();
+
+    if (primary.data) return primary.data;
+
+    // Some environments expose lowercase table names; keep a safe fallback.
+    const fallback = await supabase
+      .from("profili")
+      .select("id, ruolo, status")
+      .eq("id", userId)
+      .maybeSingle();
+
+    return fallback.data || null;
+  }
+
   async function checkUser() {
     const {
       data: { user },
@@ -40,11 +63,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
       return;
     }
 
-    const { data: profilo } = await supabase
-      .from("Profili")
-      .select("id, ruolo, status")
-      .eq("id", user.id)
-      .maybeSingle();
+    const profilo = await loadProfile(user.id);
 
     // PROFILO NON TROVATO - TENTATIVO DI RECOVERY
     if (!profilo) {
@@ -56,7 +75,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
         username: String(metadata.username || user.email?.split("@")[0] || "").trim() || null,
         email: String(user.email || "").trim().toLowerCase() || null,
         telefono: String(metadata.telefono || "").trim() || null,
-        ruolo: String(metadata.ruolo || "utente"),
+        ruolo: normalizeRole(metadata.ruolo) || "utente",
         status: "attivo",
       };
 
@@ -68,7 +87,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
       if (recoveredProfile) {
         setUser(user);
-        setRole(recoveredProfile.ruolo || "utente");
+        setRole(normalizeRole(recoveredProfile.ruolo) || "utente");
         setStatus(recoveredProfile.status);
         setLoading(false);
         return;
@@ -84,7 +103,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
 
     // ✅ PROFILO TROVATO
     setUser(user);
-    setRole(profilo.ruolo || "utente");
+    setRole(normalizeRole(profilo.ruolo) || "utente");
     setStatus(profilo.status);
     setLoading(false);
   }
@@ -101,7 +120,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  const isAdmin = role === "admin";
+  const isAdmin = normalizeRole(role) === "admin";
   const isAuthenticated = Boolean(user);
 
   return (
