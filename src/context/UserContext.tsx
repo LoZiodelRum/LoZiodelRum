@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 
 type UserContextType = {
@@ -24,6 +24,7 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   const [role, setRole] = useState<string | null>(null);
   const [status, setStatus] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const authCheckTokenRef = useRef(0);
   // Logica admin key/password rimossa
 
   function normalizeRole(value: unknown): string {
@@ -50,62 +51,82 @@ export function UserProvider({ children }: { children: React.ReactNode }) {
   }
 
   async function checkUser() {
-    const {
-      data: { user },
-    } = await supabase.auth.getUser();
+    const currentToken = Date.now();
+    authCheckTokenRef.current = currentToken;
+    setLoading(true);
 
-    // NON LOGGATO
-    if (!user) {
-      setUser(null);
-      setRole(null);
-      setStatus(null);
-      setLoading(false);
-      return;
-    }
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
-    const profilo = await loadProfile(user.id);
+      const sessionUser = session?.user || null;
 
-    // PROFILO NON TROVATO - TENTATIVO DI RECOVERY
-    if (!profilo) {
-      const metadata = (user.user_metadata || {}) as Record<string, any>;
-      const fallbackProfile = {
-        id: user.id,
-        nome: String(metadata.nome || "").trim() || null,
-        cognome: String(metadata.cognome || "").trim() || null,
-        username: String(metadata.username || user.email?.split("@")[0] || "").trim() || null,
-        email: String(user.email || "").trim().toLowerCase() || null,
-        telefono: String(metadata.telefono || "").trim() || null,
-        ruolo: normalizeRole(metadata.ruolo) || "utente",
-        status: "attivo",
-      };
-
-      const { data: recoveredProfile } = await supabase
-        .from("Profili")
-        .upsert([fallbackProfile], { onConflict: "id" })
-        .select("id, ruolo, status")
-        .maybeSingle();
-
-      if (recoveredProfile) {
-        setUser(user);
-        setRole(normalizeRole(recoveredProfile.ruolo) || "utente");
-        setStatus(recoveredProfile.status);
-        setLoading(false);
+      // NON LOGGATO
+      if (!sessionUser) {
+        if (authCheckTokenRef.current !== currentToken) return;
+        setUser(null);
+        setRole(null);
+        setStatus(null);
         return;
       }
 
-      // Se il recovery non funziona, manteniamo l'utente ma senza ruolo
-      setUser(user);
+      const profilo = await loadProfile(sessionUser.id);
+
+      // PROFILO NON TROVATO - TENTATIVO DI RECOVERY
+      if (!profilo) {
+        const metadata = (sessionUser.user_metadata || {}) as Record<string, any>;
+        const fallbackProfile = {
+          id: sessionUser.id,
+          nome: String(metadata.nome || "").trim() || null,
+          cognome: String(metadata.cognome || "").trim() || null,
+          username: String(metadata.username || sessionUser.email?.split("@")[0] || "").trim() || null,
+          email: String(sessionUser.email || "").trim().toLowerCase() || null,
+          telefono: String(metadata.telefono || "").trim() || null,
+          ruolo: normalizeRole(metadata.ruolo) || "utente",
+          status: "attivo",
+        };
+
+        const { data: recoveredProfile } = await supabase
+          .from("Profili")
+          .upsert([fallbackProfile], { onConflict: "id" })
+          .select("id, ruolo, status")
+          .maybeSingle();
+
+        if (recoveredProfile) {
+          if (authCheckTokenRef.current !== currentToken) return;
+          setUser(sessionUser);
+          setRole(normalizeRole(recoveredProfile.ruolo) || "utente");
+          setStatus(recoveredProfile.status);
+          return;
+        }
+
+        // Se il recovery non funziona, manteniamo l'utente ma senza ruolo
+        if (authCheckTokenRef.current !== currentToken) return;
+        setUser(sessionUser);
+        setRole(null);
+        setStatus(null);
+        return;
+      }
+
+      // ✅ PROFILO TROVATO
+      if (authCheckTokenRef.current !== currentToken) return;
+      setUser(sessionUser);
+      setRole(normalizeRole(profilo.ruolo) || "utente");
+      setStatus(profilo.status);
+    } catch (error: any) {
+      const message = String(error?.message || "").toLowerCase();
+      if (message.includes("refresh token") || message.includes("invalid refresh")) {
+        await supabase.auth.signOut({ scope: "local" });
+      }
+      if (authCheckTokenRef.current !== currentToken) return;
+      setUser(null);
       setRole(null);
       setStatus(null);
+    } finally {
+      if (authCheckTokenRef.current !== currentToken) return;
       setLoading(false);
-      return;
     }
-
-    // ✅ PROFILO TROVATO
-    setUser(user);
-    setRole(normalizeRole(profilo.ruolo) || "utente");
-    setStatus(profilo.status);
-    setLoading(false);
   }
 
   useEffect(() => {

@@ -41,7 +41,7 @@ export default function RegisterModal({ open, onClose }: Props) {
     const { data } = await supabase
       .from("Profili")
       .select("id")
-      .eq("username", val)
+      .ilike("username", val)
       .maybeSingle();
     setUsernameAvailable(!data);
   }
@@ -93,10 +93,9 @@ export default function RegisterModal({ open, onClose }: Props) {
         created_at: new Date().toISOString(),
       },
     ], { onConflict: "id" });
+    // In some RLS setups the profile row is created by DB trigger; don't block auth flow.
     if (profiliError) {
-      setMsg(profiliError.message || "Errore creazione profilo");
-      setLoading(false);
-      return;
+      console.warn("Profilo upsert non riuscito, continuo con login:", profiliError.message);
     }
     // Login automatico
     const { error: loginError } = await supabase.auth.signInWithPassword({ email, password });
