@@ -114,9 +114,9 @@ export default function VenueDetail() {
   async function fetchLocale() {
     const { data } = await supabase
       .from("Locali")
-      .select("id, nome, indirizzo, citta, provincia, paese, telefono, sito, instagram, tiktok, descrizione, descrizione_completa, image, image_url, video_url, categoria, orari, price_range, verificato, in_evidenza, qualita_drink, competenza_staff, atmosfera, qualita_prezzo")
+      .select("*")
       .eq("id", id)
-      .single();
+      .maybeSingle();
 
     setLocale(data);
     setForm(data);
