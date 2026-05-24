@@ -29,7 +29,7 @@ function pickArticleField(record: Record<string, any>, baseField: string, langua
 
   const candidates =
     normalized === "es"
-      ? [`${baseField}_es`, `${baseField}_en`, baseField, `${baseField}_it`]
+      ? [`${baseField}_es`, baseField, `${baseField}_it`, `${baseField}_en`]
       : normalized === "en"
       ? [`${baseField}_en`, baseField, `${baseField}_it`]
       : normalized === "bg"
