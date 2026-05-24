@@ -76,7 +76,7 @@ export default function Category() {
   function rebuildItems(type: string | undefined, cocktails: any[], distillati: any[]) {
     setItems([]);
 
-    const currentType = type || "cocktail";
+    const currentType = (type || "cocktail").toLowerCase();
 
     if (currentType === "cocktail") {
       const sorted = [...cocktails].sort((a: any, b: any) =>
@@ -93,7 +93,7 @@ export default function Category() {
       return;
     }
 
-    if (currentType === "rum" || currentType === "whisky" || currentType === "altri") {
+    if (currentType === "rum" || currentType === "whisky" || currentType === "altri" || currentType === "distillati") {
       const mappedDistillati = distillati.map((d: any) => ({
         id: d.id,
         nome: getTranslatedField(d, "nome", i18n.language, t("drink.fallbacks.distillatoName")),
@@ -153,6 +153,10 @@ export default function Category() {
         );
       }
 
+      if (currentType === "distillati") {
+        filtered = source;
+      }
+
       const sorted = [...filtered].sort((a: any, b: any) => a.nome.localeCompare(b.nome));
 
       setItems(
@@ -183,54 +187,11 @@ export default function Category() {
     setLoading(true);
 
     const cocktailSelectColumns = [
-      "id",
-      "nome",
-      "nome_en",
-      "nome_bg",
-      "immagine",
-      "immagine_url",
-      "image",
-      "img",
-      "marca",
-      "distilleria",
-      "categoria",
-      "tipologia",
-      "tipo",
-      "tipo_distillato",
-      "categoria_distillato",
-      "base_alcolica",
-      "invecchiamento",
-      "tipo_botte",
-      "esame_visivo",
-      "esame_olfattivo",
-      "esame_gustativo",
-      "note_aromatiche",
-      "sottocategoria",
+      "*",
     ].join(", ");
 
     const distillatiSelectColumns = [
-      "id",
-      "nome",
-      "nome_en",
-      "nome_bg",
-      "marca",
-      "categoria",
-      "tipologia",
-      "tipo",
-      "tipo_distillato",
-      "categoria_distillato",
-      "base_alcolica",
-      "invecchiamento",
-      "tipo_botte",
-      "esame_visivo",
-      "esame_olfattivo",
-      "esame_gustativo",
-      "note_aromatiche",
-      "sottocategoria",
-      "immagine",
-      "immagine_url",
-      "image",
-      "img",
+      "*",
     ].join(", ");
 
     // 🍸 COCKTAIL
@@ -246,7 +207,7 @@ export default function Category() {
     }
 
     // 🥃 DISTILLATI
-    else if (selectedType === "rum" || selectedType === "whisky" || selectedType === "altri") {
+    else if (selectedType === "rum" || selectedType === "whisky" || selectedType === "altri" || selectedType === "distillati") {
       const { data, error } = await supabase.from("distillati").select(distillatiSelectColumns);
 
       let distillatiRows: any[] = Array.isArray(data) ? data : [];
@@ -323,6 +284,6 @@ function getTitle(tipo: any) {
   if (tipo === "cocktail") return "cocktail";
   if (tipo === "rum") return "rum";
   if (tipo === "whisky") return "whisky";
-  if (tipo === "altri") return "otherDistillates";
+  if (tipo === "altri" || tipo === "distillati") return "otherDistillates";
   return "cocktail";
 }
