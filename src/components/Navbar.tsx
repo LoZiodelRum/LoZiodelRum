@@ -290,6 +290,10 @@ export default function Navbar() {
               cursor: "pointer",
               padding: 0,
               font: "inherit",
+              display: "inline-flex",
+              alignItems: "center",
+              whiteSpace: "nowrap",
+              flexShrink: 0,
             }}
           >
             {t("logout")}
