@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { getCocktailSuggestions, CocktailPreferences, SuggestedCocktail } from "../lib/cocktailConfigurator";
 import { useUser } from "../context/UserContext";
+import { useTranslation } from "react-i18next";
 
 const initialPreferences: CocktailPreferences = {
   base_alcolica: "",
@@ -15,16 +16,62 @@ const initialPreferences: CocktailPreferences = {
 };
 
 const preferenceOptions = {
-  base_alcolica: ["Rum", "Gin", "Vodka", "Whisky", "Brandy", "Tequila", "Mezcal", "Altro"],
-  intensita_alcolica: ["Bassa", "Media", "Alta", "Molto alta"],
-  profilo_gustativo: ["Secco", "Dolce", "Acido", "Fruttato", "Amaro", "Tropicale", "Speziato", "Fresco"],
-  famiglia_aromatica: ["Agrumato", "Floreale", "Speziato", "Erbaceo", "Tropicale", "Fruttato", "Affumicato"],
-  Genere: ["Highball", "Shakerato", "Stirred (mescolati)", "Frozen", "Tiki", "Sour", "Pestati"],
-  sensazione_palato: ["Morbido", "Secco", "Cremoso", "Frizzante", "Vellutato"],
+  base_alcolica: [
+    { value: "Rum", labelKey: "rum" },
+    { value: "Gin", labelKey: "gin" },
+    { value: "Vodka", labelKey: "vodka" },
+    { value: "Whisky", labelKey: "whisky" },
+    { value: "Brandy", labelKey: "brandy" },
+    { value: "Tequila", labelKey: "tequila" },
+    { value: "Mezcal", labelKey: "mezcal" },
+    { value: "Altro", labelKey: "other" },
+  ],
+  intensita_alcolica: [
+    { value: "Bassa", labelKey: "low" },
+    { value: "Media", labelKey: "medium" },
+    { value: "Alta", labelKey: "high" },
+    { value: "Molto alta", labelKey: "veryHigh" },
+  ],
+  profilo_gustativo: [
+    { value: "Secco", labelKey: "dry" },
+    { value: "Dolce", labelKey: "sweet" },
+    { value: "Acido", labelKey: "sour" },
+    { value: "Fruttato", labelKey: "fruity" },
+    { value: "Amaro", labelKey: "bitter" },
+    { value: "Tropicale", labelKey: "tropical" },
+    { value: "Speziato", labelKey: "spiced" },
+    { value: "Fresco", labelKey: "fresh" },
+  ],
+  famiglia_aromatica: [
+    { value: "Agrumato", labelKey: "citrus" },
+    { value: "Floreale", labelKey: "floral" },
+    { value: "Speziato", labelKey: "spiced" },
+    { value: "Erbaceo", labelKey: "herbal" },
+    { value: "Tropicale", labelKey: "tropical" },
+    { value: "Fruttato", labelKey: "fruity" },
+    { value: "Affumicato", labelKey: "smoky" },
+  ],
+  Genere: [
+    { value: "Highball", labelKey: "highball" },
+    { value: "Shakerato", labelKey: "shaken" },
+    { value: "Stirred (mescolati)", labelKey: "stirred" },
+    { value: "Frozen", labelKey: "frozen" },
+    { value: "Tiki", labelKey: "tiki" },
+    { value: "Sour", labelKey: "sourStyle" },
+    { value: "Pestati", labelKey: "muddled" },
+  ],
+  sensazione_palato: [
+    { value: "Morbido", labelKey: "smooth" },
+    { value: "Secco", labelKey: "dry" },
+    { value: "Cremoso", labelKey: "creamy" },
+    { value: "Frizzante", labelKey: "sparkling" },
+    { value: "Vellutato", labelKey: "velvety" },
+  ],
 };
 
 export default function Crea() {
   const { isAuthenticated } = useUser();
+  const { t } = useTranslation("translation");
   const [preferences, setPreferences] = useState<CocktailPreferences>(initialPreferences);
   const [loading, setLoading] = useState(false);
   const [suggestions, setSuggestions] = useState<SuggestedCocktail[]>([]);
@@ -47,7 +94,7 @@ export default function Crea() {
         setShowResults(true);
       }
     } catch (err) {
-      setError("Errore durante la ricerca dei cocktail.");
+      setError(t("createPage.error"));
       setSuggestions([]);
     } finally {
       setLoading(false);
@@ -91,19 +138,19 @@ export default function Crea() {
           className="crea-cocktail-form-rect"
         >
           <h1 className="crea-cocktail-title" style={{ marginBottom: 28 }}>
-            Crea il tuo Cocktail
+            {t("createPage.title")}
           </h1>
 
           {!isAuthenticated && (
             <div style={{ color: "#b91c1c", marginBottom: 18, fontWeight: 500 }}>
-              Effettua il login per salvare le tue creazioni e vedere suggerimenti personalizzati.
+              {t("createPage.loginNotice")}
             </div>
           )}
             <div className="crea-cocktail-grid">
               {Object.entries(preferenceOptions).map(([key, options]) => (
                 <div key={key} className="crea-cocktail-field">
                   <label className="crea-cocktail-label">
-                    {key === "sensazione_palato" ? "Sensazione al palato" : key.replace(/_/g, " ")}
+                    {t(`createPage.fields.${key === "Genere" ? "genere" : key}`)}
                   </label>
                   <select
                     name={key}
@@ -116,10 +163,10 @@ export default function Crea() {
                     onChange={handleChange}
                     className="crea-cocktail-select"
                   >
-                    <option value="">Scegli...</option>
+                    <option value="">{t("createPage.choose")}</option>
                     {options.map((option) => (
-                      <option key={option} value={option}>
-                        {option}
+                      <option key={option.value} value={option.value}>
+                        {t(`createPage.options.${option.labelKey}`)}
                       </option>
                     ))}
                   </select>
@@ -133,7 +180,7 @@ export default function Crea() {
               disabled={loading}
               style={{ marginTop: 24, width: 200 }}
             >
-              {loading ? "Caricamento..." : "Trova Cocktail"}
+              {loading ? t("loading") : t("createPage.submit")}
             </button>
           </form>
 
@@ -146,7 +193,7 @@ export default function Crea() {
           {showResults && suggestions.length > 0 && (
             <div style={{ marginTop: 24 }}>
               <h2 style={{ color: "#f5a623", marginBottom: 12 }}>
-                Suggerimenti
+                {t("createPage.suggestions")}
               </h2>
 
               <div style={{ display: "grid", gap: 24 }}>
@@ -169,16 +216,16 @@ export default function Crea() {
                       tabIndex={0}
                       onKeyDown={e => { if (e.key === "Enter" || e.key === " ") navigate(`/drink/${cocktailId}`); }}
                       role="button"
-                      aria-label={`Apri scheda di ${cocktail.name}`}
+                      aria-label={t("createPage.openDrinkAria", { name: cocktail.name })}
                     >
                       <h3 style={{ color: "#f5a623", margin: 0, textDecoration: "underline dotted #f5a62333" }}>
                         {cocktail.name}
                       </h3>
 
                       <div style={{ color: "#e2e8f0", marginTop: 8 }}>
-                        <b>Base:</b> {cocktail.base_spirit} |{" "}
-                        <b>Bicchiere:</b> {cocktail.glass} |{" "}
-                        <b>Tecnica:</b> {cocktail.technique}
+                        <b>{t("createPage.base")}:</b> {cocktail.base_spirit} |{" "}
+                        <b>{t("createPage.glass")}:</b> {cocktail.glass} |{" "}
+                        <b>{t("createPage.technique")}:</b> {cocktail.technique}
                       </div>
 
                       <ul style={{ marginTop: 10 }}>
@@ -195,11 +242,11 @@ export default function Crea() {
                       </ul>
 
                       <div style={{ color: "#fbbf24" }}>
-                        <b>Guarnizione:</b> {cocktail.garnish}
+                        <b>{t("createPage.garnish")}:</b> {cocktail.garnish}
                       </div>
 
                       <div style={{ color: "#94a3b8", fontSize: 12 }}>
-                        Fonte: {cocktail.source}
+                        {t("createPage.source")}: {cocktail.source}
                       </div>
                     </div>
                   );

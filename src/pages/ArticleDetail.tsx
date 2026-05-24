@@ -5,10 +5,39 @@ import { useParams } from "react-router-dom";
 import { useUser } from "../context/UserContext"; // ✅ AGGIUNTO
 import Navbar from "../components/Navbar";
 import { useTranslation } from "react-i18next";
-import { getTranslatedField } from "../utils/getTranslatedField";
 import { SUPABASE_ANON_KEY, SUPABASE_URL } from "../lib/supabaseClient";
 
 import { hero, overlay, heroBox, badge, title, subtitle, meta, articleWrapper } from "./articleDetailStyles";
+
+function normalizeArticleLanguage(language?: string): "it" | "en" | "bg" | "es" {
+  const short = String(language || "it").toLowerCase().split(/[-_]/)[0];
+  if (short === "en" || short === "bg" || short === "es") return short;
+  return "it";
+}
+
+function firstNonEmpty(...values: Array<unknown>): string {
+  for (const value of values) {
+    if (typeof value === "string" && value.trim().length > 0) {
+      return value.trim();
+    }
+  }
+  return "";
+}
+
+function pickArticleField(record: Record<string, any>, baseField: string, language?: string, fallback = "-"): string {
+  const normalized = normalizeArticleLanguage(language);
+
+  const candidates =
+    normalized === "es"
+      ? [`${baseField}_es`, `${baseField}_en`, baseField, `${baseField}_it`]
+      : normalized === "en"
+      ? [`${baseField}_en`, baseField, `${baseField}_it`]
+      : normalized === "bg"
+      ? [`${baseField}_bg`, `${baseField}_en`, baseField, `${baseField}_it`]
+      : [baseField, `${baseField}_it`, `${baseField}_en`];
+
+  return firstNonEmpty(...candidates.map((key) => record?.[key])) || fallback;
+}
 
 function normalizeUrl(url: string) {
   return url.replace(/\s+/g, "").trim();
@@ -261,11 +290,11 @@ export default function ArticleDetail() {
               <div style={overlay} />
 
               <div className="article-hero-box" style={heroBox}>
-                <span style={badge}>{getTranslatedField(data as any, "categoria", i18n.language, data.categoria)}</span>
+                <span style={badge}>{pickArticleField(data as any, "categoria", i18n.language, data.categoria || "-")}</span>
 
-                <h1 className="article-hero-title" style={title}>{getTranslatedField(data as any, "titolo", i18n.language, data.titolo)}</h1>
+                <h1 className="article-hero-title" style={title}>{pickArticleField(data as any, "titolo", i18n.language, data.titolo || t("articleFallback"))}</h1>
 
-                <p className="article-hero-subtitle" style={subtitle}>{getTranslatedField(data as any, "descrizione", i18n.language, data.descrizione)}</p>
+                <p className="article-hero-subtitle" style={subtitle}>{pickArticleField(data as any, "sottotitolo", i18n.language, pickArticleField(data as any, "descrizione", i18n.language, ""))}</p>
 
                 <div style={meta}>
                   <span>Lo Zio del Rum</span>
@@ -278,7 +307,7 @@ export default function ArticleDetail() {
               <div className="article-box" style={articleBox}>
                 <div className="article-content" style={articleContent}>
                   {renderArticleContent(
-                    getTranslatedField(data as any, "contenuto", i18n.language, data.contenuto || ""),
+                    pickArticleField(data as any, "contenuto", i18n.language, data.contenuto || ""),
                     t("articleImageAlt")
                   )}
                 </div>

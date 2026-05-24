@@ -3,18 +3,20 @@ import "../App.css";
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { getTranslatedField } from "../utils/getTranslatedField";
 import { SUPABASE_ANON_KEY, SUPABASE_URL } from "../lib/supabaseClient";
 
 type Article = {
   id: string;
   titolo: string;
+  titolo_es?: string | null;
   titolo_en?: string | null;
   titolo_bg?: string | null;
   sottotitolo?: string | null;
+  sottotitolo_es?: string | null;
   sottotitolo_en?: string | null;
   sottotitolo_bg?: string | null;
   descrizione: string;
+  descrizione_es?: string | null;
   descrizione_en?: string | null;
   descrizione_bg?: string | null;
   immagine: string;
@@ -23,33 +25,67 @@ type Article = {
   [key: string]: any;
 };
 
-function normalizeArticleLanguage(language?: string): "it" | "en" | "bg" {
+function normalizeArticleLanguage(language?: string): "it" | "en" | "bg" | "es" {
   const short = String(language || "it").toLowerCase().split(/[-_]/)[0];
-  if (short === "en" || short === "bg") return short;
+  if (short === "en" || short === "bg" || short === "es") return short;
   return "it";
+}
+
+function firstNonEmpty(...values: Array<string | null | undefined>): string {
+  for (const value of values) {
+    if (typeof value === "string" && value.trim().length > 0) {
+      return value;
+    }
+  }
+  return "";
 }
 
 function pickArticleTitle(article: Article, language?: string): string {
   const normalized = normalizeArticleLanguage(language);
 
-  if (normalized === "en") return article.titolo_en || article.titolo || "";
-  if (normalized === "bg") return article.titolo_bg || article.titolo || "";
+  if (normalized === "es") return firstNonEmpty(article.titolo_es, article.titolo_en, article.titolo);
+  if (normalized === "en") return firstNonEmpty(article.titolo_en, article.titolo);
+  if (normalized === "bg") return firstNonEmpty(article.titolo_bg, article.titolo_en, article.titolo);
 
-  return article.titolo || "";
+  return firstNonEmpty(article.titolo, article.titolo_en);
 }
 
 function pickArticlePreview(article: Article, language?: string): string {
   const normalized = normalizeArticleLanguage(language);
 
+  const itPreview = firstNonEmpty(article.sottotitolo, article.descrizione);
+
+  if (normalized === "es") {
+    return firstNonEmpty(article.sottotitolo_es, article.descrizione_es, article.sottotitolo_en, article.descrizione_en, itPreview);
+  }
+
   if (normalized === "en") {
-    return article.sottotitolo_en || article.sottotitolo || article.descrizione || "";
+    return firstNonEmpty(article.sottotitolo_en, article.descrizione_en, itPreview);
   }
 
   if (normalized === "bg") {
-    return article.sottotitolo_bg || article.sottotitolo || article.descrizione || "";
+    return firstNonEmpty(article.sottotitolo_bg, article.descrizione_bg, article.sottotitolo_en, article.descrizione_en, itPreview);
   }
 
-  return article.sottotitolo || article.descrizione || "";
+  return firstNonEmpty(itPreview, article.sottotitolo_en, article.descrizione_en);
+}
+
+function pickArticleCategory(article: Article, language?: string): string {
+  const normalized = normalizeArticleLanguage(language);
+
+  if (normalized === "es") {
+    return firstNonEmpty(article.categoria_es, article.categoria_en, article.categoria);
+  }
+
+  if (normalized === "en") {
+    return firstNonEmpty(article.categoria_en, article.categoria);
+  }
+
+  if (normalized === "bg") {
+    return firstNonEmpty(article.categoria_bg, article.categoria_en, article.categoria);
+  }
+
+  return firstNonEmpty(article.categoria, article.categoria_en);
 }
 
 export default function Magazine() {
@@ -102,7 +138,7 @@ export default function Magazine() {
             style={hero.immagine ? { backgroundImage: `url(${hero.immagine})` } : { background: "#0f172a" }}
           >
             <div className="magazine-hero-overlay">
-              {hero.categoria && <span className="badge-category">{getTranslatedField(hero as any, "categoria", currentLanguage, hero.categoria)}</span>}
+              {hero.categoria && <span className="badge-category">{pickArticleCategory(hero, currentLanguage)}</span>}
               <h1 className="magazine-hero-title-single">{pickArticleTitle(hero, currentLanguage) || t("articleFallback")}</h1>
               <p>{pickArticlePreview(hero, currentLanguage)}</p>
             </div>
@@ -125,7 +161,7 @@ export default function Magazine() {
                 </div>
               )}
               <div className="drink-card-overlay">
-                {a.categoria && <span className="badge-category">{getTranslatedField(a as any, "categoria", currentLanguage, a.categoria)}</span>}
+                {a.categoria && <span className="badge-category">{pickArticleCategory(a, currentLanguage)}</span>}
                 <h3>{pickArticleTitle(a, currentLanguage) || t("articleFallback")}</h3>
                 {pickArticlePreview(a, currentLanguage) && (
                   <p
