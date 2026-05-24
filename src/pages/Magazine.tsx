@@ -43,7 +43,7 @@ function firstNonEmpty(...values: Array<string | null | undefined>): string {
 function pickArticleTitle(article: Article, language?: string): string {
   const normalized = normalizeArticleLanguage(language);
 
-  if (normalized === "es") return firstNonEmpty(article.titolo_es, article.titolo, article.titolo_en);
+  if (normalized === "es") return firstNonEmpty(article.titolo_es, article.titolo_en, article.titolo);
   if (normalized === "en") return firstNonEmpty(article.titolo_en, article.titolo);
   if (normalized === "bg") return firstNonEmpty(article.titolo_bg, article.titolo_en, article.titolo);
 
@@ -56,7 +56,7 @@ function pickArticlePreview(article: Article, language?: string): string {
   const itPreview = firstNonEmpty(article.sottotitolo, article.descrizione);
 
   if (normalized === "es") {
-    return firstNonEmpty(article.sottotitolo_es, article.descrizione_es, itPreview, article.sottotitolo_en, article.descrizione_en);
+    return firstNonEmpty(article.sottotitolo_es, article.descrizione_es, article.sottotitolo_en, article.descrizione_en, itPreview);
   }
 
   if (normalized === "en") {
@@ -74,7 +74,7 @@ function pickArticleCategory(article: Article, language?: string): string {
   const normalized = normalizeArticleLanguage(language);
 
   if (normalized === "es") {
-    return firstNonEmpty(article.categoria_es, article.categoria, article.categoria_en);
+    return firstNonEmpty(article.categoria_es, article.categoria_en, article.categoria);
   }
 
   if (normalized === "en") {
