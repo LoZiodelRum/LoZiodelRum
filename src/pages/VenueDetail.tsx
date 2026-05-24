@@ -411,6 +411,41 @@ export default function VenueDetail() {
   const tr = (it: string, en: string, bg: string) =>
     getTranslatedField({ label_it: it, label_en: en, label_bg: bg }, "label", i18n.language, it);
 
+  const normalizedLang = String(i18n.language || "it").toLowerCase().split(/[-_]/)[0];
+
+  const getFirstTranslatedLocaleField = (fields: string[], fallback = "") => {
+    for (const field of fields) {
+      const value = getTranslatedField(locale as any, field, i18n.language, "");
+      if (value.trim().length > 0) return value;
+    }
+    return fallback;
+  };
+
+  const getFirstLongLocaleContent = (fields: string[], fallback = "") => {
+    const record = locale as any;
+
+    if (normalizedLang !== "it") {
+      for (const field of fields) {
+        const value = record?.[`${field}_${normalizedLang}`];
+        if (typeof value === "string" && value.trim().length > 0) return value.trim();
+      }
+    }
+
+    for (const field of fields) {
+      const value = record?.[field];
+      if (typeof value === "string" && value.trim().length > 0) return value.trim();
+    }
+
+    if (normalizedLang !== "it") {
+      for (const field of fields) {
+        const value = record?.[`${field}_it`];
+        if (typeof value === "string" && value.trim().length > 0) return value.trim();
+      }
+    }
+
+    return fallback;
+  };
+
   const placeholder = (value: string | null | undefined, label: string) =>
     value && value !== "" ? value : `Non disponibile (${label})`;
 
@@ -435,21 +470,27 @@ export default function VenueDetail() {
   const imageMain = normalizeImageUrl(locale.image_url) || normalizeImageUrl(locale.image) || firstMediaImage;
   const videoMain =
     locale.video_url || media.find((m) => m.tipo === "video")?.url_file || "";
-  const localeName = getTranslatedField(locale as any, "nome", i18n.language, locale.nome || "-");
-  const indirizzo = getTranslatedField(locale as any, "indirizzo", i18n.language, locale.indirizzo || "");
-  const citta = getTranslatedField(locale as any, "citta", i18n.language, locale.citta || "");
-  const provincia = getTranslatedField(locale as any, "provincia", i18n.language, locale.provincia || "");
-  const paese = getTranslatedField(locale as any, "paese", i18n.language, locale.paese || "");
+  const localeName = getFirstTranslatedLocaleField(["nome"], locale.nome || "-");
+  const indirizzo = getFirstTranslatedLocaleField(["indirizzo"], locale.indirizzo || "");
+  const citta = getFirstTranslatedLocaleField(["citta"], locale.citta || "");
+  const provincia = getFirstTranslatedLocaleField(["provincia"], locale.provincia || "");
+  const paese = getFirstTranslatedLocaleField(["paese"], locale.paese || "");
   const categoria = getTranslatedField(
     locale as any,
     "categoria",
     i18n.language,
     locale.categoria || tr("Categoria non disponibile", "Category not available", "Категорията не е налична")
   );
-  const orari = getTranslatedField(locale as any, "orari", i18n.language, locale.orari || "");
-  const priceRange = getTranslatedField(locale as any, "price_range", i18n.language, locale.price_range || "");
-  const descrizioneCompleta = getTranslatedField(locale as any, "descrizione_completa", i18n.language, locale.descrizione_completa || "");
-  const descrizioneBreve = getTranslatedField(locale as any, "descrizione", i18n.language, locale.descrizione || "");
+  const orari = getFirstTranslatedLocaleField(["orari"], locale.orari || "");
+  const priceRange = getFirstTranslatedLocaleField(["price_range"], locale.price_range || "");
+  const descrizioneLunga = getFirstLongLocaleContent(
+    ["descrizione_completa", "descrizione", "specialita", "storia", "testo", "content"],
+    locale.descrizione_completa || locale.descrizione || ""
+  );
+  const qualitaDrink = getFirstTranslatedLocaleField(["qualita_drink"], locale.qualita_drink || "");
+  const competenzaStaff = getFirstTranslatedLocaleField(["competenza_staff"], locale.competenza_staff || "");
+  const atmosfera = getFirstTranslatedLocaleField(["atmosfera"], locale.atmosfera || "");
+  const qualitaPrezzo = getFirstTranslatedLocaleField(["qualita_prezzo"], locale.qualita_prezzo || "");
   const fullAddress = [indirizzo, citta, provincia, paese]
     .filter(Boolean)
     .join(", ");
@@ -733,10 +774,10 @@ export default function VenueDetail() {
           <h2 className="section-title" style={sectionTitleStyle}>{tr("Valutazioni", "Ratings", "Оценки")}</h2>
           <div className="grid-wrapper" style={{ gap: 20, marginTop: 32 }}>
             {[
-              { label: t("venueDetail.ratings.qualityDrink", { defaultValue: tr("Qualità Drink", "Drink Quality", "Качество на напитките") }), value: locale.qualita_drink },
-              { label: t("venueDetail.ratings.staffCompetence", { defaultValue: tr("Competenza Staff", "Staff Competence", "Компетентност на персонала") }), value: locale.competenza_staff },
-              { label: "Atmosfera", value: locale.atmosfera },
-              { label: "Qualità/Prezzo", value: locale.qualita_prezzo },
+              { label: t("venueDetail.ratings.qualityDrink", { defaultValue: tr("Qualità Drink", "Drink Quality", "Качество на напитките") }), value: qualitaDrink },
+              { label: t("venueDetail.ratings.staffCompetence", { defaultValue: tr("Competenza Staff", "Staff Competence", "Компетентност на персонала") }), value: competenzaStaff },
+              { label: "Atmosfera", value: atmosfera },
+              { label: "Qualità/Prezzo", value: qualitaPrezzo },
             ].map((item) => (
               <div key={item.label} className="rating-box">
                 <p>{item.label}</p>
@@ -750,7 +791,7 @@ export default function VenueDetail() {
         <div className="content-wrapper venue-section">
           <h2 className="section-title" style={sectionTitleStyle}>{tr("Descrizione", "Description", "Описание")}</h2>
           <p className="venue-description">
-            {descrizioneCompleta || descrizioneBreve || tr("Descrizione non disponibile", "Description not available", "Няма налично описание")}
+            {descrizioneLunga || tr("Descrizione non disponibile", "Description not available", "Няма налично описание")}
           </p>
         </div>
 
