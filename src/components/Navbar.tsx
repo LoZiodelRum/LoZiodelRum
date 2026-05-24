@@ -174,25 +174,23 @@ export default function Navbar() {
           {t("create")}
         </Link>
 
-        {user && (
-          <button
-            onClick={handleLogout}
-            style={{
-              background: "none",
-              border: "none",
-              color: "#fff",
-              cursor: "pointer",
-              padding: 0,
-              font: "inherit",
-              display: "inline-flex",
-              alignItems: "center",
-              whiteSpace: "nowrap",
-              flexShrink: 0,
-            }}
-          >
-            {t("logout")}
-          </button>
-        )}
+        <button
+          onClick={handleLogout}
+          style={{
+            background: "none",
+            border: "none",
+            color: "#fff",
+            cursor: "pointer",
+            padding: 0,
+            font: "inherit",
+            display: "inline-flex",
+            alignItems: "center",
+            whiteSpace: "nowrap",
+            flexShrink: 0,
+          }}
+        >
+          {t("logout")}
+        </button>
 
         {/* SELETTORE LINGUA DESKTOP */}
         <div
@@ -639,24 +637,22 @@ export default function Navbar() {
           </Link>
         )}
 
-        {user && (
-          <button
-            className="mobile-menu-item mobile-logout-btn"
-            onClick={handleLogout}
-            style={{
-              marginTop: "12px",
-              background: "#222",
-              border: "1px solid #444",
-              color: "#fff",
-              borderRadius: "10px",
-              padding: "12px 12px",
-              cursor: "pointer",
-              transition: "all 0.2s ease",
-            }}
-          >
-            {t("logout")}
-          </button>
-        )}
+        <button
+          className="mobile-menu-item mobile-logout-btn"
+          onClick={handleLogout}
+          style={{
+            marginTop: "12px",
+            background: "#222",
+            border: "1px solid #444",
+            color: "#fff",
+            borderRadius: "10px",
+            padding: "12px 12px",
+            cursor: "pointer",
+            transition: "all 0.2s ease",
+          }}
+        >
+          {t("logout")}
+        </button>
       </div>
 
       {/* STYLE RESPONSIVE */}
