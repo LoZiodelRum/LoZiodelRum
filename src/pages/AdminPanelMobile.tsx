@@ -156,7 +156,22 @@ export default function AdminPanelMobile() {
       setLoadingData(true);
 
       const { data: localiData } = await supabase.from("Locali").select("id, nome, indirizzo, citta, provincia, paese, latitudine, longitudine, categoria, orari, price_range, telefono, sito, instagram, image_url, image, video_url, descrizione, descrizione_completa, qualita_drink, competenza_staff, atmosfera, qualita_prezzo, verificato, in_evidenza, status, approvato, created_at, updated_at");
-      const { data: utentiData } = await supabase.from("Profili").select("id, nome, cognome, username, email, telefono, ruolo, status, approvato, bio_breve, avatar_url, city, paese, genere, distillato_preferito, cocktail_preferito, intensita_preferita, profilo_gustativo_preferito, famiglia_aromatica_preferita, metodo_consumo_preferito, level, points, badges, numero_recensioni, numero_locali_visitati, numero_cocktail_creati, recensioni, cocktail_creati, locali_segnalati, preferiti, instagram, tiktok, sito_web, nome_locale, esperienza_anni, specialita, certificazioni, menu_caricato, indirizzo_locale, citta_locale, partita_iva, numero_dipendenti, descrizione_locale, created_at, updated_at, ultimo_accesso, email_verificata");
+      let utentiData: any[] = [];
+      let utentiError: any = null;
+      const utentiTryStrict = await supabase
+        .from("Profili")
+        .select("id, nome, cognome, username, email, telefono, ruolo, status, approvato, bio_breve, avatar_url, city, paese, genere, distillato_preferito, cocktail_preferito, intensita_preferita, profilo_gustativo_preferito, famiglia_aromatica_preferita, metodo_consumo_preferito, level, points, badges, numero_recensioni, numero_locali_visitati, numero_cocktail_creati, recensioni, cocktail_creati, locali_segnalati, preferiti, instagram, tiktok, sito_web, nome_locale, esperienza_anni, specialita, certificazioni, menu_caricato, indirizzo_locale, citta_locale, partita_iva, numero_dipendenti, descrizione_locale, created_at, updated_at, ultimo_accesso, email_verificata");
+
+      if (!utentiTryStrict.error) {
+        utentiData = Array.isArray(utentiTryStrict.data) ? utentiTryStrict.data : [];
+      } else {
+        utentiError = utentiTryStrict.error;
+        const utentiTryAll = await supabase.from("Profili").select("*");
+        utentiData = Array.isArray(utentiTryAll.data) ? utentiTryAll.data : [];
+        if (utentiTryAll.error) {
+          utentiError = utentiTryAll.error;
+        }
+      }
       type SelectResult = { data: any[]; error: any; table: string };
       async function selectWithFallback(tableNames: string[], columnAttempts: string[]): Promise<SelectResult> {
         let lastError: any = null;
@@ -214,9 +229,11 @@ export default function AdminPanelMobile() {
       console.log("distillati error:", distillatiResult.error);
       console.log("vini error:", viniResult.error);
       console.log("articoli error:", articoliResult.error);
+      console.log("utenti:", utentiData);
+      console.log("utenti error:", utentiError);
 
       setLocali(localiData || []);
-      setUtenti(utentiData || []);
+      setUtenti(Array.isArray(utentiData) ? utentiData : []);
       setCocktail(Array.isArray(cocktailData) ? cocktailData : []);
       setDistillati(Array.isArray(distillatiData) ? distillatiData : []);
       setVini(Array.isArray(viniData) ? viniData : []);

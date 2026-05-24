@@ -112,9 +112,19 @@ export default function AdminPanel() {
       }
     }
 
-    if (!utentiData) {
+    let utentiError: any = null;
+    if (!utentiData || (Array.isArray(utentiData) && utentiData.length === 0)) {
       const fallbackUsers = await supabase.from("Profili").select(ADMIN_PROFILI_COLUMNS);
-      utentiData = (fallbackUsers.data as any[]) || [];
+      if (!fallbackUsers.error) {
+        utentiData = Array.isArray(fallbackUsers.data) ? fallbackUsers.data : [];
+      } else {
+        utentiError = fallbackUsers.error;
+        const fallbackUsersAll = await supabase.from("Profili").select("*");
+        utentiData = Array.isArray(fallbackUsersAll.data) ? fallbackUsersAll.data : [];
+        if (fallbackUsersAll.error) {
+          utentiError = fallbackUsersAll.error;
+        }
+      }
     }
 
     type SelectResult = { data: any[]; error: any; table: string; columns: string };
@@ -158,10 +168,12 @@ export default function AdminPanel() {
     console.log("distillati:", distillatiData);
     console.log("vini:", viniData);
     console.log("articoli:", articoliData);
+    console.log("utenti:", utentiData);
     console.log("cocktail error:", cocktailResult.error);
     console.log("distillati error:", distillatiResult.error);
     console.log("vini error:", viniResult.error);
     console.log("articoli error:", articoliResult.error);
+    console.log("utenti error:", utentiError);
 
     const normalizeRole = (value: unknown) => String(value || "utente").trim().toLowerCase();
     const normalizeApproved = (user: any) => {
