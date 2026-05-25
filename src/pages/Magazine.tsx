@@ -32,63 +32,12 @@ type Article = {
   [key: string]: any;
 };
 
-function firstNonEmpty(...values: Array<string | null | undefined>): string {
-  for (const value of values) {
-    if (typeof value === "string" && value.trim().length > 0) {
-      return value;
-    }
-  }
-  return "";
-}
-
-function pickArticleTitle(article: Article, normalizedLanguage: "it" | "en" | "es" | "bg", language?: string): string {
-  if (normalizedLanguage === "it") {
-    return firstNonEmpty(article.titolo);
-  } else if (normalizedLanguage === "es") {
-    return firstNonEmpty(article.titolo_es, article.titolo_en, article.titolo);
-  } else if (normalizedLanguage === "bg") {
-    return firstNonEmpty(article.titolo_bg, article.titolo_en, article.titolo);
-  }
-
-  return firstNonEmpty(article.titolo_en, article.titolo);
-}
-
-function pickArticlePreview(article: Article, normalizedLanguage: "it" | "en" | "es" | "bg"): string {
-
-  const basePreview = firstNonEmpty(article.sottotitolo, article.descrizione, article.estratto);
-  const enPreview = firstNonEmpty(article.sottotitolo_en, article.descrizione_en, article.estratto_en, basePreview);
-  const esPreview = firstNonEmpty(article.sottotitolo_es, article.descrizione_es, article.estratto_es, enPreview, basePreview);
-  const bgPreview = firstNonEmpty(article.sottotitolo_bg, article.descrizione_bg, article.estratto_bg, enPreview, basePreview);
-
-  if (normalizedLanguage === "it") {
-    return basePreview;
-  } else if (normalizedLanguage === "es") {
-    return esPreview;
-  } else if (normalizedLanguage === "bg") {
-    return bgPreview;
-  }
-
-  return enPreview;
-}
-
-function pickArticleCategory(article: Article, normalizedLanguage: "it" | "en" | "es" | "bg"): string {
-
-  if (normalizedLanguage === "it") {
-    return firstNonEmpty(article.categoria);
-  } else if (normalizedLanguage === "es") {
-    return firstNonEmpty(article.categoria_es, article.categoria_en, article.categoria);
-  } else if (normalizedLanguage === "bg") {
-    return firstNonEmpty(article.categoria_bg, article.categoria_en, article.categoria);
-  }
-
-  return firstNonEmpty(article.categoria_en, article.categoria);
-}
-
-export default function Magazine() {
-  const [articles, setArticles] = useState<Article[]>([]);
-  const { t, i18n } = useTranslation("translation");
-  const language = i18n.resolvedLanguage || i18n.language || "it";
-  const normalizedLanguage: "it" | "en" | "es" | "bg" =
+const getTranslatedField = (
+  article: Article | null | undefined,
+  field: string,
+  language?: string
+): string => {
+  const lang =
     language?.toLowerCase().startsWith("es")
       ? "es"
       : language?.toLowerCase().startsWith("bg")
@@ -96,6 +45,28 @@ export default function Magazine() {
       : language?.toLowerCase().startsWith("it")
       ? "it"
       : "en";
+
+  const baseField = article?.[field];
+
+  if (lang === "it") {
+    return baseField || "";
+  }
+
+  const translatedField = article?.[`${field}_${lang}`];
+
+  if (translatedField && translatedField.trim() !== "") {
+    return translatedField;
+  }
+
+  const englishField = article?.[`${field}_en`];
+
+  return englishField || baseField || "";
+};
+
+export default function Magazine() {
+  const [articles, setArticles] = useState<Article[]>([]);
+  const { t, i18n } = useTranslation("translation");
+  const language = i18n.resolvedLanguage || i18n.language || "it";
 
   useEffect(() => {
     load();
@@ -127,38 +98,24 @@ export default function Magazine() {
     return <><Navbar /><div className="page fade-in" style={{ padding: 40 }}>{t("noArticles")}</div></>;
   }
 
-  const heroArticle = articles.find((a) => (a.titolo || "").trim().length > 0 && (a.descrizione || "").trim().length > 0);
+  const heroArticle = articles.find((article) => {
+    const title = getTranslatedField(article, "titolo", language);
+    const preview =
+      getTranslatedField(article, "descrizione", language) ||
+      getTranslatedField(article, "sottotitolo", language) ||
+      getTranslatedField(article, "estratto", language);
+    return title.trim().length > 0 && preview.trim().length > 0;
+  });
   const others = heroArticle ? articles.filter((a) => a.id !== heroArticle.id) : articles;
 
-  const heroTitle = heroArticle
-    ? normalizedLanguage === "es"
-      ? heroArticle.titolo_es || heroArticle.titolo_en || heroArticle.titolo
-      : normalizedLanguage === "bg"
-      ? heroArticle.titolo_bg || heroArticle.titolo_en || heroArticle.titolo
-      : normalizedLanguage === "it"
-      ? heroArticle.titolo
-      : heroArticle.titolo_en || heroArticle.titolo
-    : "";
+  const heroTitle = getTranslatedField(heroArticle, "titolo", language);
 
-  const heroDescription = heroArticle
-    ? normalizedLanguage === "es"
-      ? firstNonEmpty(heroArticle.descrizione_es, heroArticle.sottotitolo_es, heroArticle.descrizione_en, heroArticle.sottotitolo_en, heroArticle.descrizione, heroArticle.sottotitolo)
-      : normalizedLanguage === "bg"
-      ? firstNonEmpty(heroArticle.descrizione_bg, heroArticle.sottotitolo_bg, heroArticle.descrizione_en, heroArticle.sottotitolo_en, heroArticle.descrizione, heroArticle.sottotitolo)
-      : normalizedLanguage === "it"
-      ? firstNonEmpty(heroArticle.descrizione, heroArticle.sottotitolo)
-      : firstNonEmpty(heroArticle.descrizione_en, heroArticle.sottotitolo_en, heroArticle.descrizione, heroArticle.sottotitolo)
-    : "";
+  const heroDescription =
+    getTranslatedField(heroArticle, "descrizione", language)
+    || getTranslatedField(heroArticle, "sottotitolo", language)
+    || getTranslatedField(heroArticle, "estratto", language);
 
-  const heroCategory = heroArticle
-    ? normalizedLanguage === "es"
-      ? heroArticle.categoria_es || heroArticle.categoria_en || heroArticle.categoria
-      : normalizedLanguage === "bg"
-      ? heroArticle.categoria_bg || heroArticle.categoria_en || heroArticle.categoria
-      : normalizedLanguage === "it"
-      ? heroArticle.categoria
-      : heroArticle.categoria_en || heroArticle.categoria
-    : "";
+  const heroCategory = getTranslatedField(heroArticle, "categoria", language);
 
   return (
     <>
@@ -181,12 +138,20 @@ export default function Magazine() {
         {/* GRID */}
         <h2 className="mobile-articles-title">{t("articlesTitle")}</h2>
         <div className="cocktail-grid">
-          {others.map((a) => (
-            <Link key={a.id} to={`/magazine/${a.id}`} className="drink-card">
-              {a.immagine ? (
+          {others.map((article) => {
+            const articleTitle = getTranslatedField(article, "titolo", language);
+            const articleCategory = getTranslatedField(article, "categoria", language);
+            const articlePreview =
+              getTranslatedField(article, "descrizione", language)
+              || getTranslatedField(article, "sottotitolo", language)
+              || getTranslatedField(article, "estratto", language);
+
+            return (
+            <Link key={article.id} to={`/magazine/${article.id}`} className="drink-card">
+              {article.immagine ? (
                 <img
-                  src={a.immagine}
-                  alt={pickArticleTitle(a, normalizedLanguage, language) || t("articleFallback")}
+                  src={article.immagine}
+                  alt={articleTitle || t("articleFallback")}
                   style={{ transform: "scale(0.9)", transformOrigin: "center" }}
                 />
               ) : (
@@ -195,9 +160,9 @@ export default function Magazine() {
                 </div>
               )}
               <div className="drink-card-overlay">
-                {a.categoria && <span className="badge-category">{pickArticleCategory(a, normalizedLanguage)}</span>}
-                <h3>{pickArticleTitle(a, normalizedLanguage, language) || t("articleFallback")}</h3>
-                {pickArticlePreview(a, normalizedLanguage) && (
+                {articleCategory && <span className="badge-category">{articleCategory}</span>}
+                <h3>{articleTitle || t("articleFallback")}</h3>
+                {articlePreview && (
                   <p
                     style={{
                       display: "-webkit-box",
@@ -207,12 +172,13 @@ export default function Magazine() {
                       textOverflow: "ellipsis",
                     }}
                   >
-                    {pickArticlePreview(a, normalizedLanguage)}
+                    {articlePreview}
                   </p>
                 )}
               </div>
             </Link>
-          ))}
+            );
+          })}
         </div>
       </div>
     </>
