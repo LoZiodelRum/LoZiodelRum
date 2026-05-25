@@ -8,78 +8,27 @@ import RegisterModal from "../components/RegisterModal";
 
 function Auth() {
   const navigate = useNavigate();
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState("");
   const [showRegister, setShowRegister] = useState(false);
 
-
-  async function resolveEmailByUsername(loginRaw: string): Promise<string | null> {
-    const usernameValue = loginRaw.trim();
-    if (!usernameValue) return null;
-
-    // First try exact match, then case-insensitive match to support legacy usernames.
-    const exact = await supabase
-      .from("Profili")
-      .select("email")
-      .eq("username", usernameValue)
-      .maybeSingle();
-
-    const exactEmail = String(exact.data?.email || "").trim().toLowerCase();
-    if (exactEmail) return exactEmail;
-
-    const insensitive = await supabase
-      .from("Profili")
-      .select("email")
-      .ilike("username", usernameValue)
-      .limit(1)
-      .maybeSingle();
-
-    const insensitiveEmail = String(insensitive.data?.email || "").trim().toLowerCase();
-    return insensitiveEmail || null;
-  }
-
   async function handleLogin(e: React.FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setLoading(true);
     setMsg("");
-    const loginRaw = username.trim();
-    const loginValue = loginRaw.toLowerCase();
-    const candidateEmails: string[] = [];
-    console.log("Tentativo login con:", loginRaw);
-    if (loginValue.includes("@")) {
-      candidateEmails.push(loginValue);
-    } else {
-      // Cerca email reale del profilo per consentire login con username storico.
-      const resolvedEmail = await resolveEmailByUsername(loginRaw);
-      console.log("Risultato ricerca username:", resolvedEmail);
-      if (resolvedEmail) {
-        candidateEmails.push(resolvedEmail);
-      }
-      candidateEmails.push(`${loginRaw}@loziodelrum.it`);
-      candidateEmails.push(`${loginValue}@loziodelrum.it`);
-    }
-    const uniqueCandidateEmails = [...new Set(candidateEmails.map((value) => value.trim().toLowerCase()).filter(Boolean))];
-    let data: any = null;
-    let error: any = null;
-    for (const email of uniqueCandidateEmails) {
-      const attempt = await supabase.auth.signInWithPassword({ email, password });
-      if (!attempt.error && attempt.data?.user) {
-        data = attempt.data;
-        error = null;
-        break;
-      }
-      error = attempt.error;
-    }
-    console.log("Risposta signInWithPassword:", data, error);
+    const normalizedEmail = email.trim().toLowerCase();
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email: normalizedEmail,
+      password,
+    });
+
     if (error) {
       const rawError = String(error?.message || "");
       const lowerError = rawError.toLowerCase();
       if (lowerError.includes("email not confirmed")) {
         setMsg("Email non confermata. Apri il link ricevuto via email e riprova.");
-      } else if (lowerError.includes("invalid login credentials")) {
-        setMsg("Credenziali errate. Prova con email completa oppure username.");
       } else {
         setMsg(rawError || "Errore login");
       }
@@ -96,7 +45,6 @@ function Auth() {
     setLoading(false);
     setMsg("");
     navigate("/home");
-    console.log("Login effettuato con successo, reindirizzando a /home");
   }
 
 
@@ -178,9 +126,9 @@ function Auth() {
             <input
               className="login-input-mobile"
               style={{ background: "#222", color: "#fff", border: "none", borderRadius: 16, padding: 12, fontSize: 18, marginBottom: 22, marginTop: 0, display: "block", textAlign: "center" }}
-              placeholder="Email o Username"
-              value={username}
-              onChange={e => setUsername(e.target.value)}
+              placeholder="Email"
+              value={email}
+              onChange={e => setEmail(e.target.value)}
               required
               autoComplete="username"
             />

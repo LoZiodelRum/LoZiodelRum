@@ -18,7 +18,6 @@ export default function RegisterModal({ open, onClose }: Props) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState("");
-  const [usernameAvailable, setUsernameAvailable] = useState<boolean | null>(null);
 
   if (!open) return null;
 
@@ -29,160 +28,77 @@ export default function RegisterModal({ open, onClose }: Props) {
     telefono.trim() &&
     email.trim() &&
     password.length >= 6 &&
-    password === confirmPassword &&
-    usernameAvailable === true;
-
-  async function checkUsername(val: string) {
-    setUsername(val);
-    if (val.length < 3) {
-      setUsernameAvailable(null);
-      return;
-    }
-    const { data } = await supabase
-      .from("Profili")
-      .select("id")
-      .ilike("username", val)
-      .maybeSingle();
-    setUsernameAvailable(!data);
-  }
+    password === confirmPassword;
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setLoading(true);
     setMsg("");
-
-    const isNetlifyHost = window.location.hostname.includes("netlify");
-    const endpoints = isNetlifyHost
-      ? ["/.netlify/functions/auth-signup", "/api/auth-signup"]
-      : ["/api/auth-signup", "/.netlify/functions/auth-signup"];
-
-    const signupPayload = {
-      nome,
-      cognome,
-      username,
-      telefono: telefono || null,
-      email,
+    const normalizedEmail = email.trim().toLowerCase();
+    const { data, error } = await supabase.auth.signUp({
+      email: normalizedEmail,
       password,
-      ruolo: "utente",
-    };
+    });
 
-    let serverRegistered = false;
-    let serverMessage = "";
-    let allowDirectFallback = true;
-
-    for (const endpoint of endpoints) {
-      try {
-        const response = await fetch(endpoint, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(signupPayload),
-        });
-
-        const payload = await response.json().catch(() => ({}));
-
-        if (response.ok && payload?.ok) {
-          serverRegistered = true;
-          serverMessage = String(payload?.message || "Registrazione completata");
-          break;
-        }
-
-        const errorMessage = String(payload?.message || `HTTP ${response.status}`);
-        if (errorMessage.toLowerCase().includes("server env not configured")) {
-          allowDirectFallback = true;
-          break;
-        }
-
-        allowDirectFallback = response.status === 404 || response.status === 405;
-        serverMessage = errorMessage;
-        if (!allowDirectFallback) {
-          break;
-        }
-      } catch (err: any) {
-        serverMessage = err?.message || "Errore di rete";
-      }
-    }
-
-    if (!serverRegistered && !allowDirectFallback) {
-      setMsg(serverMessage || "Errore registrazione");
+    if (error) {
+      setMsg(error.message || "Errore registrazione");
       setLoading(false);
       return;
     }
 
-    if (!serverRegistered) {
-      const { data: authData, error: authError } = await supabase.auth.signUp({
-        email,
-        password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/auth`,
-          data: {
-            nome,
-            cognome,
-            username,
-            telefono,
-            ruolo: "utente",
-          },
-        },
-      });
+    const userId = data.user?.id;
+    const sessionUserId = data.session?.user?.id;
+    const profileUserId = sessionUserId || userId;
 
-      if (authError) {
-        const authErrorMessage = String(authError.message || "").toLowerCase();
-        if (authErrorMessage.includes("already registered") || authErrorMessage.includes("esiste già")) {
-          setMsg("Email gia registrata. Accedi oppure usa il recupero password.");
-        } else {
-          setMsg(authError?.message || "Errore registrazione");
-        }
+    if (profileUserId) {
+      const { error: profileError } = await supabase
+        .from("Profili")
+        .upsert(
+          [
+            {
+              id: profileUserId,
+              nome: nome.trim(),
+              cognome: cognome.trim(),
+              username: username.trim(),
+              email: normalizedEmail,
+              telefono: telefono.trim() || null,
+              ruolo: "utente",
+              status: "attivo",
+            },
+          ],
+          { onConflict: "id" }
+        );
+
+      if (profileError) {
+        setMsg(profileError.message || "Profilo non creato");
         setLoading(false);
         return;
       }
-
-      let userId = authData?.user?.id;
-      if (!userId) {
-        const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({ email, password });
-        if (!loginError && loginData.user) {
-          userId = loginData.user.id;
-        }
-      }
-
-      if (userId) {
-        const { error: profiliError } = await supabase.from("Profili").upsert([
-          {
-            id: userId,
-            nome,
-            cognome,
-            username,
-            telefono,
-            email,
-            ruolo: "utente",
-            status: "attivo",
-            created_at: new Date().toISOString(),
-          },
-        ], { onConflict: "id" });
-
-        if (profiliError) {
-          console.warn("Profilo upsert non riuscito, continuo:", profiliError.message);
-        }
-      }
     }
 
-    const { error: loginError } = await supabase.auth.signInWithPassword({ email, password });
+    const { error: loginError } = await supabase.auth.signInWithPassword({
+      email: normalizedEmail,
+      password,
+    });
+
     if (loginError) {
       const lowerMessage = String(loginError.message || "").toLowerCase();
       if (lowerMessage.includes("email not confirmed")) {
         setMsg("Registrazione completata. Conferma la tua email prima di accedere.");
       } else {
-        setMsg(loginError.message || "Errore login automatico");
+        setMsg(loginError.message || "Errore login");
       }
       setLoading(false);
       return;
     }
 
-    setMsg(serverMessage || "Registrazione completata! Accesso in corso...");
+    setMsg("Registrazione completata! Accesso in corso...");
     setTimeout(() => {
       setLoading(false);
       setMsg("");
       onClose();
       navigate("/home");
-    }, 1000);
+    }, 800);
   }
 
   return (
@@ -297,25 +213,10 @@ export default function RegisterModal({ open, onClose }: Props) {
           <input
             placeholder="Username"
             value={username}
-            onChange={e => checkUsername(e.target.value)}
+            onChange={e => setUsername(e.target.value)}
             required
-            style={{
-              marginBottom: 6,
-              borderColor:
-                username.length > 2
-                  ? usernameAvailable === false
-                    ? "red"
-                    : usernameAvailable === true
-                    ? "green"
-                    : "#333"
-                  : "#333",
-            }}
+            style={{ marginBottom: 10 }}
           />
-          {username.length > 2 && usernameAvailable === false && (
-            <div style={{ color: "red", fontSize: 13, marginBottom: 6 }}>
-              Username già in uso
-            </div>
-          )}
           <input
             placeholder="Cellulare"
             value={telefono}

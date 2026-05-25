@@ -13,121 +13,67 @@ export default function Registrazione() {
   const [messaggio, setMessaggio] = useState("");
   const [loading, setLoading] = useState(false);
 
-  async function registerWithSupabaseDirect() {
+  async function handleRegister(e: any) {
+    e.preventDefault();
+    setLoading(true);
+    setMessaggio("");
+
+    const normalizedEmail = email.trim().toLowerCase();
     const { data, error } = await supabase.auth.signUp({
-      email,
+      email: normalizedEmail,
       password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth`,
-        data: { nome, cognome, username, telefono: telefono || null, ruolo: "utente" },
-      },
     });
 
     if (error) {
-      setMessaggio(error.message);
+      setMessaggio(error.message || "Registrazione fallita");
+      setLoading(false);
       return;
     }
 
-    if (!data.user) {
-      setMessaggio("Utente non creato");
-      return;
+    const profileUserId = data.session?.user?.id || data.user?.id;
+    if (profileUserId) {
+      const { error: profileError } = await supabase
+        .from("Profili")
+        .upsert(
+          [
+            {
+              id: profileUserId,
+              nome: nome.trim(),
+              cognome: cognome.trim(),
+              username: username.trim(),
+              email: normalizedEmail,
+              telefono: telefono.trim() || null,
+              ruolo: "utente",
+              status: "attivo",
+            },
+          ],
+          { onConflict: "id" }
+        );
+
+      if (profileError) {
+        setMessaggio(profileError.message || "Profilo non creato");
+        setLoading(false);
+        return;
+      }
     }
 
-    const userId = data.user.id;
-    const { error: profileError } = await supabase.from("Profili").upsert([
-      {
-        id: userId,
-        nome,
-        cognome,
-        username,
-        email,
-        telefono: telefono || null,
-        ruolo: "utente",
-        status: "attivo",
-      },
-    ], { onConflict: "id" });
+    const { error: loginError } = await supabase.auth.signInWithPassword({
+      email: normalizedEmail,
+      password,
+    });
 
-    if (profileError) {
-      console.warn("Profilo upsert fallback non riuscito:", profileError.message);
-    }
-
-    if (data.session) {
-      await supabase.auth.signOut();
-    }
-
-    const { error: loginError } = await supabase.auth.signInWithPassword({ email, password });
     if (loginError) {
       const lowerMessage = String(loginError.message || "").toLowerCase();
       if (lowerMessage.includes("email not confirmed")) {
         setMessaggio("Registrazione completata. Conferma la tua email prima di accedere.");
       } else {
-        setMessaggio(loginError.message || "Errore login automatico");
+        setMessaggio(loginError.message || "Errore login");
       }
-      return;
-    }
-
-    setMessaggio("Registrazione completata! Accesso effettuato.");
-  }
-
-  async function handleRegister(e: any) {
-    e.preventDefault();
-
-    setLoading(true);
-    setMessaggio("");
-
-    const isNetlifyHost = window.location.hostname.includes("netlify");
-    const endpoints = isNetlifyHost
-      ? ["/.netlify/functions/auth-signup", "/api/auth-signup"]
-      : ["/api/auth-signup", "/.netlify/functions/auth-signup"];
-
-    let lastMessage = "Registrazione fallita";
-
-    for (const endpoint of endpoints) {
-      try {
-        const response = await fetch(endpoint, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            nome,
-            cognome,
-            username,
-            email,
-            password,
-            ruolo: "utente",
-            telefono: telefono || null,
-          }),
-        });
-
-        const payload = await response.json().catch(() => ({}));
-        if (response.ok && payload?.ok) {
-          setMessaggio(payload.message || "Registrazione completata! Controlla la tua email per confermare l'account.");
-          setLoading(false);
-          return;
-        }
-
-        lastMessage = payload?.message || `HTTP ${response.status} su ${endpoint}`;
-        if ((payload?.message || "").toLowerCase().includes("server env not configured")) {
-          await registerWithSupabaseDirect();
-          setLoading(false);
-          return;
-        }
-        if (response.status !== 404 && response.status !== 405) {
-          break;
-        }
-      } catch (err: any) {
-        lastMessage = err?.message || `Errore di rete su ${endpoint}`;
-      }
-    }
-
-    if (lastMessage.toLowerCase().includes("server env not configured")) {
-      await registerWithSupabaseDirect();
       setLoading(false);
       return;
     }
 
-    setMessaggio(lastMessage);
+    setMessaggio("Registrazione completata! Accesso effettuato.");
     setLoading(false);
   }
 
