@@ -60,7 +60,12 @@ const getTranslatedField = (
 
   const englishField = article?.[`${field}_en`];
 
-  return englishField || baseField || "";
+  if (lang === "en") {
+    return englishField || baseField || "";
+  }
+
+  // For ES/BG, prefer base content before EN fallback to avoid mixed-language cards.
+  return baseField || englishField || "";
 };
 
 export default function Magazine() {
