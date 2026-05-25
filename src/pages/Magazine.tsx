@@ -8,27 +8,31 @@ import { SUPABASE_ANON_KEY, SUPABASE_URL } from "../lib/supabaseClient";
 type Article = {
   id: string;
   titolo: string;
+  titolo_it?: string | null;
   titolo_es?: string | null;
   titolo_en?: string | null;
-  titolo_bg?: string | null;
   sottotitolo?: string | null;
+  sottotitolo_it?: string | null;
   sottotitolo_es?: string | null;
   sottotitolo_en?: string | null;
-  sottotitolo_bg?: string | null;
   descrizione: string;
+  descrizione_it?: string | null;
   descrizione_es?: string | null;
   descrizione_en?: string | null;
-  descrizione_bg?: string | null;
+  categoria_it?: string | null;
+  categoria_es?: string | null;
+  categoria_en?: string | null;
   immagine: string;
   categoria: string;
   data_creazione: string;
   [key: string]: any;
 };
 
-function normalizeArticleLanguage(language?: string): "it" | "en" | "bg" | "es" {
+function normalizeArticleLanguage(language?: string): "it" | "en" | "es" {
   const short = String(language || "it").toLowerCase().split(/[-_]/)[0];
-  if (short === "en" || short === "bg" || short === "es") return short;
-  return "it";
+  if (short === "it") return "it";
+  if (short === "es") return "es";
+  return "en";
 }
 
 function firstNonEmpty(...values: Array<string | null | undefined>): string {
@@ -44,44 +48,41 @@ function pickArticleTitle(article: Article, language?: string): string {
   const normalized = normalizeArticleLanguage(language);
 
   if (normalized === "it") {
-    return firstNonEmpty(article.titolo, article.titolo_en);
+    return firstNonEmpty(article.titolo_it, article.titolo);
   } else if (normalized === "es") {
-    return firstNonEmpty(article.titolo_es, article.titolo, article.titolo_en);
-  } else if (normalized === "en") {
-    return firstNonEmpty(article.titolo_en, article.titolo);
+    return firstNonEmpty(article.titolo_es, article.titolo);
   }
 
-  return firstNonEmpty(article.titolo_bg, article.titolo, article.titolo_en);
+  return firstNonEmpty(article.titolo_en, article.titolo);
 }
 
 function pickArticlePreview(article: Article, language?: string): string {
   const normalized = normalizeArticleLanguage(language);
 
-  const itPreview = firstNonEmpty(article.sottotitolo, article.descrizione);
+  const basePreview = firstNonEmpty(article.sottotitolo, article.descrizione);
+  const itPreview = firstNonEmpty(article.sottotitolo_it, article.descrizione_it, basePreview);
+  const enPreview = firstNonEmpty(article.sottotitolo_en, article.descrizione_en, basePreview);
+  const esPreview = firstNonEmpty(article.sottotitolo_es, article.descrizione_es, basePreview);
 
   if (normalized === "it") {
-    return firstNonEmpty(itPreview, article.sottotitolo_en, article.descrizione_en);
+    return itPreview;
   } else if (normalized === "es") {
-    return firstNonEmpty(article.sottotitolo_es, article.descrizione_es, itPreview, article.sottotitolo_en, article.descrizione_en);
-  } else if (normalized === "en") {
-    return firstNonEmpty(article.sottotitolo_en, article.descrizione_en, itPreview);
+    return esPreview;
   }
 
-  return firstNonEmpty(article.sottotitolo_bg, article.descrizione_bg, itPreview, article.sottotitolo_en, article.descrizione_en);
+  return enPreview;
 }
 
 function pickArticleCategory(article: Article, language?: string): string {
   const normalized = normalizeArticleLanguage(language);
 
   if (normalized === "it") {
-    return firstNonEmpty(article.categoria, article.categoria_en);
+    return firstNonEmpty(article.categoria_it, article.categoria);
   } else if (normalized === "es") {
-    return firstNonEmpty(article.categoria_es, article.categoria, article.categoria_en);
-  } else if (normalized === "en") {
-    return firstNonEmpty(article.categoria_en, article.categoria);
+    return firstNonEmpty(article.categoria_es, article.categoria);
   }
 
-  return firstNonEmpty(article.categoria_bg, article.categoria, article.categoria_en);
+  return firstNonEmpty(article.categoria_en, article.categoria);
 }
 
 export default function Magazine() {
