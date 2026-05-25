@@ -23,11 +23,11 @@ function buildCandidates(baseField: string, language: SupportedLanguage): string
   }
 
   if (language === "es") {
-    return [`${baseField}_es`, `${baseField}_it`, baseField, `${baseField}_en`];
+    return [`${baseField}_es`, `${baseField}_it`, baseField];
   }
 
   if (language === "bg") {
-    return [`${baseField}_bg`, `${baseField}_it`, baseField, `${baseField}_en`];
+    return [`${baseField}_bg`, `${baseField}_it`, baseField];
   }
 
   return [`${baseField}_it`, baseField];

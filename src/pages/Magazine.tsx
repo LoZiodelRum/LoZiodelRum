@@ -126,9 +126,10 @@ export default function Magazine() {
           {articles.map((article) => {
             const articleTitle = getTranslatedField(article, "titolo", language, "");
             const articlePreview =
-              getTranslatedField(article, "descrizione", language, "")
-              || getTranslatedField(article, "sottotitolo", language, "")
-              || getTranslatedField(article, "estratto", language, "");
+              getTranslatedField(article, "sottotitolo", language, "")
+              || getTranslatedField(article, "estratto", language, "")
+              || getTranslatedField(article, "descrizione", language, "")
+              || getTranslatedField(article, "contenuto", language, "");
 
             return (
             <Link key={article.id} to={`/magazine/${article.id}`} className="drink-card magazine-uniform-card">

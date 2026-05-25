@@ -306,11 +306,13 @@ export default function ArticleDetail() {
                 <p className="article-hero-subtitle" style={subtitle}>
                   {
                     getTranslatedField(data as any, "sottotitolo", i18n.language, "")
-                    || getTranslatedField(data as any, "descrizione", i18n.language, "")
                     || getTranslatedField(data as any, "estratto", i18n.language, "")
+                    || getTranslatedField(data as any, "contenuto", i18n.language, "").slice(0, 260)
+                    || getTranslatedField(data as any, "descrizione", i18n.language, "")
                     || data.sottotitolo
-                    || data.descrizione
                     || data.estratto
+                    || data.contenuto?.slice?.(0, 260)
+                    || data.descrizione
                     || ""
                   }
                 </p>
