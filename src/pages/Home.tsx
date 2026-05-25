@@ -31,6 +31,7 @@ type Articolo = {
 };
 
 const HOME_HERO_VIDEO_VERSION = "2026-04-15-07";
+const HOME_HERO_MAX_RETRIES = 2;
 
 export default function Home() {
   const { isAdmin } = useUser();
@@ -42,6 +43,7 @@ export default function Home() {
   const [savingLocaleId, setSavingLocaleId] = useState<string | null>(null);
   const [heroVideoFailed, setHeroVideoFailed] = useState(false);
   const [heroVideoReady, setHeroVideoReady] = useState(false);
+  const [heroVideoRetry, setHeroVideoRetry] = useState(0);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -243,7 +245,7 @@ export default function Home() {
     setArticoli(rows.map((row: any) => ({ ...row, immagine: row.immagine ?? row.image ?? null })));
   }
 
-  const heroVideoSrc = `/home-hero.mp4?v=${HOME_HERO_VIDEO_VERSION}`;
+  const heroVideoSrc = `/home-hero.mp4?v=${HOME_HERO_VIDEO_VERSION}-${heroVideoRetry}`;
   const heroVideoPoster =
     "data:image/svg+xml;charset=UTF-8," +
     encodeURIComponent(`
@@ -488,8 +490,17 @@ export default function Home() {
           preload="metadata"
           poster={heroVideoPoster}
           aria-hidden="true"
-          onLoadedData={() => setHeroVideoReady(true)}
-          onError={() => setHeroVideoFailed(true)}
+          onLoadedData={() => {
+            setHeroVideoReady(true);
+            setHeroVideoFailed(false);
+          }}
+          onError={() => {
+            if (heroVideoRetry < HOME_HERO_MAX_RETRIES) {
+              setHeroVideoRetry((prev) => prev + 1);
+              return;
+            }
+            setHeroVideoFailed(true);
+          }}
           style={{
             position: "absolute",
             inset: 0,
