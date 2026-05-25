@@ -42,9 +42,6 @@ function firstNonEmpty(...values: Array<string | null | undefined>): string {
 }
 
 function pickArticleTitle(article: Article, normalizedLanguage: "it" | "en" | "es" | "bg", language?: string): string {
-  console.log(language);
-  console.log(article.titolo_es);
-
   if (normalizedLanguage === "it") {
     return firstNonEmpty(article.titolo);
   } else if (normalizedLanguage === "es") {
@@ -130,24 +127,54 @@ export default function Magazine() {
     return <><Navbar /><div className="page fade-in" style={{ padding: 40 }}>{t("noArticles")}</div></>;
   }
 
-  const hero = articles.find((a) => (a.titolo || "").trim().length > 0 && (a.descrizione || "").trim().length > 0);
-  const others = hero ? articles.filter((a) => a.id !== hero.id) : articles;
+  const heroArticle = articles.find((a) => (a.titolo || "").trim().length > 0 && (a.descrizione || "").trim().length > 0);
+  const others = heroArticle ? articles.filter((a) => a.id !== heroArticle.id) : articles;
+
+  const heroTitle = heroArticle
+    ? normalizedLanguage === "es"
+      ? heroArticle.titolo_es || heroArticle.titolo_en || heroArticle.titolo
+      : normalizedLanguage === "bg"
+      ? heroArticle.titolo_bg || heroArticle.titolo_en || heroArticle.titolo
+      : normalizedLanguage === "it"
+      ? heroArticle.titolo
+      : heroArticle.titolo_en || heroArticle.titolo
+    : "";
+
+  const heroDescription = heroArticle
+    ? normalizedLanguage === "es"
+      ? firstNonEmpty(heroArticle.descrizione_es, heroArticle.sottotitolo_es, heroArticle.descrizione_en, heroArticle.sottotitolo_en, heroArticle.descrizione, heroArticle.sottotitolo)
+      : normalizedLanguage === "bg"
+      ? firstNonEmpty(heroArticle.descrizione_bg, heroArticle.sottotitolo_bg, heroArticle.descrizione_en, heroArticle.sottotitolo_en, heroArticle.descrizione, heroArticle.sottotitolo)
+      : normalizedLanguage === "it"
+      ? firstNonEmpty(heroArticle.descrizione, heroArticle.sottotitolo)
+      : firstNonEmpty(heroArticle.descrizione_en, heroArticle.sottotitolo_en, heroArticle.descrizione, heroArticle.sottotitolo)
+    : "";
+
+  const heroCategory = heroArticle
+    ? normalizedLanguage === "es"
+      ? heroArticle.categoria_es || heroArticle.categoria_en || heroArticle.categoria
+      : normalizedLanguage === "bg"
+      ? heroArticle.categoria_bg || heroArticle.categoria_en || heroArticle.categoria
+      : normalizedLanguage === "it"
+      ? heroArticle.categoria
+      : heroArticle.categoria_en || heroArticle.categoria
+    : "";
 
   return (
     <>
       <Navbar />
       <div className="page fade-in magazine-page-mobile" style={{ paddingTop: 32 }}>
         {/* HERO */}
-        {hero && (
+        {heroArticle && (
           <Link
-            to={`/magazine/${hero.id}`}
+            to={`/magazine/${heroArticle.id}`}
             className="magazine-hero"
-            style={hero.immagine ? { backgroundImage: `url(${hero.immagine})` } : { background: "#0f172a" }}
+            style={heroArticle.immagine ? { backgroundImage: `url(${heroArticle.immagine})` } : { background: "#0f172a" }}
           >
             <div className="magazine-hero-overlay">
-              {hero.categoria && <span className="badge-category">{pickArticleCategory(hero, normalizedLanguage)}</span>}
-              <h1 className="magazine-hero-title-single">{pickArticleTitle(hero, normalizedLanguage, language) || t("articleFallback")}</h1>
-              <p>{pickArticlePreview(hero, normalizedLanguage)}</p>
+              {heroCategory && <span className="badge-category">{heroCategory}</span>}
+              <h1 className="magazine-hero-title-single">{heroTitle || t("articleFallback")}</h1>
+              <p>{heroDescription}</p>
             </div>
           </Link>
         )}
