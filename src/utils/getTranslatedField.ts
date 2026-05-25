@@ -15,22 +15,22 @@ function hasValue(value: unknown): boolean {
 
 function buildCandidates(baseField: string, language: SupportedLanguage): string[] {
   if (language === "it") {
-    return [`${baseField}_it`, baseField];
+    return [baseField, `${baseField}_it`];
   }
 
   if (language === "en") {
-    return [`${baseField}_en`, baseField, `${baseField}_it`];
+    return [`${baseField}_en`, baseField];
   }
 
   if (language === "es") {
-    return [`${baseField}_es`, `${baseField}_it`, baseField];
+    return [`${baseField}_es`, `${baseField}_en`, baseField, `${baseField}_it`];
   }
 
   if (language === "bg") {
-    return [`${baseField}_bg`, `${baseField}_it`, baseField];
+    return [`${baseField}_bg`, `${baseField}_en`, baseField];
   }
 
-  return [`${baseField}_it`, baseField];
+  return [baseField, `${baseField}_it`];
 }
 
 export function getTranslatedField(

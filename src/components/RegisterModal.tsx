@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 type Props = {
   open: boolean;
@@ -8,6 +9,7 @@ type Props = {
 };
 
 export default function RegisterModal({ open, onClose }: Props) {
+  const { t } = useTranslation("auth");
   const navigate = useNavigate();
   const [nome, setNome] = useState("");
   const [cognome, setCognome] = useState("");
@@ -72,7 +74,7 @@ export default function RegisterModal({ open, onClose }: Props) {
     if (!endpointOk) {
       const loweredMessage = lastEndpointMessage.toLowerCase();
       if (loweredMessage.includes("gia registrata") || loweredMessage.includes("already")) {
-        setMsg("Email gia registrata");
+        setMsg(t("messages.emailAlreadyRegistered"));
       } else {
         const { data, error } = await supabase.auth.signUp({
           email: normalizedEmail,
@@ -80,7 +82,7 @@ export default function RegisterModal({ open, onClose }: Props) {
         });
 
         if (error) {
-          setMsg(error.message || "Errore registrazione");
+          setMsg(error.message || t("messages.signupError"));
           setLoading(false);
           return;
         }
@@ -109,7 +111,7 @@ export default function RegisterModal({ open, onClose }: Props) {
             );
 
           if (profileError) {
-            setMsg(profileError.message || "Profilo non creato");
+            setMsg(profileError.message || t("messages.profileNotCreated"));
             setLoading(false);
             return;
           }
@@ -117,7 +119,7 @@ export default function RegisterModal({ open, onClose }: Props) {
       }
 
       if (lastEndpointMessage && !lastEndpointMessage.toLowerCase().includes("gia registrata") && !lastEndpointMessage.toLowerCase().includes("already")) {
-        setMsg(lastEndpointMessage || "Errore registrazione");
+        setMsg(lastEndpointMessage || t("messages.signupError"));
       }
 
       if (lastEndpointMessage.toLowerCase().includes("gia registrata") || lastEndpointMessage.toLowerCase().includes("already")) {
@@ -134,15 +136,15 @@ export default function RegisterModal({ open, onClose }: Props) {
     if (loginError) {
       const lowerMessage = String(loginError.message || "").toLowerCase();
       if (lowerMessage.includes("email not confirmed")) {
-        setMsg("Registrazione completata. Conferma la tua email prima di accedere.");
+        setMsg(t("messages.registrationCompletedConfirmEmail"));
       } else {
-        setMsg(loginError.message || "Errore login");
+        setMsg(loginError.message || t("messages.loginError"));
       }
       setLoading(false);
       return;
     }
 
-    setMsg("Registrazione completata! Accesso in corso...");
+    setMsg(t("messages.registrationCompletedLogin"));
     setTimeout(() => {
       setLoading(false);
       setMsg("");
@@ -238,37 +240,37 @@ export default function RegisterModal({ open, onClose }: Props) {
             cursor: "pointer",
             zIndex: 10,
           }}
-          aria-label="Chiudi"
+          aria-label={t("close")}
         >
           ×
         </button>
         <div style={{ color: "#FFD36A", fontWeight: 900, fontSize: 28, marginBottom: 8, textAlign: "center", letterSpacing: 1 }}>
-          Crea il tuo account
+          {t("registerTitle")}
         </div>
         <form onSubmit={handleSubmit} style={{ width: "100%", maxWidth: 420, margin: "0 auto" }} autoComplete="off">
           <input
-            placeholder="Nome"
+            placeholder={t("firstName")}
             value={nome}
             onChange={e => setNome(e.target.value)}
             required
             style={{ marginBottom: 10 }}
           />
           <input
-            placeholder="Cognome"
+            placeholder={t("lastName")}
             value={cognome}
             onChange={e => setCognome(e.target.value)}
             required
             style={{ marginBottom: 10 }}
           />
           <input
-            placeholder="Username"
+            placeholder={t("username")}
             value={username}
             onChange={e => setUsername(e.target.value)}
             required
             style={{ marginBottom: 10 }}
           />
           <input
-            placeholder="Cellulare"
+            placeholder={t("phone")}
             value={telefono}
             onChange={e => setTelefono(e.target.value)}
             required
@@ -276,7 +278,7 @@ export default function RegisterModal({ open, onClose }: Props) {
           />
           <input
             type="email"
-            placeholder="Email"
+            placeholder={t("email")}
             value={email}
             onChange={e => setEmail(e.target.value)}
             required
@@ -284,7 +286,7 @@ export default function RegisterModal({ open, onClose }: Props) {
           />
           <input
             type="password"
-            placeholder="Password (min 6 caratteri)"
+            placeholder={t("passwordMin")}
             value={password}
             onChange={e => setPassword(e.target.value)}
             minLength={6}
@@ -293,7 +295,7 @@ export default function RegisterModal({ open, onClose }: Props) {
           />
           <input
             type="password"
-            placeholder="Conferma password"
+            placeholder={t("confirmPassword")}
             value={confirmPassword}
             onChange={e => setConfirmPassword(e.target.value)}
             minLength={6}
@@ -321,7 +323,7 @@ export default function RegisterModal({ open, onClose }: Props) {
               transition: "background 0.2s, color 0.2s",
             }}
           >
-            {loading ? "Registrazione..." : "Crea il tuo account"}
+            {loading ? t("registrationLoading") : t("createAccount")}
           </button>
         </form>
         {msg && (

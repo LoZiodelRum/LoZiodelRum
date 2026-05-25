@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import ArticleVisualEditor, { ArticleBlock } from "../components/ArticleVisualEditor";
 import { supabase } from "../lib/supabaseClient";
+import { removeEmptyFields } from "../utils/removeEmptyFields";
 
 interface ArticleEditProps {
   articleId: string;
@@ -48,7 +49,8 @@ export default function ArticleEdit({ articleId, onClose }: ArticleEditProps) {
     // Rimuovi i blocchi "meta" dal contenuto
     const contentBlocks = newBlocks.filter(b => b.type !== "title" && b.type !== "excerpt" && b.type !== "image");
     const contenuto = JSON.stringify(contentBlocks);
-    const { error } = await supabase.from("articoli").update({ titolo, estratto, immagine, contenuto }).eq("id", articleId);
+    const payload = removeEmptyFields({ titolo, estratto, immagine, contenuto });
+    const { error } = await supabase.from("articoli").update(payload).eq("id", articleId);
     if (!error) onClose();
     else setError("Errore salvataggio");
   }

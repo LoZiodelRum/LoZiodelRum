@@ -2,11 +2,13 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
+import { useTranslation } from "react-i18next";
 
 import RegisterModal from "../components/RegisterModal";
 
 
 function Auth() {
+  const { t } = useTranslation("auth");
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -29,7 +31,7 @@ function Auth() {
         .maybeSingle();
 
       if (usernameError) {
-        setMsg(usernameError.message || "Errore ricerca username");
+        setMsg(usernameError.message || t("messages.usernameLookupError"));
         setLoading(false);
         return;
       }
@@ -44,7 +46,7 @@ function Auth() {
           .maybeSingle();
 
         if (fallbackError) {
-          setMsg(fallbackError.message || "Errore ricerca username");
+          setMsg(fallbackError.message || t("messages.usernameLookupError"));
           setLoading(false);
           return;
         }
@@ -53,7 +55,7 @@ function Auth() {
       }
 
       if (!resolvedEmail) {
-        setMsg("Username non trovato");
+        setMsg(t("messages.usernameNotFound"));
         setLoading(false);
         return;
       }
@@ -65,24 +67,20 @@ function Auth() {
       email: normalizedEmail,
       password,
     });
-    console.log("LOGIN DATA", data);
-    console.log("LOGIN ERROR", error);
-
     if (error) {
       const rawError = String(error?.message || "");
       const lowerError = rawError.toLowerCase();
       if (lowerError.includes("email not confirmed")) {
-        setMsg("Email non confermata. Apri il link ricevuto via email e riprova.");
+        setMsg(t("messages.emailNotConfirmed"));
       } else {
-        setMsg(rawError || "Errore login");
+        setMsg(rawError || t("messages.loginError"));
       }
       setLoading(false);
       return;
     }
     const user = data.user;
-    console.log("USER", user);
     if (!user) {
-      setMsg("Errore login");
+      setMsg(t("messages.loginError"));
       setLoading(false);
       return;
     }
@@ -165,13 +163,13 @@ function Auth() {
       <div className="login-fullscreen-container">
         <div className="login-box">
           <img src="/logo.png" alt="Lo Zio del Rum" style={{ width: 120, height: 120, objectFit: "contain", borderRadius: "50%", background: "none", marginBottom: 8 }} />
-          <div style={{ color: "#fff", fontWeight: 700, fontSize: 28, marginBottom: 8, textAlign: "center" }}>DrinkWise</div>
-          <div style={{ color: "#ccc", fontSize: 15, marginBottom: 18, textAlign: "center" }}>Accedi per esplorare i migliori locali.</div>
+          <div style={{ color: "#fff", fontWeight: 700, fontSize: 28, marginBottom: 8, textAlign: "center" }}>{t("loginTitle")}</div>
+          <div style={{ color: "#ccc", fontSize: 15, marginBottom: 18, textAlign: "center" }}>{t("loginSubtitle")}</div>
           <form onSubmit={handleLogin} style={{ width: "100%", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center" }}>
             <input
               className="login-input-mobile"
               style={{ background: "#222", color: "#fff", border: "none", borderRadius: 16, padding: 12, fontSize: 18, marginBottom: 22, marginTop: 0, display: "block", textAlign: "center" }}
-              placeholder="Email o username"
+              placeholder={t("emailOrUsername")}
               value={email}
               onChange={e => setEmail(e.target.value)}
               required
@@ -181,14 +179,14 @@ function Auth() {
               type="password"
               className="login-input-mobile"
               style={{ background: "#222", color: "#fff", border: "none", borderRadius: 16, padding: 12, fontSize: 18, marginBottom: 28, display: "block", textAlign: "center" }}
-              placeholder="Password"
+              placeholder={t("password")}
               value={password}
               onChange={e => setPassword(e.target.value)}
               required
               autoComplete="current-password"
             />
             <div style={{ width: "25%", minWidth: 120, maxWidth: 220, display: "flex", justifyContent: "flex-end", alignItems: "center", marginBottom: 16 }}>
-              <span style={{ color: "#FFD36A", fontSize: 14, cursor: "pointer" }}>Dimenticata?</span>
+              <span style={{ color: "#FFD36A", fontSize: 14, cursor: "pointer" }}>{t("forgot")}</span>
             </div>
             {!showRegister && (
               <button
@@ -216,21 +214,21 @@ function Auth() {
                 }}
                 disabled={loading}
               >
-                {loading ? "..." : "Entra"}
+                {loading ? "..." : t("submit")}
               </button>
             )}
           </form>
           <div style={{ textAlign: "center", color: "#fff", fontSize: 15, marginBottom: 8 }}>
-            Non hai un account?
+            {t("noAccount")}
             <span
               style={{ color: "#FFD36A", fontWeight: 700, marginLeft: 4, cursor: "pointer" }}
               onClick={() => setShowRegister(true)}
             >
-              Registrati ora
+              {t("registerNow")}
             </span>
           </div>
           <div style={{ textAlign: "center", color: "#444", fontSize: 12, letterSpacing: 2, marginTop: 12 }}>
-            CRAFTED FOR SPIRITS LOVERS
+            {t("crafted")}
           </div>
           {msg && <div style={{ color: "#FFD36A", marginTop: 10, textAlign: "center" }}>{msg}</div>}
         </div>

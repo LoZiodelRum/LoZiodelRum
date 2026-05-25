@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import ArticleBlockEditor, { ArticleBlock } from "../components/admin/ArticleBlockEditor";
 import { supabase } from "../lib/supabaseClient";
+import { removeEmptyFields } from "../utils/removeEmptyFields";
 
 interface ArticleBlockEditProps {
   articleId: string;
@@ -60,7 +61,8 @@ export default function ArticleBlockEdit({ articleId, onClose }: ArticleBlockEdi
 
   async function handleSave(newBlocks: ArticleBlock[]) {
     const contenuto = blocksToContent(newBlocks);
-    const { error } = await supabase.from("articoli").update({ titolo, estratto, immagine, contenuto }).eq("id", articleId);
+    const payload = removeEmptyFields({ titolo, estratto, immagine, contenuto });
+    const { error } = await supabase.from("articoli").update(payload).eq("id", articleId);
     if (!error) onClose();
     else setError("Errore salvataggio");
   }

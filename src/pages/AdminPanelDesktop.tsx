@@ -785,9 +785,16 @@ export default function AdminPanel() {
           return;
         }
 
+      const safeChangedData = removeEmptyFields(changedData);
+
+      if (Object.keys(safeChangedData).length === 0) {
+        setSaveStatus("ok");
+        return;
+      }
+
       let query = supabase
         .from(selectedTable)
-        .update(changedData);
+        .update(safeChangedData);
 
       if (hasValidId) {
         query = query.eq("id", id);

@@ -2,6 +2,7 @@ type TargetLanguage = "es" | "bg";
 
 const TARGET_LANGUAGES: TargetLanguage[] = ["es", "bg"];
 const memoryCache = new Map<string, string>();
+const endpointUnavailable = new Set<string>();
 
 function normalizeLanguage(language?: string): TargetLanguage | null {
   const short = String(language || "").toLowerCase().split(/[-_]/)[0] as TargetLanguage;
@@ -35,7 +36,7 @@ function hashString(value: string): string {
 }
 
 function storageKey(targetLang: TargetLanguage, text: string): string {
-  return `dw:autotranslate:v1:${targetLang}:${hashString(text)}`;
+  return `dw:autotranslate:v2:${targetLang}:${hashString(text)}`;
 }
 
 function getCachedTranslation(targetLang: TargetLanguage, text: string): string | null {
@@ -73,6 +74,8 @@ async function requestTranslation(texts: string[], targetLang: TargetLanguage): 
   const endpoints = ["/api/translate-text", "/.netlify/functions/translate-text"];
 
   for (const endpoint of endpoints) {
+    if (endpointUnavailable.has(endpoint)) continue;
+
     try {
       const response = await fetch(endpoint, {
         method: "POST",
@@ -80,7 +83,12 @@ async function requestTranslation(texts: string[], targetLang: TargetLanguage): 
         body: JSON.stringify({ texts, targetLang }),
       });
 
-      if (!response.ok) continue;
+      if (!response.ok) {
+        if (response.status === 404 || response.status === 405) {
+          endpointUnavailable.add(endpoint);
+        }
+        continue;
+      }
 
       const payload = await response.json().catch(() => ({}));
       if (!payload?.ok || !Array.isArray(payload?.translations)) continue;
@@ -94,7 +102,34 @@ async function requestTranslation(texts: string[], targetLang: TargetLanguage): 
     }
   }
 
-  return texts;
+  try {
+    const translated = await Promise.all(
+      texts.map(async (source) => {
+        const value = String(source || "").trim();
+        if (!value) return "";
+
+        const response = await fetch(
+          `https://translate.googleapis.com/translate_a/single?client=gtx&sl=auto&tl=${encodeURIComponent(targetLang)}&dt=t&q=${encodeURIComponent(value)}`
+        );
+
+        if (!response.ok) return value;
+
+        const payload = await response.json().catch(() => null);
+        if (!Array.isArray(payload) || !Array.isArray(payload[0])) return value;
+
+        const segments = payload[0]
+          .map((segment: unknown) => (Array.isArray(segment) && typeof segment[0] === "string" ? segment[0] : ""))
+          .filter((segment: string) => segment.length > 0);
+
+        const merged = segments.join("").trim();
+        return merged || value;
+      })
+    );
+
+    return translated;
+  } catch {
+    return texts;
+  }
 }
 
 export async function buildArticleLanguagePatch(
