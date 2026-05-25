@@ -116,8 +116,8 @@ export default function Magazine() {
           .magazine-uniform-card {
             display: flex;
             flex-direction: column;
-            min-height: 420px;
-            height: 420px;
+            min-height: 360px;
+            height: 360px;
             width: 100%;
             border-radius: 18px;
             overflow: hidden;
@@ -125,7 +125,7 @@ export default function Magazine() {
           }
           .magazine-uniform-image {
             width: 100%;
-            height: 230px;
+            height: 190px;
             object-fit: cover;
             display: block;
           }
@@ -140,7 +140,7 @@ export default function Magazine() {
           }
           .magazine-uniform-excerpt {
             display: -webkit-box;
-            -webkit-line-clamp: 3;
+            -webkit-line-clamp: 2;
             -webkit-box-orient: vertical;
             overflow: hidden;
             text-overflow: ellipsis;
@@ -160,7 +160,6 @@ export default function Magazine() {
         <div className="magazine-uniform-grid">
           {articles.map((article) => {
             const articleTitle = getTranslatedField(article, "titolo", language);
-            const articleCategory = getTranslatedField(article, "categoria", language);
             const articlePreview =
               getTranslatedField(article, "descrizione", language)
               || getTranslatedField(article, "sottotitolo", language)
@@ -180,7 +179,6 @@ export default function Magazine() {
                 </div>
               )}
               <div className="drink-card-overlay magazine-uniform-overlay">
-                {articleCategory && <span className="badge-category">{articleCategory}</span>}
                 <h3 className="magazine-uniform-title">{articleTitle || t("articleFallback")}</h3>
                 {articlePreview && (
                   <p className="magazine-uniform-excerpt">
