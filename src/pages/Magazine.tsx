@@ -103,47 +103,62 @@ export default function Magazine() {
     return <><Navbar /><div className="page fade-in" style={{ padding: 40 }}>{t("noArticles")}</div></>;
   }
 
-  const heroArticle = articles.find((article) => {
-    const title = getTranslatedField(article, "titolo", language);
-    const preview =
-      getTranslatedField(article, "descrizione", language) ||
-      getTranslatedField(article, "sottotitolo", language) ||
-      getTranslatedField(article, "estratto", language);
-    return title.trim().length > 0 && preview.trim().length > 0;
-  });
-  const others = heroArticle ? articles.filter((a) => a.id !== heroArticle.id) : articles;
-
-  const heroTitle = getTranslatedField(heroArticle, "titolo", language);
-
-  const heroDescription =
-    getTranslatedField(heroArticle, "descrizione", language)
-    || getTranslatedField(heroArticle, "sottotitolo", language)
-    || getTranslatedField(heroArticle, "estratto", language);
-
-  const heroCategory = getTranslatedField(heroArticle, "categoria", language);
-
   return (
     <>
       <Navbar />
       <div className="page fade-in magazine-page-mobile" style={{ paddingTop: 32 }}>
-        {/* HERO */}
-        {heroArticle && (
-          <Link
-            to={`/magazine/${heroArticle.id}`}
-            className="magazine-hero"
-            style={heroArticle.immagine ? { backgroundImage: `url(${heroArticle.immagine})` } : { background: "#0f172a" }}
-          >
-            <div className="magazine-hero-overlay">
-              {heroCategory && <span className="badge-category">{heroCategory}</span>}
-              <h1 className="magazine-hero-title-single">{heroTitle || t("articleFallback")}</h1>
-              <p>{heroDescription}</p>
-            </div>
-          </Link>
-        )}
-        {/* GRID */}
+        <style>{`
+          .magazine-uniform-grid {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 24px;
+          }
+          .magazine-uniform-card {
+            display: flex;
+            flex-direction: column;
+            min-height: 420px;
+            height: 420px;
+            width: 100%;
+            border-radius: 18px;
+            overflow: hidden;
+            text-decoration: none;
+          }
+          .magazine-uniform-image {
+            width: 100%;
+            height: 230px;
+            object-fit: cover;
+            display: block;
+          }
+          .magazine-uniform-overlay {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+          }
+          .magazine-uniform-title {
+            margin: 0;
+          }
+          .magazine-uniform-excerpt {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+          @media (max-width: 1023px) {
+            .magazine-uniform-grid {
+              grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+          }
+          @media (max-width: 767px) {
+            .magazine-uniform-grid {
+              grid-template-columns: minmax(0, 1fr);
+            }
+          }
+        `}</style>
         <h2 className="mobile-articles-title">{t("articlesTitle")}</h2>
-        <div className="cocktail-grid">
-          {others.map((article) => {
+        <div className="magazine-uniform-grid">
+          {articles.map((article) => {
             const articleTitle = getTranslatedField(article, "titolo", language);
             const articleCategory = getTranslatedField(article, "categoria", language);
             const articlePreview =
@@ -152,31 +167,23 @@ export default function Magazine() {
               || getTranslatedField(article, "estratto", language);
 
             return (
-            <Link key={article.id} to={`/magazine/${article.id}`} className="drink-card">
+            <Link key={article.id} to={`/magazine/${article.id}`} className="drink-card magazine-uniform-card">
               {article.immagine ? (
                 <img
                   src={article.immagine}
                   alt={articleTitle || t("articleFallback")}
-                  style={{ transform: "scale(0.9)", transformOrigin: "center" }}
+                  className="magazine-uniform-image"
                 />
               ) : (
-                <div className="no-img-placeholder" style={{ background: "#0f172a", color: "#cbd5e1", minHeight: 220 }}>
+                <div className="no-img-placeholder magazine-uniform-image" style={{ background: "#0f172a", color: "#cbd5e1" }}>
                   {t("drink.states.noImage", { defaultValue: "No image" })}
                 </div>
               )}
-              <div className="drink-card-overlay">
+              <div className="drink-card-overlay magazine-uniform-overlay">
                 {articleCategory && <span className="badge-category">{articleCategory}</span>}
-                <h3>{articleTitle || t("articleFallback")}</h3>
+                <h3 className="magazine-uniform-title">{articleTitle || t("articleFallback")}</h3>
                 {articlePreview && (
-                  <p
-                    style={{
-                      display: "-webkit-box",
-                      WebkitLineClamp: 2,
-                      WebkitBoxOrient: "vertical",
-                      overflow: "hidden",
-                      textOverflow: "ellipsis",
-                    }}
-                  >
+                  <p className="magazine-uniform-excerpt">
                     {articlePreview}
                   </p>
                 )}
