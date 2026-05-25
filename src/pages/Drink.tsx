@@ -104,6 +104,14 @@ export default function Drink() {
     }
 
     function distillatoCategoryText(d: any) {
+      const nomeLocaleCandidates = [
+        getTranslatedField(d, "nome", i18n.language, ""),
+        getTranslatedField(d, "nome", "it", ""),
+        getTranslatedField(d, "nome", "en", ""),
+        getTranslatedField(d, "nome", "bg", ""),
+        getTranslatedField(d, "nome", "es", ""),
+      ];
+
       const categoria = [
         d.categoria,
         d.tipologia,
@@ -112,8 +120,7 @@ export default function Drink() {
         d.categoria_distillato,
         d.base_alcolica,
         d.nome,
-        d.nome_en,
-        d.nome_bg,
+        ...nomeLocaleCandidates,
         d.sottocategoria,
       ]
         .map(normalize)
