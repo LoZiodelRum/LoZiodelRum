@@ -91,15 +91,6 @@ export default function ArticleDetail() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    console.log("LANGUAGE ACTIVE:", i18n.language);
-  }, [i18n.language]);
-
-  useEffect(() => {
-    if (!data) return;
-    console.log("TRANSLATED TITLE:", getTranslatedField(data as any, "titolo", i18n.language, data.titolo || t("articleFallback")));
-  }, [data, i18n.language, t]);
-
-  useEffect(() => {
     load();
   }, [id]);
   async function load() {
@@ -312,7 +303,17 @@ export default function ArticleDetail() {
 
                 <h1 className="article-hero-title" style={title}>{getTranslatedField(data as any, "titolo", i18n.language, data.titolo || t("articleFallback"))}</h1>
 
-                <p className="article-hero-subtitle" style={subtitle}>{getTranslatedField(data as any, "sottotitolo", i18n.language, getTranslatedField(data as any, "descrizione", i18n.language, ""))}</p>
+                <p className="article-hero-subtitle" style={subtitle}>
+                  {
+                    getTranslatedField(data as any, "sottotitolo", i18n.language, "")
+                    || getTranslatedField(data as any, "descrizione", i18n.language, "")
+                    || getTranslatedField(data as any, "estratto", i18n.language, "")
+                    || data.sottotitolo
+                    || data.descrizione
+                    || data.estratto
+                    || ""
+                  }
+                </p>
 
                 <div style={meta}>
                   <span>Lo Zio del Rum</span>

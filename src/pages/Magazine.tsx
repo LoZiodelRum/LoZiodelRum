@@ -39,10 +39,6 @@ export default function Magazine() {
   const language = i18n.resolvedLanguage || i18n.language || "it";
 
   useEffect(() => {
-    console.log("LANGUAGE ACTIVE:", language);
-  }, [language]);
-
-  useEffect(() => {
     load();
   }, []);
 
@@ -128,12 +124,11 @@ export default function Magazine() {
         <h2 className="mobile-articles-title">{t("articlesTitle")}</h2>
         <div className="magazine-uniform-grid">
           {articles.map((article) => {
-            const articleTitle = getTranslatedField(article, "titolo", language);
-            console.log("TRANSLATED TITLE:", getTranslatedField(article, "titolo", language));
+            const articleTitle = getTranslatedField(article, "titolo", language, "");
             const articlePreview =
-              getTranslatedField(article, "descrizione", language)
-              || getTranslatedField(article, "sottotitolo", language)
-              || getTranslatedField(article, "estratto", language);
+              getTranslatedField(article, "descrizione", language, "")
+              || getTranslatedField(article, "sottotitolo", language, "")
+              || getTranslatedField(article, "estratto", language, "");
 
             return (
             <Link key={article.id} to={`/magazine/${article.id}`} className="drink-card magazine-uniform-card">
