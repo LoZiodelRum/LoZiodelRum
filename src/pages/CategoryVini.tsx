@@ -4,6 +4,7 @@ import { useParams, useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
 import { useTranslation } from "react-i18next";
 import { getTranslatedField } from "../utils/getTranslatedField";
+import { normalizeText, safeArray, slugifySafe } from "../utils/runtime";
 
 const VINI_SELECT_ATTEMPTS = [
   "*",
@@ -22,7 +23,7 @@ export default function CategoryVini() {
   const [loading, setLoading] = useState(true);
 
   function getCategoryTitle(slug?: string) {
-    const normalized = String(slug || "").toLowerCase();
+    const normalized = slugifySafe(slug, { fallback: "" });
     if (normalized === "rossi") return t("drink.wines.categories.red");
     if (normalized === "bianchi") return t("drink.wines.categories.white");
     if (normalized === "rosati") return t("drink.wines.categories.rose");
@@ -36,7 +37,7 @@ export default function CategoryVini() {
       setLoading(true);
 
       function normalize(value: any) {
-        return String(value || "").toLowerCase().trim();
+        return normalizeText(value);
       }
 
       function categorySlugFor(vino: any): string {
@@ -65,8 +66,8 @@ export default function CategoryVini() {
         }
       }
 
-      const slug = String(categoria || "").toLowerCase();
-      const data = allRows.filter((row) => {
+      const slug = slugifySafe(categoria, { fallback: "" });
+      const data = safeArray<any>(allRows).filter((row) => {
         if (!slug) return true;
         return categorySlugFor(row) === slug;
       });

@@ -5,6 +5,7 @@ import { supabase } from "../lib/supabaseClient";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTranslatedField } from "../utils/getTranslatedField";
+import { normalizeText, safeArray } from "../utils/runtime";
 
 const COCKTAIL_SELECT_ATTEMPTS = [
   "*",
@@ -100,7 +101,7 @@ export default function Drink() {
     }
 
     function normalize(value: any) {
-      return String(value || "").toLowerCase().trim();
+      return normalizeText(value);
     }
 
     function distillatoCategoryText(d: any) {
@@ -146,8 +147,11 @@ export default function Drink() {
       return hasDistillatoCategory || hasDistillatoFields;
     }
 
-    if (cocktailData.length) {
-      const sorted = cocktailData.sort((a: any, b: any) => {
+    const safeCocktailData = safeArray<any>(cocktailData);
+    const safeDistillatiRows = safeArray<any>(sourceDistillatiRows);
+
+    if (safeCocktailData.length) {
+      const sorted = safeCocktailData.sort((a: any, b: any) => {
         const aName = getTranslatedField(a, "nome", i18n.language, t("drink.title"));
         const bName = getTranslatedField(b, "nome", i18n.language, t("drink.title"));
         return aName.localeCompare(bName);
@@ -163,7 +167,7 @@ export default function Drink() {
       setCocktail([]);
     }
 
-    const mappedDistillati = sourceDistillatiRows
+    const mappedDistillati = safeDistillatiRows
       .map((d: any) => ({
         id: d.id,
         nome: getTranslatedField(d, "nome", i18n.language, t("drink.fallbacks.distillatoName")),
@@ -173,7 +177,7 @@ export default function Drink() {
       }))
       .sort((a, b) => a.nome.localeCompare(b.nome));
 
-    const cocktailDistillatiFallback: Distillato[] = (cocktailData || [])
+    const cocktailDistillatiFallback: Distillato[] = safeCocktailData
       .filter((record: any) => isDistillatoLike(record))
       .map((c: any) => ({
         id: c.id,

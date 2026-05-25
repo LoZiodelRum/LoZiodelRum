@@ -5,6 +5,7 @@ import { supabase } from "../lib/supabaseClient";
 import { useNavigate, useParams } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTranslatedField } from "../utils/getTranslatedField";
+import { normalizeText, safeArray } from "../utils/runtime";
 
 type VinoCard = {
   id: string;
@@ -70,7 +71,7 @@ export default function Vini() {
 
   function rebuildVini(rows: any[]) {
     function normalize(value: any) {
-      return String(value || "").toLowerCase().trim();
+      return normalizeText(value);
     }
 
     function categorySlugFor(vino: any): "rossi" | "bianchi" | "rosati" | "bollicine" | "altri-vini" {
@@ -91,7 +92,7 @@ export default function Vini() {
       return "altri-vini";
     }
 
-    const mapped = rows
+    const mapped = safeArray<any>(rows)
       .map((vino: any) => ({
         id: String(vino.id),
         nome: getTranslatedField(vino, "nome", i18n.language, t("drink.wines.fallbackName")),
@@ -131,7 +132,13 @@ export default function Vini() {
   }
 
   function normalizeWineName(name: string) {
-    return (name || "").replace(/\s+/g, " ").trim();
+    return normalizeText(name, {
+      trim: true,
+      lowercase: false,
+      collapseWhitespace: true,
+      removeDiacritics: false,
+      fallback: "",
+    });
   }
 
   function renderSection(title: string, list: VinoCard[], tipo: string, fillPlaceholders = true) {
