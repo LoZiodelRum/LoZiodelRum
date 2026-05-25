@@ -79,6 +79,8 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     return Number.isNaN(parsed) ? null : parsed;
   };
 
+  const hasOwn = (obj: Record<string, unknown>, key: string) => Object.prototype.hasOwnProperty.call(obj, key);
+
   const tableCandidates = ["Locali", "locali"];
   let lastError = "Could not save locale";
 
@@ -86,8 +88,28 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     try {
       const safeChanges = mode === "delete" ? null : { ...changes };
       if (safeChanges) {
-        safeChanges.latitudine = normalizeCoordinate(safeChanges.latitudine);
-        safeChanges.longitudine = normalizeCoordinate(safeChanges.longitudine);
+        if (mode === "create") {
+          safeChanges.latitudine = normalizeCoordinate(safeChanges.latitudine);
+          safeChanges.longitudine = normalizeCoordinate(safeChanges.longitudine);
+        } else {
+          if (hasOwn(safeChanges as Record<string, unknown>, "latitudine")) {
+            const parsedLat = normalizeCoordinate(safeChanges.latitudine);
+            if (parsedLat === null) {
+              delete (safeChanges as Record<string, unknown>).latitudine;
+            } else {
+              safeChanges.latitudine = parsedLat;
+            }
+          }
+
+          if (hasOwn(safeChanges as Record<string, unknown>, "longitudine")) {
+            const parsedLng = normalizeCoordinate(safeChanges.longitudine);
+            if (parsedLng === null) {
+              delete (safeChanges as Record<string, unknown>).longitudine;
+            } else {
+              safeChanges.longitudine = parsedLng;
+            }
+          }
+        }
       }
       if (mode === "create") {
         while (true) {

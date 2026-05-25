@@ -74,6 +74,8 @@ export async function handler(event) {
     return Number.isNaN(parsed) ? null : parsed;
   };
 
+  const hasOwn = (obj, key) => Object.prototype.hasOwnProperty.call(obj, key);
+
   const tableCandidates = ["Locali", "locali"];
   let lastError = "Could not save locale";
 
@@ -81,8 +83,28 @@ export async function handler(event) {
     try {
       let safeChanges = mode === "delete" ? null : { ...changes };
       if (safeChanges) {
-        safeChanges.latitudine = normalizeCoordinate(safeChanges.latitudine);
-        safeChanges.longitudine = normalizeCoordinate(safeChanges.longitudine);
+        if (mode === "create") {
+          safeChanges.latitudine = normalizeCoordinate(safeChanges.latitudine);
+          safeChanges.longitudine = normalizeCoordinate(safeChanges.longitudine);
+        } else {
+          if (hasOwn(safeChanges, "latitudine")) {
+            const parsedLat = normalizeCoordinate(safeChanges.latitudine);
+            if (parsedLat === null) {
+              delete safeChanges.latitudine;
+            } else {
+              safeChanges.latitudine = parsedLat;
+            }
+          }
+
+          if (hasOwn(safeChanges, "longitudine")) {
+            const parsedLng = normalizeCoordinate(safeChanges.longitudine);
+            if (parsedLng === null) {
+              delete safeChanges.longitudine;
+            } else {
+              safeChanges.longitudine = parsedLng;
+            }
+          }
+        }
       }
       if (mode === "create") {
         while (true) {
