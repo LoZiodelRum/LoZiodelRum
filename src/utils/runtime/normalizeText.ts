@@ -1,3 +1,5 @@
+import { safeString } from "./safeString";
+
 export type NormalizeTextOptions = {
   trim?: boolean;
   lowercase?: boolean;
@@ -15,9 +17,7 @@ export function normalizeText(value: unknown, options: NormalizeTextOptions = {}
     fallback = "",
   } = options;
 
-  if (value === null || value === undefined) return fallback;
-
-  let output = String(value);
+  let output = safeString(value, { fallback, trim: false });
 
   if (removeDiacritics) {
     output = output.normalize("NFD").replace(/[\u0300-\u036f]/g, "");
