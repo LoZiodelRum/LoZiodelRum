@@ -159,15 +159,6 @@ export default function VinoDetail() {
   const translatedVintage = vino ? getTranslatedField(vino, "annata", i18n.language, "-") : "-";
   const translatedWinery = vino ? getTranslatedField(vino, "cantina", i18n.language, "-") : "-";
 
-  function getTranslatedFieldWithAliases(record: VinoRecord | null, key: string, fallback = "-") {
-    const aliases = fieldAliases[key] || [key];
-    for (const alias of aliases) {
-      const value = getTranslatedField(record, alias, i18n.language, "");
-      if (value.trim().length > 0) return value;
-    }
-    return fallback;
-  }
-
   const heroImageStyleForWine = useMemo(() => {
     return {
       ...heroImageStyle,
@@ -183,12 +174,21 @@ export default function VinoDetail() {
       <section className="vino-detail-section" style={sectionStyle}>
         <h2 className="vino-detail-section-title" style={sectionTitleStyle}>{title}</h2>
         <div className="vino-detail-grid" style={gridStyle}>
-          {fields.map((field) => (
-            <article key={field.key} className="vino-detail-card" style={cardStyle}>
-              <h3 className="vino-detail-label" style={labelStyle}>{t(field.labelKey)}</h3>
-              <p className="vino-detail-value" style={valueStyle}>{normalizeValue(getTranslatedFieldWithAliases(vino, field.key, "-"))}</p>
-            </article>
-          ))}
+          {fields.map((field) => {
+            const aliases = fieldAliases[field.key] || [field.key];
+            const translatedValue =
+              aliases
+                .map((alias) => getTranslatedField(vino, alias, i18n.language, ""))
+                .find((value) => value.trim().length > 0)
+              || "-";
+
+            return (
+              <article key={field.key} className="vino-detail-card" style={cardStyle}>
+                <h3 className="vino-detail-label" style={labelStyle}>{t(field.labelKey)}</h3>
+                <p className="vino-detail-value" style={valueStyle}>{normalizeValue(translatedValue)}</p>
+              </article>
+            );
+          })}
         </div>
       </section>
     );
