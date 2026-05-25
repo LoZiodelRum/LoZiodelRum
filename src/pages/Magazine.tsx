@@ -32,14 +32,6 @@ type Article = {
   [key: string]: any;
 };
 
-function normalizeArticleLanguage(language?: string): "it" | "en" | "es" | "bg" {
-  const short = String(language || "it").toLowerCase().split(/[-_]/)[0];
-  if (short === "it") return "it";
-  if (short === "es") return "es";
-  if (short === "bg") return "bg";
-  return "en";
-}
-
 function firstNonEmpty(...values: Array<string | null | undefined>): string {
   for (const value of values) {
     if (typeof value === "string" && value.trim().length > 0) {
@@ -49,47 +41,46 @@ function firstNonEmpty(...values: Array<string | null | undefined>): string {
   return "";
 }
 
-function pickArticleTitle(article: Article, language?: string): string {
-  const normalized = normalizeArticleLanguage(language);
+function pickArticleTitle(article: Article, normalizedLanguage: "it" | "en" | "es" | "bg", language?: string): string {
+  console.log(language);
+  console.log(article.titolo_es);
 
-  if (normalized === "it") {
+  if (normalizedLanguage === "it") {
     return firstNonEmpty(article.titolo);
-  } else if (normalized === "es") {
+  } else if (normalizedLanguage === "es") {
     return firstNonEmpty(article.titolo_es, article.titolo_en, article.titolo);
-  } else if (normalized === "bg") {
+  } else if (normalizedLanguage === "bg") {
     return firstNonEmpty(article.titolo_bg, article.titolo_en, article.titolo);
   }
 
   return firstNonEmpty(article.titolo_en, article.titolo);
 }
 
-function pickArticlePreview(article: Article, language?: string): string {
-  const normalized = normalizeArticleLanguage(language);
+function pickArticlePreview(article: Article, normalizedLanguage: "it" | "en" | "es" | "bg"): string {
 
   const basePreview = firstNonEmpty(article.sottotitolo, article.descrizione, article.estratto);
   const enPreview = firstNonEmpty(article.sottotitolo_en, article.descrizione_en, article.estratto_en, basePreview);
   const esPreview = firstNonEmpty(article.sottotitolo_es, article.descrizione_es, article.estratto_es, enPreview, basePreview);
   const bgPreview = firstNonEmpty(article.sottotitolo_bg, article.descrizione_bg, article.estratto_bg, enPreview, basePreview);
 
-  if (normalized === "it") {
+  if (normalizedLanguage === "it") {
     return basePreview;
-  } else if (normalized === "es") {
+  } else if (normalizedLanguage === "es") {
     return esPreview;
-  } else if (normalized === "bg") {
+  } else if (normalizedLanguage === "bg") {
     return bgPreview;
   }
 
   return enPreview;
 }
 
-function pickArticleCategory(article: Article, language?: string): string {
-  const normalized = normalizeArticleLanguage(language);
+function pickArticleCategory(article: Article, normalizedLanguage: "it" | "en" | "es" | "bg"): string {
 
-  if (normalized === "it") {
+  if (normalizedLanguage === "it") {
     return firstNonEmpty(article.categoria);
-  } else if (normalized === "es") {
+  } else if (normalizedLanguage === "es") {
     return firstNonEmpty(article.categoria_es, article.categoria_en, article.categoria);
-  } else if (normalized === "bg") {
+  } else if (normalizedLanguage === "bg") {
     return firstNonEmpty(article.categoria_bg, article.categoria_en, article.categoria);
   }
 
@@ -99,7 +90,15 @@ function pickArticleCategory(article: Article, language?: string): string {
 export default function Magazine() {
   const [articles, setArticles] = useState<Article[]>([]);
   const { t, i18n } = useTranslation("translation");
-  const currentLanguage = i18n.resolvedLanguage || i18n.language || "it";
+  const language = i18n.resolvedLanguage || i18n.language || "it";
+  const normalizedLanguage: "it" | "en" | "es" | "bg" =
+    language?.toLowerCase().startsWith("es")
+      ? "es"
+      : language?.toLowerCase().startsWith("bg")
+      ? "bg"
+      : language?.toLowerCase().startsWith("it")
+      ? "it"
+      : "en";
 
   useEffect(() => {
     load();
@@ -146,9 +145,9 @@ export default function Magazine() {
             style={hero.immagine ? { backgroundImage: `url(${hero.immagine})` } : { background: "#0f172a" }}
           >
             <div className="magazine-hero-overlay">
-              {hero.categoria && <span className="badge-category">{pickArticleCategory(hero, currentLanguage)}</span>}
-              <h1 className="magazine-hero-title-single">{pickArticleTitle(hero, currentLanguage) || t("articleFallback")}</h1>
-              <p>{pickArticlePreview(hero, currentLanguage)}</p>
+              {hero.categoria && <span className="badge-category">{pickArticleCategory(hero, normalizedLanguage)}</span>}
+              <h1 className="magazine-hero-title-single">{pickArticleTitle(hero, normalizedLanguage, language) || t("articleFallback")}</h1>
+              <p>{pickArticlePreview(hero, normalizedLanguage)}</p>
             </div>
           </Link>
         )}
@@ -160,7 +159,7 @@ export default function Magazine() {
               {a.immagine ? (
                 <img
                   src={a.immagine}
-                  alt={pickArticleTitle(a, currentLanguage) || t("articleFallback")}
+                  alt={pickArticleTitle(a, normalizedLanguage, language) || t("articleFallback")}
                   style={{ transform: "scale(0.9)", transformOrigin: "center" }}
                 />
               ) : (
@@ -169,9 +168,9 @@ export default function Magazine() {
                 </div>
               )}
               <div className="drink-card-overlay">
-                {a.categoria && <span className="badge-category">{pickArticleCategory(a, currentLanguage)}</span>}
-                <h3>{pickArticleTitle(a, currentLanguage) || t("articleFallback")}</h3>
-                {pickArticlePreview(a, currentLanguage) && (
+                {a.categoria && <span className="badge-category">{pickArticleCategory(a, normalizedLanguage)}</span>}
+                <h3>{pickArticleTitle(a, normalizedLanguage, language) || t("articleFallback")}</h3>
+                {pickArticlePreview(a, normalizedLanguage) && (
                   <p
                     style={{
                       display: "-webkit-box",
@@ -181,7 +180,7 @@ export default function Magazine() {
                       textOverflow: "ellipsis",
                     }}
                   >
-                    {pickArticlePreview(a, currentLanguage)}
+                    {pickArticlePreview(a, normalizedLanguage)}
                   </p>
                 )}
               </div>
