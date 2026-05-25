@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { MapContainer, TileLayer, Marker, ZoomControl, useMap } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, ZoomControl } from "react-leaflet";
 import { X } from "lucide-react";
 import { supabase } from "../lib/supabaseClient";
 import Navbar from "../components/Navbar";
@@ -12,7 +12,7 @@ import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
 import markerShadow from "leaflet/dist/images/marker-shadow.png";
 
-// 🔧 FIX fondamentale Leaflet
+// Fix Leaflet default icon paths in Vite environment.
 delete (L.Icon.Default.prototype as any)._getIconUrl;
 
 L.Icon.Default.mergeOptions({
@@ -21,12 +21,11 @@ L.Icon.Default.mergeOptions({
   shadowUrl: markerShadow,
 });
 
-// ✅ MARKER PERSONALIZZATO
 const customIcon = L.icon({
   iconUrl: "/marker.png",
   iconSize: [48, 48],
   iconAnchor: [24, 48],
-  popupAnchor: [0, -48]
+  popupAnchor: [0, -48],
 });
 
 type Venue = {
@@ -58,33 +57,13 @@ function isLongitude(value: number) {
   return value >= -180 && value <= 180;
 }
 
-function MapAutoFit({ venues }: { venues: Venue[] }) {
-  const map = useMap();
-
-  useEffect(() => {
-    if (!venues.length) return;
-
-    const bounds = L.latLngBounds(venues.map((venue) => [venue.latitudine, venue.longitudine] as [number, number]));
-
-    if (!bounds.isValid()) return;
-
-    map.fitBounds(bounds, {
-      padding: [36, 36],
-      maxZoom: 15,
-    });
-  }, [map, venues]);
-
-  return null;
-}
-
 export default function MapPage() {
   const { i18n } = useTranslation();
   const [venues, setVenues] = useState<Venue[]>([]);
-  const [mapCenter, setMapCenter] = useState<[number, number]>([41.9028, 12.4964]);
   const [selectedVenue, setSelectedVenue] = useState<Venue | null>(null);
 
   useEffect(() => {
-    fetchVenues();
+    void fetchVenues();
   }, []);
 
   async function fetchVenues() {
@@ -124,97 +103,96 @@ export default function MapPage() {
       .filter((locale): locale is Venue => locale !== null);
 
     setVenues(valid);
-
-    if (valid.length > 0) {
-      setMapCenter([valid[0].latitudine, valid[0].longitudine]);
-    }
   }
 
   return (
-      <>
-        <Navbar />
-        <div style={{ height: "100vh", position: "relative" }}>
-      <MapContainer
-        center={mapCenter}
-        zoom={6}
-        style={{ height: "100%", width: "100%" }}
-        zoomControl={false}
-      >
-        <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
-        <MapAutoFit venues={venues} />
+    <>
+      <Navbar />
+      <div style={{ height: "100vh", position: "relative" }}>
+        <MapContainer
+          center={[42.5, 12.5]}
+          zoom={6}
+          style={{ height: "100%", width: "100%" }}
+          zoomControl={false}
+        >
+          <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
 
-        {venues.map((venue) => {
-          console.log("MARKER:", venue.nome, venue.latitudine, venue.longitudine);
-          return (
-            <Marker
-              key={venue.id}
-              position={[venue.latitudine, venue.longitudine]}
-              icon={customIcon}
-              eventHandlers={{
-                click: () => setSelectedVenue(venue)
-              }}
-            />
-          );
-        })}
+          {venues.map((venue) => {
+            console.log("MARKER:", venue.nome, venue.latitudine, venue.longitudine);
+            return (
+              <Marker
+                key={venue.id}
+                position={[venue.latitudine, venue.longitudine]}
+                icon={customIcon}
+                eventHandlers={{
+                  click: () => setSelectedVenue(venue),
+                }}
+              />
+            );
+          })}
 
-        {/* ✅ Zoom control corretto */}
-        <ZoomControl position="bottomleft" />
-        {/* Anteprima compatta sopra il marker selezionato */}
-        {selectedVenue && (
-          <div
-            style={{
-              position: "absolute",
-              left: "50%",
-              top: 90,
-              transform: "translateX(-50%)",
-              width: 220,
-              background: "#000",
-              color: "#fff",
-              padding: 10,
-              borderRadius: 10,
-              zIndex: 1200,
-              boxShadow: "0 2px 12px #000a",
-              cursor: "pointer",
-              display: "flex",
-              flexDirection: "column",
-              alignItems: "center"
-            }}
-            onClick={() => window.location.href = `/venue/${selectedVenue.id}`}
-          >
-            <button
-              onClick={e => { e.stopPropagation(); setSelectedVenue(null); }}
+          <ZoomControl position="bottomleft" />
+
+          {selectedVenue && (
+            <div
               style={{
                 position: "absolute",
-                top: 8,
-                right: 8,
-                background: "#f5a623",
-                border: "none",
-                borderRadius: 6,
+                left: "50%",
+                top: 90,
+                transform: "translateX(-50%)",
+                width: 220,
+                background: "#000",
                 color: "#fff",
-                width: 28,
-                height: 28,
-                fontSize: 16,
-                cursor: "pointer"
+                padding: 10,
+                borderRadius: 10,
+                zIndex: 1200,
+                boxShadow: "0 2px 12px #000a",
+                cursor: "pointer",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
               }}
-              title="Chiudi"
+              onClick={() => {
+                window.location.href = `/venue/${selectedVenue.id}`;
+              }}
             >
-              <X size={18} />
-            </button>
-            <img
-              src={selectedVenue.image_url || "/fallback.jpg"}
-              alt={getTranslatedField(selectedVenue as any, "nome", i18n.language, "-")}
-              style={{ width: "100%", height: 70, objectFit: "cover", borderRadius: 6, marginBottom: 8 }}
-            />
-            <div style={{ fontWeight: 700, fontSize: 17, marginBottom: 2 }}>
-              {getTranslatedField(selectedVenue as any, "nome", i18n.language, "-")}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setSelectedVenue(null);
+                }}
+                style={{
+                  position: "absolute",
+                  top: 8,
+                  right: 8,
+                  background: "#f5a623",
+                  border: "none",
+                  borderRadius: 6,
+                  color: "#fff",
+                  width: 28,
+                  height: 28,
+                  fontSize: 16,
+                  cursor: "pointer",
+                }}
+                title="Chiudi"
+              >
+                <X size={18} />
+              </button>
+              <img
+                src={selectedVenue.image_url || "/fallback.jpg"}
+                alt={getTranslatedField(selectedVenue as any, "nome", i18n.language, "-")}
+                style={{ width: "100%", height: 70, objectFit: "cover", borderRadius: 6, marginBottom: 8 }}
+              />
+              <div style={{ fontWeight: 700, fontSize: 17, marginBottom: 2 }}>
+                {getTranslatedField(selectedVenue as any, "nome", i18n.language, "-")}
+              </div>
+              <div style={{ fontSize: 13, opacity: 0.8, textAlign: "center" }}>
+                {selectedVenue.indirizzo}, {selectedVenue.citta}
+              </div>
             </div>
-            <div style={{ fontSize: 13, opacity: 0.8, textAlign: "center" }}>
-              {selectedVenue.indirizzo}, {selectedVenue.citta}
-            </div>
-          </div>
-        )}
-      </MapContainer>
-    </div>
-      </>
+          )}
+        </MapContainer>
+      </div>
+    </>
   );
 }
