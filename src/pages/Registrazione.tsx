@@ -19,7 +19,7 @@ export default function Registrazione() {
       password,
       options: {
         emailRedirectTo: `${window.location.origin}/auth`,
-        data: { nome, cognome, username, telefono: telefono || null },
+        data: { nome, cognome, username, telefono: telefono || null, ruolo: "utente" },
       },
     });
 
@@ -33,13 +33,40 @@ export default function Registrazione() {
       return;
     }
 
+    const userId = data.user.id;
+    const { error: profileError } = await supabase.from("Profili").upsert([
+      {
+        id: userId,
+        nome,
+        cognome,
+        username,
+        email,
+        telefono: telefono || null,
+        ruolo: "utente",
+        status: "attivo",
+      },
+    ], { onConflict: "id" });
+
+    if (profileError) {
+      console.warn("Profilo upsert fallback non riuscito:", profileError.message);
+    }
+
     if (data.session) {
       await supabase.auth.signOut();
-      setMessaggio("Account creato. Conferma email attualmente disattivata in Supabase: attivala per richiedere la verifica obbligatoria.");
+    }
+
+    const { error: loginError } = await supabase.auth.signInWithPassword({ email, password });
+    if (loginError) {
+      const lowerMessage = String(loginError.message || "").toLowerCase();
+      if (lowerMessage.includes("email not confirmed")) {
+        setMessaggio("Registrazione completata. Conferma la tua email prima di accedere.");
+      } else {
+        setMessaggio(loginError.message || "Errore login automatico");
+      }
       return;
     }
 
-    setMessaggio("Registrazione completata! Controlla la tua email per confermare l'account.");
+    setMessaggio("Registrazione completata! Accesso effettuato.");
   }
 
   async function handleRegister(e: any) {

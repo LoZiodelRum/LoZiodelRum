@@ -50,61 +50,133 @@ export default function RegisterModal({ open, onClose }: Props) {
     e.preventDefault();
     setLoading(true);
     setMsg("");
-    // 1. Prova registrazione utente su Supabase Auth
-    const { data: authData, error: authError } = await supabase.auth.signUp({
+
+    const isNetlifyHost = window.location.hostname.includes("netlify");
+    const endpoints = isNetlifyHost
+      ? ["/.netlify/functions/auth-signup", "/api/auth-signup"]
+      : ["/api/auth-signup", "/.netlify/functions/auth-signup"];
+
+    const signupPayload = {
+      nome,
+      cognome,
+      username,
+      telefono: telefono || null,
       email,
       password,
-      options: {
-        data: {
-          nome,
-          cognome,
-          username,
-          telefono,
-        },
-      },
-    });
-    let userId = authData?.user?.id;
-    if (authError && !authError.message.toLowerCase().includes("already registered") && !authError.message.toLowerCase().includes("esiste già")) {
-      setMsg(authError?.message || "Errore registrazione");
+      ruolo: "utente",
+    };
+
+    let serverRegistered = false;
+    let serverMessage = "";
+    let allowDirectFallback = true;
+
+    for (const endpoint of endpoints) {
+      try {
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(signupPayload),
+        });
+
+        const payload = await response.json().catch(() => ({}));
+
+        if (response.ok && payload?.ok) {
+          serverRegistered = true;
+          serverMessage = String(payload?.message || "Registrazione completata");
+          break;
+        }
+
+        const errorMessage = String(payload?.message || `HTTP ${response.status}`);
+        if (errorMessage.toLowerCase().includes("server env not configured")) {
+          allowDirectFallback = true;
+          break;
+        }
+
+        allowDirectFallback = response.status === 404 || response.status === 405;
+        serverMessage = errorMessage;
+        if (!allowDirectFallback) {
+          break;
+        }
+      } catch (err: any) {
+        serverMessage = err?.message || "Errore di rete";
+      }
+    }
+
+    if (!serverRegistered && !allowDirectFallback) {
+      setMsg(serverMessage || "Errore registrazione");
       setLoading(false);
       return;
     }
-    // Se già registrato, recupera userId tramite login
-    if (!userId) {
-      const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({ email, password });
-      if (loginError || !loginData.user) {
-        setMsg(loginError?.message || "Errore login");
+
+    if (!serverRegistered) {
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email,
+        password,
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth`,
+          data: {
+            nome,
+            cognome,
+            username,
+            telefono,
+            ruolo: "utente",
+          },
+        },
+      });
+
+      if (authError) {
+        const authErrorMessage = String(authError.message || "").toLowerCase();
+        if (authErrorMessage.includes("already registered") || authErrorMessage.includes("esiste già")) {
+          setMsg("Email gia registrata. Accedi oppure usa il recupero password.");
+        } else {
+          setMsg(authError?.message || "Errore registrazione");
+        }
         setLoading(false);
         return;
       }
-      userId = loginData.user.id;
+
+      let userId = authData?.user?.id;
+      if (!userId) {
+        const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({ email, password });
+        if (!loginError && loginData.user) {
+          userId = loginData.user.id;
+        }
+      }
+
+      if (userId) {
+        const { error: profiliError } = await supabase.from("Profili").upsert([
+          {
+            id: userId,
+            nome,
+            cognome,
+            username,
+            telefono,
+            email,
+            ruolo: "utente",
+            status: "attivo",
+            created_at: new Date().toISOString(),
+          },
+        ], { onConflict: "id" });
+
+        if (profiliError) {
+          console.warn("Profilo upsert non riuscito, continuo:", profiliError.message);
+        }
+      }
     }
-    // 2. Inserimento/upsert nella tabella Profili
-    const { error: profiliError } = await supabase.from("Profili").upsert([
-      {
-        id: userId,
-        nome,
-        cognome,
-        username,
-        telefono,
-        email,
-        ruolo: "utente",
-        status: "attivo",
-        created_at: new Date().toISOString(),
-      },
-    ], { onConflict: "id" });
-    // In some RLS setups the profile row is created by DB trigger; don't block auth flow.
-    if (profiliError) {
-      console.warn("Profilo upsert non riuscito, continuo con login:", profiliError.message);
-    }
-    // Login automatico
+
     const { error: loginError } = await supabase.auth.signInWithPassword({ email, password });
     if (loginError) {
-      setMsg(loginError.message || "Errore login automatico");
+      const lowerMessage = String(loginError.message || "").toLowerCase();
+      if (lowerMessage.includes("email not confirmed")) {
+        setMsg("Registrazione completata. Conferma la tua email prima di accedere.");
+      } else {
+        setMsg(loginError.message || "Errore login automatico");
+      }
       setLoading(false);
       return;
     }
-    setMsg("Registrazione completata! Accesso in corso...");
+
+    setMsg(serverMessage || "Registrazione completata! Accesso in corso...");
     setTimeout(() => {
       setLoading(false);
       setMsg("");

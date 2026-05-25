@@ -58,14 +58,6 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
   const missingEnv: string[] = [];
   if (!SUPABASE_URL) missingEnv.push("SUPABASE_URL");
   if (!SUPABASE_SERVICE_ROLE_KEY) missingEnv.push("SUPABASE_SERVICE_ROLE_KEY");
-  if (!RESEND_API_KEY) missingEnv.push("RESEND_API_KEY");
-
-  if (missingEnv.length > 0) {
-    return res.status(500).json({
-      ok: false,
-      message: `Server env not configured: ${missingEnv.join(", ")}`,
-    });
-  }
 
   const nome = String(req.body?.nome || "").trim();
   const cognome = String(req.body?.cognome || "").trim();
@@ -92,31 +84,72 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     return res.status(400).json({ ok: false, message: "Ruolo non valido" });
   }
 
+  if (ruolo !== "utente" && !RESEND_API_KEY) {
+    missingEnv.push("RESEND_API_KEY");
+  }
+
+  if (missingEnv.length > 0) {
+    return res.status(500).json({
+      ok: false,
+      message: `Server env not configured: ${missingEnv.join(", ")}`,
+    });
+  }
+
   const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 
   const redirectTo = `${APP_URL}/auth`;
 
-  const { data, error } = await supabaseAdmin.auth.admin.generateLink({
-    type: "signup",
-    email,
-    password,
-    options: {
-      data: { nome, cognome, username, telefono },
-      redirectTo,
-    },
-  });
+  let userId: string | null = null;
+  let actionLink: string | null = null;
 
-  if (error) {
-    const message = error.message || "Errore in registrazione";
-    if (message.toLowerCase().includes("already") || message.toLowerCase().includes("exists")) {
-      return res.status(409).json({ ok: false, message: "Email gia registrata" });
+  if (ruolo === "utente") {
+    const { data, error } = await supabaseAdmin.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true,
+      user_metadata: {
+        nome,
+        cognome,
+        username,
+        telefono,
+        ruolo,
+      },
+    });
+
+    if (error) {
+      const message = error.message || "Errore in registrazione";
+      if (message.toLowerCase().includes("already") || message.toLowerCase().includes("exists")) {
+        return res.status(409).json({ ok: false, message: "Email gia registrata" });
+      }
+      return res.status(400).json({ ok: false, message });
     }
-    return res.status(400).json({ ok: false, message });
+
+    userId = (data as any)?.user?.id || null;
+  } else {
+    const { data, error } = await supabaseAdmin.auth.admin.generateLink({
+      type: "signup",
+      email,
+      password,
+      options: {
+        data: { nome, cognome, username, telefono },
+        redirectTo,
+      },
+    });
+
+    if (error) {
+      const message = error.message || "Errore in registrazione";
+      if (message.toLowerCase().includes("already") || message.toLowerCase().includes("exists")) {
+        return res.status(409).json({ ok: false, message: "Email gia registrata" });
+      }
+      return res.status(400).json({ ok: false, message });
+    }
+
+    userId = (data as any)?.user?.id || null;
+    actionLink = (data as any)?.properties?.action_link || (data as any)?.action_link || null;
   }
 
-  const userId = (data as any)?.user?.id;
   if (!userId) {
     return res.status(500).json({ ok: false, message: "Utente creato senza id" });
   }
@@ -135,6 +168,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
             email,
             telefono,
             ruolo,
+            status: "attivo",
           },
         ],
         { onConflict: "id" }
@@ -176,8 +210,14 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     return res.status(500).json({ ok: false, message: `Errore interno: ${err.message}` });
   }
 
+  if (ruolo === "utente") {
+    return res.status(200).json({
+      ok: true,
+      message: "Registrazione completata! Ora puoi accedere.",
+    });
+  }
+
   // 4. Genera link di conferma
-  const actionLink = (data as any)?.properties?.action_link || (data as any)?.action_link;
   if (!actionLink) {
     await supabaseAdmin.auth.admin.deleteUser(userId).catch(() => undefined);
     return res.status(500).json({ ok: false, message: "Link conferma non disponibile" });

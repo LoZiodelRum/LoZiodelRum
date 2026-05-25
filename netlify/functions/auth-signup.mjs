@@ -55,11 +55,6 @@ export async function handler(event) {
   const missingEnv = [];
   if (!SUPABASE_URL) missingEnv.push("SUPABASE_URL");
   if (!SUPABASE_SERVICE_ROLE_KEY) missingEnv.push("SUPABASE_SERVICE_ROLE_KEY");
-  if (!RESEND_API_KEY) missingEnv.push("RESEND_API_KEY");
-
-  if (missingEnv.length > 0) {
-    return json(500, { ok: false, message: `Server env not configured: ${missingEnv.join(", ")}` });
-  }
 
   let parsed;
   try {
@@ -93,31 +88,69 @@ export async function handler(event) {
     return json(400, { ok: false, message: "Ruolo non valido" });
   }
 
+  if (ruolo !== "utente" && !RESEND_API_KEY) {
+    missingEnv.push("RESEND_API_KEY");
+  }
+
+  if (missingEnv.length > 0) {
+    return json(500, { ok: false, message: `Server env not configured: ${missingEnv.join(", ")}` });
+  }
+
   const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 
   const redirectTo = `${APP_URL}/auth`;
 
-  const { data, error } = await supabaseAdmin.auth.admin.generateLink({
-    type: "signup",
-    email,
-    password,
-    options: {
-      data: { nome, cognome, username, telefono },
-      redirectTo,
-    },
-  });
+  let userId = null;
+  let actionLink = null;
 
-  if (error) {
-    const message = error.message || "Errore in registrazione";
-    if (message.toLowerCase().includes("already") || message.toLowerCase().includes("exists")) {
-      return json(409, { ok: false, message: "Email gia registrata" });
+  if (ruolo === "utente") {
+    const { data, error } = await supabaseAdmin.auth.admin.createUser({
+      email,
+      password,
+      email_confirm: true,
+      user_metadata: {
+        nome,
+        cognome,
+        username,
+        telefono,
+        ruolo,
+      },
+    });
+
+    if (error) {
+      const message = error.message || "Errore in registrazione";
+      if (message.toLowerCase().includes("already") || message.toLowerCase().includes("exists")) {
+        return json(409, { ok: false, message: "Email gia registrata" });
+      }
+      return json(400, { ok: false, message });
     }
-    return json(400, { ok: false, message });
+
+    userId = data?.user?.id || null;
+  } else {
+    const { data, error } = await supabaseAdmin.auth.admin.generateLink({
+      type: "signup",
+      email,
+      password,
+      options: {
+        data: { nome, cognome, username, telefono },
+        redirectTo,
+      },
+    });
+
+    if (error) {
+      const message = error.message || "Errore in registrazione";
+      if (message.toLowerCase().includes("already") || message.toLowerCase().includes("exists")) {
+        return json(409, { ok: false, message: "Email gia registrata" });
+      }
+      return json(400, { ok: false, message });
+    }
+
+    userId = data?.user?.id || null;
+    actionLink = data?.properties?.action_link || data?.action_link || null;
   }
 
-  const userId = data?.user?.id;
   if (!userId) {
     return json(500, { ok: false, message: "Utente creato senza id" });
   }
@@ -136,6 +169,7 @@ export async function handler(event) {
             email,
             telefono,
             ruolo,
+            status: "attivo",
           },
         ],
         { onConflict: "id" }
@@ -177,8 +211,14 @@ export async function handler(event) {
     return json(500, { ok: false, message: `Errore interno: ${err.message}` });
   }
 
+  if (ruolo === "utente") {
+    return json(200, {
+      ok: true,
+      message: "Registrazione completata! Ora puoi accedere.",
+    });
+  }
+
   // 4. Genera link di conferma
-  const actionLink = data?.properties?.action_link || data?.action_link;
   if (!actionLink) {
     await supabaseAdmin.auth.admin.deleteUser(userId).catch(() => undefined);
     return json(500, { ok: false, message: "Link conferma non disponibile" });
