@@ -5,6 +5,7 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { SUPABASE_ANON_KEY, SUPABASE_URL } from "../lib/supabaseClient";
 import { getTranslatedField } from "../utils/getTranslatedField";
+import { buildArticleLanguagePatch } from "../utils/articleAutoTranslate";
 
 type Article = {
   id: string;
@@ -34,6 +35,7 @@ type Article = {
 };
 
 export default function Magazine() {
+  const [rawArticles, setRawArticles] = useState<Article[]>([]);
   const [articles, setArticles] = useState<Article[]>([]);
   const { t, i18n } = useTranslation("translation");
   const language = i18n.resolvedLanguage || i18n.language || "it";
@@ -41,6 +43,46 @@ export default function Magazine() {
   useEffect(() => {
     load();
   }, []);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function hydrateArticlesForLanguage() {
+      if (!rawArticles.length) {
+        setArticles([]);
+        return;
+      }
+
+      const normalizedLanguage = String(language || "").toLowerCase().split(/[-_]/)[0];
+      if (normalizedLanguage !== "es" && normalizedLanguage !== "bg") {
+        setArticles(rawArticles);
+        return;
+      }
+
+      const translatedRows: Article[] = [];
+      for (const article of rawArticles) {
+        const patch = await buildArticleLanguagePatch(article as any, normalizedLanguage, [
+          "titolo",
+          "sottotitolo",
+          "estratto",
+          "descrizione",
+          "categoria",
+        ]);
+
+        translatedRows.push(patch ? ({ ...article, ...patch } as Article) : article);
+      }
+
+      if (!cancelled) {
+        setArticles(translatedRows);
+      }
+    }
+
+    void hydrateArticlesForLanguage();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [rawArticles, language]);
 
   async function load() {
     let rows: any[] = [];
@@ -57,7 +99,7 @@ export default function Magazine() {
       rows = Array.isArray(dataRows) ? dataRows : [];
     }
 
-    setArticles(rows.map((a: any) => ({
+    setRawArticles(rows.map((a: any) => ({
       ...a,
       descrizione: a.descrizione || a.estratto || "",
       immagine: a.immagine || a.image || null,

@@ -7,6 +7,7 @@ import Navbar from "../components/Navbar";
 import { useTranslation } from "react-i18next";
 import { SUPABASE_ANON_KEY, SUPABASE_URL } from "../lib/supabaseClient";
 import { getTranslatedField } from "../utils/getTranslatedField";
+import { buildArticleLanguagePatch } from "../utils/articleAutoTranslate";
 
 import { hero, overlay, heroBox, badge, title, subtitle, meta, articleWrapper } from "./articleDetailStyles";
 
@@ -93,6 +94,45 @@ export default function ArticleDetail() {
   useEffect(() => {
     load();
   }, [id]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function hydrateArticleLanguage() {
+      if (!data) return;
+
+      const normalizedLanguage = String(i18n.language || "").toLowerCase().split(/[-_]/)[0];
+      if (normalizedLanguage !== "es" && normalizedLanguage !== "bg") return;
+
+      const patch = await buildArticleLanguagePatch(data as any, normalizedLanguage, [
+        "titolo",
+        "sottotitolo",
+        "estratto",
+        "descrizione",
+        "categoria",
+        "contenuto",
+      ]);
+
+      if (!patch || cancelled) return;
+
+      setData((prev: any) => {
+        if (!prev) return prev;
+        return { ...prev, ...patch };
+      });
+
+      setForm((prev: any) => {
+        if (!prev) return prev;
+        return { ...prev, ...patch };
+      });
+    }
+
+    void hydrateArticleLanguage();
+
+    return () => {
+      cancelled = true;
+    };
+  }, [data, i18n.language]);
+
   async function load() {
     if (!id) {
       setData(null);

@@ -30,6 +30,11 @@
   to = "/.netlify/functions/auth-signup-custom"
   status = 200
 
+[[redirects]]
+  from = "/api/translate-text"
+  to = "/.netlify/functions/translate-text"
+  status = 200
+
 [[headers]]
   for = "/index.html"
   [headers.values]
