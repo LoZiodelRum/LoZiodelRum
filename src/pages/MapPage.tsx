@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { MapContainer, TileLayer, Marker, ZoomControl } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, ZoomControl, useMap } from "react-leaflet";
 import { X } from "lucide-react";
 import { supabase } from "../lib/supabaseClient";
 import Navbar from "../components/Navbar";
@@ -41,6 +41,42 @@ type Venue = {
   image_url?: string;
 };
 
+function parseCoordinate(value: unknown): number | null {
+  if (value === null || value === undefined) return null;
+  const normalized = String(value).replace(",", ".").trim();
+  if (!normalized) return null;
+  const parsed = Number(normalized);
+  if (!Number.isFinite(parsed)) return null;
+  return parsed;
+}
+
+function isLatitude(value: number) {
+  return value >= -90 && value <= 90;
+}
+
+function isLongitude(value: number) {
+  return value >= -180 && value <= 180;
+}
+
+function MapAutoFit({ venues }: { venues: Venue[] }) {
+  const map = useMap();
+
+  useEffect(() => {
+    if (!venues.length) return;
+
+    const bounds = L.latLngBounds(venues.map((venue) => [venue.latitudine, venue.longitudine] as [number, number]));
+
+    if (!bounds.isValid()) return;
+
+    map.fitBounds(bounds, {
+      padding: [36, 36],
+      maxZoom: 15,
+    });
+  }, [map, venues]);
+
+  return null;
+}
+
 export default function MapPage() {
   const { i18n } = useTranslation();
   const [venues, setVenues] = useState<Venue[]>([]);
@@ -56,22 +92,36 @@ export default function MapPage() {
       .from("Locali")
       .select("id, nome, nome_en, nome_bg, citta, indirizzo, descrizione, descrizione_en, descrizione_bg, latitudine, longitudine, image_url");
 
+    console.log("LOCALI TOTALI DB:", data);
+    console.log("NUMERO LOCALI:", data?.length);
+
     if (!data) return;
 
     const valid = data
       .map((v: any) => {
-        const lat = Number(String(v.latitudine).replace(",", "."));
-        const lng = Number(String(v.longitudine).replace(",", "."));
+        const rawLat = parseCoordinate(v.latitudine);
+        const rawLng = parseCoordinate(v.longitudine);
 
-        if (isNaN(lat) || isNaN(lng)) return null;
+        if (rawLat === null || rawLng === null) return null;
+
+        let lat = rawLat;
+        let lng = rawLng;
+
+        // Handle common data-entry mistake where lat/lng are swapped.
+        if (!isLatitude(lat) && isLatitude(lng) && isLongitude(lat)) {
+          lat = rawLng;
+          lng = rawLat;
+        }
+
+        if (!isLatitude(lat) || !isLongitude(lng)) return null;
 
         return {
           ...v,
           latitudine: lat,
-          longitudine: lng
+          longitudine: lng,
         };
       })
-      .filter(Boolean) as Venue[];
+      .filter((locale): locale is Venue => locale !== null);
 
     setVenues(valid);
 
@@ -91,17 +141,21 @@ export default function MapPage() {
         zoomControl={false}
       >
         <TileLayer url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png" />
+        <MapAutoFit venues={venues} />
 
-        {venues.map((venue) => (
-          <Marker
-            key={venue.id}
-            position={[venue.latitudine, venue.longitudine]}
-            icon={customIcon}
-            eventHandlers={{
-              click: () => setSelectedVenue(venue)
-            }}
-          />
-        ))}
+        {venues.map((venue) => {
+          console.log("MARKER:", venue.nome, venue.latitudine, venue.longitudine);
+          return (
+            <Marker
+              key={venue.id}
+              position={[venue.latitudine, venue.longitudine]}
+              icon={customIcon}
+              eventHandlers={{
+                click: () => setSelectedVenue(venue)
+              }}
+            />
+          );
+        })}
 
         {/* ✅ Zoom control corretto */}
         <ZoomControl position="bottomleft" />
