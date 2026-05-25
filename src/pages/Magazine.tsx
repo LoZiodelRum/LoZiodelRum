@@ -43,11 +43,15 @@ function firstNonEmpty(...values: Array<string | null | undefined>): string {
 function pickArticleTitle(article: Article, language?: string): string {
   const normalized = normalizeArticleLanguage(language);
 
-  if (normalized === "es") return firstNonEmpty(article.titolo_es, article.titolo_en, article.titolo);
-  if (normalized === "en") return firstNonEmpty(article.titolo_en, article.titolo);
-  if (normalized === "bg") return firstNonEmpty(article.titolo_bg, article.titolo_en, article.titolo);
+  if (normalized === "it") {
+    return firstNonEmpty(article.titolo, article.titolo_en);
+  } else if (normalized === "es") {
+    return firstNonEmpty(article.titolo_es, article.titolo, article.titolo_en);
+  } else if (normalized === "en") {
+    return firstNonEmpty(article.titolo_en, article.titolo);
+  }
 
-  return firstNonEmpty(article.titolo, article.titolo_en);
+  return firstNonEmpty(article.titolo_bg, article.titolo, article.titolo_en);
 }
 
 function pickArticlePreview(article: Article, language?: string): string {
@@ -55,37 +59,29 @@ function pickArticlePreview(article: Article, language?: string): string {
 
   const itPreview = firstNonEmpty(article.sottotitolo, article.descrizione);
 
-  if (normalized === "es") {
-    return firstNonEmpty(article.sottotitolo_es, article.descrizione_es, article.sottotitolo_en, article.descrizione_en, itPreview);
-  }
-
-  if (normalized === "en") {
+  if (normalized === "it") {
+    return firstNonEmpty(itPreview, article.sottotitolo_en, article.descrizione_en);
+  } else if (normalized === "es") {
+    return firstNonEmpty(article.sottotitolo_es, article.descrizione_es, itPreview, article.sottotitolo_en, article.descrizione_en);
+  } else if (normalized === "en") {
     return firstNonEmpty(article.sottotitolo_en, article.descrizione_en, itPreview);
   }
 
-  if (normalized === "bg") {
-    return firstNonEmpty(article.sottotitolo_bg, article.descrizione_bg, article.sottotitolo_en, article.descrizione_en, itPreview);
-  }
-
-  return firstNonEmpty(itPreview, article.sottotitolo_en, article.descrizione_en);
+  return firstNonEmpty(article.sottotitolo_bg, article.descrizione_bg, itPreview, article.sottotitolo_en, article.descrizione_en);
 }
 
 function pickArticleCategory(article: Article, language?: string): string {
   const normalized = normalizeArticleLanguage(language);
 
-  if (normalized === "es") {
-    return firstNonEmpty(article.categoria_es, article.categoria_en, article.categoria);
-  }
-
-  if (normalized === "en") {
+  if (normalized === "it") {
+    return firstNonEmpty(article.categoria, article.categoria_en);
+  } else if (normalized === "es") {
+    return firstNonEmpty(article.categoria_es, article.categoria, article.categoria_en);
+  } else if (normalized === "en") {
     return firstNonEmpty(article.categoria_en, article.categoria);
   }
 
-  if (normalized === "bg") {
-    return firstNonEmpty(article.categoria_bg, article.categoria_en, article.categoria);
-  }
-
-  return firstNonEmpty(article.categoria, article.categoria_en);
+  return firstNonEmpty(article.categoria_bg, article.categoria, article.categoria_en);
 }
 
 export default function Magazine() {
