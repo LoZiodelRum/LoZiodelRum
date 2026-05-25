@@ -6,7 +6,7 @@ import { useUser } from "../context/UserContext"; // ✅ AGGIUNTO
 import Navbar from "../components/Navbar";
 import { useTranslation } from "react-i18next";
 import { getTranslatedField } from "../utils/getTranslatedField";
-import { removeEmptyFields } from "../utils/removeEmptyFields";
+import { normalizeText, safeArray, sanitizeUpdateData } from "../utils/runtime";
 
 type Locale = {
   id: string;
@@ -113,17 +113,28 @@ export default function VenueDetail() {
   }
 
   async function fetchLocale() {
+    if (!id) {
+      setLocale(null);
+      setForm(null);
+      return;
+    }
+
     const { data } = await supabase
       .from("Locali")
       .select("*")
       .eq("id", id)
       .maybeSingle();
 
-    setLocale(data);
-    setForm(data);
+    setLocale(data || null);
+    setForm(data || null);
   }
 
   async function fetchRecensioni() {
+    if (!id) {
+      setRecensioni([]);
+      return;
+    }
+
     const { data } = await supabase
       .from("Recensioni")
       .select("id, locale_id, commento, testo, created_at, author_name, utente_id, voto, status, servizio, qualita_drink, qualita_prezzo, atmosfera, tags")
@@ -131,10 +142,15 @@ export default function VenueDetail() {
       .gte("created_at", REVIEWS_RESET_AT)
       .order("created_at", { ascending: false });
 
-    if (data) setRecensioni(data);
+    setRecensioni(safeArray<Recensione>(data));
   }
 
   async function fetchMedia() {
+    if (!id) {
+      setMedia([]);
+      return;
+    }
+
     const { data } = await supabase
       .from("Media")
       .select("id, entity_id, entity_type, url_file, tipo, approvato")
@@ -142,10 +158,15 @@ export default function VenueDetail() {
       .eq("entity_type", "locale")
       .eq("approvato", true);
 
-    if (data) setMedia(data);
+    setMedia(safeArray<Media>(data));
   }
 
   async function handleSave() {
+    if (!form?.id) {
+      alert("Dati locale non disponibili per il salvataggio");
+      return;
+    }
+
     const adminPassword =
       localStorage.getItem("adminPassword") ||
       "";
@@ -153,7 +174,7 @@ export default function VenueDetail() {
     let error: any = null;
 
     const normalizedImage = normalizeImageUrl(form.image_url || form.image);
-    const safePatch = removeEmptyFields({
+    const safePatch = sanitizeUpdateData({
       ...form,
       image: normalizedImage,
       image_url: normalizedImage,
@@ -224,6 +245,11 @@ export default function VenueDetail() {
   }
 
   async function handleDelete() {
+    if (!form?.id) {
+      alert("Dati locale non disponibili per l'eliminazione");
+      return;
+    }
+
     if (!isAdmin) {
       alert("Operazione consentita solo ad admin");
       return;
@@ -329,10 +355,13 @@ export default function VenueDetail() {
 
     const url = data.publicUrl;
 
-    setForm({
-      ...form,
-      image: url,
-      image_url: url,
+    setForm((prev: any) => {
+      if (!prev) return prev;
+      return {
+        ...prev,
+        image: url,
+        image_url: url,
+      };
     });
 
     setUploading(false);
@@ -439,7 +468,7 @@ export default function VenueDetail() {
     if (typeof value === "boolean") return value;
     if (typeof value === "number") return value === 1;
     if (typeof value === "string") {
-      const normalized = value.toLowerCase().trim();
+      const normalized = normalizeText(value);
       return ["1", "true", "si", "s", "yes", "y", "on"].includes(normalized);
     }
     return false;
@@ -451,7 +480,7 @@ export default function VenueDetail() {
     return map[value] ?? value;
   };
 
-  const firstMediaImage = normalizeImageUrl(media.find((m) => m.tipo === "foto")?.url_file || "");
+  const firstMediaImage = normalizeImageUrl(safeArray<Media>(media).find((m) => m.tipo === "foto")?.url_file || "");
   const placeholderHero = "https://via.placeholder.com/1600x900?text=Lo+Zio+del+Rum";
   const imageMain = normalizeImageUrl(locale.image_url) || normalizeImageUrl(locale.image) || firstMediaImage;
   const videoMain =
@@ -500,7 +529,9 @@ export default function VenueDetail() {
   };
 
   // Calcola rating generale da voto o da media delle 4 categorie
-  const ratedReviews = recensioni
+  const safeRecensioni = safeArray<Recensione>(recensioni);
+
+  const ratedReviews = safeRecensioni
     .map((rec) => {
       const general = parseScore(rec.voto);
       if (general > 0) return general;
@@ -514,24 +545,24 @@ export default function VenueDetail() {
     : 0;
 
   // Calcola medie per categoria
-  const avgServizio = recensioni.length
-    ? recensioni.map((r) => parseScore(r.servizio)).filter(s => s > 0).reduce((a, b) => a + b, 0) / 
-      recensioni.filter(r => parseScore(r.servizio) > 0).length || 0
+  const avgServizio = safeRecensioni.length
+    ? safeRecensioni.map((r) => parseScore(r.servizio)).filter(s => s > 0).reduce((a, b) => a + b, 0) /
+      safeRecensioni.filter(r => parseScore(r.servizio) > 0).length || 0
     : 0;
 
-  const avgQualitaDrink = recensioni.length
-    ? recensioni.map((r) => parseScore(r.qualita_drink)).filter(s => s > 0).reduce((a, b) => a + b, 0) / 
-      recensioni.filter(r => parseScore(r.qualita_drink) > 0).length || 0
+  const avgQualitaDrink = safeRecensioni.length
+    ? safeRecensioni.map((r) => parseScore(r.qualita_drink)).filter(s => s > 0).reduce((a, b) => a + b, 0) /
+      safeRecensioni.filter(r => parseScore(r.qualita_drink) > 0).length || 0
     : 0;
 
-  const avgQualitaPrezzo = recensioni.length
-    ? recensioni.map((r) => parseScore(r.qualita_prezzo)).filter(s => s > 0).reduce((a, b) => a + b, 0) / 
-      recensioni.filter(r => parseScore(r.qualita_prezzo) > 0).length || 0
+  const avgQualitaPrezzo = safeRecensioni.length
+    ? safeRecensioni.map((r) => parseScore(r.qualita_prezzo)).filter(s => s > 0).reduce((a, b) => a + b, 0) /
+      safeRecensioni.filter(r => parseScore(r.qualita_prezzo) > 0).length || 0
     : 0;
 
-  const avgAtmosfera = recensioni.length
-    ? recensioni.map((r) => parseScore(r.atmosfera)).filter(s => s > 0).reduce((a, b) => a + b, 0) / 
-      recensioni.filter(r => parseScore(r.atmosfera) > 0).length || 0
+  const avgAtmosfera = safeRecensioni.length
+    ? safeRecensioni.map((r) => parseScore(r.atmosfera)).filter(s => s > 0).reduce((a, b) => a + b, 0) /
+      safeRecensioni.filter(r => parseScore(r.atmosfera) > 0).length || 0
     : 0;
 
   const reviewDistribution = [

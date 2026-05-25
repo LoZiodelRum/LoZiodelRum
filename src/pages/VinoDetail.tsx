@@ -4,6 +4,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import { SUPABASE_ANON_KEY, SUPABASE_URL } from "../lib/supabaseClient";
 import { useTranslation } from "react-i18next";
 import { getTranslatedField } from "../utils/getTranslatedField";
+import { normalizeText, safeArray } from "../utils/runtime";
 
 type VinoRecord = Record<string, any>;
 
@@ -74,7 +75,7 @@ function normalizeValue(raw: unknown): string {
   if (raw === null || raw === undefined || raw === "") return "-";
 
   if (Array.isArray(raw)) {
-    const cleaned = raw.map((x) => String(x).trim()).filter(Boolean);
+    const cleaned = safeArray<unknown>(raw).map((x) => String(x).trim()).filter(Boolean);
     return cleaned.length ? cleaned.join(", ") : "-";
   }
 
@@ -90,6 +91,17 @@ function normalizeValue(raw: unknown): string {
   }
 
   return text;
+}
+
+function normalizeImageUrl(value?: string | null): string {
+  const raw = String(value || "").trim();
+  if (!raw) return "";
+  if (raw.startsWith("http://") || raw.startsWith("https://") || raw.startsWith("data:") || raw.startsWith("blob:") || raw.startsWith("/")) {
+    return raw;
+  }
+  if (raw.startsWith("//")) return `https:${raw}`;
+  if (raw.startsWith("www.")) return `https://${raw}`;
+  return raw;
 }
 
 export default function VinoDetail() {
@@ -124,7 +136,7 @@ export default function VinoDetail() {
         if (!response.ok) return null;
 
         const payload = await response.json().catch(() => []);
-        return Array.isArray(payload) ? payload[0] ?? null : null;
+        return safeArray<VinoRecord>(payload)[0] ?? null;
       };
 
       const lower = await fetchVino("vini");
@@ -149,9 +161,9 @@ export default function VinoDetail() {
   }
 
   const imageUrl = useMemo(() => {
-    const primary = typeof vino?.immagine === "string" ? vino.immagine.trim() : "";
+    const primary = normalizeImageUrl(typeof vino?.immagine === "string" ? vino.immagine : "");
     if (primary) return primary;
-    return typeof vino?.image === "string" ? vino.image.trim() : "";
+    return normalizeImageUrl(typeof vino?.image === "string" ? vino.image : "");
   }, [vino]);
 
   const translatedName = vino ? getTranslatedField(vino, "nome", i18n.language, "-") : "-";
@@ -175,11 +187,11 @@ export default function VinoDetail() {
         <h2 className="vino-detail-section-title" style={sectionTitleStyle}>{title}</h2>
         <div className="vino-detail-grid" style={gridStyle}>
           {fields.map((field) => {
-            const aliases = fieldAliases[field.key] || [field.key];
+            const aliases = safeArray<string>(fieldAliases[field.key] || [field.key]);
             const translatedValue =
               aliases
                 .map((alias) => getTranslatedField(vino, alias, i18n.language, ""))
-                .find((value) => value.trim().length > 0)
+                .find((value) => normalizeText(value, { lowercase: false }) .trim().length > 0)
               || "-";
 
             return (
