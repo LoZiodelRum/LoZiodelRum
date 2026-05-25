@@ -40,7 +40,15 @@ export default function CategoryVini() {
       }
 
       function categorySlugFor(vino: any): string {
-        const haystack = [vino.categoria, vino.categoria_en, vino.categoria_bg].map(normalize).join(" ");
+        const categoryCandidates = [
+          getTranslatedField(vino, "categoria", i18n.language, ""),
+          getTranslatedField(vino, "categoria", "it", ""),
+          getTranslatedField(vino, "categoria", "en", ""),
+          getTranslatedField(vino, "categoria", "bg", ""),
+          getTranslatedField(vino, "categoria", "es", ""),
+        ];
+
+        const haystack = categoryCandidates.map(normalize).join(" ");
         if (haystack.includes("ross") || haystack.includes("red")) return "rossi";
         if (haystack.includes("bian") || haystack.includes("whit")) return "bianchi";
         if (haystack.includes("rosa") || haystack.includes("rose")) return "rosati";
