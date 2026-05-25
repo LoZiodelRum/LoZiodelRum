@@ -99,7 +99,7 @@ function renderArticleContent(raw: string, imageAlt: string) {
           key={`img-line-${idx}`}
           src={trimmed}
           alt={imageAlt}
-          style={{ maxWidth: "100%", height: "auto", borderRadius: 16, margin: "24px 0", display: "block" }}
+          className="magazine-article-inline-image"
           loading="lazy"
         />
       );
@@ -227,12 +227,42 @@ export default function ArticleDetail() {
         <main>
           <div className="page page-full-bleed fade-in">
             <style>{`
+              .magazine-article-container {
+                max-width: 900px;
+                margin: 0 auto;
+                width: 100%;
+              }
+
+              .magazine-article-content img,
+              .magazine-article-content figure img,
+              .magazine-article-inline-image {
+                max-width: 700px;
+                width: 100%;
+                height: auto;
+                display: block;
+                margin: 40px auto;
+                border-radius: 18px;
+                object-fit: cover;
+              }
+
+              .magazine-article-content figure {
+                margin: 40px 0;
+              }
+
               .article-hero-box,
               .article-box {
                 width: min(94vw, 64rem) !important;
                 max-width: none !important;
                 margin-left: auto !important;
                 margin-right: auto !important;
+              }
+
+              @media (max-width: 1023px) {
+                .magazine-article-content img,
+                .magazine-article-content figure img,
+                .magazine-article-inline-image {
+                  max-width: 600px;
+                }
               }
 
               @media (max-width: 768px) {
@@ -276,6 +306,13 @@ export default function ArticleDetail() {
                 .article-content li {
                   font-size: 18px !important;
                 }
+
+                .magazine-article-content img,
+                .magazine-article-content figure img,
+                .magazine-article-inline-image {
+                  max-width: 100%;
+                  margin: 24px auto;
+                }
               }
             `}</style>
 
@@ -303,9 +340,9 @@ export default function ArticleDetail() {
             </div>
 
             {/* 🔥 BOX ARTICOLO COMPLETO */}
-            <div className="article-wrapper" style={{ ...articleWrapper, width: '100%', maxWidth: '100vw', overflowX: 'hidden' }}>
+            <div className="article-wrapper magazine-article-container" style={{ ...articleWrapper, width: '100%', overflowX: 'hidden' }}>
               <div className="article-box" style={articleBox}>
-                <div className="article-content" style={articleContent}>
+                <div className="article-content magazine-article-content" style={articleContent}>
                   {renderArticleContent(
                     pickArticleField(data as any, "contenuto", i18n.language, data.contenuto || ""),
                     t("articleImageAlt")
