@@ -432,14 +432,6 @@ export default function VenueDetail() {
   const tr = (it: string, en: string, bg: string) =>
     getTranslatedField({ label_it: it, label_en: en, label_bg: bg }, "label", i18n.language, it);
 
-  const getFirstTranslatedLocaleField = (fields: string[], fallback = "") => {
-    for (const field of fields) {
-      const value = getTranslatedField(locale as any, field, i18n.language, "");
-      if (value.trim().length > 0) return value;
-    }
-    return fallback;
-  };
-
   const placeholder = (value: string | null | undefined, label: string) =>
     value && value !== "" ? value : `Non disponibile (${label})`;
 
@@ -464,27 +456,33 @@ export default function VenueDetail() {
   const imageMain = normalizeImageUrl(locale.image_url) || normalizeImageUrl(locale.image) || firstMediaImage;
   const videoMain =
     locale.video_url || media.find((m) => m.tipo === "video")?.url_file || "";
-  const localeName = getFirstTranslatedLocaleField(["nome"], locale.nome || "-");
-  const indirizzo = getFirstTranslatedLocaleField(["indirizzo"], locale.indirizzo || "");
-  const citta = getFirstTranslatedLocaleField(["citta"], locale.citta || "");
-  const provincia = getFirstTranslatedLocaleField(["provincia"], locale.provincia || "");
-  const paese = getFirstTranslatedLocaleField(["paese"], locale.paese || "");
+  const localeName = getTranslatedField(locale as any, "nome", i18n.language, locale.nome || "-");
+  const indirizzo = getTranslatedField(locale as any, "indirizzo", i18n.language, locale.indirizzo || "");
+  const citta = getTranslatedField(locale as any, "citta", i18n.language, locale.citta || "");
+  const provincia = getTranslatedField(locale as any, "provincia", i18n.language, locale.provincia || "");
+  const paese = getTranslatedField(locale as any, "paese", i18n.language, locale.paese || "");
   const categoria = getTranslatedField(
     locale as any,
     "categoria",
     i18n.language,
     locale.categoria || tr("Categoria non disponibile", "Category not available", "Категорията не е налична")
   );
-  const orari = getFirstTranslatedLocaleField(["orari"], locale.orari || "");
-  const priceRange = getFirstTranslatedLocaleField(["price_range"], locale.price_range || "");
-  const descrizioneLunga = getFirstTranslatedLocaleField(
-    ["descrizione_completa", "descrizione", "specialita", "storia", "testo", "content"],
-    locale.descrizione_completa || locale.descrizione || ""
-  );
-  const qualitaDrink = getFirstTranslatedLocaleField(["qualita_drink"], locale.qualita_drink || "");
-  const competenzaStaff = getFirstTranslatedLocaleField(["competenza_staff"], locale.competenza_staff || "");
-  const atmosfera = getFirstTranslatedLocaleField(["atmosfera"], locale.atmosfera || "");
-  const qualitaPrezzo = getFirstTranslatedLocaleField(["qualita_prezzo"], locale.qualita_prezzo || "");
+  const orari = getTranslatedField(locale as any, "orari", i18n.language, locale.orari || "");
+  const priceRange = getTranslatedField(locale as any, "price_range", i18n.language, locale.price_range || "");
+  const descrizioneLunga =
+    getTranslatedField(locale as any, "descrizione_completa", i18n.language, "")
+    || getTranslatedField(locale as any, "descrizione", i18n.language, "")
+    || getTranslatedField(locale as any, "specialita", i18n.language, "")
+    || getTranslatedField(locale as any, "storia", i18n.language, "")
+    || getTranslatedField(locale as any, "testo", i18n.language, "")
+    || getTranslatedField(locale as any, "content", i18n.language, "")
+    || locale.descrizione_completa
+    || locale.descrizione
+    || "";
+  const qualitaDrink = getTranslatedField(locale as any, "qualita_drink", i18n.language, locale.qualita_drink || "");
+  const competenzaStaff = getTranslatedField(locale as any, "competenza_staff", i18n.language, locale.competenza_staff || "");
+  const atmosfera = getTranslatedField(locale as any, "atmosfera", i18n.language, locale.atmosfera || "");
+  const qualitaPrezzo = getTranslatedField(locale as any, "qualita_prezzo", i18n.language, locale.qualita_prezzo || "");
   const fullAddress = [indirizzo, citta, provincia, paese]
     .filter(Boolean)
     .join(", ");
