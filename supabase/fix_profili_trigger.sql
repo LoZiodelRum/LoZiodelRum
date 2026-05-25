@@ -20,6 +20,10 @@ BEGIN
   )
   ON CONFLICT (id) DO NOTHING;
   RETURN NEW;
+EXCEPTION
+  WHEN others THEN
+    RAISE NOTICE 'handle_new_user failed for %: %', NEW.id, SQLERRM;
+    RETURN NEW;
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 

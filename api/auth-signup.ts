@@ -50,6 +50,47 @@ function getProfileConflictMessage(error: any) {
   return "Conflitto dati profilo: username o email gia usati";
 }
 
+async function cleanupGhostAuthUserByEmail(supabaseAdmin: any, email: string) {
+  const targetEmail = normalizeEmail(email);
+  const { data: profileRows } = await supabaseAdmin
+    .from("Profili")
+    .select("id")
+    .eq("email", targetEmail)
+    .limit(1);
+
+  const hasProfileRow = Array.isArray(profileRows) && profileRows.length > 0;
+
+  for (let page = 1; page <= 10; page += 1) {
+    const { data, error } = await supabaseAdmin.auth.admin.listUsers({
+      page,
+      perPage: 1000,
+    });
+
+    if (error) {
+      return false;
+    }
+
+    const users = Array.isArray((data as any)?.users) ? (data as any).users : [];
+    const match = users.find((user: any) => normalizeEmail(user?.email) === targetEmail);
+
+    if (!match) {
+      if (users.length < 1000) {
+        return false;
+      }
+      continue;
+    }
+
+    if (match.deleted_at || match.banned_until || !hasProfileRow) {
+      await supabaseAdmin.auth.admin.deleteUser(match.id).catch(() => undefined);
+      return true;
+    }
+
+    return false;
+  }
+
+  return false;
+}
+
 export default async function handler(req: ApiRequest, res: ApiResponse) {
   if (req.method !== "POST") {
     return res.status(405).json({ ok: false, message: "Method not allowed" });
@@ -141,17 +182,37 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     if (error) {
       const message = error.message || "Errore in registrazione";
       if (message.toLowerCase().includes("already") || message.toLowerCase().includes("exists")) {
-        return res.status(409).json({ ok: false, message: "Email gia registrata" });
+        const cleaned = await cleanupGhostAuthUserByEmail(supabaseAdmin, email);
+        if (cleaned) {
+          const retry = await supabaseAdmin.auth.admin.createUser({
+            email,
+            password,
+            email_confirm: true,
+            user_metadata: {
+              nome,
+              cognome,
+              username,
+              telefono,
+              ruolo,
+            },
+          });
+
+          if (!retry.error && retry.data?.user?.id) {
+            userId = retry.data.user.id;
+          } else if (retry.error) {
+            return res.status(400).json({ ok: false, message: retry.error.message || message });
+          }
+        }
+
+        if (!userId) {
+          return res.status(409).json({ ok: false, message: "Email gia registrata" });
+        }
+      } else {
+        return res.status(400).json({ ok: false, message });
       }
-      return res.status(400).json({ ok: false, message });
+    } else {
+      userId = (data as any)?.user?.id || null;
     }
-
-    userId = (data as any)?.user?.id || null;
-    actionLink = (data as any)?.properties?.action_link || (data as any)?.action_link || null;
-  }
-
-  if (!userId) {
-    return res.status(500).json({ ok: false, message: "Utente creato senza id" });
   }
 
   try {
@@ -175,10 +236,23 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       );
 
     if (profileError) {
-      await supabaseAdmin.auth.admin.deleteUser(userId).catch(() => undefined);
       if (String(profileError?.code || "") === "23505" || String(profileError?.message || "").toLowerCase().includes("duplicate")) {
+        if (ruolo === "utente") {
+          return res.status(200).json({
+            ok: true,
+            message: "Registrazione completata! Il profilo verra sincronizzato al primo accesso.",
+          });
+        }
+        await supabaseAdmin.auth.admin.deleteUser(userId).catch(() => undefined);
         return res.status(409).json({ ok: false, message: getProfileConflictMessage(profileError) });
       }
+      if (ruolo === "utente") {
+        return res.status(200).json({
+          ok: true,
+          message: "Registrazione completata! Il profilo verra sincronizzato al primo accesso.",
+        });
+      }
+      await supabaseAdmin.auth.admin.deleteUser(userId).catch(() => undefined);
       return res.status(500).json({ ok: false, message: `Errore salvataggio profilo: ${profileError.message}` });
     }
 

@@ -47,6 +47,47 @@ function getProfileConflictMessage(error) {
   return "Conflitto dati profilo: username o email gia usati";
 }
 
+async function cleanupGhostAuthUserByEmail(supabaseAdmin, email) {
+  const targetEmail = normalizeEmail(email);
+  const { data: profileRows } = await supabaseAdmin
+    .from("Profili")
+    .select("id")
+    .eq("email", targetEmail)
+    .limit(1);
+
+  const hasProfileRow = Array.isArray(profileRows) && profileRows.length > 0;
+
+  for (let page = 1; page <= 10; page += 1) {
+    const { data, error } = await supabaseAdmin.auth.admin.listUsers({
+      page,
+      perPage: 1000,
+    });
+
+    if (error) {
+      return false;
+    }
+
+    const users = Array.isArray(data?.users) ? data.users : [];
+    const match = users.find((user) => normalizeEmail(user?.email) === targetEmail);
+
+    if (!match) {
+      if (users.length < 1000) {
+        return false;
+      }
+      continue;
+    }
+
+    if (match.deleted_at || match.banned_until || !hasProfileRow) {
+      await supabaseAdmin.auth.admin.deleteUser(match.id).catch(() => undefined);
+      return true;
+    }
+
+    return false;
+  }
+
+  return false;
+}
+
 export async function handler(event) {
   if (event.httpMethod !== "POST") {
     return json(405, { ok: false, message: "Method not allowed" });
@@ -122,12 +163,37 @@ export async function handler(event) {
     if (error) {
       const message = error.message || "Errore in registrazione";
       if (message.toLowerCase().includes("already") || message.toLowerCase().includes("exists")) {
-        return json(409, { ok: false, message: "Email gia registrata" });
-      }
-      return json(400, { ok: false, message });
-    }
+        const cleaned = await cleanupGhostAuthUserByEmail(supabaseAdmin, email);
+        if (cleaned) {
+          const retry = await supabaseAdmin.auth.admin.createUser({
+            email,
+            password,
+            email_confirm: true,
+            user_metadata: {
+              nome,
+              cognome,
+              username,
+              telefono,
+              ruolo,
+            },
+          });
 
-    userId = data?.user?.id || null;
+          if (!retry.error && retry.data?.user?.id) {
+            userId = retry.data.user.id;
+          } else if (retry.error) {
+            return json(400, { ok: false, message: retry.error.message || message });
+          }
+        }
+
+        if (!userId) {
+          return json(409, { ok: false, message: "Email gia registrata" });
+        }
+      } else {
+        return json(400, { ok: false, message });
+      }
+    } else {
+      userId = data?.user?.id || null;
+    }
   } else {
     const { data, error } = await supabaseAdmin.auth.admin.generateLink({
       type: "signup",
@@ -176,10 +242,23 @@ export async function handler(event) {
       );
 
     if (profileError) {
-      await supabaseAdmin.auth.admin.deleteUser(userId).catch(() => undefined);
       if (String(profileError?.code || "") === "23505" || String(profileError?.message || "").toLowerCase().includes("duplicate")) {
+        if (ruolo === "utente") {
+          return json(200, {
+            ok: true,
+            message: "Registrazione completata! Il profilo verra sincronizzato al primo accesso.",
+          });
+        }
+        await supabaseAdmin.auth.admin.deleteUser(userId).catch(() => undefined);
         return json(409, { ok: false, message: getProfileConflictMessage(profileError) });
       }
+      if (ruolo === "utente") {
+        return json(200, {
+          ok: true,
+          message: "Registrazione completata! Il profilo verra sincronizzato al primo accesso.",
+        });
+      }
+      await supabaseAdmin.auth.admin.deleteUser(userId).catch(() => undefined);
       return json(500, { ok: false, message: `Errore salvataggio profilo: ${profileError.message}` });
     }
 
