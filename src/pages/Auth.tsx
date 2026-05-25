@@ -18,11 +18,55 @@ function Auth() {
     e.preventDefault();
     setLoading(true);
     setMsg("");
-    const normalizedEmail = email.trim().toLowerCase();
+    const identifier = email.trim().toLowerCase();
+    let normalizedEmail = identifier;
+
+    if (!identifier.includes("@")) {
+      const { data: usernameRow, error: usernameError } = await supabase
+        .from("Profili")
+        .select("email")
+        .ilike("username", identifier)
+        .maybeSingle();
+
+      if (usernameError) {
+        setMsg(usernameError.message || "Errore ricerca username");
+        setLoading(false);
+        return;
+      }
+
+      let resolvedEmail = String(usernameRow?.email || "").trim().toLowerCase();
+
+      if (!resolvedEmail) {
+        const { data: fallbackRow, error: fallbackError } = await supabase
+          .from("profiles")
+          .select("email")
+          .ilike("username", identifier)
+          .maybeSingle();
+
+        if (fallbackError) {
+          setMsg(fallbackError.message || "Errore ricerca username");
+          setLoading(false);
+          return;
+        }
+
+        resolvedEmail = String(fallbackRow?.email || "").trim().toLowerCase();
+      }
+
+      if (!resolvedEmail) {
+        setMsg("Username non trovato");
+        setLoading(false);
+        return;
+      }
+
+      normalizedEmail = resolvedEmail;
+    }
+
     const { data, error } = await supabase.auth.signInWithPassword({
       email: normalizedEmail,
       password,
     });
+    console.log("LOGIN DATA", data);
+    console.log("LOGIN ERROR", error);
 
     if (error) {
       const rawError = String(error?.message || "");
@@ -36,6 +80,7 @@ function Auth() {
       return;
     }
     const user = data.user;
+    console.log("USER", user);
     if (!user) {
       setMsg("Errore login");
       setLoading(false);
@@ -126,7 +171,7 @@ function Auth() {
             <input
               className="login-input-mobile"
               style={{ background: "#222", color: "#fff", border: "none", borderRadius: 16, padding: 12, fontSize: 18, marginBottom: 22, marginTop: 0, display: "block", textAlign: "center" }}
-              placeholder="Email"
+              placeholder="Email o username"
               value={email}
               onChange={e => setEmail(e.target.value)}
               required
