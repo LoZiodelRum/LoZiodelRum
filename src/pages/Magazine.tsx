@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { SUPABASE_ANON_KEY, SUPABASE_URL } from "../lib/supabaseClient";
+import { getTranslatedField } from "../utils/getTranslatedField";
 
 type Article = {
   id: string;
@@ -32,46 +33,14 @@ type Article = {
   [key: string]: any;
 };
 
-const getTranslatedField = (
-  article: Article | null | undefined,
-  field: string,
-  language?: string
-): string => {
-  const lang =
-    language?.toLowerCase().startsWith("es")
-      ? "es"
-      : language?.toLowerCase().startsWith("bg")
-      ? "bg"
-      : language?.toLowerCase().startsWith("it")
-      ? "it"
-      : "en";
-
-  const baseField = article?.[field];
-
-  if (lang === "it") {
-    return baseField || "";
-  }
-
-  const translatedField = article?.[`${field}_${lang}`];
-
-  if (translatedField && translatedField.trim() !== "") {
-    return translatedField;
-  }
-
-  const englishField = article?.[`${field}_en`];
-
-  if (lang === "en") {
-    return englishField || baseField || "";
-  }
-
-  // For ES/BG, prefer base content before EN fallback to avoid mixed-language cards.
-  return baseField || englishField || "";
-};
-
 export default function Magazine() {
   const [articles, setArticles] = useState<Article[]>([]);
   const { t, i18n } = useTranslation("translation");
   const language = i18n.resolvedLanguage || i18n.language || "it";
+
+  useEffect(() => {
+    console.log("LANGUAGE ACTIVE:", language);
+  }, [language]);
 
   useEffect(() => {
     load();
@@ -160,6 +129,7 @@ export default function Magazine() {
         <div className="magazine-uniform-grid">
           {articles.map((article) => {
             const articleTitle = getTranslatedField(article, "titolo", language);
+            console.log("TRANSLATED TITLE:", getTranslatedField(article, "titolo", language));
             const articlePreview =
               getTranslatedField(article, "descrizione", language)
               || getTranslatedField(article, "sottotitolo", language)

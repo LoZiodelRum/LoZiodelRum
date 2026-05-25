@@ -1,6 +1,6 @@
-export type SupportedLanguage = "it" | "en" | "es" | "de" | "fr" | "bg";
+export type SupportedLanguage = "it" | "en" | "es" | "bg";
 
-const SUPPORTED_LANGUAGES: SupportedLanguage[] = ["it", "en", "es", "de", "fr", "bg"];
+const SUPPORTED_LANGUAGES: SupportedLanguage[] = ["it", "en", "es", "bg"];
 
 function normalizeLanguage(language?: string): SupportedLanguage {
   const short = String(language || "it").toLowerCase().split(/[-_]/)[0] as SupportedLanguage;
@@ -18,7 +18,19 @@ function buildCandidates(baseField: string, language: SupportedLanguage): string
     return [baseField, `${baseField}_it`];
   }
 
-  return [`${baseField}_${language}`, baseField, `${baseField}_it`];
+  if (language === "en") {
+    return [`${baseField}_en`, baseField, `${baseField}_it`];
+  }
+
+  if (language === "es") {
+    return [`${baseField}_es`, `${baseField}_en`, baseField, `${baseField}_it`];
+  }
+
+  if (language === "bg") {
+    return [`${baseField}_bg`, `${baseField}_en`, baseField, `${baseField}_it`];
+  }
+
+  return [baseField, `${baseField}_it`];
 }
 
 export function getTranslatedField(

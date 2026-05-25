@@ -409,38 +409,11 @@ export default function VenueDetail() {
   const tr = (it: string, en: string, bg: string) =>
     getTranslatedField({ label_it: it, label_en: en, label_bg: bg }, "label", i18n.language, it);
 
-  const normalizedLang = String(i18n.language || "it").toLowerCase().split(/[-_]/)[0];
-
   const getFirstTranslatedLocaleField = (fields: string[], fallback = "") => {
     for (const field of fields) {
       const value = getTranslatedField(locale as any, field, i18n.language, "");
       if (value.trim().length > 0) return value;
     }
-    return fallback;
-  };
-
-  const getFirstLongLocaleContent = (fields: string[], fallback = "") => {
-    const record = locale as any;
-
-    if (normalizedLang !== "it") {
-      for (const field of fields) {
-        const value = record?.[`${field}_${normalizedLang}`];
-        if (typeof value === "string" && value.trim().length > 0) return value.trim();
-      }
-    }
-
-    for (const field of fields) {
-      const value = record?.[field];
-      if (typeof value === "string" && value.trim().length > 0) return value.trim();
-    }
-
-    if (normalizedLang !== "it") {
-      for (const field of fields) {
-        const value = record?.[`${field}_it`];
-        if (typeof value === "string" && value.trim().length > 0) return value.trim();
-      }
-    }
-
     return fallback;
   };
 
@@ -481,7 +454,7 @@ export default function VenueDetail() {
   );
   const orari = getFirstTranslatedLocaleField(["orari"], locale.orari || "");
   const priceRange = getFirstTranslatedLocaleField(["price_range"], locale.price_range || "");
-  const descrizioneLunga = getFirstLongLocaleContent(
+  const descrizioneLunga = getFirstTranslatedLocaleField(
     ["descrizione_completa", "descrizione", "specialita", "storia", "testo", "content"],
     locale.descrizione_completa || locale.descrizione || ""
   );
