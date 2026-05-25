@@ -56,19 +56,6 @@ function formatFieldKeyLabel(key: string) {
   return withSpaces.charAt(0).toUpperCase() + withSpaces.slice(1);
 }
 
-function getFirstTranslatedField(
-  record: Record<string, any> | null,
-  fields: string[],
-  language: string,
-  fallback = ""
-) {
-  for (const field of fields) {
-    const value = getTranslatedField(record, field, language, "");
-    if (value.trim().length > 0) return value;
-  }
-  return fallback;
-}
-
 export default function DrinkDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
@@ -116,15 +103,38 @@ export default function DrinkDetail() {
   const translatedBrand = getTranslatedField(drink, "marca", i18n.language, "");
   const translatedCategory = getTranslatedField(drink, "categoria", i18n.language, "");
   const translatedAbv = getTranslatedField(drink, "gradazione", i18n.language, "");
-  const translatedDescription = getFirstTranslatedField(drink, ["descrizione", "description"], i18n.language, "");
-  const translatedIngredients = getFirstTranslatedField(drink, ["ingredienti", "ingredients"], i18n.language, "");
-  const translatedPreparation = getFirstTranslatedField(drink, ["preparazione", "ricetta", "recipe"], i18n.language, "");
-  const translatedTastingNotes = getFirstTranslatedField(drink, ["note_degustazione", "degustazione", "tasting_notes", "tastingnotes"], i18n.language, "");
-  const translatedHistory = getFirstTranslatedField(drink, ["storia", "history"], i18n.language, "");
-  const translatedPairings = getFirstTranslatedField(drink, ["abbinamenti", "pairing", "pairings"], i18n.language, "");
-  const translatedOrigin = getFirstTranslatedField(drink, ["provenienza", "origine", "origin"], i18n.language, "");
-  const translatedAromaticNotes = getFirstTranslatedField(drink, ["note_aromatiche", "aromatic_notes"], i18n.language, "");
-  const translatedPalate = getFirstTranslatedField(drink, ["sensazioni_al_palato", "palato"], i18n.language, "");
+  const translatedDescription =
+    getTranslatedField(drink, "descrizione", i18n.language, "")
+    || getTranslatedField(drink, "description", i18n.language, "");
+  const translatedIngredients =
+    getTranslatedField(drink, "ingredienti", i18n.language, "")
+    || getTranslatedField(drink, "ingredients", i18n.language, "");
+  const translatedPreparation =
+    getTranslatedField(drink, "preparazione", i18n.language, "")
+    || getTranslatedField(drink, "ricetta", i18n.language, "")
+    || getTranslatedField(drink, "recipe", i18n.language, "");
+  const translatedTastingNotes =
+    getTranslatedField(drink, "note_degustazione", i18n.language, "")
+    || getTranslatedField(drink, "degustazione", i18n.language, "")
+    || getTranslatedField(drink, "tasting_notes", i18n.language, "")
+    || getTranslatedField(drink, "tastingnotes", i18n.language, "");
+  const translatedHistory =
+    getTranslatedField(drink, "storia", i18n.language, "")
+    || getTranslatedField(drink, "history", i18n.language, "");
+  const translatedPairings =
+    getTranslatedField(drink, "abbinamenti", i18n.language, "")
+    || getTranslatedField(drink, "pairing", i18n.language, "")
+    || getTranslatedField(drink, "pairings", i18n.language, "");
+  const translatedOrigin =
+    getTranslatedField(drink, "provenienza", i18n.language, "")
+    || getTranslatedField(drink, "origine", i18n.language, "")
+    || getTranslatedField(drink, "origin", i18n.language, "");
+  const translatedAromaticNotes =
+    getTranslatedField(drink, "note_aromatiche", i18n.language, "")
+    || getTranslatedField(drink, "aromatic_notes", i18n.language, "");
+  const translatedPalate =
+    getTranslatedField(drink, "sensazioni_al_palato", i18n.language, "")
+    || getTranslatedField(drink, "palato", i18n.language, "");
   const imageUrl = drink.immagine || drink.immagine_url || drink.image || drink.img || null;
 
   const languageSuffixRegex = /_(it|en|es|de|fr|bg)$/i;
