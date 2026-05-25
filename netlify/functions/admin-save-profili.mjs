@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { removeEmptyFields } from "./dbSafety.mjs";
 
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -149,6 +150,10 @@ export async function handler(event) {
     return json(400, { ok: false, message: "Invalid mode" });
   }
 
+  if (mode === "delete") {
+    return json(403, { ok: false, message: "Physical delete disabled by safety policy" });
+  }
+
   if (mode !== "delete" && (!changes || typeof changes !== "object" || Array.isArray(changes))) {
     return json(400, { ok: false, message: "Missing changes payload" });
   }
@@ -157,22 +162,8 @@ export async function handler(event) {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 
-  if (mode === "delete") {
-    if (!id) {
-      return json(400, { ok: false, message: "Missing id" });
-    }
-
-    const deletedProfile = await deleteProfileRow(supabaseAdmin, id);
-    if (!deletedProfile.ok) {
-      return json(500, { ok: false, message: deletedProfile.error?.message || "Profile delete failed" });
-    }
-
-    await supabaseAdmin.auth.admin.deleteUser(id).catch(() => undefined);
-    return json(200, { ok: true, id, table: deletedProfile.tableName });
-  }
-
   const password = String(changes.password || "").trim();
-  const normalizedChanges = normalizeProfileChanges(changes);
+  const normalizedChanges = removeEmptyFields(normalizeProfileChanges(changes));
   const email = String(normalizedChanges.email || "").trim().toLowerCase();
 
   if (!email) {
@@ -207,6 +198,8 @@ export async function handler(event) {
       email,
     };
 
+    console.log("PATCH UPDATE:", profilePayload);
+
     const savedProfile = await upsertProfile(supabaseAdmin, profilePayload);
     if (savedProfile.error) {
       await supabaseAdmin.auth.admin.deleteUser(authResponse.data.user.id).catch(() => undefined);
@@ -240,6 +233,8 @@ export async function handler(event) {
     email,
     updated_at: new Date().toISOString(),
   };
+
+  console.log("PATCH UPDATE:", profilePayload);
 
   const savedProfile = await upsertProfile(supabaseAdmin, profilePayload);
   if (savedProfile.error) {

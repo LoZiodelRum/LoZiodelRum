@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useUser } from "../context/UserContext";
 import { AROMATIC_FAMILY_OPTIONS, TASTE_PROFILE_OPTIONS } from "../lib/cocktailOptionSets";
+import { removeEmptyFields } from "../utils/removeEmptyFields";
 
 const PREVIEW_BOX_SIZE = 280;
 
@@ -273,6 +274,10 @@ export default function AdminPanel() {
       });
     }
 
+    const sanitizedCleanData = removeEmptyFields(cleanData);
+    Object.keys(cleanData).forEach((key) => delete cleanData[key]);
+    Object.assign(cleanData, sanitizedCleanData);
+
     const changedData: any = {};
     if (!isCreating) {
       Object.keys(cleanData).forEach((k) => {
@@ -290,6 +295,10 @@ export default function AdminPanel() {
         setTimeout(() => setSaveStatus(null), 2000);
         return;
       }
+
+      const sanitizedChangedData = removeEmptyFields(changedData);
+      Object.keys(changedData).forEach((key) => delete changedData[key]);
+      Object.assign(changedData, sanitizedChangedData);
     }
 
     let error: any = null;
@@ -846,6 +855,9 @@ export default function AdminPanel() {
 
   async function eliminaElemento() {
     if (!selectedItem || !selectedTable || isCreating) return;
+
+    alert("Delete fisico disabilitato dalla safety policy. Usa soft-delete tramite update.");
+    return;
 
     const label =
       selectedItem?.nome ||

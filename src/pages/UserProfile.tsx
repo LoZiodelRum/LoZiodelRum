@@ -6,6 +6,7 @@ import {
   TASTE_PROFILE_OPTIONS,
   AROMATIC_FAMILY_OPTIONS,
 } from "../lib/cocktailOptionSets";
+import { removeEmptyFields } from "../utils/removeEmptyFields";
 
 // Opzioni per i menu a tendina (coerenti con la creazione cocktail)
 const GENERE_OPTIONS = ["Maschio", "Femmina", "Altro"];
@@ -64,9 +65,11 @@ export default function UserProfile() {
     const toSave = { ...form };
     delete toSave.id;
     delete toSave.created_at;
+    const safePatch = removeEmptyFields(toSave);
+    console.log("PATCH UPDATE:", safePatch);
     const { error } = await supabase
       .from("Profili")
-      .update(toSave)
+      .update(safePatch)
       .eq("id", id);
     if (error) {
       setError("Errore nel salvataggio: " + error.message);

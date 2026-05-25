@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { removeEmptyFields } from "./dbSafety";
 
 type ApiRequest = {
   method?: string;
@@ -152,6 +153,10 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     return res.status(400).json({ ok: false, message: "Invalid mode" });
   }
 
+  if (mode === "delete") {
+    return res.status(403).json({ ok: false, message: "Physical delete disabled by safety policy" });
+  }
+
   if (mode !== "delete" && (!changes || typeof changes !== "object" || Array.isArray(changes))) {
     return res.status(400).json({ ok: false, message: "Missing changes payload" });
   }
@@ -160,22 +165,8 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 
-  if (mode === "delete") {
-    if (!id) {
-      return res.status(400).json({ ok: false, message: "Missing id" });
-    }
-
-    const deletedProfile = await deleteProfileRow(supabaseAdmin, id);
-    if (!deletedProfile.ok) {
-      return res.status(500).json({ ok: false, message: deletedProfile.error?.message || "Profile delete failed" });
-    }
-
-    await supabaseAdmin.auth.admin.deleteUser(id).catch(() => undefined);
-    return res.status(200).json({ ok: true, id, table: deletedProfile.tableName });
-  }
-
   const password = String(changes.password || "").trim();
-  const normalizedChanges = normalizeProfileChanges(changes);
+  const normalizedChanges = removeEmptyFields(normalizeProfileChanges(changes));
   const email = String(normalizedChanges.email || "").trim().toLowerCase();
 
   if (!email) {
@@ -210,6 +201,8 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       email,
     };
 
+    console.log("PATCH UPDATE:", profilePayload);
+
     const savedProfile = await upsertProfile(supabaseAdmin, profilePayload);
     if (savedProfile.error) {
       await supabaseAdmin.auth.admin.deleteUser(authResponse.data.user.id).catch(() => undefined);
@@ -243,6 +236,8 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     email,
     updated_at: new Date().toISOString(),
   };
+
+  console.log("PATCH UPDATE:", profilePayload);
 
   const savedProfile = await upsertProfile(supabaseAdmin, profilePayload);
   if (savedProfile.error) {

@@ -6,6 +6,7 @@ import { useUser } from "../context/UserContext"; // ✅ AGGIUNTO
 import Navbar from "../components/Navbar";
 import { useTranslation } from "react-i18next";
 import { getTranslatedField } from "../utils/getTranslatedField";
+import { removeEmptyFields } from "../utils/removeEmptyFields";
 
 type Locale = {
   id: string;
@@ -152,6 +153,13 @@ export default function VenueDetail() {
     let error: any = null;
 
     const normalizedImage = normalizeImageUrl(form.image_url || form.image);
+    const safePatch = removeEmptyFields({
+      ...form,
+      image: normalizedImage,
+      image_url: normalizedImage,
+    });
+
+    console.log("PATCH UPDATE:", safePatch);
 
     if (adminPassword) {
       const isNetlifyHost = typeof window !== "undefined" && window.location.hostname.includes("netlify");
@@ -172,11 +180,7 @@ export default function VenueDetail() {
             body: JSON.stringify({
               mode: "update",
               id: form.id,
-              changes: {
-                ...form,
-                image: normalizedImage,
-                image_url: normalizedImage,
-              },
+              changes: safePatch,
             }),
           });
 
@@ -203,11 +207,7 @@ export default function VenueDetail() {
     } else {
       const result = await supabase
         .from("Locali")
-        .update({
-          ...form,
-          image: normalizedImage,
-          image_url: normalizedImage,
-        })
+        .update(safePatch)
         .eq("id", form.id);
 
       error = result.error;
@@ -224,8 +224,16 @@ export default function VenueDetail() {
   }
 
   async function handleDelete() {
+    if (!isAdmin) {
+      alert("Operazione consentita solo ad admin");
+      return;
+    }
+
     const ok = confirm("Eliminare locale?");
     if (!ok) return;
+
+    const confirmToken = prompt("Digita CONFIRM_DELETE per confermare");
+    if (confirmToken !== "CONFIRM_DELETE") return;
 
     const adminPassword =
       localStorage.getItem("adminPassword") ||
@@ -239,7 +247,14 @@ export default function VenueDetail() {
         "/.netlify/functions/admin-save-locale",
       ];
 
-      let lastMessage = "Eliminazione locale fallita lato server.";
+      let lastMessage = "Soft delete locale fallita lato server.";
+      const softDeletePatch = {
+        status: "deleted",
+        attivo: false,
+        deleted_at: new Date().toISOString(),
+      };
+
+      console.log("PATCH UPDATE:", softDeletePatch);
 
       for (const endpoint of endpoints) {
         try {
@@ -250,8 +265,9 @@ export default function VenueDetail() {
               "x-admin-password": adminPassword,
             },
             body: JSON.stringify({
-              mode: "delete",
+              mode: "update",
               id: form.id,
+              changes: softDeletePatch,
             }),
           });
 
@@ -271,7 +287,14 @@ export default function VenueDetail() {
         error = { message: lastMessage };
       }
     } else {
-      const result = await supabase.from("Locali").delete().eq("id", form.id);
+      const softDeletePatch = {
+        status: "deleted",
+        attivo: false,
+        deleted_at: new Date().toISOString(),
+      };
+
+      console.log("PATCH UPDATE:", softDeletePatch);
+      const result = await supabase.from("Locali").update(softDeletePatch).eq("id", form.id);
       error = result.error;
     }
 

@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { removeEmptyFields } from "./dbSafety";
 
 type ApiRequest = {
   method?: string;
@@ -37,6 +38,10 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     return res.status(400).json({ ok: false, message: "Invalid mode" });
   }
 
+  if (mode === "delete") {
+    return res.status(403).json({ ok: false, message: "Physical delete disabled by safety policy" });
+  }
+
   if (mode !== "delete" && (!changes || typeof changes !== "object" || Array.isArray(changes))) {
     return res.status(400).json({ ok: false, message: "Missing changes payload" });
   }
@@ -55,24 +60,25 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
 
   for (const tableName of tableCandidates) {
     try {
+      const safeChanges = removeEmptyFields({ ...(changes || {}) });
+
       if (mode === "create") {
-        const { data, error } = await supabaseAdmin.from(tableName).insert([changes]).select("id");
+        const { data, error } = await supabaseAdmin.from(tableName).insert([safeChanges]).select("id");
         if (!error && data && data.length > 0) {
           return res.status(200).json({ ok: true, table: tableName, id: data[0].id });
         }
         lastError = error?.message || `No row inserted into ${tableName}`;
       } else if (mode === "update") {
-        const { data, error } = await supabaseAdmin.from(tableName).update(changes).eq("id", id).select("id");
+        if (Object.keys(safeChanges).length === 0) {
+          return res.status(200).json({ ok: true, table: tableName, id, noop: true });
+        }
+
+        console.log("PATCH UPDATE:", safeChanges);
+        const { data, error } = await supabaseAdmin.from(tableName).update(safeChanges).eq("id", id).select("id");
         if (!error && data && data.length > 0) {
           return res.status(200).json({ ok: true, table: tableName, id: data[0].id });
         }
         lastError = error?.message || `No row updated in ${tableName}`;
-      } else {
-        const { data, error } = await supabaseAdmin.from(tableName).delete().eq("id", id).select("id");
-        if (!error && data && data.length > 0) {
-          return res.status(200).json({ ok: true, table: tableName, id: data[0].id });
-        }
-        lastError = error?.message || `No row deleted in ${tableName}`;
       }
     } catch (e: any) {
       lastError = e?.message || String(e);

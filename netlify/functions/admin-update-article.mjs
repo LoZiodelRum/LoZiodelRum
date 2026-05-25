@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { removeEmptyFields } from "./dbSafety.mjs";
 
 const SUPABASE_URL = process.env.SUPABASE_URL || process.env.VITE_SUPABASE_URL;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
@@ -40,11 +41,19 @@ export async function handler(event) {
   const id = parsed?.id;
   const slug = typeof parsed?.slug === "string" ? parsed.slug.trim() : "";
   const changes = parsed?.changes;
+  const safeChanges = removeEmptyFields({ ...(changes || {}) });
 
   if (!changes || typeof changes !== "object" || Array.isArray(changes)) {
     return {
       statusCode: 400,
       body: JSON.stringify({ ok: false, message: "Missing changes payload" }),
+    };
+  }
+
+  if (Object.keys(safeChanges).length === 0) {
+    return {
+      statusCode: 200,
+      body: JSON.stringify({ ok: true, noop: true }),
     };
   }
 
@@ -60,7 +69,8 @@ export async function handler(event) {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 
-  let query = supabaseAdmin.from("articoli").update(changes);
+  console.log("PATCH UPDATE:", safeChanges);
+  let query = supabaseAdmin.from("articoli").update(safeChanges);
   query = hasValidId ? query.eq("id", id) : query.eq("slug", slug);
 
   const { data, error } = await query.select("id,slug");

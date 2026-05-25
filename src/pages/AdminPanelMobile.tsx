@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import type { CSSProperties } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useUser } from "../context/UserContext";
+import { removeEmptyFields } from "../utils/removeEmptyFields";
 
 export default function AdminPanelMobile() {
   const { loading, isAdmin } = useUser();
@@ -333,7 +334,7 @@ Object.keys(selectedItem).forEach((key) => {
 });
     try {
       const tableName = getTableName();
-      const payload = { ...selectedItem };
+      const payload = removeEmptyFields({ ...selectedItem });
 
       if (tableName === "Locali") {
         const normalizeCoordinate = (value: any) => {
@@ -356,6 +357,8 @@ if (isCreating) {
   delete payload.ultimo_accesso;
 }
 
+      console.log("PATCH UPDATE:", payload);
+
       if (!isCreating && payload.id) {
         const { error } = await supabase.from(tableName).update(payload).eq("id", payload.id);
         if (error) throw error;
@@ -375,6 +378,9 @@ if (isCreating) {
 
   async function eliminaElemento() {
     if (!selectedItem?.id || !selectedTable) return;
+
+    alert("Delete fisico disabilitato dalla safety policy. Usa soft-delete lato server.");
+    return;
 
     const ok = window.confirm("Vuoi eliminare questo elemento?");
     if (!ok) return;

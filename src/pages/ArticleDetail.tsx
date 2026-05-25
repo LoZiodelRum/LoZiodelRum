@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import { SUPABASE_ANON_KEY, SUPABASE_URL } from "../lib/supabaseClient";
 import { getTranslatedField } from "../utils/getTranslatedField";
 import { buildArticleLanguagePatch } from "../utils/articleAutoTranslate";
+import { removeEmptyFields } from "../utils/removeEmptyFields";
 
 import { hero, overlay, heroBox, badge, title, subtitle, meta, articleWrapper } from "./articleDetailStyles";
 
@@ -166,12 +167,16 @@ export default function ArticleDetail() {
 
   // ✅ SAVE
   async function handleSave() {
+    const safePatch = removeEmptyFields({
+      ...form,
+      immagine: form.immagine,
+    });
+
+    console.log("PATCH UPDATE:", safePatch);
+
     const { error } = await supabase
       .from("articoli")
-      .update({
-        ...form,
-        immagine: form.immagine,
-      })
+      .update(safePatch)
       .eq("id", form.id);
 
     if (error) {
@@ -186,10 +191,31 @@ export default function ArticleDetail() {
 
   // ✅ DELETE
   async function handleDelete() {
+    if (!isAdmin) {
+      alert("Operazione consentita solo ad admin");
+      return;
+    }
+
     const ok = confirm(t("deleteArticleConfirm"));
     if (!ok) return;
 
-    await supabase.from("articoli").delete().eq("id", form.id);
+    const confirmToken = prompt("Digita CONFIRM_DELETE per confermare");
+    if (confirmToken !== "CONFIRM_DELETE") return;
+
+    const softDeletePatch = {
+      pubblicato: false,
+      deleted_at: new Date().toISOString(),
+      status: "deleted",
+    };
+
+    console.log("PATCH UPDATE:", softDeletePatch);
+
+    const { error } = await supabase.from("articoli").update(softDeletePatch).eq("id", form.id);
+
+    if (error) {
+      alert(t("saveError"));
+      return;
+    }
 
     window.location.href = "/magazine";
   }

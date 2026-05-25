@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { removeEmptyFields } from "./dbSafety";
 
 type ApiRequest = {
   method?: string;
@@ -36,6 +37,10 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
 
   if (!mode || !["create", "update", "delete"].includes(mode)) {
     return res.status(400).json({ ok: false, message: "Invalid mode" });
+  }
+
+  if (mode === "delete") {
+    return res.status(403).json({ ok: false, message: "Physical delete disabled by safety policy" });
   }
 
   if (mode !== "delete" && (!changes || typeof changes !== "object" || Array.isArray(changes))) {
@@ -110,6 +115,14 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
             }
           }
         }
+
+        const cleaned = removeEmptyFields(safeChanges as Record<string, any>);
+        Object.keys(safeChanges).forEach((key) => {
+          if (!(key in cleaned)) {
+            delete (safeChanges as Record<string, any>)[key];
+          }
+        });
+        Object.assign(safeChanges, cleaned);
       }
       if (mode === "create") {
         while (true) {
@@ -134,6 +147,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
             return res.status(200).json({ ok: true, table: tableName, id, noop: true });
           }
 
+          console.log("PATCH UPDATE:", safeChanges);
           const { data, error } = await supabaseAdmin.from(tableName).update(safeChanges).eq("id", id).select("id");
           if (!error && data && data.length > 0) {
             return res.status(200).json({ ok: true, table: tableName, id: data[0].id });
@@ -159,15 +173,6 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
             return res.status(500).json({ ok: false, message: lastError });
           }
           break;
-        }
-      } else {
-        const { data, error } = await supabaseAdmin.from(tableName).delete().eq("id", id).select("id");
-        if (!error && data && data.length > 0) {
-          return res.status(200).json({ ok: true, table: tableName, id: data[0].id });
-        }
-        lastError = error?.message || `No row deleted in ${tableName}`;
-        if (!isMissingTableError(lastError)) {
-          return res.status(500).json({ ok: false, message: lastError });
         }
       }
     } catch (e: any) {

@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { removeEmptyFields } from "./dbSafety";
 
 type ApiRequest = {
   method?: string;
@@ -32,9 +33,14 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
   const id = req.body?.id;
   const slug = typeof req.body?.slug === "string" ? req.body.slug.trim() : "";
   const changes = req.body?.changes;
+  const safeChanges = removeEmptyFields({ ...(changes || {}) });
 
   if (!changes || typeof changes !== "object" || Array.isArray(changes)) {
     return res.status(400).json({ ok: false, message: "Missing changes payload" });
+  }
+
+  if (Object.keys(safeChanges).length === 0) {
+    return res.status(200).json({ ok: true, noop: true });
   }
 
   const hasValidId = id !== undefined && id !== null && String(id).trim() !== "";
@@ -46,7 +52,8 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     auth: { persistSession: false, autoRefreshToken: false },
   });
 
-  let query = supabaseAdmin.from("articoli").update(changes);
+  console.log("PATCH UPDATE:", safeChanges);
+  let query = supabaseAdmin.from("articoli").update(safeChanges);
   query = hasValidId ? query.eq("id", id) : query.eq("slug", slug);
 
   const { data, error } = await query.select("id,slug");
