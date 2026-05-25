@@ -35,42 +35,92 @@ export default function RegisterModal({ open, onClose }: Props) {
     setLoading(true);
     setMsg("");
     const normalizedEmail = email.trim().toLowerCase();
-    const { data, error } = await supabase.auth.signUp({
+    const payload = {
+      nome: nome.trim(),
+      cognome: cognome.trim(),
+      username: username.trim(),
+      telefono: telefono.trim() || null,
       email: normalizedEmail,
       password,
-    });
+      ruolo: "utente",
+    };
 
-    if (error) {
-      setMsg(error.message || "Errore registrazione");
-      setLoading(false);
-      return;
+    const endpoints = ["/api/auth-signup", "/.netlify/functions/auth-signup"];
+    let endpointOk = false;
+    let lastEndpointMessage = "";
+
+    for (const endpoint of endpoints) {
+      try {
+        const response = await fetch(endpoint, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(payload),
+        });
+
+        const body = await response.json().catch(() => ({}));
+        if (response.ok && body?.ok) {
+          endpointOk = true;
+          break;
+        }
+
+        lastEndpointMessage = String(body?.message || "");
+      } catch (error: any) {
+        lastEndpointMessage = String(error?.message || "");
+      }
     }
 
-    const userId = data.user?.id;
-    const sessionUserId = data.session?.user?.id;
-    const profileUserId = sessionUserId || userId;
+    if (!endpointOk) {
+      const loweredMessage = lastEndpointMessage.toLowerCase();
+      if (loweredMessage.includes("gia registrata") || loweredMessage.includes("already")) {
+        setMsg("Email gia registrata");
+      } else {
+        const { data, error } = await supabase.auth.signUp({
+          email: normalizedEmail,
+          password,
+        });
 
-    if (profileUserId) {
-      const { error: profileError } = await supabase
-        .from("Profili")
-        .upsert(
-          [
-            {
-              id: profileUserId,
-              nome: nome.trim(),
-              cognome: cognome.trim(),
-              username: username.trim(),
-              email: normalizedEmail,
-              telefono: telefono.trim() || null,
-              ruolo: "utente",
-              status: "attivo",
-            },
-          ],
-          { onConflict: "id" }
-        );
+        if (error) {
+          setMsg(error.message || "Errore registrazione");
+          setLoading(false);
+          return;
+        }
 
-      if (profileError) {
-        setMsg(profileError.message || "Profilo non creato");
+        const userId = data.user?.id;
+        const sessionUserId = data.session?.user?.id;
+        const profileUserId = sessionUserId || userId;
+
+        if (profileUserId) {
+          const { error: profileError } = await supabase
+            .from("Profili")
+            .upsert(
+              [
+                {
+                  id: profileUserId,
+                  nome: nome.trim(),
+                  cognome: cognome.trim(),
+                  username: username.trim(),
+                  email: normalizedEmail,
+                  telefono: telefono.trim() || null,
+                  ruolo: "utente",
+                  status: "attivo",
+                },
+              ],
+              { onConflict: "id" }
+            );
+
+          if (profileError) {
+            setMsg(profileError.message || "Profilo non creato");
+            setLoading(false);
+            return;
+          }
+        }
+      }
+
+      if (lastEndpointMessage && !lastEndpointMessage.toLowerCase().includes("gia registrata") && !lastEndpointMessage.toLowerCase().includes("already")) {
+        setMsg(lastEndpointMessage || "Errore registrazione");
+      }
+
+      if (lastEndpointMessage.toLowerCase().includes("gia registrata") || lastEndpointMessage.toLowerCase().includes("already")) {
         setLoading(false);
         return;
       }

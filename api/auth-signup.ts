@@ -162,12 +162,39 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     if (error) {
       const message = error.message || "Errore in registrazione";
       if (message.toLowerCase().includes("already") || message.toLowerCase().includes("exists")) {
-        return res.status(409).json({ ok: false, message: "Email gia registrata" });
+        const cleaned = await cleanupGhostAuthUserByEmail(supabaseAdmin, email);
+        if (cleaned) {
+          const retry = await supabaseAdmin.auth.admin.createUser({
+            email,
+            password,
+            email_confirm: true,
+            user_metadata: {
+              nome,
+              cognome,
+              username,
+              telefono,
+              ruolo,
+            },
+          });
+
+          if (!retry.error && retry.data?.user?.id) {
+            userId = retry.data.user.id;
+          } else if (retry.error) {
+            return res.status(400).json({ ok: false, message: retry.error.message || message });
+          }
+        }
+
+        if (!userId) {
+          return res.status(409).json({ ok: false, message: "Email gia registrata" });
+        }
+      } else {
+        return res.status(400).json({ ok: false, message });
       }
-      return res.status(400).json({ ok: false, message });
     }
 
-    userId = (data as any)?.user?.id || null;
+    if (!userId) {
+      userId = (data as any)?.user?.id || null;
+    }
   } else {
     const { data, error } = await supabaseAdmin.auth.admin.generateLink({
       type: "signup",
