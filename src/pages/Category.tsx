@@ -5,6 +5,7 @@ import { supabase } from "../lib/supabaseClient";
 import { useParams, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { getTranslatedField } from "../utils/getTranslatedField";
+import { normalizeText, safeArray, slugifySafe } from "../utils/runtime";
 
 type Item = {
   id: string;
@@ -15,7 +16,7 @@ type Item = {
 
 export default function Category() {
   const { categoria, tipo } = useParams();
-  const selectedType = categoria || tipo;
+  const selectedType = slugifySafe(categoria || tipo, { fallback: "cocktail" });
   const navigate = useNavigate();
   const { t, i18n } = useTranslation("drink");
 
@@ -38,7 +39,7 @@ export default function Category() {
   }
 
   function normalize(value: any) {
-    return String(value || "").toLowerCase().trim();
+    return normalizeText(value);
   }
 
   function distillatoCategoryText(d: any) {
@@ -76,10 +77,12 @@ export default function Category() {
   function rebuildItems(type: string | undefined, cocktails: any[], distillati: any[]) {
     setItems([]);
 
-    const currentType = (type || "cocktail").toLowerCase();
+    const currentType = slugifySafe(type || "cocktail", { fallback: "cocktail" });
+    const safeCocktails = safeArray<any>(cocktails);
+    const safeDistillati = safeArray<any>(distillati);
 
     if (currentType === "cocktail") {
-      const sorted = [...cocktails].sort((a: any, b: any) =>
+      const sorted = [...safeCocktails].sort((a: any, b: any) =>
         getTranslatedField(a, "nome", i18n.language, "-").localeCompare(getTranslatedField(b, "nome", i18n.language, "-"))
       );
 
@@ -94,7 +97,7 @@ export default function Category() {
     }
 
     if (currentType === "rum" || currentType === "whisky" || currentType === "altri" || currentType === "distillati") {
-      const mappedDistillati = distillati.map((d: any) => ({
+      const mappedDistillati = safeDistillati.map((d: any) => ({
         id: d.id,
         nome: getTranslatedField(d, "nome", i18n.language, t("drink.fallbacks.distillatoName")),
         marca: d.marca || "",
@@ -102,7 +105,7 @@ export default function Category() {
         categoria_testo: distillatoCategoryText(d),
       }));
 
-      const mappedCocktailDistillati = cocktails
+      const mappedCocktailDistillati = safeCocktails
         .filter((record: any) => isDistillatoLike(record))
         .map((d: any) => ({
           id: d.id,
@@ -170,7 +173,7 @@ export default function Category() {
       return;
     }
 
-    const sorted = [...cocktails].sort((a: any, b: any) =>
+    const sorted = [...safeCocktails].sort((a: any, b: any) =>
       getTranslatedField(a, "nome", i18n.language, "-").localeCompare(getTranslatedField(b, "nome", i18n.language, "-"))
     );
 

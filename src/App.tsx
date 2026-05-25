@@ -1,6 +1,7 @@
 import React from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import MainLayout from "./layouts/MainLayout";
+import RuntimeErrorBoundary from "./components/RuntimeErrorBoundary";
 // Scroll to top ad ogni cambio pagina
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -53,15 +54,16 @@ export default function App() {
   return (
     <>
       <ScrollToTop />
-      <Routes>
-        {/* AUTH SENZA NAVBAR (fullscreen) */}
-        <Route path="/" element={<Auth />} />
-        <Route path="/login" element={<Auth />} />
-        <Route path="/register" element={<Auth />} />
-        {/* Tutte le altre pagine wrappate da MainLayout che contiene la Navbar */}
-        <Route element={<MainLayout />}>
-          <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
-          <Route path="/mappa" element={<ProtectedRoute><MapPage /></ProtectedRoute>} />
+      <RuntimeErrorBoundary>
+        <Routes>
+          {/* AUTH SENZA NAVBAR (fullscreen) */}
+          <Route path="/" element={<Auth />} />
+          <Route path="/login" element={<Auth />} />
+          <Route path="/register" element={<Auth />} />
+          {/* Tutte le altre pagine wrappate da MainLayout che contiene la Navbar */}
+          <Route element={<MainLayout />}>
+            <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
+            <Route path="/mappa" element={<ProtectedRoute><MapPage /></ProtectedRoute>} />
 
           {/* DRINK */}
           <Route path="/drink" element={<ProtectedRoute><Drink /></ProtectedRoute>} />
@@ -119,9 +121,10 @@ export default function App() {
           <Route path="/venues" element={<ProtectedRoute><Venues /></ProtectedRoute>} />
           <Route path="/crea" element={<ProtectedRoute><Crea /></ProtectedRoute>} />
           <Route path="/admin" element={<ProtectedRoute><AdminPanel /></ProtectedRoute>} />
-          <Route path="/venue/:id" element={<ProtectedRoute><VenueDetail /></ProtectedRoute>} />
-        </Route>
-      </Routes>
+            <Route path="/venue/:id" element={<ProtectedRoute><VenueDetail /></ProtectedRoute>} />
+          </Route>
+        </Routes>
+      </RuntimeErrorBoundary>
     </>
   );
 }

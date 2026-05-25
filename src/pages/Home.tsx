@@ -8,6 +8,7 @@ import { useTranslation } from "react-i18next";
 import { supabase } from "../lib/supabaseClient";
 import { useUser } from "../context/UserContext";
 import { getTranslatedField } from "../utils/getTranslatedField";
+import { sanitizeUpdateData } from "../utils/runtime";
 
 type Locale = {
   id: string;
@@ -127,12 +128,12 @@ export default function Home() {
       return;
     }
 
-    const changes = {
+    const changes = sanitizeUpdateData({
       nome: (localeDraft.nome || "").trim(),
       citta: (localeDraft.citta || "").trim(),
       descrizione: (localeDraft.descrizione || "").trim() || null,
       descrizione_completa: (localeDraft.descrizione_completa || "").trim() || null,
-    };
+    });
 
     if (!changes.nome) {
       alert(t("home.alerts.localeNameRequired"));
