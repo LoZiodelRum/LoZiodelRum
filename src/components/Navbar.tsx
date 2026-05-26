@@ -630,10 +630,10 @@ export default function Navbar() {
 
         <Link
           className="mobile-menu-item"
-          to="/community"
+          to="/lounge"
           onClick={closeMobileMenu}
           style={{
-            ...linkStyle("/community"),
+            ...linkStyle("/lounge"),
             padding: "13px 10px",
             borderRadius: "10px",
             marginBottom: "4px",
@@ -642,7 +642,7 @@ export default function Navbar() {
             WebkitTapHighlightColor: "transparent",
           }}
         >
-            {t("community")}
+            Lounge
         </Link>
 
         <Link
