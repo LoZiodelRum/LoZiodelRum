@@ -108,6 +108,62 @@ const reservations: ReservationItem[] = [
   },
 ];
 
+function titleCase(value: string) {
+  return value
+    .split(/[_\s-]+/)
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1).toLowerCase())
+    .join(" ");
+}
+
+function buildDynamicBadges(profile: ProfileRecord | null, memberRole: string) {
+  const items: ChipItem[] = [];
+
+  if (profile?.distillato_preferito) {
+    const spirit = String(profile.distillato_preferito).toLowerCase();
+    if (spirit.includes("rum")) {
+      items.push({ id: "rum", label: "Rum Explorer", accent: "#ff7f3f", icon: Medal, to: "/profilo/badge" });
+    }
+    if (spirit.includes("whisk")) {
+      items.push({ id: "whisky", label: "Whisky Hunter", accent: "#f4b11b", icon: Crown, to: "/profilo/badge" });
+    }
+  }
+
+  if (profile?.cocktail_preferito) {
+    items.push({ id: "cocktail", label: "Cocktail Lover", accent: "#d65bff", icon: GlassWater, to: "/profilo/badge" });
+  }
+
+  if (String(profile?.status || "").toLowerCase().includes("premium")) {
+    items.push({ id: "premium", label: "Premium Member", accent: "#21ebd6", icon: Diamond, to: "/profilo/badge" });
+  }
+
+  if (memberRole.toLowerCase().includes("founder") || memberRole.toLowerCase().includes("admin")) {
+    items.push({ id: "founder", label: "Founder Member", accent: "#5e77ff", icon: Crown, to: "/profilo/badge" });
+  }
+
+  const deduped = items.filter((item, index, array) => array.findIndex((entry) => entry.label === item.label) === index);
+  return deduped.length ? deduped : badgeItems;
+}
+
+function buildTasteProfile(profile: ProfileRecord | null) {
+  const derived: ChipItem[] = [];
+  const taste = String(profile?.profilo_gustativo_preferito || "").trim();
+  const spirit = String(profile?.distillato_preferito || "").trim();
+  const cocktail = String(profile?.cocktail_preferito || "").trim();
+
+  if (taste) {
+    derived.push({ id: "taste-main", label: titleCase(taste), accent: "#d36cff", icon: Sparkles, to: "/profilo/preferenze" });
+  }
+  if (spirit) {
+    derived.push({ id: "taste-spirit", label: titleCase(spirit), accent: "#f0b83b", icon: Wine, to: "/profilo/preferenze" });
+  }
+  if (cocktail) {
+    derived.push({ id: "taste-cocktail", label: titleCase(cocktail), accent: "#ff933d", icon: GlassWater, to: "/profilo/preferenze" });
+  }
+
+  return derived.length ? derived : tasteItems;
+}
+
 function useProfileData() {
   const { user, role } = useUser();
   const [profile, setProfile] = React.useState<ProfileRecord | null>(null);
@@ -155,6 +211,14 @@ function useProfileData() {
 
   const memberRole = normalizeRoleLabel(String(profile?.ruolo || role || metadata.ruolo || "Founding Member"));
   const avatarUrl = String(profile?.avatar_url || metadata.avatar_url || metadata.picture || "").trim() || null;
+  const bio = String(profile?.bio_breve || metadata.bio_breve || metadata.bio || "").trim() || "Colleziona esperienze premium, lascia recensioni e costruisce il proprio percorso DrinkWise.";
+  const dynamicBadges = buildDynamicBadges(profile, memberRole);
+  const tasteProfile = buildTasteProfile(profile);
+  const reservationItems = reservations.map((item, index) => ({
+    ...item,
+    city: String(metadata.citta_locale || item.city),
+    time: index === 0 && profile?.numero_cocktail_creati ? "21:00" : item.time,
+  }));
 
   return {
     user,
@@ -164,8 +228,12 @@ function useProfileData() {
     avatarUrl,
     reviewCount: Number(profile?.numero_recensioni || 92),
     venuesCount: Number(profile?.numero_locali_visitati || 128),
-    eventsCount: Number(profile?.numero_cocktail_creati || 36),
+    eventsCount: Number(profile?.numero_cocktail_creati || reservationItems.length || 36),
     bottlesCount: 18,
+    bio,
+    dynamicBadges,
+    tasteProfile,
+    reservationItems,
   };
 }
 
@@ -482,7 +550,20 @@ function ProfileStyles() {
 
 export default function ProfilePage() {
   const navigate = useNavigate();
-  const { displayName, memberRole, avatarUrl, reviewCount, venuesCount, eventsCount, bottlesCount, profile } = useProfileData();
+  const {
+    displayName,
+    memberRole,
+    avatarUrl,
+    reviewCount,
+    venuesCount,
+    eventsCount,
+    bottlesCount,
+    profile,
+    bio,
+    dynamicBadges,
+    tasteProfile,
+    reservationItems,
+  } = useProfileData();
   const initials = displayName
     .split(/\s+/)
     .filter(Boolean)
@@ -536,6 +617,9 @@ export default function ProfilePage() {
                 <div className="profile-tag">
                   <Star size={18} strokeWidth={2} /> {tasteLabel}
                 </div>
+                <p style={{ margin: "14px 0 0", color: "rgba(226,236,255,0.78)", fontSize: "clamp(14px, 1.8vw, 18px)", lineHeight: 1.5, maxWidth: 560 }}>
+                  {bio}
+                </p>
               </div>
 
               <div className="profile-hero-art" aria-hidden="true" />
@@ -568,7 +652,7 @@ export default function ProfilePage() {
             <button className="profile-link-btn" onClick={() => navigate("/profilo/badge")}>Vedi tutti <ChevronRight size={18} strokeWidth={2} /></button>
           </div>
           <div className="profile-chip-row">
-            {badgeItems.map((item) => <ProfileChip key={item.id} item={item} />)}
+            {dynamicBadges.map((item) => <ProfileChip key={item.id} item={item} />)}
           </div>
         </SectionCard>
 
@@ -578,7 +662,7 @@ export default function ProfilePage() {
             <button className="profile-link-btn" onClick={() => navigate("/profilo/preferenze")}>Modifica gusti <ChevronRight size={18} strokeWidth={2} /></button>
           </div>
           <div className="profile-chip-row">
-            {tasteItems.map((item) => <ProfileChip key={item.id} item={item} />)}
+            {tasteProfile.map((item) => <ProfileChip key={item.id} item={item} />)}
           </div>
         </SectionCard>
 
@@ -600,7 +684,7 @@ export default function ProfilePage() {
             <button className="profile-link-btn" onClick={() => navigate("/eventi")}>Vedi tutti <ChevronRight size={18} strokeWidth={2} /></button>
           </div>
           <div className="reservation-list">
-            {reservations.map((item) => <ReservationCard key={item.id} item={item} />)}
+            {reservationItems.map((item) => <ReservationCard key={item.id} item={item} />)}
           </div>
         </SectionCard>
 

@@ -15,9 +15,9 @@ type LoungeNavItem = {
 };
 
 const items: LoungeNavItem[] = [
+  { label: "Home", to: "/lounge", icon: House, match: "/lounge" },
   { label: "Discover", to: "/discover", icon: Compass, match: "/discover" },
   { label: "Profilo", to: "/profilo", icon: UserCircle2, match: "/profilo" },
-  { label: "Home", to: "/lounge", icon: House, match: "/lounge" },
   { label: "Eventi", to: "/eventi", icon: CalendarDays, match: "/eventi" },
 ];
 
