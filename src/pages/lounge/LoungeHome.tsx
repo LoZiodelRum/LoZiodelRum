@@ -74,9 +74,9 @@ export default function LoungeHome() {
   return (
     <>
       <LoungeNavigation
-        leftTo="/discover"
+        leftTo="/profilo"
         rightTo="/eventi"
-        leftAriaLabel="Vai a Discover"
+        leftAriaLabel="Vai al profilo"
         rightAriaLabel="Vai agli eventi"
       />
       <div style={pageStyle}>

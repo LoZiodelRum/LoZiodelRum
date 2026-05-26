@@ -152,9 +152,9 @@ export default function DiscoverPage() {
     >
       <LoungeNavigation
         leftTo="/eventi"
-        rightTo="/lounge"
+        rightTo="/profilo"
         leftAriaLabel="Vai agli eventi"
-        rightAriaLabel="Vai alla Lounge"
+        rightAriaLabel="Vai al profilo"
       />
 
       <style>{`

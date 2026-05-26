@@ -3,7 +3,7 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import MainLayout from "./layouts/MainLayout";
 import RuntimeErrorBoundary from "./components/RuntimeErrorBoundary";
 
-// Scroll to top ad ogni cambio pagina
+// Scroll automatico top pagina
 function ScrollToTop() {
   const { pathname } = useLocation();
 
@@ -14,41 +14,56 @@ function ScrollToTop() {
   return null;
 }
 
+// PAGINE BASE
 import Home from "./pages/Home";
 import Auth from "./pages/Auth";
 import ProtectedRoute from "./pages/ProtectedRoute";
 import MapPage from "./pages/MapPage";
+
+// DRINK
 import Drink from "./pages/Drink";
 import DrinkDetail from "./pages/DrinkDetail";
+
+// VINI
 import Vini from "./pages/Vini";
 import VinoDetail from "./pages/VinoDetail";
-import Magazine from "./pages/Magazine";
 import CategoryVini from "./pages/CategoryVini";
-import Category from "./pages/Category";
+
+// MAGAZINE
+import Magazine from "./pages/Magazine";
 import ArticleDetail from "./pages/ArticleDetail";
 
-// 🔥 NUOVE PAGINE
+// CATEGORIE
+import Category from "./pages/Category";
+
+// NUOVE PAGINE
 import EventiPage from "./pages/EventiPage";
 import LocaliVicini from "./pages/LocaliVicini";
 import DiscoverPage from "./pages/DiscoverPage";
+import ProfilePage, {
+  EditProfilePage,
+  EventDetailPlaceholderPage,
+  ProfileBadgesPage,
+  ProfilePreferencesPage,
+} from "./pages/ProfilePage";
 
-// 🔥 LOUNGE
+// LOUNGE
 import LoungeShell from "./pages/lounge/LoungeShell";
 
+// ALTRE PAGINE
 import Crea from "./pages/Crea";
 import AdminPanel from "./pages/AdminPanel";
 import Bancone from "./pages/Bancone";
 import VenueDetail from "./pages/VenueDetail";
 import Venues from "./pages/Venues";
 
-// 🔥 BARETTO
+// BARETTO
 import Baretto from "./pages/Baretto";
 import BarettoMobile from "./pages/BarettoMobile";
 import BarettoChat from "./pages/BarettoChat";
 
 export default function App() {
-
-  // 🔥 FIX SSR / VERCEL
+  // FIX SSR / MOBILE
   const [isMobile, setIsMobile] = React.useState(false);
 
   React.useEffect(() => {
@@ -70,7 +85,7 @@ export default function App() {
       <RuntimeErrorBoundary>
         <Routes>
 
-          {/* AUTH SENZA NAVBAR */}
+          {/* AUTH */}
           <Route path="/" element={<Auth />} />
           <Route path="/login" element={<Auth />} />
           <Route path="/register" element={<Auth />} />
@@ -84,6 +99,62 @@ export default function App() {
               element={
                 <ProtectedRoute>
                   <Home />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* DISCOVER */}
+            <Route
+              path="/discover"
+              element={
+                <ProtectedRoute>
+                  <DiscoverPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* PROFILO */}
+            <Route
+              path="/profilo"
+              element={
+                <ProtectedRoute>
+                  <ProfilePage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/profilo/preferenze"
+              element={
+                <ProtectedRoute>
+                  <ProfilePreferencesPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/profilo/badge"
+              element={
+                <ProtectedRoute>
+                  <ProfileBadgesPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/modifica-profilo"
+              element={
+                <ProtectedRoute>
+                  <EditProfilePage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/evento/:id"
+              element={
+                <ProtectedRoute>
+                  <EventDetailPlaceholderPage />
                 </ProtectedRoute>
               }
             />
@@ -174,7 +245,7 @@ export default function App() {
               }
             />
 
-            {/* COMMUNITY */}
+            {/* COMMUNITY / LOUNGE */}
             <Route
               path="/community"
               element={
@@ -184,7 +255,6 @@ export default function App() {
               }
             />
 
-            {/* LOUNGE */}
             <Route
               path="/lounge"
               element={
@@ -200,16 +270,6 @@ export default function App() {
               element={
                 <ProtectedRoute>
                   <EventiPage />
-                </ProtectedRoute>
-              }
-            />
-
-            {/* DISCOVER */}
-            <Route
-              path="/discover"
-              element={
-                <ProtectedRoute>
-                  <DiscoverPage />
                 </ProtectedRoute>
               }
             />
@@ -244,7 +304,7 @@ export default function App() {
               }
             />
 
-            {/* CHAT */}
+            {/* CHAT BARETTO */}
             <Route
               path="/baretto/chat/:room"
               element={
