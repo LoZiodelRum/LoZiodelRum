@@ -23,6 +23,52 @@ export default function LoungeHome() {
     overflow: "hidden",
   };
 
+  const topCards = [
+    {
+      value: "0",
+      title: "Locali Premium",
+      color: "#ff6b35",
+      path: "/locali",
+    },
+    {
+      value: "0",
+      title: "Eventi Stasera",
+      color: "#5b5fff",
+      path: "/eventi",
+    },
+    {
+      value: "0",
+      title: "Nuove Recensioni",
+      color: "#22e6c9",
+      path: "/recensioni",
+    },
+    {
+      value: "0",
+      title: "Nuovi Cocktail",
+      color: "#b05cff",
+      path: "/drink",
+    },
+  ];
+
+  const openNearbyBars = () => {
+    if (!navigator.geolocation) {
+      alert("Geolocalizzazione non supportata");
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const lat = position.coords.latitude;
+        const lng = position.coords.longitude;
+
+        navigate(`/locali-vicini?lat=${lat}&lng=${lng}`);
+      },
+      () => {
+        alert("Impossibile ottenere la posizione");
+      }
+    );
+  };
+
   return (
     <div style={pageStyle}>
       <div
@@ -42,34 +88,16 @@ export default function LoungeHome() {
             marginBottom: isMobile ? 18 : 26,
           }}
         >
-          {[
-            {
-              value: "14",
-              title: "Premium Bars",
-              color: "#ff6b35",
-            },
-            {
-              value: "3",
-              title: "Events Tonight",
-              color: "#5b5fff",
-            },
-            {
-              value: "28",
-              title: "New Reviews",
-              color: "#22e6c9",
-            },
-            {
-              value: "7",
-              title: "New Bottles",
-              color: "#b05cff",
-            },
-          ].map((item) => (
+          {topCards.map((item) => (
             <div
               key={item.title}
+              onClick={() => navigate(item.path)}
               style={{
                 ...cardStyle,
                 padding: isMobile ? 18 : 26,
                 border: `1px solid ${item.color}55`,
+                cursor: "pointer",
+                transition: "0.2s ease",
               }}
             >
               <div
@@ -158,10 +186,10 @@ export default function LoungeHome() {
                 }}
               >
                 {[
-                  ["Tastings", 64],
-                  ["Experiences", 58],
+                  ["Degustazioni", 64],
+                  ["Esperienze", 58],
                   ["Community", 70],
-                  ["Knowledge", 71],
+                  ["Conoscenza", 71],
                 ].map(([label, value]) => (
                   <div
                     key={label}
@@ -237,7 +265,7 @@ export default function LoungeHome() {
                   fontWeight: 900,
                 }}
               >
-                Milan
+                Milano
               </div>
             </div>
 
@@ -256,7 +284,7 @@ export default function LoungeHome() {
                   fontWeight: 600,
                 }}
               >
-                Trending Cocktail
+                Cocktail del Momento
               </div>
 
               <div
@@ -282,9 +310,11 @@ export default function LoungeHome() {
           }}
         >
           <div
+            onClick={() => navigate("/eventi")}
             style={{
               ...cardStyle,
               padding: isMobile ? 18 : 28,
+              cursor: "pointer",
             }}
           >
             <div
@@ -295,7 +325,7 @@ export default function LoungeHome() {
                 marginBottom: 18,
               }}
             >
-              Tonight’s Events
+              Eventi di Stasera
             </div>
 
             <img
@@ -340,7 +370,7 @@ export default function LoungeHome() {
                 fontSize: isMobile ? 14 : 18,
               }}
             >
-              8:00 PM · 24 going
+              8:00 PM · 24 partecipanti
             </div>
           </div>
 
@@ -358,7 +388,7 @@ export default function LoungeHome() {
                 marginBottom: 22,
               }}
             >
-              New from Lounge
+              Novità dalla Lounge
             </div>
 
             <div
@@ -396,7 +426,7 @@ export default function LoungeHome() {
                 marginBottom: 18,
               }}
             >
-              12 new bartender stories
+              12 nuove storie bartender
             </div>
 
             <div
@@ -405,7 +435,7 @@ export default function LoungeHome() {
                 fontSize: isMobile ? 14 : 18,
               }}
             >
-              See what they’re sharing ✨
+              Guarda cosa stanno condividendo ✨
             </div>
           </div>
         </div>
@@ -425,7 +455,7 @@ export default function LoungeHome() {
               marginBottom: 20,
             }}
           >
-            DrinkWise Picks
+            Suggerimenti DrinkWise
           </div>
 
           <div
@@ -437,25 +467,50 @@ export default function LoungeHome() {
               gap: isMobile ? 14 : 18,
             }}
           >
-            {[
-              "Rum suggestion",
-              "Find bars near you",
-              "Cocktail for tonight",
-            ].map((item) => (
-              <div
-                key={item}
-                style={{
-                  padding: isMobile ? 18 : 24,
-                  borderRadius: 20,
-                  background: "rgba(255,255,255,0.04)",
-                  border: "1px solid rgba(255,255,255,0.08)",
-                  fontSize: isMobile ? 15 : 20,
-                  fontWeight: 700,
-                }}
-              >
-                {item}
-              </div>
-            ))}
+            <div
+              onClick={() => navigate("/drink")}
+              style={{
+                padding: isMobile ? 18 : 24,
+                borderRadius: 20,
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(255,255,255,0.08)",
+                fontSize: isMobile ? 15 : 20,
+                fontWeight: 700,
+                cursor: "pointer",
+              }}
+            >
+              Suggerimento Rum
+            </div>
+
+            <div
+              onClick={openNearbyBars}
+              style={{
+                padding: isMobile ? 18 : 24,
+                borderRadius: 20,
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(255,255,255,0.08)",
+                fontSize: isMobile ? 15 : 20,
+                fontWeight: 700,
+                cursor: "pointer",
+              }}
+            >
+              Trova locali vicino a te
+            </div>
+
+            <div
+              onClick={() => navigate("/drink")}
+              style={{
+                padding: isMobile ? 18 : 24,
+                borderRadius: 20,
+                background: "rgba(255,255,255,0.04)",
+                border: "1px solid rgba(255,255,255,0.08)",
+                fontSize: isMobile ? 15 : 20,
+                fontWeight: 700,
+                cursor: "pointer",
+              }}
+            >
+              Cocktail per stasera
+            </div>
           </div>
         </div>
 
