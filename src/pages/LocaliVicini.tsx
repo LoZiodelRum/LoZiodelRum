@@ -334,30 +334,45 @@ export default function LocaliVicini() {
           ← Torna alla Lounge
         </button>
 
-        <div
-          style={{
-            background: "rgba(255,255,255,0.04)",
-            border: "1px solid rgba(255,255,255,0.08)",
-            borderRadius: 22,
-            padding: 18,
-            marginBottom: 18,
-          }}
-        >
-          {loading && <div>Rilevamento posizione e ricerca locali entro 5 km...</div>}
-          {!loading && geoError && <div>{geoError}</div>}
-          {!loading && !geoError && userPosition && (
-            <div style={{ opacity: 0.85, lineHeight: 1.7 }}>
-              Posizione rilevata:
-              <br />
-              Latitudine: {userPosition.lat.toFixed(5)}
-              <br />
-              Longitudine: {userPosition.lng.toFixed(5)}
-            </div>
-          )}
-          {!loading && !geoError && fetchError && (
-            <div style={{ marginTop: 10, color: "#fecaca" }}>{fetchError}</div>
-          )}
-        </div>
+        {loading && (
+          <p style={{ marginBottom: 16, opacity: 0.85 }}>
+            Rilevamento posizione e ricerca locali entro 5 km...
+          </p>
+        )}
+
+        {!loading && geoError && (
+          <div
+            style={{
+              background: "linear-gradient(155deg, rgba(11,20,51,0.96), rgba(7,14,37,0.98))",
+              border: "1px solid rgba(98,122,255,0.24)",
+              borderRadius: 24,
+              padding: 24,
+              marginBottom: 18,
+              boxShadow: "0 0 28px rgba(31,78,197,0.12)",
+              color: "#fecaca",
+              fontWeight: 600,
+            }}
+          >
+            {geoError}
+          </div>
+        )}
+
+        {!loading && !geoError && fetchError && (
+          <div
+            style={{
+              background: "linear-gradient(155deg, rgba(11,20,51,0.96), rgba(7,14,37,0.98))",
+              border: "1px solid rgba(98,122,255,0.24)",
+              borderRadius: 24,
+              padding: 24,
+              marginBottom: 18,
+              boxShadow: "0 0 28px rgba(31,78,197,0.12)",
+              color: "#fecaca",
+              fontWeight: 600,
+            }}
+          >
+            {fetchError}
+          </div>
+        )}
 
         {!loading && !geoError && locali.length > 0 && (
           <div className="locali-vicini-grid">
