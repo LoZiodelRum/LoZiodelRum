@@ -169,7 +169,7 @@ export default function Navbar() {
         </Link>
 
         <Link to="/community" style={linkStyle("/community")}>
-          {t("community")}
+          Lounge
         </Link>
 
         <Link to="/crea" style={linkStyle("/crea")}>

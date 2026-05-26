@@ -2,12 +2,15 @@ import React from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import MainLayout from "./layouts/MainLayout";
 import RuntimeErrorBoundary from "./components/RuntimeErrorBoundary";
+
 // Scroll to top ad ogni cambio pagina
 function ScrollToTop() {
   const { pathname } = useLocation();
+
   React.useEffect(() => {
     window.scrollTo(0, 0);
   }, [pathname]);
+
   return null;
 }
 
@@ -23,7 +26,10 @@ import Magazine from "./pages/Magazine";
 import CategoryVini from "./pages/CategoryVini";
 import Category from "./pages/Category";
 import ArticleDetail from "./pages/ArticleDetail";
-import Community from "./pages/Community";
+
+// 🔥 LOUNGE
+import LoungeShell from "./pages/lounge/LoungeShell";
+
 import Crea from "./pages/Crea";
 import AdminPanel from "./pages/AdminPanel";
 import Bancone from "./pages/Bancone";
@@ -48,80 +54,216 @@ export default function App() {
     handleResize(); // 🔥 FONDAMENTALE
 
     window.addEventListener("resize", handleResize);
+
     return () => window.removeEventListener("resize", handleResize);
   }, []);
 
   return (
     <>
       <ScrollToTop />
+
       <RuntimeErrorBoundary>
         <Routes>
+
           {/* AUTH SENZA NAVBAR (fullscreen) */}
           <Route path="/" element={<Auth />} />
           <Route path="/login" element={<Auth />} />
           <Route path="/register" element={<Auth />} />
+
           {/* Tutte le altre pagine wrappate da MainLayout che contiene la Navbar */}
           <Route element={<MainLayout />}>
-            <Route path="/home" element={<ProtectedRoute><Home /></ProtectedRoute>} />
-            <Route path="/mappa" element={<ProtectedRoute><MapPage /></ProtectedRoute>} />
 
-          {/* DRINK */}
-          <Route path="/drink" element={<ProtectedRoute><Drink /></ProtectedRoute>} />
-          <Route path="/drink/:id" element={<ProtectedRoute><DrinkDetail /></ProtectedRoute>} />
+            <Route
+              path="/home"
+              element={
+                <ProtectedRoute>
+                  <Home />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* VINI */}
-          <Route path="/vini" element={<ProtectedRoute><Vini /></ProtectedRoute>} />
-          <Route path="/vini/:id" element={<ProtectedRoute><VinoDetail /></ProtectedRoute>} />
-          <Route path="/vini/categoria/:categoria" element={<ProtectedRoute><CategoryVini /></ProtectedRoute>} />
+            <Route
+              path="/mappa"
+              element={
+                <ProtectedRoute>
+                  <MapPage />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* MAGAZINE */}
-          <Route path="/magazine" element={<ProtectedRoute><Magazine /></ProtectedRoute>} />
-          <Route path="/magazine/:id" element={<ProtectedRoute><ArticleDetail /></ProtectedRoute>} />
+            {/* DRINK */}
+            <Route
+              path="/drink"
+              element={
+                <ProtectedRoute>
+                  <Drink />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* CATEGORIE */}
-          <Route path="/categoria/:categoria" element={<ProtectedRoute><Category /></ProtectedRoute>} />
+            <Route
+              path="/drink/:id"
+              element={
+                <ProtectedRoute>
+                  <DrinkDetail />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* COMMUNITY */}
-          <Route path="/community" element={<ProtectedRoute><Community /></ProtectedRoute>} />
+            {/* VINI */}
+            <Route
+              path="/vini"
+              element={
+                <ProtectedRoute>
+                  <Vini />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* BANCONE */}
-          <Route path="/bancone" element={<ProtectedRoute><Bancone /></ProtectedRoute>} />
+            <Route
+              path="/vini/:id"
+              element={
+                <ProtectedRoute>
+                  <VinoDetail />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* 🔥 BARETTO SWITCH */}
-          <Route
-            path="/baretto"
-            element={
-              <ProtectedRoute>
-                {isMobile ? <BarettoMobile /> : <Baretto />}
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/vini/categoria/:categoria"
+              element={
+                <ProtectedRoute>
+                  <CategoryVini />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* 🔥 CHAT */}
-          <Route
-            path="/baretto/chat/:room"
-            element={
-              <ProtectedRoute>
-                <BarettoChat />
-              </ProtectedRoute>
-            }
-          />
+            {/* MAGAZINE */}
+            <Route
+              path="/magazine"
+              element={
+                <ProtectedRoute>
+                  <Magazine />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* 🔥 FALLBACK BARETTO */}
-          <Route
-            path="/baretto/*"
-            element={
-              <ProtectedRoute>
-                {isMobile ? <BarettoMobile /> : <Baretto />}
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/magazine/:id"
+              element={
+                <ProtectedRoute>
+                  <ArticleDetail />
+                </ProtectedRoute>
+              }
+            />
 
-          {/* ALTRO */}
-          <Route path="/venues" element={<ProtectedRoute><Venues /></ProtectedRoute>} />
-          <Route path="/crea" element={<ProtectedRoute><Crea /></ProtectedRoute>} />
-          <Route path="/admin" element={<ProtectedRoute><AdminPanel /></ProtectedRoute>} />
-            <Route path="/venue/:id" element={<ProtectedRoute><VenueDetail /></ProtectedRoute>} />
+            {/* CATEGORIE */}
+            <Route
+              path="/categoria/:categoria"
+              element={
+                <ProtectedRoute>
+                  <Category />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* COMMUNITY */}
+            <Route
+              path="/community"
+              element={
+                <ProtectedRoute>
+                  <LoungeShell />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* 🔥 LOUNGE */}
+            <Route
+              path="/lounge"
+              element={
+                <ProtectedRoute>
+                  <LoungeShell />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* BANCONE */}
+            <Route
+              path="/bancone"
+              element={
+                <ProtectedRoute>
+                  <Bancone />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* 🔥 BARETTO SWITCH */}
+            <Route
+              path="/baretto"
+              element={
+                <ProtectedRoute>
+                  {isMobile ? <BarettoMobile /> : <Baretto />}
+                </ProtectedRoute>
+              }
+            />
+
+            {/* 🔥 CHAT */}
+            <Route
+              path="/baretto/chat/:room"
+              element={
+                <ProtectedRoute>
+                  <BarettoChat />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* 🔥 FALLBACK BARETTO */}
+            <Route
+              path="/baretto/*"
+              element={
+                <ProtectedRoute>
+                  {isMobile ? <BarettoMobile /> : <Baretto />}
+                </ProtectedRoute>
+              }
+            />
+
+            {/* ALTRO */}
+            <Route
+              path="/venues"
+              element={
+                <ProtectedRoute>
+                  <Venues />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/crea"
+              element={
+                <ProtectedRoute>
+                  <Crea />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/admin"
+              element={
+                <ProtectedRoute>
+                  <AdminPanel />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="/venue/:id"
+              element={
+                <ProtectedRoute>
+                  <VenueDetail />
+                </ProtectedRoute>
+              }
+            />
+
           </Route>
         </Routes>
       </RuntimeErrorBoundary>
