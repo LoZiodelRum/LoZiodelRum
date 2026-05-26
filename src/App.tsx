@@ -30,6 +30,7 @@ import ArticleDetail from "./pages/ArticleDetail";
 // 🔥 NUOVE PAGINE
 import EventiPage from "./pages/EventiPage";
 import LocaliVicini from "./pages/LocaliVicini";
+import DiscoverPage from "./pages/DiscoverPage";
 
 // 🔥 LOUNGE
 import LoungeShell from "./pages/lounge/LoungeShell";
@@ -199,6 +200,16 @@ export default function App() {
               element={
                 <ProtectedRoute>
                   <EventiPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* DISCOVER */}
+            <Route
+              path="/discover"
+              element={
+                <ProtectedRoute>
+                  <DiscoverPage />
                 </ProtectedRoute>
               }
             />
