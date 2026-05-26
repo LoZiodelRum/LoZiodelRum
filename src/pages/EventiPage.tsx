@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
-import LoungeNavigation from "../components/lounge/LoungeNavigation";
+import LoungeBottomNavigation from "../components/lounge/LoungeBottomNavigation";
 
 /* ──────────────────────── TIPI ──────────────────────── */
 interface Evento {
@@ -371,12 +371,7 @@ export default function EventiPage() {
         }
       `}</style>
 
-      <LoungeNavigation
-        leftTo="/lounge"
-        rightTo="/discover"
-        leftAriaLabel="Vai alla Lounge"
-        rightAriaLabel="Vai a Discover"
-      />
+      <LoungeBottomNavigation />
 
       <div
         style={{

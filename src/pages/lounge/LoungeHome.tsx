@@ -1,6 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import React from "react";
-import LoungeNavigation from "../../components/lounge/LoungeNavigation";
+import LoungeBottomNavigation from "../../components/lounge/LoungeBottomNavigation";
 
 export default function LoungeHome() {
   const navigate = useNavigate();
@@ -73,12 +73,7 @@ export default function LoungeHome() {
 
   return (
     <>
-      <LoungeNavigation
-        leftTo="/profilo"
-        rightTo="/eventi"
-        leftAriaLabel="Vai al profilo"
-        rightAriaLabel="Vai agli eventi"
-      />
+      <LoungeBottomNavigation />
       <div style={pageStyle}>
       <div
         style={{

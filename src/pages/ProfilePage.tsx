@@ -19,7 +19,7 @@ import {
   Wine,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
-import LoungeNavigation from "../components/lounge/LoungeNavigation";
+import LoungeBottomNavigation from "../components/lounge/LoungeBottomNavigation";
 import { useUser } from "../context/UserContext";
 import { supabase } from "../lib/supabaseClient";
 
@@ -497,12 +497,7 @@ export default function ProfilePage() {
   return (
     <PageShell>
       <ProfileStyles />
-      <LoungeNavigation
-        leftTo="/discover"
-        rightTo="/lounge"
-        leftAriaLabel="Vai a Discover"
-        rightAriaLabel="Vai alla Lounge"
-      />
+      <LoungeBottomNavigation />
 
       <section className="profile-shell">
         <header className="profile-topbar">
