@@ -9,23 +9,25 @@ export default function LoungeHome() {
     minHeight: "100vh",
     background:
       "radial-gradient(circle at top, #071326 0%, #020817 45%, #01040d 100%)",
-    padding: isMobile ? "16px" : "28px",
+    padding: isMobile ? "14px" : "24px",
     color: "white",
+    paddingTop: isMobile ? "88px" : "110px",
   };
 
   const cardStyle: React.CSSProperties = {
     background: "rgba(7,15,35,0.88)",
-    borderRadius: 32,
+    borderRadius: isMobile ? 24 : 30,
     border: "1px solid rgba(255,255,255,0.08)",
-    boxShadow: "0 0 30px rgba(0,255,255,0.08)",
+    boxShadow: "0 0 24px rgba(0,255,255,0.08)",
     backdropFilter: "blur(18px)",
+    overflow: "hidden",
   };
 
   return (
     <div style={pageStyle}>
       <div
         style={{
-          maxWidth: 1600,
+          maxWidth: 1450,
           margin: "0 auto",
         }}
       >
@@ -33,10 +35,11 @@ export default function LoungeHome() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns:
-              "repeat(auto-fit,minmax(260px,1fr))",
-            gap: 22,
-            marginBottom: 26,
+            gridTemplateColumns: isMobile
+              ? "repeat(2,minmax(0,1fr))"
+              : "repeat(auto-fit,minmax(240px,1fr))",
+            gap: isMobile ? 14 : 20,
+            marginBottom: isMobile ? 18 : 26,
           }}
         >
           {[
@@ -65,16 +68,17 @@ export default function LoungeHome() {
               key={item.title}
               style={{
                 ...cardStyle,
-                padding: 32,
-                border: `1px solid ${item.color}`,
+                padding: isMobile ? 18 : 26,
+                border: `1px solid ${item.color}55`,
               }}
             >
               <div
                 style={{
-                  fontSize: isMobile ? 46 : 58,
+                  fontSize: isMobile ? 28 : 42,
                   fontWeight: 900,
                   color: item.color,
-                  marginBottom: 12,
+                  marginBottom: 8,
+                  lineHeight: 1,
                 }}
               >
                 {item.value}
@@ -82,8 +86,9 @@ export default function LoungeHome() {
 
               <div
                 style={{
-                  fontSize: 30,
+                  fontSize: isMobile ? 13 : 18,
                   fontWeight: 700,
+                  opacity: 0.92,
                 }}
               >
                 {item.title}
@@ -96,22 +101,23 @@ export default function LoungeHome() {
         <div
           style={{
             display: "grid",
-            gridTemplateColumns: isMobile ? "1fr" : "2fr 1fr",
-            gap: 24,
-            marginBottom: 28,
+            gridTemplateColumns: isMobile ? "1fr" : "1.8fr 0.9fr",
+            gap: isMobile ? 16 : 22,
+            marginBottom: isMobile ? 18 : 26,
           }}
         >
           <div
             style={{
               ...cardStyle,
-              padding: isMobile ? 20 : 24,
+              padding: isMobile ? 18 : 24,
             }}
           >
             <h2
               style={{
                 marginTop: 0,
-                marginBottom: 30,
-                fontSize: isMobile ? 28 : 34,
+                marginBottom: isMobile ? 20 : 28,
+                fontSize: isMobile ? 22 : 30,
+                fontWeight: 800,
               }}
             >
               DrinkWise Score
@@ -120,23 +126,26 @@ export default function LoungeHome() {
             <div
               style={{
                 display: "flex",
-                gap: 42,
+                gap: isMobile ? 22 : 34,
                 flexWrap: "wrap",
                 alignItems: "center",
               }}
             >
               <div
                 style={{
-                  width: isMobile ? 170 : 180,
-                  height: isMobile ? 170 : 180,
+                  width: isMobile ? 120 : 160,
+                  height: isMobile ? 120 : 160,
                   borderRadius: "50%",
-                  border: "18px solid #3ffff2",
+                  border: isMobile
+                    ? "10px solid #3ffff2"
+                    : "14px solid #3ffff2",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
-                  fontSize: isMobile ? 42 : 48,
+                  fontSize: isMobile ? 30 : 44,
                   fontWeight: 900,
-                  boxShadow: "0 0 20px #3ffff244",
+                  boxShadow: "0 0 18px #3ffff244",
+                  flexShrink: 0,
                 }}
               >
                 78
@@ -145,7 +154,7 @@ export default function LoungeHome() {
               <div
                 style={{
                   flex: 1,
-                  minWidth: 280,
+                  minWidth: isMobile ? "100%" : 260,
                 }}
               >
                 {[
@@ -157,15 +166,16 @@ export default function LoungeHome() {
                   <div
                     key={label}
                     style={{
-                      marginBottom: 30,
+                      marginBottom: isMobile ? 18 : 24,
                     }}
                   >
                     <div
                       style={{
                         display: "flex",
                         justifyContent: "space-between",
-                        marginBottom: 12,
-                       fontSize: isMobile ? 18 : 16,
+                        marginBottom: 8,
+                        fontSize: isMobile ? 13 : 15,
+                        fontWeight: 600,
                       }}
                     >
                       <span>{label}</span>
@@ -174,9 +184,9 @@ export default function LoungeHome() {
 
                     <div
                       style={{
-                        width: isMobile ? "100%" : "420px",
-                        height: 16,
-                        borderRadius: 24,
+                        width: "100%",
+                        height: isMobile ? 10 : 12,
+                        borderRadius: 20,
                         background: "rgba(255,255,255,0.08)",
                       }}
                     >
@@ -184,7 +194,7 @@ export default function LoungeHome() {
                         style={{
                           width: `${value}%`,
                           height: "100%",
-                          borderRadius: 24,
+                          borderRadius: 20,
                           background:
                             "linear-gradient(90deg,#3ffff2,#5b5fff)",
                         }}
@@ -199,21 +209,23 @@ export default function LoungeHome() {
           <div
             style={{
               display: "flex",
-              flexDirection: "column",
-              gap: 24,
+              flexDirection: isMobile ? "row" : "column",
+              gap: isMobile ? 14 : 20,
             }}
           >
             <div
               style={{
                 ...cardStyle,
-                padding: 34,
+                padding: isMobile ? 18 : 28,
+                flex: 1,
               }}
             >
               <div
                 style={{
                   opacity: 0.7,
-                  marginBottom: 18,
-                  fontSize: 26,
+                  marginBottom: 10,
+                  fontSize: isMobile ? 12 : 18,
+                  fontWeight: 600,
                 }}
               >
                 Top City
@@ -221,7 +233,7 @@ export default function LoungeHome() {
 
               <div
                 style={{
-                  fontSize: isMobile ? 34 : 38,
+                  fontSize: isMobile ? 22 : 34,
                   fontWeight: 900,
                 }}
               >
@@ -232,14 +244,16 @@ export default function LoungeHome() {
             <div
               style={{
                 ...cardStyle,
-                padding: 34,
+                padding: isMobile ? 18 : 28,
+                flex: 1,
               }}
             >
               <div
                 style={{
                   opacity: 0.7,
-                  marginBottom: 18,
-                  fontSize: 26,
+                  marginBottom: 10,
+                  fontSize: isMobile ? 12 : 18,
+                  fontWeight: 600,
                 }}
               >
                 Trending Cocktail
@@ -247,8 +261,9 @@ export default function LoungeHome() {
 
               <div
                 style={{
-                  fontSize: isMobile ? 52 : 68,
+                  fontSize: isMobile ? 20 : 32,
                   fontWeight: 900,
+                  lineHeight: 1.1,
                 }}
               >
                 Daiquiri
@@ -262,22 +277,22 @@ export default function LoungeHome() {
           style={{
             display: "grid",
             gridTemplateColumns: isMobile ? "1fr" : "1fr 1fr",
-            gap: 24,
-            marginBottom: 28,
+            gap: isMobile ? 16 : 22,
+            marginBottom: isMobile ? 18 : 26,
           }}
         >
           <div
             style={{
               ...cardStyle,
-              padding: 32,
+              padding: isMobile ? 18 : 28,
             }}
           >
             <div
               style={{
                 color: "#ffcc66",
-                fontSize: isMobile ? 20 : 24,
+                fontSize: isMobile ? 16 : 22,
                 fontWeight: 800,
-                marginBottom: 24,
+                marginBottom: 18,
               }}
             >
               Tonight’s Events
@@ -288,19 +303,19 @@ export default function LoungeHome() {
               alt="event"
               style={{
                 width: "100%",
-                height: 260,
+                height: isMobile ? 180 : 240,
                 objectFit: "cover",
-                borderRadius: 24,
-                marginBottom: 24,
+                borderRadius: 20,
+                marginBottom: 20,
               }}
             />
 
             <div
               style={{
-                fontSize: isMobile ? 30 : 38,
-                lineHeight: 1,
+                fontSize: isMobile ? 24 : 34,
+                lineHeight: 1.05,
                 fontWeight: 900,
-                marginBottom: 20,
+                marginBottom: 16,
               }}
             >
               Caribbean
@@ -312,8 +327,8 @@ export default function LoungeHome() {
               style={{
                 color: "#ff944d",
                 fontWeight: 800,
-                fontSize: 28,
-                marginBottom: 12,
+                fontSize: isMobile ? 16 : 22,
+                marginBottom: 10,
               }}
             >
               ● LIVE
@@ -322,7 +337,7 @@ export default function LoungeHome() {
             <div
               style={{
                 opacity: 0.8,
-                fontSize: 24,
+                fontSize: isMobile ? 14 : 18,
               }}
             >
               8:00 PM · 24 going
@@ -332,15 +347,15 @@ export default function LoungeHome() {
           <div
             style={{
               ...cardStyle,
-              padding: 32,
+              padding: isMobile ? 18 : 28,
             }}
           >
             <div
               style={{
                 color: "#ff66cc",
-                fontSize: 30,
+                fontSize: isMobile ? 18 : 24,
                 fontWeight: 800,
-                marginBottom: 26,
+                marginBottom: 22,
               }}
             >
               New from Lounge
@@ -349,8 +364,8 @@ export default function LoungeHome() {
             <div
               style={{
                 display: "flex",
-                gap: 18,
-                marginBottom: 30,
+                gap: isMobile ? 10 : 16,
+                marginBottom: 24,
               }}
             >
               {[
@@ -363,11 +378,11 @@ export default function LoungeHome() {
                   src={img}
                   alt="avatar"
                   style={{
-                    width: 110,
-                    height: 110,
+                    width: isMobile ? 58 : 82,
+                    height: isMobile ? 58 : 82,
                     borderRadius: "50%",
                     objectFit: "cover",
-                    border: "4px solid #ff66cc",
+                    border: "3px solid #ff66cc",
                   }}
                 />
               ))}
@@ -375,10 +390,10 @@ export default function LoungeHome() {
 
             <div
               style={{
-                fontSize: isMobile ? 30 : 42,
-                lineHeight: 1,
+                fontSize: isMobile ? 22 : 36,
+                lineHeight: 1.08,
                 fontWeight: 900,
-                marginBottom: 24,
+                marginBottom: 18,
               }}
             >
               12 new bartender stories
@@ -387,7 +402,7 @@ export default function LoungeHome() {
             <div
               style={{
                 opacity: 0.82,
-                fontSize: 28,
+                fontSize: isMobile ? 14 : 18,
               }}
             >
               See what they’re sharing ✨
@@ -399,15 +414,15 @@ export default function LoungeHome() {
         <div
           style={{
             ...cardStyle,
-            padding: 32,
-            marginBottom: 28,
+            padding: isMobile ? 18 : 28,
+            marginBottom: isMobile ? 18 : 26,
           }}
         >
           <div
             style={{
-              fontSize: isMobile ? 24 : 32,
+              fontSize: isMobile ? 20 : 28,
               fontWeight: 800,
-              marginBottom: 24,
+              marginBottom: 20,
             }}
           >
             DrinkWise Picks
@@ -416,9 +431,10 @@ export default function LoungeHome() {
           <div
             style={{
               display: "grid",
-              gridTemplateColumns:
-                "repeat(auto-fit,minmax(260px,1fr))",
-              gap: 20,
+              gridTemplateColumns: isMobile
+                ? "1fr"
+                : "repeat(auto-fit,minmax(240px,1fr))",
+              gap: isMobile ? 14 : 18,
             }}
           >
             {[
@@ -429,11 +445,11 @@ export default function LoungeHome() {
               <div
                 key={item}
                 style={{
-                  padding: 30,
-                  borderRadius: 24,
+                  padding: isMobile ? 18 : 24,
+                  borderRadius: 20,
                   background: "rgba(255,255,255,0.04)",
                   border: "1px solid rgba(255,255,255,0.08)",
-                  fontSize: 28,
+                  fontSize: isMobile ? 15 : 20,
                   fontWeight: 700,
                 }}
               >
@@ -444,24 +460,33 @@ export default function LoungeHome() {
         </div>
 
         {/* CTA */}
-        <button
-          onClick={() => navigate("/baretto")}
+        <div
           style={{
-            width: "100%",
-            padding: isMobile ? "14px 18px" : "18px 28px",
-            borderRadius: 24,
-            border: "none",
-            cursor: "pointer",
-            background:
-              "linear-gradient(90deg,#42f5df,#5df7d3,#6ffff0)",
-            color: "#04131e",
-            fontWeight: 900,
-            fontSize: isMobile ? 34 : 54,
-            boxShadow: "0 0 40px #42f5df66",
+            display: "flex",
+            justifyContent: "center",
+            marginBottom: isMobile ? 14 : 10,
           }}
         >
-          Entra nel Baretto
-        </button>
+          <button
+            onClick={() => navigate("/baretto")}
+            style={{
+              padding: isMobile ? "12px 24px" : "14px 34px",
+              borderRadius: 18,
+              border: "1px solid rgba(66,245,223,0.35)",
+              cursor: "pointer",
+              background:
+                "linear-gradient(90deg,#42f5df,#5df7d3,#6ffff0)",
+              color: "#04131e",
+              fontWeight: 900,
+              fontSize: isMobile ? 16 : 18,
+              boxShadow: "0 0 24px #42f5df44",
+              transition: "0.2s ease",
+              minWidth: isMobile ? "unset" : 260,
+            }}
+          >
+            Entra nel Baretto
+          </button>
+        </div>
       </div>
     </div>
   );
