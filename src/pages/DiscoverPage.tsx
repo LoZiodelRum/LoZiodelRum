@@ -12,6 +12,7 @@ import {
   Wine,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
+import LoungeNavigation from "../components/lounge/LoungeNavigation";
 
 type DiscoverCard = {
   id: string;
@@ -149,6 +150,13 @@ export default function DiscoverPage() {
         overflowX: "hidden",
       }}
     >
+      <LoungeNavigation
+        leftTo="/eventi"
+        rightTo="/lounge"
+        leftAriaLabel="Vai agli eventi"
+        rightAriaLabel="Vai alla Lounge"
+      />
+
       <style>{`
         .discover-shell {
           width: min(860px, 100%);
