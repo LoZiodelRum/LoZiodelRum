@@ -1,9 +1,8 @@
-import { useLocation } from "react-router-dom";
-import { useLoungeSwipe } from "../components/lounge/LoungeSwipeNavigation";
+import { useLocation, useNavigate } from "react-router-dom";
 
 export default function LocaliVicini() {
   const location = useLocation();
-  const swipe = useLoungeSwipe("/eventi", "/baretto");
+  const navigate = useNavigate();
 
   const query = new URLSearchParams(location.search);
 
@@ -12,7 +11,6 @@ export default function LocaliVicini() {
 
   return (
     <div
-      {...swipe}
       style={{
         minHeight: "100vh",
         background:
@@ -36,6 +34,26 @@ export default function LocaliVicini() {
         >
           Locali Vicini
         </h1>
+
+        <button
+          onClick={() => navigate("/lounge")}
+          style={{
+            display: "inline-flex",
+            alignItems: "center",
+            gap: 8,
+            marginBottom: 22,
+            padding: "10px 14px",
+            borderRadius: 12,
+            border: "1px solid rgba(0,180,255,0.5)",
+            background: "rgba(0,180,255,0.12)",
+            color: "#dff6ff",
+            fontWeight: 700,
+            cursor: "pointer",
+            boxShadow: "0 0 14px rgba(0,180,255,0.2)",
+          }}
+        >
+          ← Torna alla Lounge
+        </button>
 
         <div
           style={{

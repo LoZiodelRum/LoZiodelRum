@@ -1,6 +1,5 @@
 import { useNavigate } from "react-router-dom";
 import React from "react";
-import { useLoungeSwipe } from "../../components/lounge/LoungeSwipeNavigation";
 
 function FrecciaDesstra({ onClick }: { onClick: () => void }) {
   const [hov, setHov] = React.useState(false);
@@ -42,7 +41,6 @@ function FrecciaDesstra({ onClick }: { onClick: () => void }) {
 
 export default function LoungeHome() {
   const navigate = useNavigate();
-  const swipe = useLoungeSwipe(null, "/eventi");
 
   const isMobile = window.innerWidth < 980;
 
@@ -112,13 +110,8 @@ export default function LoungeHome() {
 
   return (
     <>
-      <style>{`
-        @media (max-width: 768px) {
-          .freccia-lounge-desktop { display: none !important; }
-        }
-      `}</style>
       <FrecciaDesstra onClick={() => navigate("/eventi")} />
-    <div style={pageStyle} {...swipe}>
+    <div style={pageStyle}>
       <div
         style={{
           maxWidth: 1450,

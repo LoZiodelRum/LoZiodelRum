@@ -2,14 +2,12 @@ import React, { useEffect, useState } from "react";
 // MainLayout ora solo via router
 import { useNavigate } from "react-router-dom";
 import { supabase } from "../lib/supabaseClient";
-import { useLoungeSwipe } from "../components/lounge/LoungeSwipeNavigation";
 
 export default function BarettoMobile() {
   const [rooms, setRooms] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
   const [search, setSearch] = useState("");
-  const swipe = useLoungeSwipe("/locali-vicini", null);
 
   useEffect(() => {
     const fetchRooms = async () => {
@@ -29,7 +27,7 @@ export default function BarettoMobile() {
   const filteredRooms = rooms.filter(r => !search || r.nome.toLowerCase().includes(search.toLowerCase()));
 
   return (
-    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "#f7f4ee", paddingTop: 47 }} {...swipe}>
+    <div style={{ minHeight: "100vh", display: "flex", flexDirection: "column", background: "#f7f4ee", paddingTop: 47 }}>
       {/* HEADER */}
       <div style={{ padding: 15, borderBottom: "1px solid #ddd", background: "#f7f4ee", display: "flex", alignItems: "center", gap: 10 }}>
         <button onClick={() => navigate("/home")} style={{ background: "none", border: "none", fontSize: 20, cursor: "pointer" }}>←</button>
