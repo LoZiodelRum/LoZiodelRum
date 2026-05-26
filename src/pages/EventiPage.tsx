@@ -359,6 +359,7 @@ export default function EventiPage() {
     <>
       <style>{`
         @media (max-width: 768px) {
+          .eventi-page-root { padding: 100px 14px 40px !important; }
           .eventi-grid { grid-template-columns: 1fr !important; }
           .eventi-week-grid { grid-template-columns: 1fr 1fr !important; }
           .eventi-header-row { flex-direction: column !important; gap: 10px !important; align-items: flex-start !important; }
@@ -374,11 +375,12 @@ export default function EventiPage() {
       <LoungeBottomNavigation />
 
       <div
+        className="eventi-page-root"
         style={{
           minHeight: "100vh",
           background: BG,
           color: "#fff",
-          padding: "100px 16px 60px",
+          padding: "120px 24px 40px",
         }}
       >
         <div style={{ maxWidth: 900, margin: "0 auto" }}>
@@ -561,6 +563,8 @@ export default function EventiPage() {
             </div>
             <div style={{ fontSize: 36, flexShrink: 0 }}>🍸</div>
           </div>
+
+            <div style={{ height: 140 }} />
 
         </div>
       </div>

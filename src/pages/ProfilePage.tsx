@@ -253,11 +253,12 @@ function normalizeRoleLabel(role: string) {
 function PageShell({ children }: { children: React.ReactNode }) {
   return (
     <div
+      className="profile-page-root"
       style={{
         minHeight: "100vh",
         background: pageBackground,
         color: "#eef6ff",
-        padding: "96px 12px 38px",
+        padding: "120px 24px 40px",
         overflowX: "hidden",
       }}
     >
@@ -511,6 +512,11 @@ function ProfileStyles() {
         display: inline-flex; align-items: center; gap: 8px; margin-bottom: 18px; padding: 10px 14px; border-radius: 14px;
         border: 1px solid rgba(42,241,230,0.5); background: rgba(10,32,56,0.82); color: #bffef7; cursor: pointer;
       }
+      @media (max-width: 768px) {
+        .profile-page-root {
+          padding: 100px 14px 40px !important;
+        }
+      }
       @media (max-width: 900px) {
         .profile-hero-main { grid-template-columns: auto 1fr; }
         .profile-hero-art { display: none; }
@@ -708,6 +714,8 @@ export default function ProfilePage() {
         <button className="edit-profile-btn" onClick={() => navigate("/modifica-profilo")}>
           Modifica profilo <ChevronRight size={28} strokeWidth={2} />
         </button>
+
+        <div style={{ height: 140 }} />
       </section>
     </PageShell>
   );

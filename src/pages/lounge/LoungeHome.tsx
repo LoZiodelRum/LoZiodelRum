@@ -11,9 +11,8 @@ export default function LoungeHome() {
     minHeight: "100vh",
     background:
       "radial-gradient(circle at top, #071326 0%, #020817 45%, #01040d 100%)",
-    padding: isMobile ? "14px" : "24px",
+    padding: isMobile ? "100px 14px 40px" : "120px 24px 40px",
     color: "white",
-    paddingTop: isMobile ? "88px" : "110px",
   };
 
   const cardStyle: React.CSSProperties = {
@@ -546,6 +545,8 @@ export default function LoungeHome() {
             Entra nel Baretto
           </button>
         </div>
+
+        <div style={{ height: 140 }} />
       </div>
     </div>
     </>

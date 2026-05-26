@@ -141,12 +141,13 @@ export default function DiscoverPage() {
 
   return (
     <div
+      className="discover-page-root"
       style={{
         minHeight: "100vh",
         background:
           "radial-gradient(circle at top, #071326 0%, #020817 45%, #01040d 100%)",
         color: "#eef6ff",
-        padding: "96px 12px 38px",
+        padding: "120px 24px 40px",
         overflowX: "hidden",
       }}
     >
@@ -318,6 +319,10 @@ export default function DiscoverPage() {
             width: min(720px, 100%);
           }
 
+          .discover-page-root {
+            padding: 100px 14px 40px !important;
+          }
+
           .discover-card {
             min-height: 110px;
             border-radius: 20px;
@@ -406,6 +411,8 @@ export default function DiscoverPage() {
           </div>
           <div className="discover-banner-orb" aria-hidden="true" />
         </div>
+
+        <div style={{ height: 140 }} />
       </section>
     </div>
   );
