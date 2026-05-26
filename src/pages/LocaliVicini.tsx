@@ -1,7 +1,9 @@
 import { useLocation } from "react-router-dom";
+import { useLoungeSwipe } from "../components/lounge/LoungeSwipeNavigation";
 
 export default function LocaliVicini() {
   const location = useLocation();
+  const swipe = useLoungeSwipe("/eventi", "/baretto");
 
   const query = new URLSearchParams(location.search);
 
@@ -10,6 +12,7 @@ export default function LocaliVicini() {
 
   return (
     <div
+      {...swipe}
       style={{
         minHeight: "100vh",
         background:

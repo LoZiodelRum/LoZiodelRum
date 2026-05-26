@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { useLoungeSwipe } from "../components/lounge/LoungeSwipeNavigation";
 
 /* ──────────────────────── FRECCIA LATERALE DESKTOP ──────────────────────── */
 function FrecciaSinistra({ onClick }: { onClick: () => void }) {
@@ -372,6 +373,7 @@ function Calendario({
 /* ──────────────────────── PAGINA PRINCIPALE ──────────────────────── */
 export default function EventiPage() {
   const navigate = useNavigate();
+  const swipe = useLoungeSwipe("/lounge", "/locali-vicini");
   const [selectedDate, setSelectedDate] = useState<string>(fmt(oggi));
 
   const eventiDate = useMemo(() => new Set(EVENTI.map(e => e.data)), []);
@@ -415,6 +417,7 @@ export default function EventiPage() {
       <FrecciaSinistra onClick={() => navigate("/lounge")} />
 
       <div
+        {...swipe}
         style={{
           minHeight: "100vh",
           background: BG,
