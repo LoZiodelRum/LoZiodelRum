@@ -1,6 +1,44 @@
 import { useNavigate } from "react-router-dom";
 import React from "react";
 
+function FrecciaSinistra({ onClick }: { onClick: () => void }) {
+  const [hov, setHov] = React.useState(false);
+  return (
+    <button
+      onClick={onClick}
+      onMouseEnter={() => setHov(true)}
+      onMouseLeave={() => setHov(false)}
+      aria-label="Vai a Discover"
+      style={{
+        position: "fixed",
+        left: 12,
+        top: "50%",
+        transform: "translateY(-50%)",
+        zIndex: 1200,
+        background: hov
+          ? "rgba(0,180,255,0.18)"
+          : "rgba(0,0,0,0.45)",
+        border: `1.5px solid ${hov ? "#00b4ff" : "rgba(255,255,255,0.15)"}`,
+        borderRadius: 14,
+        color: hov ? "#00b4ff" : "rgba(255,255,255,0.7)",
+        width: 44,
+        height: 68,
+        cursor: "pointer",
+        fontSize: 22,
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        backdropFilter: "blur(10px)",
+        boxShadow: hov ? "0 0 18px rgba(0,180,255,0.35)" : "0 2px 12px rgba(0,0,0,0.4)",
+        transition: "all 0.22s ease",
+      }}
+      className="freccia-lounge-sinistra"
+    >
+      ‹
+    </button>
+  );
+}
+
 function FrecciaDesstra({ onClick }: { onClick: () => void }) {
   const [hov, setHov] = React.useState(false);
   return (
@@ -14,7 +52,7 @@ function FrecciaDesstra({ onClick }: { onClick: () => void }) {
         right: 12,
         top: "50%",
         transform: "translateY(-50%)",
-        zIndex: 800,
+        zIndex: 1200,
         background: hov
           ? "rgba(0,180,255,0.18)"
           : "rgba(0,0,0,0.45)",
@@ -110,6 +148,7 @@ export default function LoungeHome() {
 
   return (
     <>
+      <FrecciaSinistra onClick={() => navigate("/discover")} />
       <FrecciaDesstra onClick={() => navigate("/eventi")} />
     <div style={pageStyle}>
       <div
