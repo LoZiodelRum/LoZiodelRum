@@ -132,13 +132,7 @@ export default function Vini() {
   }
 
   function normalizeWineName(name: string) {
-    return normalizeText(name, {
-      trim: true,
-      lowercase: false,
-      collapseWhitespace: true,
-      removeDiacritics: false,
-      fallback: "",
-    });
+    return normalizeText(name);
   }
 
   function renderSection(title: string, list: VinoCard[], tipo: string, fillPlaceholders = true) {

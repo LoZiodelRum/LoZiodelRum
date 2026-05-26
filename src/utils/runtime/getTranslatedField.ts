@@ -21,13 +21,7 @@ export type SupportedLanguage = "it" | "en" | "es" | "bg";
 const SUPPORTED_LANGUAGES: SupportedLanguage[] = ["it", "en", "es", "bg"];
 
 function normalizeLanguage(language?: string): SupportedLanguage {
-  const short = normalizeText(language || "it", {
-    trim: true,
-    lowercase: true,
-    collapseWhitespace: false,
-    removeDiacritics: false,
-    fallback: "it",
-  }).split(/[-_]/)[0] as SupportedLanguage;
+  const short = normalizeText(language || "it").split(/[-_]/)[0] as SupportedLanguage;
 
   return SUPPORTED_LANGUAGES.includes(short) ? short : "it";
 }

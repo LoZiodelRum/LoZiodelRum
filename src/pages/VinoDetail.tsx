@@ -191,7 +191,7 @@ export default function VinoDetail() {
             const translatedValue =
               aliases
                 .map((alias) => getTranslatedField(vino, alias, i18n.language, ""))
-                .find((value) => normalizeText(value, { lowercase: false }) .trim().length > 0)
+                .find((value) => normalizeText(value).trim().length > 0)
               || "-";
 
             return (
