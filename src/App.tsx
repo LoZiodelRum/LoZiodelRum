@@ -27,6 +27,10 @@ import CategoryVini from "./pages/CategoryVini";
 import Category from "./pages/Category";
 import ArticleDetail from "./pages/ArticleDetail";
 
+// 🔥 NUOVE PAGINE
+import EventiPage from "./pages/EventiPage";
+import LocaliVicini from "./pages/LocaliVicini";
+
 // 🔥 LOUNGE
 import LoungeShell from "./pages/lounge/LoungeShell";
 
@@ -51,7 +55,7 @@ export default function App() {
       setIsMobile(window.innerWidth < 768);
     };
 
-    handleResize(); // 🔥 FONDAMENTALE
+    handleResize();
 
     window.addEventListener("resize", handleResize);
 
@@ -65,14 +69,15 @@ export default function App() {
       <RuntimeErrorBoundary>
         <Routes>
 
-          {/* AUTH SENZA NAVBAR (fullscreen) */}
+          {/* AUTH SENZA NAVBAR */}
           <Route path="/" element={<Auth />} />
           <Route path="/login" element={<Auth />} />
           <Route path="/register" element={<Auth />} />
 
-          {/* Tutte le altre pagine wrappate da MainLayout che contiene la Navbar */}
+          {/* PAGINE CON NAVBAR */}
           <Route element={<MainLayout />}>
 
+            {/* HOME */}
             <Route
               path="/home"
               element={
@@ -82,6 +87,7 @@ export default function App() {
               }
             />
 
+            {/* MAPPA */}
             <Route
               path="/mappa"
               element={
@@ -177,12 +183,32 @@ export default function App() {
               }
             />
 
-            {/* 🔥 LOUNGE */}
+            {/* LOUNGE */}
             <Route
               path="/lounge"
               element={
                 <ProtectedRoute>
                   <LoungeShell />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* EVENTI */}
+            <Route
+              path="/eventi"
+              element={
+                <ProtectedRoute>
+                  <EventiPage />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* LOCALI VICINI */}
+            <Route
+              path="/locali-vicini"
+              element={
+                <ProtectedRoute>
+                  <LocaliVicini />
                 </ProtectedRoute>
               }
             />
@@ -197,7 +223,7 @@ export default function App() {
               }
             />
 
-            {/* 🔥 BARETTO SWITCH */}
+            {/* BARETTO */}
             <Route
               path="/baretto"
               element={
@@ -207,7 +233,7 @@ export default function App() {
               }
             />
 
-            {/* 🔥 CHAT */}
+            {/* CHAT */}
             <Route
               path="/baretto/chat/:room"
               element={
@@ -217,7 +243,7 @@ export default function App() {
               }
             />
 
-            {/* 🔥 FALLBACK BARETTO */}
+            {/* FALLBACK BARETTO */}
             <Route
               path="/baretto/*"
               element={
@@ -227,7 +253,7 @@ export default function App() {
               }
             />
 
-            {/* ALTRO */}
+            {/* VENUES */}
             <Route
               path="/venues"
               element={
@@ -237,6 +263,7 @@ export default function App() {
               }
             />
 
+            {/* CREA */}
             <Route
               path="/crea"
               element={
@@ -246,6 +273,7 @@ export default function App() {
               }
             />
 
+            {/* ADMIN */}
             <Route
               path="/admin"
               element={
@@ -255,6 +283,7 @@ export default function App() {
               }
             />
 
+            {/* DETTAGLIO LOCALE */}
             <Route
               path="/venue/:id"
               element={
