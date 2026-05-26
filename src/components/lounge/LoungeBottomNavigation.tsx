@@ -31,7 +31,7 @@ export default function LoungeBottomNavigation() {
         .lounge-bottom-nav-shell {
           position: fixed;
           left: 50%;
-          bottom: calc(env(safe-area-inset-bottom, 0px) + 20px);
+          bottom: calc(env(safe-area-inset-bottom, 0px) + 16px);
           transform: translateX(-50%);
           z-index: 1350;
           width: min(720px, calc(100vw - 20px));
