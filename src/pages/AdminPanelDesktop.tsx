@@ -4,6 +4,7 @@ import { supabase } from "../lib/supabaseClient";
 import { useUser } from "../context/UserContext";
 import { AROMATIC_FAMILY_OPTIONS, TASTE_PROFILE_OPTIONS } from "../lib/cocktailOptionSets";
 import { removeEmptyFields } from "../utils/removeEmptyFields";
+import { sanitizeUpdateData } from "@/utils/runtime/sanitizeUpdateData";
 
 const PREVIEW_BOX_SIZE = 280;
 
@@ -506,9 +507,10 @@ export default function AdminPanel() {
           }
         }
       } else {
+        const payload = sanitizeUpdateData(cleanData);
         const result = await supabase
           .from(selectedTable)
-          .insert([cleanData])
+          .insert([payload])
           .select("id");
 
         error = result.error;
@@ -785,7 +787,7 @@ export default function AdminPanel() {
           return;
         }
 
-      const safeChangedData = removeEmptyFields(changedData);
+      const safeChangedData = sanitizeUpdateData(removeEmptyFields(changedData));
 
       if (Object.keys(safeChangedData).length === 0) {
         setSaveStatus("ok");

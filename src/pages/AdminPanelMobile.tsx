@@ -3,6 +3,7 @@ import type { CSSProperties } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useUser } from "../context/UserContext";
 import { removeEmptyFields } from "../utils/removeEmptyFields";
+import { sanitizeUpdateData } from "@/utils/runtime/sanitizeUpdateData";
 
 export default function AdminPanelMobile() {
   const { loading, isAdmin } = useUser();
@@ -359,12 +360,14 @@ if (isCreating) {
 
       console.log("PATCH UPDATE:", payload);
 
-      if (!isCreating && payload.id) {
-        const { error } = await supabase.from(tableName).update(payload).eq("id", payload.id);
+      const sanitizedPayload = sanitizeUpdateData(payload);
+
+      if (!isCreating && sanitizedPayload.id) {
+        const { error } = await supabase.from(tableName).update(sanitizedPayload).eq("id", sanitizedPayload.id);
         if (error) throw error;
       } else {
-        delete payload.id;
-        const { error } = await supabase.from(tableName).insert(payload);
+        delete sanitizedPayload.id;
+        const { error } = await supabase.from(tableName).insert(sanitizedPayload);
         if (error) throw error;
       }
 

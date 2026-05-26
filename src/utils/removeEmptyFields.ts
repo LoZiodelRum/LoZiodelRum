@@ -8,5 +8,6 @@ export function removeEmptyFields<T extends Record<string, any>>(
   input: T,
   options: RemoveEmptyOptions = {}
 ): Partial<T> {
-  return sanitizeUpdateData(input, options);
+  void options;
+  return sanitizeUpdateData(input);
 }

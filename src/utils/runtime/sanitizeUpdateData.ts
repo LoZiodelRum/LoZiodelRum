@@ -1,44 +1,16 @@
-export type SanitizeUpdateDataOptions = {
-  trimStrings?: boolean;
-};
-
-function isPlainObject(value: unknown): value is Record<string, unknown> {
-  return Object.prototype.toString.call(value) === "[object Object]";
-}
-
 export function sanitizeUpdateData<T extends Record<string, any>>(
-  input: T,
-  options: SanitizeUpdateDataOptions = {}
+  data: T
 ): Partial<T> {
-  const { trimStrings = true } = options;
-  const output: Record<string, unknown> = {};
+  return Object.fromEntries(
+    Object.entries(data).filter(([_, value]) => {
+      if (value === null) return false;
+      if (value === undefined) return false;
 
-  Object.entries(input || {}).forEach(([key, rawValue]) => {
-    let value: unknown = rawValue;
-
-    if (typeof value === "string" && trimStrings) {
-      value = value.trim();
-    }
-
-    if (value === null || value === undefined || value === "") {
-      return;
-    }
-
-    if (Array.isArray(value)) {
-      output[key] = value;
-      return;
-    }
-
-    if (isPlainObject(value)) {
-      const nested = sanitizeUpdateData(value as Record<string, any>, options);
-      if (Object.keys(nested).length > 0) {
-        output[key] = nested;
+      if (typeof value === "string" && value.trim() === "") {
+        return false;
       }
-      return;
-    }
 
-    output[key] = value;
-  });
-
-  return output as Partial<T>;
+      return true;
+    })
+  ) as Partial<T>;
 }
