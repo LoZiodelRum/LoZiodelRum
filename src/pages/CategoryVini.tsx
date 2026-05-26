@@ -23,7 +23,7 @@ export default function CategoryVini() {
   const [loading, setLoading] = useState(true);
 
   function getCategoryTitle(slug?: string) {
-    const normalized = slugifySafe(slug, { fallback: "" });
+    const normalized = slugifySafe(slug);
     if (normalized === "rossi") return t("drink.wines.categories.red");
     if (normalized === "bianchi") return t("drink.wines.categories.white");
     if (normalized === "rosati") return t("drink.wines.categories.rose");
@@ -66,7 +66,7 @@ export default function CategoryVini() {
         }
       }
 
-      const slug = slugifySafe(categoria, { fallback: "" });
+      const slug = slugifySafe(categoria);
       const data = safeArray<any>(allRows).filter((row) => {
         if (!slug) return true;
         return categorySlugFor(row) === slug;

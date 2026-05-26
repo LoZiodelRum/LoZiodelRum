@@ -1,24 +1,11 @@
 import { normalizeText } from "./normalizeText";
+import { safeString } from "./safeString";
 
-export type SlugifySafeOptions = {
-  fallback?: string;
-};
-
-export function slugifySafe(value: unknown, options: SlugifySafeOptions = {}): string {
-  const { fallback = "n-a" } = options;
-
-  const normalized = normalizeText(value, {
-    trim: true,
-    lowercase: true,
-    collapseWhitespace: true,
-    removeDiacritics: true,
-    fallback: "",
-  });
-
-  const slug = normalized
+export function slugifySafe(value: unknown): string {
+  return safeString(value)
+    .normalize("NFD")
+    .replace(/[\u0300-\u036f]/g, "")
+    .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
-    .replace(/^-+|-+$/g, "")
-    .replace(/-{2,}/g, "-");
-
-  return slug || fallback;
+    .replace(/^-+|-+$/g, "");
 }

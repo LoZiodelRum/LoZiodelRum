@@ -16,7 +16,7 @@ type Item = {
 
 export default function Category() {
   const { categoria, tipo } = useParams();
-  const selectedType = slugifySafe(categoria || tipo, { fallback: "cocktail" });
+  const selectedType = slugifySafe(categoria || tipo) || "cocktail";
   const navigate = useNavigate();
   const { t, i18n } = useTranslation("drink");
 
@@ -77,7 +77,7 @@ export default function Category() {
   function rebuildItems(type: string | undefined, cocktails: any[], distillati: any[]) {
     setItems([]);
 
-    const currentType = slugifySafe(type || "cocktail", { fallback: "cocktail" });
+    const currentType = slugifySafe(type || "cocktail") || "cocktail";
     const safeCocktails = safeArray<any>(cocktails);
     const safeDistillati = safeArray<any>(distillati);
 
