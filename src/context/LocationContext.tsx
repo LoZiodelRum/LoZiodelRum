@@ -1,4 +1,5 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { useUser } from "./UserContext";
 
 export type LocationStatus =
   | "idle"
@@ -36,6 +37,7 @@ export const DEFAULT_POSITION = {
 
 const LAST_POSITION_STORAGE_KEY = "drinkwise_last_position";
 const ONBOARDING_DONE_STORAGE_KEY = "drinkwise_location_onboarding_done";
+const LOCATION_STARTED_SESSION_KEY = "drinkwise_location_started";
 
 const LocationContext = createContext<LocationContextValue>({
   userPosition: {
@@ -55,6 +57,10 @@ const LocationContext = createContext<LocationContextValue>({
 
 function canUseStorage() {
   return typeof window !== "undefined" && typeof window.localStorage !== "undefined";
+}
+
+function canUseSessionStorage() {
+  return typeof window !== "undefined" && typeof window.sessionStorage !== "undefined";
 }
 
 function parseCoordinate(value: unknown): number | null {
@@ -114,6 +120,7 @@ function writeOnboardingDoneFlag(value: boolean) {
 }
 
 export function LocationProvider({ children }: { children: React.ReactNode }) {
+  const { isAuthenticated } = useUser();
   const cachedPosition = useMemo(() => readCachedPosition(), []);
   const onboardingDoneFromStorage = useMemo(() => readOnboardingDoneFlag(), []);
   const [userPosition, setUserPosition] = useState<LocationPosition>(() =>
@@ -292,6 +299,23 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
       setLocationError("Non riesco a controllare i permessi posizione in background.");
     }
   }, [ensureWatchPosition, handleError, handleSuccess, hasRequestedLocationOnboarding, hasSavedPosition]);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      if (canUseSessionStorage()) {
+        window.sessionStorage.removeItem(LOCATION_STARTED_SESSION_KEY);
+      }
+      return;
+    }
+
+    if (canUseSessionStorage()) {
+      const alreadyStarted = window.sessionStorage.getItem(LOCATION_STARTED_SESSION_KEY);
+      if (alreadyStarted === "true") return;
+      window.sessionStorage.setItem(LOCATION_STARTED_SESSION_KEY, "true");
+    }
+
+    requestLocation();
+  }, [isAuthenticated, requestLocation]);
 
   useEffect(() => {
     void checkLocationSilently();
