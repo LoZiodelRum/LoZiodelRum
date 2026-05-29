@@ -179,6 +179,80 @@
   border: none;
   font-size: 15px;
 }
+
+@media (max-width: 768px) {
+  .crea-cocktail-form-rect {
+    width: min(100%, 760px);
+    min-width: 0;
+    max-width: 760px;
+    height: auto;
+    min-height: 440px;
+    padding: 26px 18px 20px;
+  }
+
+  .crea-cocktail-title {
+    width: 100%;
+    max-width: 9ch;
+    margin: 0 auto 18px !important;
+    text-align: center;
+    font-size: clamp(2.2rem, 8vw, 2.6rem);
+    line-height: 1.05;
+  }
+
+  .crea-cocktail-label {
+    font-size: 0.95rem;
+    margin-bottom: 5px;
+    line-height: 1.25;
+  }
+
+  .crea-cocktail-grid {
+    gap: 14px 14px;
+  }
+
+  .crea-cocktail-select {
+    padding: 8px 10px;
+    min-height: 42px;
+    font-size: 0.98rem;
+    line-height: 1.2;
+  }
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  .crea-cocktail-form-rect {
+    width: min(100%, 860px);
+    min-width: 0;
+    max-width: 860px;
+    height: auto;
+    min-height: 470px;
+    padding: 30px 26px 22px;
+  }
+
+  .crea-cocktail-title {
+    width: 100%;
+    max-width: 9ch;
+    margin: 0 auto 20px !important;
+    text-align: center;
+    font-size: clamp(2.8rem, 5vw, 3.2rem);
+    line-height: 1.04;
+  }
+
+  .crea-cocktail-label {
+    font-size: 1rem;
+    margin-bottom: 6px;
+    line-height: 1.25;
+  }
+
+  .crea-cocktail-grid {
+    gap: 16px 20px;
+  }
+
+  .crea-cocktail-select {
+    padding: 9px 11px;
+    min-height: 44px;
+    font-size: 1rem;
+    line-height: 1.2;
+  }
+}
 /* ============================================================
    1. RESET E VARIABILI (Righe 1-20)
    ============================================================ */
