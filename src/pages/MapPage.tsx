@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronRight, MapPin, Navigation, Star } from "lucide-react";
-import { MapContainer, Marker, Popup, TileLayer, ZoomControl, useMap } from "react-leaflet";
+import { AttributionControl, MapContainer, Marker, Popup, TileLayer, ZoomControl, useMap } from "react-leaflet";
 import { supabase } from "../lib/supabaseClient";
 import Navbar from "../components/Navbar";
 import L from "leaflet";
@@ -140,6 +140,21 @@ function computeRating(venue: VenueRow) {
   if (!values.length) return null;
   const avg = values.reduce((acc, value) => acc + value, 0) / values.length;
   return Math.min(5, Math.max(0, avg));
+}
+
+function resolveVenueImage(venue: VenueRow) {
+  const anyVenue = venue as any;
+  return (
+    venue.image_url ||
+    venue.image ||
+    anyVenue.immagine ||
+    anyVenue.foto ||
+    anyVenue.cover ||
+    anyVenue.cover_url ||
+    anyVenue.logo ||
+    anyVenue.media_url ||
+    null
+  );
 }
 
 function MapCenterUpdater({
@@ -396,6 +411,86 @@ export default function MapPage() {
             background: #061327;
           }
 
+          .leaflet-control-attribution {
+            font-size: 9px !important;
+            line-height: 1.2 !important;
+            padding: 2px 5px !important;
+            background: rgba(255, 255, 255, 0.55) !important;
+            color: rgba(0, 0, 0, 0.55) !important;
+            border-radius: 8px 0 0 0 !important;
+          }
+
+          .leaflet-control-attribution a {
+            color: rgba(0, 0, 0, 0.65) !important;
+            text-decoration: none !important;
+          }
+
+          .dw-map-popup {
+            width: 260px;
+            display: flex;
+            gap: 12px;
+            align-items: center;
+            background: #ffffff;
+            color: #111827;
+          }
+
+          .dw-map-popup-image-wrap {
+            width: 74px;
+            height: 74px;
+            border-radius: 16px;
+            overflow: hidden;
+            flex-shrink: 0;
+            background: #0b1220;
+          }
+
+          .dw-map-popup-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+          }
+
+          .dw-map-popup-placeholder {
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: linear-gradient(135deg, #1a2236, #070d1a);
+            color: #f5a623;
+            font-size: 12px;
+            font-weight: 800;
+          }
+
+          .dw-map-popup-content {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            min-width: 0;
+          }
+
+          .dw-map-popup-content strong {
+            font-size: 15px;
+            line-height: 1.15;
+            color: #111827;
+          }
+
+          .dw-map-popup-content span {
+            font-size: 13px;
+            color: #6b7280;
+          }
+
+          .dw-map-popup-content button {
+            width: fit-content;
+            border: 1px solid rgba(245, 166, 35, 0.55);
+            background: rgba(245, 166, 35, 0.08);
+            color: #a16207;
+            border-radius: 10px;
+            padding: 7px 12px;
+            font-weight: 800;
+            cursor: pointer;
+          }
+
           .dw-user-marker {
             background: transparent;
           }
@@ -605,13 +700,16 @@ export default function MapPage() {
                   zoom={13}
                   style={{ height: "100%", width: "100%" }}
                   zoomControl={false}
+                  attributionControl={false}
                 >
                   <MapCenterUpdater lat={userPosition.lat} lng={userPosition.lng} zoom={13} />
 
                   <TileLayer
                     url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    attribution='&copy; OpenStreetMap contributors &copy; CARTO'
+                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OSM</a>'
                   />
+
+                  <AttributionControl position="bottomright" prefix={false} />
 
                   <Marker position={[userPosition.lat, userPosition.lng]} icon={userPositionIcon}>
                     <Popup>Sei qui</Popup>
@@ -624,27 +722,30 @@ export default function MapPage() {
                       icon={customIcon}
                     >
                       <Popup>
-                        <div style={{ minWidth: 180 }}>
-                          <div style={{ fontWeight: 800, marginBottom: 4 }}>
-                            {getTranslatedField(venue as any, "nome", i18n.language, venue.nome || "Locale")}
+                        <div className="dw-map-popup">
+                          <div className="dw-map-popup-image-wrap">
+                            {resolveVenueImage(venue) ? (
+                              <img
+                                src={resolveVenueImage(venue) as string}
+                                alt={getTranslatedField(venue as any, "nome", i18n.language, venue.nome || "Locale DrinkWise")}
+                                className="dw-map-popup-image"
+                              />
+                            ) : (
+                              <div className="dw-map-popup-placeholder">DrinkWise</div>
+                            )}
                           </div>
-                          <div style={{ fontSize: 13, opacity: 0.82, marginBottom: 8 }}>
-                            {venue.citta || "Citta non disponibile"} · {formatDistance(venue.distanceKm)}
+
+                          <div className="dw-map-popup-content">
+                            <strong>
+                              {getTranslatedField(venue as any, "nome", i18n.language, venue.nome || "Locale")}
+                            </strong>
+                            <span>
+                              {venue.citta || "Locale DrinkWise"} · {formatDistance(venue.distanceKm)}
+                            </span>
+                            <button onClick={() => navigate(`/venue/${venue.id}`)}>
+                              Apri scheda
+                            </button>
                           </div>
-                          <button
-                            onClick={() => navigate(`/venue/${venue.id}`)}
-                            style={{
-                              border: "1px solid rgba(245, 166, 35, 0.52)",
-                              background: "rgba(245, 166, 35, 0.12)",
-                              color: "#b66f00",
-                              borderRadius: 10,
-                              padding: "6px 10px",
-                              fontWeight: 700,
-                              cursor: "pointer",
-                            }}
-                          >
-                            Apri scheda
-                          </button>
                         </div>
                       </Popup>
                     </Marker>
