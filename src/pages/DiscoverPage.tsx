@@ -20,6 +20,8 @@ type DiscoverCard = {
   subtitle: string;
   icon: LucideIcon;
   to?: string;
+  bgGradient: string;
+  borderColor: string;
   accent: string;
   glow: string;
   placeholder?: boolean;
@@ -32,8 +34,10 @@ const cards: DiscoverCard[] = [
     subtitle: "Top venue vicino a te",
     icon: MapPin,
     to: "/locali-vicini",
-    accent: "#2cf7e4",
-    glow: "rgba(44,247,228,0.26)",
+    bgGradient: "linear-gradient(135deg, rgba(92, 46, 12, 0.85), rgba(28, 16, 10, 0.95))",
+    borderColor: "rgba(245, 166, 35, 0.55)",
+    accent: "#f5a623",
+    glow: "rgba(245, 166, 35, 0.18)",
   },
   {
     id: "cocktail-bars",
@@ -41,16 +45,20 @@ const cards: DiscoverCard[] = [
     subtitle: "Mixology d'autore",
     icon: GlassWater,
     to: "/venues",
-    accent: "#4f7bff",
-    glow: "rgba(79,123,255,0.24)",
+    bgGradient: "linear-gradient(135deg, rgba(92, 30, 20, 0.85), rgba(24, 12, 12, 0.95))",
+    borderColor: "rgba(211, 93, 48, 0.55)",
+    accent: "#d35d30",
+    glow: "rgba(211, 93, 48, 0.18)",
   },
   {
     id: "rum-rooms",
     title: "Rum Rooms",
     subtitle: "Disponibile presto",
     icon: FlaskConical,
-    accent: "#ff8f3d",
-    glow: "rgba(255,143,61,0.26)",
+    bgGradient: "linear-gradient(135deg, rgba(117, 64, 20, 0.85), rgba(31, 17, 8, 0.95))",
+    borderColor: "rgba(198, 111, 34, 0.55)",
+    accent: "#c66f22",
+    glow: "rgba(198, 111, 34, 0.18)",
     placeholder: true,
   },
   {
@@ -58,8 +66,10 @@ const cards: DiscoverCard[] = [
     title: "Whisky Clubs",
     subtitle: "Disponibile presto",
     icon: Wine,
-    accent: "#f5cf38",
-    glow: "rgba(245,207,56,0.22)",
+    bgGradient: "linear-gradient(135deg, rgba(72, 38, 13, 0.85), rgba(20, 12, 7, 0.95))",
+    borderColor: "rgba(184, 124, 45, 0.55)",
+    accent: "#b87c2d",
+    glow: "rgba(184, 124, 45, 0.18)",
     placeholder: true,
   },
   {
@@ -68,8 +78,10 @@ const cards: DiscoverCard[] = [
     subtitle: "Servite curate",
     icon: Star,
     to: "/drink",
-    accent: "#f751b4",
-    glow: "rgba(247,81,180,0.24)",
+    bgGradient: "linear-gradient(135deg, rgba(87, 22, 32, 0.85), rgba(25, 8, 13, 0.95))",
+    borderColor: "rgba(184, 65, 76, 0.55)",
+    accent: "#b8414c",
+    glow: "rgba(184, 65, 76, 0.18)",
   },
   {
     id: "bartender-picks",
@@ -77,8 +89,10 @@ const cards: DiscoverCard[] = [
     subtitle: "Consigli esperti",
     icon: User,
     to: "/baretto",
-    accent: "#00d9e6",
-    glow: "rgba(0,217,230,0.22)",
+    bgGradient: "linear-gradient(135deg, rgba(28, 76, 55, 0.85), rgba(9, 24, 18, 0.95))",
+    borderColor: "rgba(92, 158, 121, 0.55)",
+    accent: "#5c9e79",
+    glow: "rgba(92, 158, 121, 0.18)",
   },
   {
     id: "guest-shifts",
@@ -86,8 +100,10 @@ const cards: DiscoverCard[] = [
     subtitle: "Notti speciali",
     icon: CalendarDays,
     to: "/eventi",
-    accent: "#9f66ff",
-    glow: "rgba(159,102,255,0.24)",
+    bgGradient: "linear-gradient(135deg, rgba(69, 39, 81, 0.85), rgba(18, 10, 25, 0.95))",
+    borderColor: "rgba(151, 91, 175, 0.55)",
+    accent: "#975baf",
+    glow: "rgba(151, 91, 175, 0.18)",
   },
   {
     id: "events",
@@ -95,16 +111,20 @@ const cards: DiscoverCard[] = [
     subtitle: "Esperienze live",
     icon: CalendarDays,
     to: "/eventi",
-    accent: "#ff6a2f",
-    glow: "rgba(255,106,47,0.24)",
+    bgGradient: "linear-gradient(135deg, rgba(97, 50, 19, 0.85), rgba(27, 13, 7, 0.95))",
+    borderColor: "rgba(230, 126, 34, 0.55)",
+    accent: "#e67e22",
+    glow: "rgba(230, 126, 34, 0.18)",
   },
   {
     id: "pairings",
     title: "Pairings",
     subtitle: "Disponibile presto",
     icon: Sparkles,
-    accent: "#58df70",
-    glow: "rgba(88,223,112,0.22)",
+    bgGradient: "linear-gradient(135deg, rgba(76, 59, 30, 0.85), rgba(22, 17, 9, 0.95))",
+    borderColor: "rgba(207, 160, 82, 0.55)",
+    accent: "#cfa052",
+    glow: "rgba(207, 160, 82, 0.18)",
     placeholder: true,
   },
   {
@@ -112,8 +132,10 @@ const cards: DiscoverCard[] = [
     title: "Bottle Collection",
     subtitle: "Disponibile presto",
     icon: Wine,
-    accent: "#8f70ff",
-    glow: "rgba(143,112,255,0.26)",
+    bgGradient: "linear-gradient(135deg, rgba(54, 37, 24, 0.85), rgba(17, 11, 8, 0.95))",
+    borderColor: "rgba(143, 93, 52, 0.55)",
+    accent: "#8f5d34",
+    glow: "rgba(143, 93, 52, 0.18)",
     placeholder: true,
   },
   {
@@ -122,8 +144,10 @@ const cards: DiscoverCard[] = [
     subtitle: "Momenti premium",
     icon: Sparkles,
     to: "/eventi",
-    accent: "#2cb6ff",
-    glow: "rgba(44,182,255,0.24)",
+    bgGradient: "linear-gradient(135deg, rgba(18, 57, 66, 0.85), rgba(7, 20, 24, 0.95))",
+    borderColor: "rgba(67, 138, 150, 0.55)",
+    accent: "#438a96",
+    glow: "rgba(67, 138, 150, 0.18)",
   },
   {
     id: "new-openings",
@@ -131,8 +155,10 @@ const cards: DiscoverCard[] = [
     subtitle: "Freschi nel network",
     icon: Compass,
     to: "/venues",
-    accent: "#14d6b2",
-    glow: "rgba(20,214,178,0.24)",
+    bgGradient: "linear-gradient(135deg, rgba(84, 66, 31, 0.85), rgba(22, 17, 8, 0.95))",
+    borderColor: "rgba(218, 165, 32, 0.55)",
+    accent: "#daa520",
+    glow: "rgba(218, 165, 32, 0.18)",
   },
 ];
 
@@ -215,8 +241,8 @@ export default function DiscoverPage() {
           min-height: 122px;
           padding: 16px 14px;
           border-radius: 24px;
-          border: 1px solid var(--accent);
-          background: linear-gradient(145deg, color-mix(in srgb, var(--accent) 13%, #071127 87%), rgba(4, 11, 30, 0.95));
+          border: 1px solid var(--card-border);
+          background: var(--card-bg);
           box-shadow: 0 0 26px var(--glow), inset 0 0 30px rgba(255, 255, 255, 0.02);
           display: flex;
           align-items: center;
@@ -382,6 +408,8 @@ export default function DiscoverPage() {
                 key={card.id}
                 className="discover-card"
                 style={{
+                  ["--card-bg" as string]: card.bgGradient,
+                  ["--card-border" as string]: card.borderColor,
                   ["--accent" as string]: card.accent,
                   ["--glow" as string]: card.glow,
                 }}
