@@ -181,32 +181,42 @@
 }
 
 @media (max-width: 768px) {
+  .crea-page > div {
+    padding: 8px !important;
+  }
+
   .crea-cocktail-form-rect {
-    width: min(100%, 760px);
+    width: min(calc(100vw - 16px), 760px);
     min-width: 0;
     max-width: 760px;
     height: auto;
     min-height: 440px;
-    padding: 26px 18px 20px;
+    padding: 24px 14px 18px;
   }
 
   .crea-cocktail-title {
     width: 100%;
-    max-width: 9ch;
-    margin: 0 auto 18px !important;
+    max-width: none;
+    margin: 0 auto 16px !important;
     text-align: center;
-    font-size: clamp(2.2rem, 8vw, 2.6rem);
-    line-height: 1.05;
+    font-size: clamp(1.95rem, 6.7vw, 2.2rem);
+    line-height: 1.02;
+    white-space: nowrap;
   }
 
   .crea-cocktail-label {
     font-size: 0.95rem;
     margin-bottom: 5px;
     line-height: 1.25;
+    min-height: 2.45em;
   }
 
   .crea-cocktail-grid {
     gap: 14px 14px;
+  }
+
+  .crea-cocktail-field {
+    align-items: stretch;
   }
 
   .crea-cocktail-select {
@@ -218,32 +228,42 @@
 }
 
 @media (min-width: 769px) and (max-width: 1024px) {
+  .crea-page > div {
+    padding: 12px !important;
+  }
+
   .crea-cocktail-form-rect {
-    width: min(100%, 860px);
+    width: min(calc(100vw - 24px), 920px);
     min-width: 0;
-    max-width: 860px;
+    max-width: 920px;
     height: auto;
     min-height: 470px;
-    padding: 30px 26px 22px;
+    padding: 28px 20px 20px;
   }
 
   .crea-cocktail-title {
     width: 100%;
-    max-width: 9ch;
-    margin: 0 auto 20px !important;
+    max-width: none;
+    margin: 0 auto 18px !important;
     text-align: center;
-    font-size: clamp(2.8rem, 5vw, 3.2rem);
-    line-height: 1.04;
+    font-size: clamp(2.2rem, 4.2vw, 2.55rem);
+    line-height: 1.03;
+    white-space: nowrap;
   }
 
   .crea-cocktail-label {
     font-size: 1rem;
     margin-bottom: 6px;
     line-height: 1.25;
+    min-height: 2.4em;
   }
 
   .crea-cocktail-grid {
     gap: 16px 20px;
+  }
+
+  .crea-cocktail-field {
+    align-items: stretch;
   }
 
   .crea-cocktail-select {

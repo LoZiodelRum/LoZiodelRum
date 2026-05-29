@@ -78,6 +78,7 @@ export default function Crea() {
   const [error, setError] = useState<string | null>(null);
   const [showResults, setShowResults] = useState(false);
   const navigate = useNavigate();
+  const chooseLabel = t("createPage.choose").replace("...", "").trim();
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
@@ -163,7 +164,7 @@ export default function Crea() {
                     onChange={handleChange}
                     className="crea-cocktail-select"
                   >
-                    <option value="">{t("createPage.choose")}</option>
+                    <option value="">{chooseLabel}</option>
                     {options.map((option) => (
                       <option key={option.value} value={option.value}>
                         {t(`createPage.options.${option.labelKey}`)}
