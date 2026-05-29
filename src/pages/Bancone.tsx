@@ -636,7 +636,7 @@ export default function Bancone() {
                 gap: 14,
               }}
             >
-              {locali.map((locale) => {
+              {locali.map((locale, localeIndex) => {
                 const localeId = String(locale?.id ?? "");
                 const rewardsForLocale = localeRewardsMap.get(localeId) || [];
                 const image = pickFirstText(locale, ["image_url", "image", "immagine"]);
@@ -646,7 +646,7 @@ export default function Bancone() {
 
                 return (
                   <article
-                    key={localeId || Math.random()}
+                    key={localeId || `locale-${localeIndex}`}
                     style={{
                       background: "#141414",
                       border: "1px solid #2e2e2e",
