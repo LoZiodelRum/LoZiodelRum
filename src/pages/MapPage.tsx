@@ -70,6 +70,18 @@ type UserPosition = {
   lng: number;
 };
 
+const DEFAULT_CENTER: UserPosition = {
+  lat: 40.8518,
+  lng: 14.2681,
+};
+
+const LAST_POSITION_STORAGE_KEY = "drinkwise_last_position";
+const CACHED_VENUES_STORAGE_KEY = "drinkwise_cached_venues";
+
+function canUseStorage() {
+  return typeof window !== "undefined" && typeof window.localStorage !== "undefined";
+}
+
 function parseCoordinate(value: unknown): number | null {
   if (value === null || value === undefined) return null;
   const normalized = String(value).replace(",", ".").trim();
@@ -157,6 +169,92 @@ function resolveVenueImage(venue: VenueRow) {
   );
 }
 
+function normalizeVenueRows(rows: any[]): VenueRow[] {
+  return rows
+    .map((v: any) => {
+      const rawLat = parseCoordinate(v.latitudine);
+      const rawLng = parseCoordinate(v.longitudine);
+
+      if (rawLat === null || rawLng === null) return null;
+
+      let lat = rawLat;
+      let lng = rawLng;
+
+      // Handle common data-entry mistake where lat/lng are swapped.
+      if (!isLatitude(lat) && isLatitude(lng) && isLongitude(lat)) {
+        lat = rawLng;
+        lng = rawLat;
+      }
+
+      if (!isLatitude(lat) || !isLongitude(lng)) return null;
+
+      return {
+        ...v,
+        latitudine: lat,
+        longitudine: lng,
+      };
+    })
+    .filter((locale): locale is VenueRow => locale !== null);
+}
+
+function readCachedPosition() {
+  if (!canUseStorage()) return null;
+
+  try {
+    const raw = window.localStorage.getItem(LAST_POSITION_STORAGE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as { lat?: unknown; lng?: unknown };
+    const lat = parseCoordinate(parsed.lat);
+    const lng = parseCoordinate(parsed.lng);
+    if (lat === null || lng === null) return null;
+    if (!isLatitude(lat) || !isLongitude(lng)) return null;
+    return { lat, lng } satisfies UserPosition;
+  } catch {
+    return null;
+  }
+}
+
+function writeCachedPosition(position: UserPosition) {
+  if (!canUseStorage()) return;
+
+  try {
+    window.localStorage.setItem(
+      LAST_POSITION_STORAGE_KEY,
+      JSON.stringify({
+        lat: position.lat,
+        lng: position.lng,
+        timestamp: Date.now(),
+      })
+    );
+  } catch {
+    // Ignore storage write failures.
+  }
+}
+
+function readCachedVenues() {
+  if (!canUseStorage()) return [] as VenueRow[];
+
+  try {
+    const raw = window.localStorage.getItem(CACHED_VENUES_STORAGE_KEY);
+    if (!raw) return [] as VenueRow[];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [] as VenueRow[];
+    return normalizeVenueRows(parsed);
+  } catch {
+    return [] as VenueRow[];
+  }
+}
+
+function writeCachedVenues(venues: VenueRow[]) {
+  if (!canUseStorage()) return;
+
+  try {
+    window.localStorage.setItem(CACHED_VENUES_STORAGE_KEY, JSON.stringify(venues));
+  } catch {
+    // Ignore storage write failures.
+  }
+}
+
 function MapCenterUpdater({
   lat,
   lng,
@@ -169,7 +267,7 @@ function MapCenterUpdater({
   const map = useMap();
 
   useEffect(() => {
-    map.setView([lat, lng], zoom, { animate: true });
+    map.setView([lat, lng], zoom, { animate: true, duration: 0.5 });
   }, [lat, lng, zoom, map]);
 
   return null;
@@ -178,72 +276,77 @@ function MapCenterUpdater({
 export default function MapPage() {
   const navigate = useNavigate();
   const { i18n } = useTranslation();
-  const [venues, setVenues] = useState<VenueRow[]>([]);
-  const [userPosition, setUserPosition] = useState<UserPosition | null>(null);
-  const [loadingGeo, setLoadingGeo] = useState(true);
-  const [loadingVenues, setLoadingVenues] = useState(true);
-  const [usingFallbackPosition, setUsingFallbackPosition] = useState(false);
+  const cachedPosition = useMemo(() => readCachedPosition(), []);
+  const cachedVenues = useMemo(() => readCachedVenues(), []);
+
+  const [venues, setVenues] = useState<VenueRow[]>(cachedVenues);
+  const [userPosition, setUserPosition] = useState<UserPosition>(
+    cachedPosition || DEFAULT_CENTER
+  );
+  const [isUpdatingLocation, setIsUpdatingLocation] = useState(false);
+  const [loadingVenues, setLoadingVenues] = useState(cachedVenues.length === 0);
+  const [usingFallbackPosition, setUsingFallbackPosition] = useState(!cachedPosition);
   const [geoMessage, setGeoMessage] = useState<string | null>(null);
   const [fetchError, setFetchError] = useState<string | null>(null);
-
-  const fallbackPosition: UserPosition = { lat: 40.8518, lng: 14.2681 };
   const radiusKm = 10;
 
-  useEffect(() => {
-    void fetchVenues();
-  }, []);
-
   const requestUserPosition = useCallback(() => {
+    setIsUpdatingLocation(true);
+
     if (!navigator.geolocation) {
       setGeoMessage(
         "Posizione non disponibile. Puoi comunque esplorare i locali del network."
       );
-      setUserPosition(fallbackPosition);
+      setUserPosition((prev) => prev || DEFAULT_CENTER);
       setUsingFallbackPosition(true);
-      setLoadingGeo(false);
+      setIsUpdatingLocation(false);
       return;
     }
-
-    setLoadingGeo(true);
     setGeoMessage(null);
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        setUserPosition({
+        const nextPosition = {
           lat: position.coords.latitude,
           lng: position.coords.longitude,
-        });
+        };
+
+        setUserPosition(nextPosition);
+        writeCachedPosition(nextPosition);
         setUsingFallbackPosition(false);
-        setLoadingGeo(false);
+        setIsUpdatingLocation(false);
       },
       () => {
         setGeoMessage(
-          "Attiva la posizione per vedere i locali DrinkWise vicino a te."
+          "Posizione non attiva: risultati basati sull'ultima posizione disponibile."
         );
-        setUserPosition(fallbackPosition);
+        setUserPosition((prev) => prev || DEFAULT_CENTER);
         setUsingFallbackPosition(true);
-        setLoadingGeo(false);
+        setIsUpdatingLocation(false);
       },
       {
-        enableHighAccuracy: true,
-        timeout: 12000,
-        maximumAge: 0,
+        enableHighAccuracy: false,
+        timeout: 3500,
+        maximumAge: 60000,
       }
     );
   }, []);
 
   useEffect(() => {
+    void fetchVenues();
     requestUserPosition();
   }, [requestUserPosition]);
 
   async function fetchVenues() {
-    setLoadingVenues(true);
+    if (!venues.length) {
+      setLoadingVenues(true);
+    }
     setFetchError(null);
 
     const preferredQuery = await supabase
       .from("Locali")
       .select(
-        "id, nome, nome_en, nome_bg, citta, indirizzo, tipo_locale, pacchetto, livello, rating, qualita_drink, competenza_staff, atmosfera, qualita_prezzo, latitudine, longitudine, image_url, image"
+        "id, nome, nome_en, nome_bg, citta, indirizzo, tipo_locale, pacchetto, livello, rating, qualita_drink, competenza_staff, atmosfera, qualita_prezzo, latitudine, longitudine, image_url, image, cover_url"
       )
       .or("status.eq.approved,approvato.eq.true");
 
@@ -253,7 +356,7 @@ export default function MapPage() {
         ? await supabase
             .from("Locali")
             .select(
-              "id, nome, nome_en, nome_bg, citta, indirizzo, latitudine, longitudine, image_url, image"
+              "id, nome, nome_en, nome_bg, citta, indirizzo, latitudine, longitudine, image_url, image, cover_url"
             )
             .or("status.eq.approved,approvato.eq.true")
         : null;
@@ -266,38 +369,14 @@ export default function MapPage() {
 
     if (sourceError) {
       setFetchError("Errore nel caricamento della mappa. Riprova tra poco.");
-      setVenues([]);
       setLoadingVenues(false);
       return;
     }
 
-    const valid = sourceData
-      .map((v: any) => {
-        const rawLat = parseCoordinate(v.latitudine);
-        const rawLng = parseCoordinate(v.longitudine);
-
-        if (rawLat === null || rawLng === null) return null;
-
-        let lat = rawLat;
-        let lng = rawLng;
-
-        // Handle common data-entry mistake where lat/lng are swapped.
-        if (!isLatitude(lat) && isLatitude(lng) && isLongitude(lat)) {
-          lat = rawLng;
-          lng = rawLat;
-        }
-
-        if (!isLatitude(lat) || !isLongitude(lng)) return null;
-
-        return {
-          ...v,
-          latitudine: lat,
-          longitudine: lng,
-        };
-      })
-      .filter((locale): locale is VenueRow => locale !== null);
+    const valid = normalizeVenueRows(sourceData);
 
     setVenues(valid);
+    writeCachedVenues(valid);
     setLoadingVenues(false);
   }
 
@@ -333,7 +412,7 @@ export default function MapPage() {
       });
   }, [radiusKm, userPosition, venues]);
 
-  const loading = loadingGeo || loadingVenues;
+  const showSkeletons = loadingVenues && venues.length === 0;
 
   return (
     <>
@@ -533,9 +612,68 @@ export default function MapPage() {
             padding: 6px 10px;
           }
 
+          .map-status-label {
+            margin: 0 4px 10px;
+            font-size: 12px;
+            color: rgba(205, 221, 243, 0.82);
+          }
+
           .map-venues-list {
             display: grid;
             gap: 9px;
+          }
+
+          .map-skeleton-card {
+            background: rgba(12, 18, 34, 0.88);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+            border-radius: 20px;
+            padding: 12px;
+            display: grid;
+            grid-template-columns: 92px minmax(0, 1fr) 82px;
+            gap: 11px;
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.22);
+          }
+
+          .map-skeleton-image,
+          .map-skeleton-line,
+          .map-skeleton-badge {
+            border-radius: 12px;
+            background: linear-gradient(90deg, rgba(146, 163, 186, 0.12), rgba(173, 190, 214, 0.22), rgba(146, 163, 186, 0.12));
+            background-size: 220% 100%;
+            animation: map-shimmer 1.25s linear infinite;
+          }
+
+          .map-skeleton-image {
+            width: 92px;
+            height: 70px;
+          }
+
+          .map-skeleton-lines {
+            display: grid;
+            align-content: center;
+            gap: 8px;
+          }
+
+          .map-skeleton-line {
+            height: 11px;
+          }
+
+          .map-skeleton-line.short {
+            width: 58%;
+          }
+
+          .map-skeleton-badge {
+            height: 24px;
+            align-self: center;
+          }
+
+          @keyframes map-shimmer {
+            0% {
+              background-position: 220% 0;
+            }
+            100% {
+              background-position: -220% 0;
+            }
           }
 
           .map-venue-card {
@@ -662,6 +800,19 @@ export default function MapPage() {
               grid-template-columns: 86px minmax(0, 1fr);
             }
 
+            .map-skeleton-card {
+              grid-template-columns: 86px minmax(0, 1fr);
+            }
+
+            .map-skeleton-image {
+              width: 86px;
+              height: 66px;
+            }
+
+            .map-skeleton-badge {
+              display: none;
+            }
+
             .map-venue-right {
               grid-column: 2;
               flex-direction: row;
@@ -694,28 +845,32 @@ export default function MapPage() {
             )}
 
             <div className="map-viewport">
-              {userPosition ? (
-                <MapContainer
-                  center={[userPosition.lat, userPosition.lng]}
-                  zoom={13}
-                  style={{ height: "100%", width: "100%" }}
-                  zoomControl={false}
-                  attributionControl={false}
-                >
-                  <MapCenterUpdater lat={userPosition.lat} lng={userPosition.lng} zoom={13} />
+              <MapContainer
+                center={[userPosition.lat, userPosition.lng]}
+                zoom={13}
+                style={{ height: "100%", width: "100%" }}
+                zoomControl={false}
+                attributionControl={false}
+                preferCanvas={true}
+                scrollWheelZoom={true}
+              >
+                <MapCenterUpdater lat={userPosition.lat} lng={userPosition.lng} zoom={13} />
 
-                  <TileLayer
-                    url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                    attribution='&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OSM</a>'
-                  />
+                <TileLayer
+                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                  attribution='&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noreferrer">OSM</a>'
+                />
 
-                  <AttributionControl position="bottomright" prefix={false} />
+                <AttributionControl position="bottomright" prefix={false} />
 
-                  <Marker position={[userPosition.lat, userPosition.lng]} icon={userPositionIcon}>
-                    <Popup>Sei qui</Popup>
-                  </Marker>
+                <Marker position={[userPosition.lat, userPosition.lng]} icon={userPositionIcon}>
+                  <Popup>Sei qui</Popup>
+                </Marker>
 
-                  {nearbyVenues.map((venue) => (
+                {nearbyVenues.map((venue) => {
+                  const popupImage = resolveVenueImage(venue);
+
+                  return (
                     <Marker
                       key={venue.id}
                       position={[venue.latitudine, venue.longitudine]}
@@ -724,11 +879,12 @@ export default function MapPage() {
                       <Popup>
                         <div className="dw-map-popup">
                           <div className="dw-map-popup-image-wrap">
-                            {resolveVenueImage(venue) ? (
+                            {popupImage ? (
                               <img
-                                src={resolveVenueImage(venue) as string}
+                                src={popupImage}
                                 alt={getTranslatedField(venue as any, "nome", i18n.language, venue.nome || "Locale DrinkWise")}
                                 className="dw-map-popup-image"
+                                loading="lazy"
                               />
                             ) : (
                               <div className="dw-map-popup-placeholder">DrinkWise</div>
@@ -749,15 +905,11 @@ export default function MapPage() {
                         </div>
                       </Popup>
                     </Marker>
-                  ))}
+                  );
+                })}
 
-                  <ZoomControl position="bottomright" />
-                </MapContainer>
-              ) : (
-                <div className="map-state-card" style={{ margin: 12 }}>
-                  Sto cercando i locali DrinkWise vicino a te...
-                </div>
-              )}
+                <ZoomControl position="bottomright" />
+              </MapContainer>
             </div>
 
             {fetchError && <div className="map-state-card">{fetchError}</div>}
@@ -769,13 +921,34 @@ export default function MapPage() {
               <span className="map-range-chip">10 km</span>
             </div>
 
-            {loading && (
+            <p className="map-status-label">
+              {isUpdatingLocation
+                ? "Aggiornamento posizione..."
+                : usingFallbackPosition
+                  ? "Posizione non attiva: risultati basati sull'ultima posizione disponibile."
+                  : "Locali nel raggio di 10 km"}
+            </p>
+
+            {showSkeletons && (
               <div className="map-state-card">
-                Sto cercando i locali DrinkWise vicino a te...
+                <div style={{ marginBottom: 12 }}>Sto aggiornando i locali vicino a te...</div>
+                <div className="map-venues-list">
+                  {[0, 1, 2].map((item) => (
+                    <div key={item} className="map-skeleton-card" aria-hidden="true">
+                      <div className="map-skeleton-image" />
+                      <div className="map-skeleton-lines">
+                        <div className="map-skeleton-line" />
+                        <div className="map-skeleton-line short" />
+                        <div className="map-skeleton-line" />
+                      </div>
+                      <div className="map-skeleton-badge" />
+                    </div>
+                  ))}
+                </div>
               </div>
             )}
 
-            {!loading && nearbyVenues.length > 0 && (
+            {nearbyVenues.length > 0 && (
               <div className="map-venues-list">
                 {nearbyVenues.map((venue) => {
                   const displayName = getTranslatedField(
@@ -797,7 +970,7 @@ export default function MapPage() {
                       className="map-venue-card"
                       onClick={() => navigate(`/venue/${venue.id}`)}
                     >
-                      <img src={image} alt={displayName} className="map-venue-image" />
+                      <img src={image} alt={displayName} className="map-venue-image" loading="lazy" />
 
                       <div>
                         <h3 className="map-venue-name">{displayName}</h3>
@@ -826,7 +999,7 @@ export default function MapPage() {
               </div>
             )}
 
-            {!loading && nearbyVenues.length === 0 && (
+            {!showSkeletons && nearbyVenues.length === 0 && (
               <div className="map-state-card">
                 <div style={{ fontWeight: 800, marginBottom: 4 }}>
                   Nessun locale DrinkWise entro 10 km
