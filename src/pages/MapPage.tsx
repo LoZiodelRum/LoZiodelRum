@@ -172,8 +172,12 @@ function resolveVenueImage(venue: VenueRow) {
 function normalizeVenueRows(rows: any[]): VenueRow[] {
   return rows
     .map((v: any) => {
-      const rawLat = parseCoordinate(v.latitudine);
-      const rawLng = parseCoordinate(v.longitudine);
+      const rawLat = parseCoordinate(
+        v.latitudine ?? v.latitude ?? v.lat ?? v.Latitudine ?? v.Latitude
+      );
+      const rawLng = parseCoordinate(
+        v.longitudine ?? v.longitude ?? v.lng ?? v.Longitudine ?? v.Longitude
+      );
 
       if (rawLat === null || rawLng === null) return null;
 
@@ -343,58 +347,81 @@ export default function MapPage() {
     }
     setFetchError(null);
 
-    const preferredQuery = await supabase
+    const { data, error } = await supabase
       .from("Locali")
-      .select(
-        "id, nome, nome_en, nome_bg, citta, indirizzo, tipo_locale, pacchetto, livello, rating, qualita_drink, competenza_staff, atmosfera, qualita_prezzo, latitudine, longitudine, image_url, image, cover_url"
-      )
-      .or("status.eq.approved,approvato.eq.true");
+      .select("*")
+      .or("status.eq.approved,approvato.eq.true")
+      .order("nome", { ascending: true });
 
-    const fallbackQuery =
-      preferredQuery.error &&
-      String(preferredQuery.error.message || "").toLowerCase().includes("column")
-        ? await supabase
-            .from("Locali")
-            .select(
-              "id, nome, nome_en, nome_bg, citta, indirizzo, latitudine, longitudine, image_url, image, cover_url"
-            )
-            .or("status.eq.approved,approvato.eq.true")
-        : null;
+    console.log("MAPPA - dati Supabase grezzi:", data);
+    console.log("MAPPA - errore Supabase:", error);
 
-    const sourceError =
-      preferredQuery.error && !fallbackQuery
-        ? preferredQuery.error
-        : fallbackQuery?.error;
-    const sourceData = (preferredQuery.data || fallbackQuery?.data || []) as any[];
-
-    if (sourceError) {
+    if (error) {
       setFetchError("Errore nel caricamento della mappa. Riprova tra poco.");
       setLoadingVenues(false);
+      setVenues([]);
       return;
     }
 
-    const valid = normalizeVenueRows(sourceData);
+    const valid = normalizeVenueRows((data || []) as any[]);
 
     setVenues(valid);
     writeCachedVenues(valid);
     setLoadingVenues(false);
   }
 
+  const getVenueLat = (venue: any) => {
+    const value =
+      venue.latitudine ??
+      venue.latitude ??
+      venue.lat ??
+      venue.Latitudine ??
+      venue.Latitude;
+
+    const num = Number(String(value).replace(",", "."));
+    return Number.isFinite(num) ? num : null;
+  };
+
+  const getVenueLng = (venue: any) => {
+    const value =
+      venue.longitudine ??
+      venue.longitude ??
+      venue.lng ??
+      venue.Longitudine ??
+      venue.Longitude;
+
+    const num = Number(String(value).replace(",", "."));
+    return Number.isFinite(num) ? num : null;
+  };
+
+  const venuesWithCoords = useMemo(
+    () =>
+      venues
+        .map((venue: any) => ({
+          ...venue,
+          markerLat: getVenueLat(venue),
+          markerLng: getVenueLng(venue),
+        }))
+        .filter(
+          (venue: any) =>
+            venue.markerLat !== null &&
+            venue.markerLng !== null
+        ),
+    [venues]
+  );
+
   const nearbyVenues = useMemo(() => {
     if (!userPosition) return [] as NearbyVenue[];
 
-    return venues
-      .map((venue) => {
+    return venuesWithCoords
+      .map((venue: any) => {
+        const priority = getVenuePriority(venue);
         const distanceKm = getDistanceKm(
           userPosition.lat,
           userPosition.lng,
-          venue.latitudine,
-          venue.longitudine
+          venue.markerLat,
+          venue.markerLng
         );
-
-        if (distanceKm > radiusKm) return null;
-
-        const priority = getVenuePriority(venue);
 
         return {
           ...venue,
@@ -405,44 +432,27 @@ export default function MapPage() {
           computedRating: computeRating(venue),
         } satisfies NearbyVenue;
       })
+      .filter((venue: any) => venue.distanceKm <= radiusKm)
       .filter((venue): venue is NearbyVenue => venue !== null)
       .sort((a, b) => {
         if (a.priority !== b.priority) return a.priority - b.priority;
         return a.distanceKm - b.distanceKm;
       });
-  }, [radiusKm, userPosition, venues]);
+  }, [radiusKm, userPosition, venuesWithCoords]);
+
+  useEffect(() => {
+    console.log("MAPPA - locali in state:", venues.length);
+  }, [venues.length]);
+
+  useEffect(() => {
+    console.log("MAPPA - locali con coordinate:", venuesWithCoords.length);
+  }, [venuesWithCoords.length]);
+
+  useEffect(() => {
+    console.log("MAPPA - locali entro 10 km:", nearbyVenues.length);
+  }, [nearbyVenues.length]);
 
   const showSkeletons = loadingVenues && venues.length === 0;
-  const venuesWithCoords = venues
-    .map((venue: any) => {
-      const latValue =
-        venue.latitudine ??
-        venue.latitude ??
-        venue.lat ??
-        venue.Latitudine ??
-        venue.Latitude;
-
-      const lngValue =
-        venue.longitudine ??
-        venue.longitude ??
-        venue.lng ??
-        venue.Longitudine ??
-        venue.Longitude;
-
-      const markerLat = Number(String(latValue).replace(",", "."));
-      const markerLng = Number(String(lngValue).replace(",", "."));
-
-      return {
-        ...venue,
-        markerLat: Number.isFinite(markerLat) ? markerLat : null,
-        markerLng: Number.isFinite(markerLng) ? markerLng : null,
-      };
-    })
-    .filter(
-      (venue: any) =>
-        venue.markerLat !== null &&
-        venue.markerLng !== null
-    );
 
   return (
     <>
@@ -1035,13 +1045,24 @@ export default function MapPage() {
               </div>
             )}
 
-            {!showSkeletons && nearbyVenues.length === 0 && (
+            {!showSkeletons && venuesWithCoords.length === 0 && (
               <div className="map-state-card">
                 <div style={{ fontWeight: 800, marginBottom: 4 }}>
-                  Nessun locale DrinkWise entro 10 km
+                  Nessun locale con coordinate disponibili.
                 </div>
                 <div style={{ opacity: 0.88 }}>
-                  Stiamo espandendo il network nella tua zona.
+                  Controlla che i locali abbiano latitudine e longitudine salvate.
+                </div>
+              </div>
+            )}
+
+            {!showSkeletons && venuesWithCoords.length > 0 && nearbyVenues.length === 0 && (
+              <div className="map-state-card">
+                <div style={{ fontWeight: 800, marginBottom: 4 }}>
+                  Nessun locale DrinkWise entro 10 km.
+                </div>
+                <div style={{ opacity: 0.88 }}>
+                  La mappa mostra comunque tutti i locali del network.
                 </div>
                 <button className="map-state-action" onClick={() => navigate("/venues")}>
                   Esplora tutti i locali
