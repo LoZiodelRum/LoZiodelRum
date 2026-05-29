@@ -533,7 +533,7 @@ export default function OwnerDashboard() {
             "drink registrati",
           ),
           loadRowsByLocale(["Recensioni", "recensioni"], localeId, "recensioni"),
-          loadRowsByLocale(["event_requests", "events", "eventi"], localeId, "eventi"),
+          loadRowsByLocale(["event_requests", "events", "eventi", "richieste_eventi", "eventi_richieste"], localeId, "eventi"),
           loadRowsByLocale(["pagamenti", "payments", "subscriptions", "abbonamenti"], localeId, "pagamenti"),
         ]);
 
@@ -822,7 +822,25 @@ export default function OwnerDashboard() {
   async function handleEventRequestSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
-    if (!eventMeta.table) {
+    let eventTable = eventMeta.table;
+    let eventLocaleColumn = eventMeta.localeColumn;
+
+    if (!eventTable) {
+      eventTable = await resolveTable(["event_requests", "events", "eventi", "richieste_eventi", "eventi_richieste"]);
+      if (eventTable) {
+        eventLocaleColumn = await resolveColumn(eventTable, [
+          "locale_id",
+          "local_id",
+          "venue_id",
+          "id_locale",
+          "localeId",
+          "locale",
+        ]);
+        setEventMeta({ table: eventTable, localeColumn: eventLocaleColumn || null });
+      }
+    }
+
+    if (!eventTable) {
       setEventFeedback("Richiesta evento pronta per essere collegata al database.");
       return;
     }
@@ -833,22 +851,25 @@ export default function OwnerDashboard() {
     try {
       const payload: GenericRow = {};
 
-      const ownerIdColumn = await resolveColumn(eventMeta.table, ["owner_id", "proprietario_id", "user_id", "profile_id"]);
-      const typeColumn = await resolveColumn(eventMeta.table, ["tipo_evento", "event_type", "tipo"]);
-      const dateColumn = await resolveColumn(eventMeta.table, ["data_evento", "event_date", "data"]);
-      const timeColumn = await resolveColumn(eventMeta.table, ["fascia_oraria", "time_slot", "orario"]);
-      const participantsColumn = await resolveColumn(eventMeta.table, ["numero_partecipanti", "participants", "guests"]);
-      const notesColumn = await resolveColumn(eventMeta.table, ["note", "notes", "descrizione"]);
-      const statusColumn = await resolveColumn(eventMeta.table, ["stato", "status", "state"]);
+      const ownerIdColumn = await resolveColumn(eventTable, ["owner_id", "proprietario_id", "user_id", "profile_id"]);
+      const typeColumn = await resolveColumn(eventTable, ["tipo_evento", "event_type", "tipo"]);
+      const dateColumn = await resolveColumn(eventTable, ["data_evento", "event_date", "data"]);
+      const timeColumn = await resolveColumn(eventTable, ["fascia_oraria", "time_slot", "orario"]);
+      const participantsColumn = await resolveColumn(eventTable, ["numero_partecipanti", "participants", "guests"]);
+      const notesColumn = await resolveColumn(eventTable, ["note", "notes", "descrizione"]);
+      const statusColumn = await resolveColumn(eventTable, ["stato", "status", "state", "approval_status"]);
+      const approvedColumn = await resolveColumn(eventTable, ["approvato", "approved", "is_approved"]);
+      const createdAtColumn = await resolveColumn(eventTable, ["created_at", "requested_at", "data_richiesta"]);
 
-      if (eventMeta.localeColumn && locale?.id) payload[eventMeta.localeColumn] = locale.id;
+      if (eventLocaleColumn && locale?.id) payload[eventLocaleColumn] = locale.id;
       if (ownerIdColumn && user?.id) payload[ownerIdColumn] = user.id;
       if (typeColumn) payload[typeColumn] = eventType;
       if (dateColumn) payload[dateColumn] = eventDate || null;
       if (timeColumn) payload[timeColumn] = eventTimeRange;
       if (participantsColumn) payload[participantsColumn] = Number(eventParticipants || 0);
       if (notesColumn) payload[notesColumn] = eventNotes;
-      if (statusColumn) payload[statusColumn] = "inviata";
+      if (approvedColumn) payload[approvedColumn] = false;
+      if (createdAtColumn && !payload[createdAtColumn]) payload[createdAtColumn] = new Date().toISOString();
 
       if (!Object.keys(payload).length) {
         setEventFeedback("Richiesta evento pronta per essere collegata al database.");
@@ -856,12 +877,37 @@ export default function OwnerDashboard() {
         return;
       }
 
-      const result = await supabase.from(eventMeta.table).insert([payload]);
-      if (result.error) {
-        console.error("[OwnerDashboard] Errore salvataggio richiesta evento:", result.error);
+      const statusValues = statusColumn ? ["pending", "in_attesa", "in attesa", "inviata"] : [""];
+      let insertError: any = null;
+
+      for (const statusValue of statusValues) {
+        const payloadWithStatus = { ...payload };
+        if (statusColumn && statusValue) payloadWithStatus[statusColumn] = statusValue;
+
+        const result = await supabase.from(eventTable).insert([payloadWithStatus]);
+        if (!result.error) {
+          insertError = null;
+          break;
+        }
+
+        insertError = result.error;
+        const errorMessage = String(result.error?.message || "").toLowerCase();
+        const isStatusConstraintIssue =
+          errorMessage.includes("check constraint") ||
+          errorMessage.includes("violates") ||
+          errorMessage.includes("invalid input value") ||
+          errorMessage.includes("enum");
+
+        if (!statusColumn || !isStatusConstraintIssue) {
+          break;
+        }
+      }
+
+      if (insertError) {
+        console.error("[OwnerDashboard] Errore salvataggio richiesta evento:", insertError);
         setEventFeedback("Richiesta evento pronta per essere collegata al database.");
       } else {
-        setEventFeedback("Richiesta evento inviata.");
+        setEventFeedback("Richiesta evento inviata e in attesa di approvazione admin.");
         setEventModalOpen(false);
       }
     } finally {
