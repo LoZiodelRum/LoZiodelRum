@@ -338,7 +338,7 @@ export default function MapPage() {
   return (
     <>
       <Navbar />
-      <div className="map-page-root" style={{ minHeight: "100vh", padding: "74px 12px 138px", color: "#edf4ff", overflowX: "hidden" }}>
+      <div className="map-page-root" style={{ minHeight: "100vh", padding: "40px 12px 138px", color: "#edf4ff", overflowX: "hidden" }}>
         <style>{`
           .map-page-shell {
             width: min(1040px, 100%);
@@ -640,7 +640,7 @@ export default function MapPage() {
 
           @media (max-width: 760px) {
             .map-page-root {
-              padding: 72px 10px 146px !important;
+              padding: 38px 10px 146px !important;
             }
 
             .map-main-box {
