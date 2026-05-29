@@ -1358,6 +1358,19 @@
     display: block;
   }
 
+  .owner-mobile-kpi-foot {
+    display: block;
+    margin-top: 5px;
+    font-size: 8px;
+    color: #58c26a;
+    white-space: nowrap;
+  }
+
+  .owner-mobile-rating-foot {
+    color: #ffbd52;
+    letter-spacing: 0.05em;
+  }
+
   .owner-mobile-double-grid {
     display: grid;
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -1442,8 +1455,18 @@
     padding: 8px;
     background: rgba(255, 255, 255, 0.02);
     display: grid;
+    grid-template-columns: 44px 1fr;
+    align-items: center;
     gap: 6px;
     min-width: 0;
+  }
+
+  .owner-mobile-events-grid article img {
+    width: 44px;
+    height: 44px;
+    border-radius: 8px;
+    object-fit: cover;
+    border: 1px solid rgba(255, 176, 39, 0.24);
   }
 
   .owner-mobile-events-grid strong {
@@ -1462,6 +1485,7 @@
 
   .owner-mobile-events-grid em {
     justify-self: start;
+    grid-column: 2;
     font-style: normal;
     font-size: 9px;
     color: #f7be64;

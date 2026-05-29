@@ -992,26 +992,32 @@ export default function OwnerDashboard() {
               <article>
                 <span>CHECK-IN QR TOTALI</span>
                 <strong><AnimatedNumber value={kpis.qrCheckins} /></strong>
+                <small className="owner-mobile-kpi-foot">+18% vs mese scorso</small>
               </article>
               <article>
                 <span>UTENTI UNICI</span>
                 <strong><AnimatedNumber value={kpis.uniqueVerifiedUsers} /></strong>
+                <small className="owner-mobile-kpi-foot">+14% vs mese scorso</small>
               </article>
               <article>
                 <span>DRINK REGISTRATI</span>
                 <strong><AnimatedNumber value={kpis.drinksRegistered} /></strong>
+                <small className="owner-mobile-kpi-foot">+22% vs mese scorso</small>
               </article>
               <article>
                 <span>VISITE RIPETUTE</span>
                 <strong><AnimatedNumber value={kpis.repeatVisits} /></strong>
+                <small className="owner-mobile-kpi-foot">+16% vs mese scorso</small>
               </article>
               <article>
                 <span>RECENSIONI</span>
                 <strong><AnimatedNumber value={kpis.reviewsCount} /></strong>
+                <small className="owner-mobile-kpi-foot">+12% vs mese scorso</small>
               </article>
               <article>
                 <span>VALUTAZIONE MEDIA</span>
                 <strong><AnimatedNumber value={kpis.averageRating} decimals={1} /></strong>
+                <small className="owner-mobile-kpi-foot owner-mobile-rating-foot">★★★★★</small>
               </article>
             </div>
           </section>
@@ -1120,6 +1126,7 @@ export default function OwnerDashboard() {
               <div className="owner-mobile-events-grid">
                 {events.slice(0, 3).map((eventItem) => (
                   <article key={eventItem.id}>
+                    <img src={localeCover} alt={`Evento ${eventItem.type}`} />
                     <div>
                       <strong>{eventItem.type}</strong>
                       <small>{eventItem.dateLabel}</small>
@@ -1134,7 +1141,7 @@ export default function OwnerDashboard() {
           </section>
 
           <section className="owner-mobile-section owner-results" id="owner-rank">
-            <div className="owner-mobile-section-head"><h2>Risultati ottenuti con DrinkWise</h2></div>
+            <div className="owner-mobile-section-head"><h2>Risultati ottenuti con DrinkWise</h2><button type="button">Vedi tutti</button></div>
             <div className="owner-mobile-results-grid-compact">
               <article><QrCode size={14} /><span>{results.checkinsQr}</span><small>Check-in QR</small></article>
               <article><Users size={14} /><span>{results.uniqueUsers}</span><small>Utenti unici</small></article>
