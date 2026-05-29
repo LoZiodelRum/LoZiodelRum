@@ -14,6 +14,7 @@ const ADMIN_ARTICOLI_COLUMNS = "id, slug, titolo, titolo_en, titolo_bg, sottotit
 const ADMIN_COCKTAIL_COLUMNS = "id, nome, nome_en, nome_bg, categoria, descrizione, descrizione_en, descrizione_bg, ingredienti, ingredienti_en, ingredienti_bg, preparazione, preparazione_en, preparazione_bg, immagine, immagine_url, created_at, updated_at";
 const ADMIN_DISTILLATI_COLUMNS = "id, nome, nome_en, nome_bg, categoria, marca, provenienza, provenienza_en, provenienza_bg, storia, storia_en, storia_bg, note_degustazione, note_degustazione_en, note_degustazione_bg, immagine, created_at, updated_at";
 const ADMIN_VINI_COLUMNS = "id, nome, categoria, annata, cantina, vitigno, grado_alcolico, zona, denominazione, immagine, note_degustazione, note_degustazione_en, note_degustazione_bg, provenienza, provenienza_en, provenienza_bg, descrizione, descrizione_en, descrizione_bg, created_at, updated_at";
+const PROFILE_LOCALE_FIELD_CANDIDATES = ["locale_id", "local_id", "venue_id", "id_locale"] as const;
 
 function getAdminSelectColumns(tableName: string) {
   const normalized = String(tableName || "").toLowerCase();
@@ -46,6 +47,7 @@ export default function AdminPanel() {
   const [selectedTable, setSelectedTable] = useState<string>("");
   const [isCreating, setIsCreating] = useState(false);
   const [createRoleHint, setCreateRoleHint] = useState<string | null>(null);
+  const [profileLocaleField, setProfileLocaleField] = useState<string | null>(null);
 
   const [kpi, setKpi] = useState({
     utenti: 0,
@@ -191,6 +193,26 @@ export default function AdminPanel() {
       approvato: normalizeApproved(user),
     }));
     const safeCocktail = Array.isArray(cocktailData) ? cocktailData : [];
+
+    let detectedProfileLocaleField = PROFILE_LOCALE_FIELD_CANDIDATES.find((field) =>
+      safeUsers.some((user) => Object.prototype.hasOwnProperty.call(user || {}, field)),
+    ) || null;
+
+    if (!detectedProfileLocaleField) {
+      const tableCandidates = ["Profili", "profili"];
+      for (const tableName of tableCandidates) {
+        for (const field of PROFILE_LOCALE_FIELD_CANDIDATES) {
+          const probe = await supabase.from(tableName).select(field).limit(1);
+          if (!probe.error) {
+            detectedProfileLocaleField = field;
+            break;
+          }
+        }
+        if (detectedProfileLocaleField) break;
+      }
+    }
+
+    setProfileLocaleField(detectedProfileLocaleField);
 
     setLocali(localiData || []);
     setUtenti(safeUsers);
@@ -1493,6 +1515,10 @@ export default function AdminPanel() {
     "telefono",
     "password",
     "ruolo",
+    "locale_id",
+    "local_id",
+    "venue_id",
+    "id_locale",
     "status",
     "bio_breve",
     "avatar_url",
@@ -1580,6 +1606,10 @@ export default function AdminPanel() {
     citta_locale: "citta_locale",
     latitudine: "latitudine",
     longitudine: "longitudine",
+    locale_id: "Locale associato",
+    local_id: "Locale associato",
+    venue_id: "Locale associato",
+    id_locale: "Locale associato",
   };
 
   function stringifyProfileCollection(value: unknown) {
@@ -1602,6 +1632,10 @@ export default function AdminPanel() {
       telefono: item?.telefono ?? item?.cellulare ?? "",
       password: "",
       ruolo,
+      locale_id: item?.locale_id ?? "",
+      local_id: item?.local_id ?? "",
+      venue_id: item?.venue_id ?? "",
+      id_locale: item?.id_locale ?? "",
       status,
       bio_breve: item?.bio_breve ?? item?.bio ?? "",
       avatar_url: item?.avatar_url ?? item?.foto_profilo ?? "",
@@ -1648,6 +1682,10 @@ export default function AdminPanel() {
   function getProfiliEditorKeys(item: any) {
     const ruolo = String(item?.ruolo || "utente").toLowerCase();
     return profiliEditorKeyOrder.filter((key) => {
+      if ((PROFILE_LOCALE_FIELD_CANDIDATES as readonly string[]).includes(key)) {
+        return Boolean(profileLocaleField) && key === profileLocaleField && ruolo === "proprietario";
+      }
+
       if (["nome_locale", "esperienza_anni", "specialita", "certificazioni", "menu_caricato"].includes(key) && ruolo !== "bartender") {
         return false;
       }
@@ -1678,6 +1716,21 @@ export default function AdminPanel() {
     normalized.ruolo = String(normalized.ruolo || "utente").trim().toLowerCase();
     normalized.status = String(normalized.status || (normalized.approvato ? "attivo" : "sospeso")).trim().toLowerCase();
     normalized.approvato = normalized.status === "attivo" || normalized.status === "admin";
+
+    PROFILE_LOCALE_FIELD_CANDIDATES.forEach((field) => {
+      if (profileLocaleField !== field) {
+        delete normalized[field];
+      }
+    });
+
+    if (profileLocaleField) {
+      if (normalized.ruolo === "proprietario") {
+        const selectedLocaleId = String(normalized[profileLocaleField] ?? "").trim();
+        normalized[profileLocaleField] = selectedLocaleId || null;
+      } else {
+        delete normalized[profileLocaleField];
+      }
+    }
 
     if (!String(normalized.password || "").trim()) {
       delete normalized.password;
@@ -2047,6 +2100,9 @@ export default function AdminPanel() {
     : selectedTable === "profili"
       ? getProfiliEditorKeys(selectedItem)
       : Object.keys(selectedItem || {});
+  const sortedLocaliOptions = [...locali].sort((a, b) =>
+    String(a?.nome || "").localeCompare(String(b?.nome || "")),
+  );
 
   // --- MOBILE/TABLET LAYOUT ---
   if (isMobile) {
@@ -2174,6 +2230,11 @@ export default function AdminPanel() {
               </h2>
               {saveStatus === "ok" && (<div style={{ ...badgeOkStyle, fontSize: 15, padding: 8 }}>Modifica salvata</div>)}
               {saveStatus === "error" && (<div style={{ ...badgeErrorStyle, fontSize: 15, padding: 8 }}>Modifica non salvata</div>)}
+              {selectedTable === "profili" && String(selectedItem?.ruolo || "").trim().toLowerCase() === "proprietario" && !profileLocaleField && (
+                <div style={{ background: "#3a1f0c", color: "#ffd9a8", border: "1px solid #7c3f12", borderRadius: 8, padding: "10px 12px", fontSize: 13, marginBottom: 12 }}>
+                  Campo di associazione locale non trovato nel profilo. SQL consigliato: ALTER TABLE public."Profili" ADD COLUMN IF NOT EXISTS locale_id uuid;
+                </div>
+              )}
               <div style={{ display: "flex", flexDirection: "column", gap: 14 }}>
                 {editorKeys.map(key => {
                   if ((key === "id" && selectedTable !== "profili") || (selectedTable === "cocktail" && (key === "data_creazione" || key === "created_at" || key === "texture")) || (selectedTable === "Locali" && removedLocaliFields.has(key))) return null;
@@ -2183,6 +2244,25 @@ export default function AdminPanel() {
                       <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
                         <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>{fieldLabelMap[key] ?? key}</label>
                         <input type="password" value={selectedItem[key] ?? ""} onChange={e => { const value = e.target.value; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }} placeholder={isCreating ? "Imposta password iniziale" : "Lascia vuoto per non cambiarla"} style={inputMobileStyle} />
+                      </div>
+                    );
+                  }
+                  if (selectedTable === "profili" && profileLocaleField && key === profileLocaleField) {
+                    return (
+                      <div key={key} style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                        <label style={{ fontSize: 14, color: "#f5a623", fontWeight: 600, marginBottom: 2 }}>Locale associato</label>
+                        <select
+                          value={selectedItem[key] ?? ""}
+                          onChange={e => { const value = e.target.value; setSelectedItem((prev: any) => ({ ...prev, [key]: value })); setSaveStatus(null); }}
+                          style={inputMobileStyle}
+                        >
+                          <option value="">Scegli locale</option>
+                          {sortedLocaliOptions.map((locale) => (
+                            <option key={String(locale.id)} value={String(locale.id)}>
+                              {`${String(locale?.nome || "Locale")} - ${String(locale?.citta || "N/D")}`}
+                            </option>
+                          ))}
+                        </select>
                       </div>
                     );
                   }
@@ -2387,6 +2467,11 @@ const inputMobileStyle = {
 
             {saveStatus === "error" && (
               <div style={badgeErrorStyle}>Modifica non salvata</div>
+            )}
+            {selectedTable === "profili" && String(selectedItem?.ruolo || "").trim().toLowerCase() === "proprietario" && !profileLocaleField && (
+              <div style={{ background: "#3a1f0c", color: "#ffd9a8", border: "1px solid #7c3f12", borderRadius: 8, padding: "10px 12px", fontSize: 13, marginBottom: 12 }}>
+                Campo di associazione locale non trovato nel profilo. SQL consigliato: ALTER TABLE public."Profili" ADD COLUMN IF NOT EXISTS locale_id uuid;
+              </div>
             )}
 
             {isImageSidebarTable ? (
@@ -2659,6 +2744,26 @@ const inputMobileStyle = {
                         placeholder={isCreating ? "Imposta password iniziale" : "Lascia vuoto per non cambiarla"}
                         style={inputStyle}
                       />
+                    ) : selectedTable === "profili" && profileLocaleField && key === profileLocaleField ? (
+                      <select
+                        value={selectedItem[key] ?? ""}
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          setSelectedItem((prev: any) => ({
+                            ...prev,
+                            [key]: value,
+                          }));
+                          setSaveStatus(null);
+                        }}
+                        style={selectStyle}
+                      >
+                        <option value="">Scegli locale</option>
+                        {sortedLocaliOptions.map((locale) => (
+                          <option key={String(locale.id)} value={String(locale.id)}>
+                            {`${String(locale?.nome || "Locale")} - ${String(locale?.citta || "N/D")}`}
+                          </option>
+                        ))}
+                      </select>
                     ) : booleanFields.has(key) ? (
                       <select
                         value={String(toBoolean(selectedItem[key]))}

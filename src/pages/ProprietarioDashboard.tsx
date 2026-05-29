@@ -319,6 +319,30 @@ export default function OwnerDashboard() {
       return null;
     }
 
+    const linkedLocaleId =
+      ownerProfile?.locale_id ??
+      ownerProfile?.local_id ??
+      ownerProfile?.venue_id ??
+      ownerProfile?.id_locale ??
+      null;
+
+    if (linkedLocaleId !== null && linkedLocaleId !== undefined && String(linkedLocaleId).trim()) {
+      const linkedLocaleResult = await supabase
+        .from(localiTable)
+        .select("*")
+        .eq("id", linkedLocaleId)
+        .limit(1)
+        .maybeSingle();
+
+      if (!linkedLocaleResult.error && linkedLocaleResult.data) {
+        return linkedLocaleResult.data;
+      }
+
+      if (linkedLocaleResult.error) {
+        console.error("[OwnerDashboard] Errore lookup locale da profilo.locale_id:", linkedLocaleResult.error);
+      }
+    }
+
     const idValues = [currentUser?.id, ownerProfile?.id].filter(Boolean);
     const idColumns = ["proprietario_id", "owner_id", "user_id", "profile_id"];
 
