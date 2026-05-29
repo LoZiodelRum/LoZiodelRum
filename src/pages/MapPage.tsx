@@ -676,7 +676,7 @@ export default function MapPage() {
           <div className="map-main-box">
             <div className="map-title-row">
               <div>
-                <h1 className="map-title">Mappa DrinkWise</h1>
+                <h1 className="map-title">Locali DrinkWise</h1>
                 <p className="map-subtitle">Locali nel raggio di 10 km</p>
               </div>
 
