@@ -84,7 +84,16 @@ type EventTableMeta = {
   localeColumn: string | null;
 };
 
-const OWNER_ALLOWED_ROLES = new Set(["proprietario", "admin"]);
+const OWNER_ALLOWED_ROLES = new Set([
+  "proprietario",
+  "owner",
+  "proprietari",
+  "gestore",
+  "locale",
+  "proprietario locale",
+  "admin",
+  "amministratore",
+]);
 
 const SIDEBAR_ITEMS = [
   { id: "owner-main-dashboard", label: "Dashboard" },
@@ -195,7 +204,22 @@ export default function OwnerDashboard() {
   const navigate = useNavigate();
   const { user, role } = useUser();
 
-  const normalizedRole = String(role || "").trim().toLowerCase();
+  const normalizedRole = String(
+    role ||
+      user?.ruolo ||
+      user?.role ||
+      user?.tipo ||
+      user?.userRole ||
+      user?.user_metadata?.ruolo ||
+      user?.user_metadata?.role ||
+      user?.user_metadata?.tipo ||
+      user?.user_metadata?.userRole ||
+      user?.app_metadata?.ruolo ||
+      user?.app_metadata?.role ||
+      "",
+  )
+    .trim()
+    .toLowerCase();
   const isAuthorized = OWNER_ALLOWED_ROLES.has(normalizedRole);
 
   const [loading, setLoading] = useState(true);

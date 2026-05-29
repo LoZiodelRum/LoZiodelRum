@@ -41,8 +41,26 @@ export default function Navbar() {
     };
   }
 
-  const normalizedRole = String(role || "").trim().toLowerCase();
-  const canAccessOwnerDashboard = isAdmin || normalizedRole === "proprietario";
+  const normalizeRole = (value: unknown) => String(value || "").trim().toLowerCase();
+  const normalizedRole = normalizeRole(
+    role ||
+    user?.ruolo ||
+    user?.role ||
+    user?.tipo ||
+    user?.userRole ||
+    user?.user_metadata?.ruolo ||
+    user?.user_metadata?.role ||
+    user?.user_metadata?.tipo ||
+    user?.user_metadata?.userRole ||
+    user?.app_metadata?.ruolo ||
+    user?.app_metadata?.role ||
+    "",
+  );
+
+  const ownerRoles = ["proprietario", "owner", "proprietari", "gestore", "locale", "proprietario locale"];
+  const adminRoles = ["admin", "amministratore"];
+  const canAccessOwnerDashboard =
+    isAdmin || ownerRoles.includes(normalizedRole) || adminRoles.includes(normalizedRole);
 
   async function handleLogout() {
     await supabase.auth.signOut();
@@ -181,7 +199,7 @@ export default function Navbar() {
 
         {canAccessOwnerDashboard && (
           <Link to="/proprietario" style={linkStyle("/proprietario")}>
-            Dashboard Proprietario
+            Dashboard
           </Link>
         )}
 
@@ -686,7 +704,7 @@ export default function Navbar() {
               WebkitTapHighlightColor: "transparent",
             }}
           >
-            Dashboard Proprietario
+            Dashboard
           </Link>
         )}
 
