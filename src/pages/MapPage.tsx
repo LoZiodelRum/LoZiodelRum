@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronRight, MapPin, Navigation, Star } from "lucide-react";
 import { AttributionControl, MapContainer, Marker, Popup, TileLayer, ZoomControl, useMap } from "react-leaflet";
@@ -8,6 +8,7 @@ import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import { useTranslation } from "react-i18next";
 import { getTranslatedField } from "../utils/getTranslatedField";
+import { useLocationContext } from "../context/LocationContext";
 
 import markerIcon2x from "leaflet/dist/images/marker-icon-2x.png";
 import markerIcon from "leaflet/dist/images/marker-icon.png";
@@ -75,7 +76,6 @@ const DEFAULT_CENTER: UserPosition = {
   lng: 14.2681,
 };
 
-const LAST_POSITION_STORAGE_KEY = "drinkwise_last_position";
 const CACHED_VENUES_STORAGE_KEY = "drinkwise_cached_venues";
 
 function canUseStorage() {
@@ -201,40 +201,6 @@ function normalizeVenueRows(rows: any[]): VenueRow[] {
     .filter((locale): locale is VenueRow => locale !== null);
 }
 
-function readCachedPosition() {
-  if (!canUseStorage()) return null;
-
-  try {
-    const raw = window.localStorage.getItem(LAST_POSITION_STORAGE_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw) as { lat?: unknown; lng?: unknown };
-    const lat = parseCoordinate(parsed.lat);
-    const lng = parseCoordinate(parsed.lng);
-    if (lat === null || lng === null) return null;
-    if (!isLatitude(lat) || !isLongitude(lng)) return null;
-    return { lat, lng } satisfies UserPosition;
-  } catch {
-    return null;
-  }
-}
-
-function writeCachedPosition(position: UserPosition) {
-  if (!canUseStorage()) return;
-
-  try {
-    window.localStorage.setItem(
-      LAST_POSITION_STORAGE_KEY,
-      JSON.stringify({
-        lat: position.lat,
-        lng: position.lng,
-        timestamp: Date.now(),
-      })
-    );
-  } catch {
-    // Ignore storage write failures.
-  }
-}
-
 function readCachedVenues() {
   if (!canUseStorage()) return [] as VenueRow[];
 
@@ -280,66 +246,24 @@ function MapCenterUpdater({
 export default function MapPage() {
   const navigate = useNavigate();
   const { i18n } = useTranslation();
-  const cachedPosition = useMemo(() => readCachedPosition(), []);
+  const {
+    userPosition,
+    hasRealPosition,
+    locationStatus,
+    locationError,
+    requestLocation,
+    refreshLocation,
+  } = useLocationContext();
   const cachedVenues = useMemo(() => readCachedVenues(), []);
 
   const [venues, setVenues] = useState<VenueRow[]>(cachedVenues);
-  const [userPosition, setUserPosition] = useState<UserPosition>(
-    cachedPosition || DEFAULT_CENTER
-  );
-  const [isUpdatingLocation, setIsUpdatingLocation] = useState(false);
   const [loadingVenues, setLoadingVenues] = useState(cachedVenues.length === 0);
-  const [usingFallbackPosition, setUsingFallbackPosition] = useState(!cachedPosition);
-  const [geoMessage, setGeoMessage] = useState<string | null>(null);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const radiusKm = 10;
 
-  const requestUserPosition = useCallback(() => {
-    setIsUpdatingLocation(true);
-
-    if (!navigator.geolocation) {
-      setGeoMessage(
-        "Posizione non disponibile. Puoi comunque esplorare i locali del network."
-      );
-      setUserPosition((prev) => prev || DEFAULT_CENTER);
-      setUsingFallbackPosition(true);
-      setIsUpdatingLocation(false);
-      return;
-    }
-    setGeoMessage(null);
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const nextPosition = {
-          lat: position.coords.latitude,
-          lng: position.coords.longitude,
-        };
-
-        setUserPosition(nextPosition);
-        writeCachedPosition(nextPosition);
-        setUsingFallbackPosition(false);
-        setIsUpdatingLocation(false);
-      },
-      () => {
-        setGeoMessage(
-          "Posizione non attiva: risultati basati sull'ultima posizione disponibile."
-        );
-        setUserPosition((prev) => prev || DEFAULT_CENTER);
-        setUsingFallbackPosition(true);
-        setIsUpdatingLocation(false);
-      },
-      {
-        enableHighAccuracy: false,
-        timeout: 3500,
-        maximumAge: 60000,
-      }
-    );
-  }, []);
-
   useEffect(() => {
     void fetchVenues();
-    requestUserPosition();
-  }, [requestUserPosition]);
+  }, []);
 
   async function fetchVenues() {
     if (!venues.length) {
@@ -411,7 +335,7 @@ export default function MapPage() {
   );
 
   const nearbyVenues = useMemo(() => {
-    if (!userPosition) return [] as NearbyVenue[];
+    if (!hasRealPosition) return [] as NearbyVenue[];
 
     return venuesWithCoords
       .map((venue: any) => {
@@ -438,7 +362,7 @@ export default function MapPage() {
         if (a.priority !== b.priority) return a.priority - b.priority;
         return a.distanceKm - b.distanceKm;
       });
-  }, [radiusKm, userPosition, venuesWithCoords]);
+  }, [hasRealPosition, radiusKm, userPosition, venuesWithCoords]);
 
   useEffect(() => {
     console.log("MAPPA - locali in state:", venues.length);
@@ -871,22 +795,38 @@ export default function MapPage() {
                 <p className="map-subtitle">Locali nel raggio di 10 km</p>
               </div>
 
-              <button className="map-recenter-btn" onClick={requestUserPosition}>
+              <button className="map-recenter-btn" onClick={refreshLocation}>
                 <Navigation size={16} strokeWidth={2.3} />
                 Usa la mia posizione
               </button>
             </div>
 
-            {geoMessage && (
+            {locationStatus === "denied" && (
+              <div className="map-state-card" style={{ marginBottom: 12 }}>
+                <div style={{ fontWeight: 800, marginBottom: 4 }}>
+                  Per usare al meglio DrinkWise, attiva la posizione.
+                </div>
+                <div style={{ opacity: 0.88 }}>
+                  Ti mostreremo locali, eventi e suggerimenti vicino a te.
+                </div>
+                <div style={{ opacity: 0.78, marginTop: 6 }}>
+                  Se hai negato il permesso, riattivalo dalle impostazioni del browser.
+                </div>
+                <button className="map-state-action" onClick={requestLocation}>
+                  Attiva posizione
+                </button>
+              </div>
+            )}
+
+            {(locationError && locationStatus !== "denied") && (
               <div className="map-geo-alert">
-                {geoMessage}
-                {usingFallbackPosition && " Fallback attivo su Napoli."}
+                {locationError}
               </div>
             )}
 
             <div className="map-viewport">
               <MapContainer
-                center={[userPosition.lat, userPosition.lng]}
+                center={[userPosition?.lat || DEFAULT_CENTER.lat, userPosition?.lng || DEFAULT_CENTER.lng]}
                 zoom={13}
                 style={{ height: "100%", width: "100%" }}
                 zoomControl={false}
@@ -894,7 +834,11 @@ export default function MapPage() {
                 preferCanvas={true}
                 scrollWheelZoom={true}
               >
-                <MapCenterUpdater lat={userPosition.lat} lng={userPosition.lng} zoom={13} />
+                <MapCenterUpdater
+                  lat={userPosition?.lat || DEFAULT_CENTER.lat}
+                  lng={userPosition?.lng || DEFAULT_CENTER.lng}
+                  zoom={13}
+                />
 
                 <TileLayer
                   url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -903,9 +847,11 @@ export default function MapPage() {
 
                 <AttributionControl position="bottomright" prefix={false} />
 
-                <Marker position={[userPosition.lat, userPosition.lng]} icon={userPositionIcon}>
-                  <Popup>Sei qui</Popup>
-                </Marker>
+                {hasRealPosition && (
+                  <Marker position={[userPosition.lat, userPosition.lng]} icon={userPositionIcon}>
+                    <Popup>Sei qui</Popup>
+                  </Marker>
+                )}
 
                 {venuesWithCoords.map((venue: any) => {
                   const popupImage = resolveVenueImage(venue);
@@ -968,11 +914,13 @@ export default function MapPage() {
             </div>
 
             <p className="map-status-label">
-              {isUpdatingLocation
-                ? "Aggiornamento posizione..."
-                : usingFallbackPosition
-                  ? "Posizione non attiva: risultati basati sull'ultima posizione disponibile."
-                  : "Locali nel raggio di 10 km"}
+              {locationStatus === "requesting"
+                ? "Sto rilevando la tua posizione..."
+                : locationStatus === "denied"
+                  ? "Attiva la posizione per vedere i locali DrinkWise vicino a te."
+                  : locationStatus === "granted"
+                    ? "Locali nel raggio di 10 km dalla tua posizione."
+                    : "Attiva la posizione per vedere i locali più vicini a te."}
             </p>
 
             {showSkeletons && (
@@ -1058,15 +1006,28 @@ export default function MapPage() {
 
             {!showSkeletons && venuesWithCoords.length > 0 && nearbyVenues.length === 0 && (
               <div className="map-state-card">
-                <div style={{ fontWeight: 800, marginBottom: 4 }}>
-                  Nessun locale DrinkWise entro 10 km.
-                </div>
-                <div style={{ opacity: 0.88 }}>
-                  La mappa mostra comunque tutti i locali del network.
-                </div>
-                <button className="map-state-action" onClick={() => navigate("/venues")}>
-                  Esplora tutti i locali
-                </button>
+                {hasRealPosition ? (
+                  <>
+                    <div style={{ fontWeight: 800, marginBottom: 4 }}>
+                      Nessun locale DrinkWise entro 10 km.
+                    </div>
+                    <div style={{ opacity: 0.88 }}>
+                      La mappa mostra comunque tutti i locali del network.
+                    </div>
+                    <button className="map-state-action" onClick={() => navigate("/venues")}>
+                      Esplora tutti i locali
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <div style={{ fontWeight: 800, marginBottom: 4 }}>
+                      Attiva la posizione per vedere i locali piu vicini a te.
+                    </div>
+                    <button className="map-state-action" onClick={refreshLocation}>
+                      Attiva posizione
+                    </button>
+                  </>
+                )}
               </div>
             )}
           </section>

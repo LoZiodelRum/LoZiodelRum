@@ -5,6 +5,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import App from "./App";
 import { BrowserRouter } from "react-router-dom";
 import { UserProvider } from "./context/UserContext";
+import { LocationProvider } from "./context/LocationContext";
 import "./index.css";
 import "./i18n/i18n";
 
@@ -32,7 +33,9 @@ ReactDOM.createRoot(document.getElementById("root")!).render(
     <QueryClientProvider client={queryClient}>
       <BrowserRouter>
         <UserProvider>
-          <App />
+          <LocationProvider>
+            <App />
+          </LocationProvider>
         </UserProvider>
       </BrowserRouter>
     </QueryClientProvider>
