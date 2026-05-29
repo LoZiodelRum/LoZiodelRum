@@ -56,7 +56,7 @@ import AdminPanel from "./pages/AdminPanel";
 import Bancone from "./pages/Bancone";
 import VenueDetail from "./pages/VenueDetail";
 import Venues from "./pages/Venues";
-import OwnerDashboard from "./pages/OwnerDashboard";
+import OwnerDashboard from "./pages/ProprietarioDashboard";
 
 // BARETTO
 import Baretto from "./pages/Baretto";
