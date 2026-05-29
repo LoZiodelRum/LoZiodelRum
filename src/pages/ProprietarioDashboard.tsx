@@ -319,6 +319,28 @@ export default function OwnerDashboard() {
       return null;
     }
 
+    // Temporary test path: first resolve locale by owner email fields.
+    const emailColumns = ["email_proprietario", "proprietario_email", "owner_email", "email", "email_locale"];
+    const emailValues = [
+      String(currentUser?.email || "").trim().toLowerCase(),
+      String(ownerProfile?.email || "").trim().toLowerCase(),
+    ].filter(Boolean);
+
+    for (const emailColumn of emailColumns) {
+      const existingColumn = await resolveColumn(localiTable, [emailColumn]);
+      if (!existingColumn) continue;
+      for (const emailValue of emailValues) {
+        const result = await supabase
+          .from(localiTable)
+          .select("*")
+          .eq(existingColumn, emailValue)
+          .limit(1)
+          .maybeSingle();
+
+        if (!result.error && result.data) return result.data;
+      }
+    }
+
     const linkedLocaleId =
       ownerProfile?.locale_id ??
       ownerProfile?.local_id ??
@@ -354,27 +376,6 @@ export default function OwnerDashboard() {
           .from(localiTable)
           .select("*")
           .eq(existingColumn, idValue)
-          .limit(1)
-          .maybeSingle();
-
-        if (!result.error && result.data) return result.data;
-      }
-    }
-
-    const emailColumns = ["email_proprietario", "email"];
-    const emailValues = [
-      String(currentUser?.email || "").trim().toLowerCase(),
-      String(ownerProfile?.email || "").trim().toLowerCase(),
-    ].filter(Boolean);
-
-    for (const emailColumn of emailColumns) {
-      const existingColumn = await resolveColumn(localiTable, [emailColumn]);
-      if (!existingColumn) continue;
-      for (const emailValue of emailValues) {
-        const result = await supabase
-          .from(localiTable)
-          .select("*")
-          .eq(existingColumn, emailValue)
           .limit(1)
           .maybeSingle();
 
@@ -455,12 +456,7 @@ export default function OwnerDashboard() {
         const ownedLocale = await loadOwnedLocale(user, ownerProfile);
         setLocale(ownedLocale);
 
-        if (!ownedLocale) {
-          setLoading(false);
-          return;
-        }
-
-        const localeId = ownedLocale.id || null;
+        const localeId = ownedLocale?.id || null;
 
         const [
           checkinsResult,
@@ -759,17 +755,6 @@ export default function OwnerDashboard() {
     );
   }
 
-  if (!locale) {
-    return (
-      <div className="owner-dashboard-page">
-        <div className="owner-empty-card">
-          <h2>Nessun locale associato al tuo profilo.</h2>
-          <p>Contatta l'amministratore DrinkWise.</p>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="owner-dashboard-page">
       <div className="owner-dashboard-shell">
@@ -833,6 +818,13 @@ export default function OwnerDashboard() {
               </button>
             ))}
           </div>
+
+          {!locale && (
+            <section className="owner-empty-card" style={{ width: "100%", margin: 0, textAlign: "left" }}>
+              <h2>Nessun locale collegato alla tua email.</h2>
+              <p>Per il test, inserisci nel locale una email proprietario uguale alla email usata per il login.</p>
+            </section>
+          )}
 
           <section className="owner-kpi-grid" id="owner-customers">
             <article className="owner-kpi-card">

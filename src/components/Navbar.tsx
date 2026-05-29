@@ -1,7 +1,7 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
 import { supabase } from "../lib/supabaseClient";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export default function Navbar() {
@@ -11,6 +11,7 @@ export default function Navbar() {
 
   const [menuOpen, setMenuOpen] = useState(false);
   const [languageOpen, setLanguageOpen] = useState(false);
+  const [profileRoleFallback, setProfileRoleFallback] = useState("");
 
   const { t, i18n } = useTranslation("navbar");
   const normalizedLanguage = String(i18n.language || "it").toLowerCase();
@@ -59,8 +60,66 @@ export default function Navbar() {
 
   const ownerRoles = ["proprietario", "owner", "proprietari", "gestore", "locale", "proprietario locale"];
   const adminRoles = ["admin", "amministratore"];
+  const normalizedProfileFallbackRole = normalizeRole(profileRoleFallback);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadProfileRoleFallback() {
+      if (!user) {
+        if (!cancelled) setProfileRoleFallback("");
+        return;
+      }
+
+      try {
+        const userId = String(user?.id || "").trim();
+        const userEmail = String(user?.email || "").trim().toLowerCase();
+        const tableCandidates = ["Profili", "profili"];
+
+        for (const table of tableCandidates) {
+          if (userId) {
+            const byId = await supabase.from(table).select("*").eq("id", userId).limit(1).maybeSingle();
+            if (!byId.error && byId.data) {
+              const fallbackRole = normalizeRole(
+                byId.data?.ruolo || byId.data?.role || byId.data?.tipo || byId.data?.userRole || "",
+              );
+              if (!cancelled) setProfileRoleFallback(fallbackRole);
+              return;
+            }
+          }
+
+          if (userEmail) {
+            const byEmail = await supabase.from(table).select("*").eq("email", userEmail).limit(1).maybeSingle();
+            if (!byEmail.error && byEmail.data) {
+              const fallbackRole = normalizeRole(
+                byEmail.data?.ruolo || byEmail.data?.role || byEmail.data?.tipo || byEmail.data?.userRole || "",
+              );
+              if (!cancelled) setProfileRoleFallback(fallbackRole);
+              return;
+            }
+          }
+        }
+
+        if (!cancelled) setProfileRoleFallback("");
+      } catch (error) {
+        console.error("[Navbar] Impossibile leggere ruolo profilo fallback:", error);
+        if (!cancelled) setProfileRoleFallback("");
+      }
+    }
+
+    loadProfileRoleFallback();
+    return () => {
+      cancelled = true;
+    };
+  }, [user?.id, user?.email]);
+
   const canAccessOwnerDashboard =
-    isAdmin || ownerRoles.includes(normalizedRole) || adminRoles.includes(normalizedRole);
+    isAdmin ||
+    ownerRoles.includes(normalizedRole) ||
+    adminRoles.includes(normalizedRole) ||
+    ownerRoles.includes(normalizedProfileFallbackRole) ||
+    adminRoles.includes(normalizedProfileFallbackRole) ||
+    location.pathname.startsWith("/proprietario");
 
   async function handleLogout() {
     await supabase.auth.signOut();
