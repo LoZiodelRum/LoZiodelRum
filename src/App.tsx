@@ -2,8 +2,6 @@ import React from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import MainLayout from "./layouts/MainLayout";
 import RuntimeErrorBoundary from "./components/RuntimeErrorBoundary";
-import { useUser } from "./context/UserContext";
-import { useLocationContext } from "./context/LocationContext";
 
 // Scroll automatico top pagina
 function ScrollToTop() {
@@ -67,21 +65,6 @@ import BarettoChat from "./pages/BarettoChat";
 export default function App() {
   // FIX SSR / MOBILE
   const [isMobile, setIsMobile] = React.useState(false);
-  const { isAuthenticated } = useUser();
-  const { requestLocation } = useLocationContext();
-  const didRequestLocationRef = React.useRef(false);
-
-  React.useEffect(() => {
-    if (!isAuthenticated) {
-      didRequestLocationRef.current = false;
-      return;
-    }
-
-    if (didRequestLocationRef.current) return;
-
-    didRequestLocationRef.current = true;
-    requestLocation();
-  }, [isAuthenticated, requestLocation]);
 
   React.useEffect(() => {
     const handleResize = () => {

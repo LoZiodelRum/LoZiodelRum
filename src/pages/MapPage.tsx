@@ -249,6 +249,7 @@ export default function MapPage() {
   const {
     userPosition,
     hasRealPosition,
+    hasSavedPosition,
     locationStatus,
     locationError,
     requestLocation,
@@ -335,7 +336,8 @@ export default function MapPage() {
   );
 
   const nearbyVenues = useMemo(() => {
-    if (!hasRealPosition) return [] as NearbyVenue[];
+    const hasPositionForDistance = hasRealPosition || hasSavedPosition;
+    if (!hasPositionForDistance) return [] as NearbyVenue[];
 
     return venuesWithCoords
       .map((venue: any) => {
@@ -362,7 +364,7 @@ export default function MapPage() {
         if (a.priority !== b.priority) return a.priority - b.priority;
         return a.distanceKm - b.distanceKm;
       });
-  }, [hasRealPosition, radiusKm, userPosition, venuesWithCoords]);
+  }, [hasRealPosition, hasSavedPosition, radiusKm, userPosition, venuesWithCoords]);
 
   useEffect(() => {
     console.log("MAPPA - locali in state:", venues.length);
@@ -801,7 +803,7 @@ export default function MapPage() {
               </button>
             </div>
 
-            {locationStatus === "denied" && (
+            {locationStatus === "denied" && !hasSavedPosition && (
               <div className="map-state-card" style={{ marginBottom: 12 }}>
                 <div style={{ fontWeight: 800, marginBottom: 4 }}>
                   Per usare al meglio DrinkWise, attiva la posizione.
@@ -914,13 +916,15 @@ export default function MapPage() {
             </div>
 
             <p className="map-status-label">
-              {locationStatus === "requesting"
-                ? "Sto rilevando la tua posizione..."
-                : locationStatus === "denied"
-                  ? "Attiva la posizione per vedere i locali DrinkWise vicino a te."
+              {locationStatus === "checking"
+                ? "Sto aggiornando la posizione in background..."
+                : locationStatus === "requesting"
+                  ? "Sto rilevando la tua posizione..."
                   : locationStatus === "granted"
                     ? "Locali nel raggio di 10 km dalla tua posizione."
-                    : "Attiva la posizione per vedere i locali più vicini a te."}
+                    : hasSavedPosition
+                      ? "Uso l'ultima posizione salvata per mostrarti i locali vicini."
+                      : "Per vedere i locali più vicini a te, attiva la posizione."}
             </p>
 
             {showSkeletons && (
@@ -1006,7 +1010,7 @@ export default function MapPage() {
 
             {!showSkeletons && venuesWithCoords.length > 0 && nearbyVenues.length === 0 && (
               <div className="map-state-card">
-                {hasRealPosition ? (
+                {(hasRealPosition || hasSavedPosition) ? (
                   <>
                     <div style={{ fontWeight: 800, marginBottom: 4 }}>
                       Nessun locale DrinkWise entro 10 km.
@@ -1021,7 +1025,7 @@ export default function MapPage() {
                 ) : (
                   <>
                     <div style={{ fontWeight: 800, marginBottom: 4 }}>
-                      Attiva la posizione per vedere i locali piu vicini a te.
+                      Per vedere i locali piu vicini a te, attiva la posizione.
                     </div>
                     <button className="map-state-action" onClick={refreshLocation}>
                       Attiva posizione

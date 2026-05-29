@@ -2,6 +2,8 @@ import { createContext, useCallback, useContext, useEffect, useMemo, useRef, use
 
 export type LocationStatus =
   | "idle"
+  | "onboarding_required"
+  | "checking"
   | "requesting"
   | "granted"
   | "denied"
@@ -17,10 +19,14 @@ export type LocationPosition = {
 type LocationContextValue = {
   userPosition: LocationPosition;
   hasRealPosition: boolean;
+  hasSavedPosition: boolean;
+  hasRequestedLocationOnboarding: boolean;
   locationStatus: LocationStatus;
   locationError: string | null;
   requestLocation: () => void;
   refreshLocation: () => void;
+  checkLocationSilently: () => void;
+  markLocationOnboardingDone: () => void;
 };
 
 export const DEFAULT_POSITION = {
@@ -29,6 +35,7 @@ export const DEFAULT_POSITION = {
 };
 
 const LAST_POSITION_STORAGE_KEY = "drinkwise_last_position";
+const ONBOARDING_DONE_STORAGE_KEY = "drinkwise_location_onboarding_done";
 
 const LocationContext = createContext<LocationContextValue>({
   userPosition: {
@@ -36,10 +43,14 @@ const LocationContext = createContext<LocationContextValue>({
     timestamp: 0,
   },
   hasRealPosition: false,
+  hasSavedPosition: false,
+  hasRequestedLocationOnboarding: false,
   locationStatus: "idle",
   locationError: null,
   requestLocation: () => undefined,
   refreshLocation: () => undefined,
+  checkLocationSilently: () => undefined,
+  markLocationOnboardingDone: () => undefined,
 });
 
 function canUseStorage() {
@@ -92,8 +103,19 @@ function writeCachedPosition(position: LocationPosition) {
   }
 }
 
+function readOnboardingDoneFlag() {
+  if (!canUseStorage()) return false;
+  return window.localStorage.getItem(ONBOARDING_DONE_STORAGE_KEY) === "true";
+}
+
+function writeOnboardingDoneFlag(value: boolean) {
+  if (!canUseStorage()) return;
+  window.localStorage.setItem(ONBOARDING_DONE_STORAGE_KEY, value ? "true" : "false");
+}
+
 export function LocationProvider({ children }: { children: React.ReactNode }) {
   const cachedPosition = useMemo(() => readCachedPosition(), []);
+  const onboardingDoneFromStorage = useMemo(() => readOnboardingDoneFlag(), []);
   const [userPosition, setUserPosition] = useState<LocationPosition>(() =>
     cachedPosition || {
       ...DEFAULT_POSITION,
@@ -101,9 +123,21 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
     }
   );
   const [hasRealPosition, setHasRealPosition] = useState(false);
-  const [locationStatus, setLocationStatus] = useState<LocationStatus>("idle");
+  const [hasRequestedLocationOnboarding, setHasRequestedLocationOnboarding] = useState(
+    onboardingDoneFromStorage
+  );
+  const [locationStatus, setLocationStatus] = useState<LocationStatus>(
+    onboardingDoneFromStorage ? "idle" : "onboarding_required"
+  );
   const [locationError, setLocationError] = useState<string | null>(null);
   const watchIdRef = useRef<number | null>(null);
+  const hasSavedPosition = userPosition.timestamp > 0;
+
+  const markLocationOnboardingDone = useCallback(() => {
+    setHasRequestedLocationOnboarding(true);
+    writeOnboardingDoneFlag(true);
+    // Future enhancement: mirror onboarding+permission state to user profile in Supabase.
+  }, []);
 
   const handleSuccess = useCallback((position: GeolocationPosition) => {
     const nextPosition: LocationPosition = {
@@ -117,7 +151,8 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
     setLocationStatus("granted");
     setLocationError(null);
     writeCachedPosition(nextPosition);
-  }, []);
+    markLocationOnboardingDone();
+  }, [markLocationOnboardingDone]);
 
   const handleError = useCallback((error: GeolocationPositionError) => {
     setHasRealPosition(false);
@@ -162,7 +197,11 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
   }, [handleSuccess]);
 
   const requestLocationInternal = useCallback(
-    (maximumAge: number) => {
+    (maximumAge: number, markOnboardingDone: boolean) => {
+      if (markOnboardingDone) {
+        markLocationOnboardingDone();
+      }
+
       if (typeof navigator === "undefined" || !navigator.geolocation) {
         setLocationStatus("unavailable");
         setLocationError("Geolocalizzazione non disponibile su questo dispositivo.");
@@ -185,16 +224,78 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
         }
       );
     },
-    [ensureWatchPosition, handleError, handleSuccess]
+    [ensureWatchPosition, handleError, handleSuccess, markLocationOnboardingDone]
   );
 
   const requestLocation = useCallback(() => {
-    requestLocationInternal(60000);
+    requestLocationInternal(60000, true);
   }, [requestLocationInternal]);
 
   const refreshLocation = useCallback(() => {
-    requestLocationInternal(0);
+    requestLocationInternal(0, true);
   }, [requestLocationInternal]);
+
+  const checkLocationSilently = useCallback(async () => {
+    if (typeof navigator === "undefined" || !navigator.geolocation) {
+      setLocationStatus("unavailable");
+      setLocationError("Geolocalizzazione non disponibile su questo dispositivo.");
+      return;
+    }
+
+    if (!hasRequestedLocationOnboarding) {
+      setLocationStatus("onboarding_required");
+      return;
+    }
+
+    const permissionsApi = (navigator as any).permissions;
+    if (!permissionsApi?.query) {
+      setLocationStatus(hasSavedPosition ? "idle" : "idle");
+      return;
+    }
+
+    setLocationStatus("checking");
+
+    try {
+      const result = await permissionsApi.query({ name: "geolocation" });
+
+      if (result.state === "granted") {
+        navigator.geolocation.getCurrentPosition(
+          (position) => {
+            handleSuccess(position);
+            ensureWatchPosition();
+          },
+          (error) => {
+            handleError(error);
+          },
+          {
+            enableHighAccuracy: false,
+            timeout: 5000,
+            maximumAge: 60000,
+          }
+        );
+        return;
+      }
+
+      if (result.state === "denied") {
+        setHasRealPosition(false);
+        setLocationStatus("denied");
+        setLocationError(
+          "Posizione non autorizzata. Se hai negato il permesso, riattivalo dalle impostazioni del browser."
+        );
+        return;
+      }
+
+      setLocationStatus("idle");
+      setLocationError(null);
+    } catch {
+      setLocationStatus("error");
+      setLocationError("Non riesco a controllare i permessi posizione in background.");
+    }
+  }, [ensureWatchPosition, handleError, handleSuccess, hasRequestedLocationOnboarding, hasSavedPosition]);
+
+  useEffect(() => {
+    void checkLocationSilently();
+  }, [checkLocationSilently]);
 
   useEffect(() => {
     return () => {
@@ -210,10 +311,14 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
       value={{
         userPosition,
         hasRealPosition,
+        hasSavedPosition,
+        hasRequestedLocationOnboarding,
         locationStatus,
         locationError,
         requestLocation,
         refreshLocation,
+        checkLocationSilently,
+        markLocationOnboardingDone,
       }}
     >
       {children}

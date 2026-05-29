@@ -2,6 +2,7 @@ import { useState } from "react";
 import { supabase } from "../lib/supabaseClient";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
+import { useLocationContext } from "../context/LocationContext";
 
 type Props = {
   open: boolean;
@@ -11,6 +12,7 @@ type Props = {
 export default function RegisterModal({ open, onClose }: Props) {
   const { t } = useTranslation("auth");
   const navigate = useNavigate();
+  const { requestLocation, markLocationOnboardingDone } = useLocationContext();
   const [nome, setNome] = useState("");
   const [cognome, setCognome] = useState("");
   const [username, setUsername] = useState("");
@@ -20,6 +22,7 @@ export default function RegisterModal({ open, onClose }: Props) {
   const [confirmPassword, setConfirmPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState("");
+  const [showLocationOnboarding, setShowLocationOnboarding] = useState(false);
 
   if (!open) return null;
 
@@ -144,13 +147,23 @@ export default function RegisterModal({ open, onClose }: Props) {
       return;
     }
 
-    setMsg(t("messages.registrationCompletedLogin"));
-    setTimeout(() => {
-      setLoading(false);
-      setMsg("");
-      onClose();
-      navigate("/home");
-    }, 800);
+    setLoading(false);
+    setMsg("");
+    setShowLocationOnboarding(true);
+  }
+
+  function handleContinueWithoutLocation() {
+    markLocationOnboardingDone();
+    setShowLocationOnboarding(false);
+    onClose();
+    navigate("/home");
+  }
+
+  function handleEnableLocation() {
+    requestLocation();
+    setShowLocationOnboarding(false);
+    onClose();
+    navigate("/home");
   }
 
   return (
@@ -244,10 +257,57 @@ export default function RegisterModal({ open, onClose }: Props) {
         >
           ×
         </button>
-        <div style={{ color: "#FFD36A", fontWeight: 900, fontSize: 28, marginBottom: 8, textAlign: "center", letterSpacing: 1 }}>
-          {t("registerTitle")}
-        </div>
-        <form onSubmit={handleSubmit} style={{ width: "100%", maxWidth: 420, margin: "0 auto" }} autoComplete="off">
+        {showLocationOnboarding ? (
+          <div style={{ width: "100%", maxWidth: 420, margin: "0 auto", textAlign: "center" }}>
+            <div style={{ color: "#FFD36A", fontWeight: 900, fontSize: 28, marginBottom: 10, letterSpacing: 1 }}>
+              Benvenuto su DrinkWise
+            </div>
+            <div style={{ color: "#fff", fontSize: 16, lineHeight: 1.45, marginBottom: 20 }}>
+              DrinkWise usa la tua posizione per mostrarti locali, eventi e suggerimenti vicino a te.
+            </div>
+            <button
+              type="button"
+              onClick={handleEnableLocation}
+              style={{
+                width: "100%",
+                background: "#FFD36A",
+                color: "#181818",
+                fontWeight: 900,
+                fontSize: 20,
+                border: "none",
+                borderRadius: 12,
+                padding: "14px 0",
+                marginBottom: 10,
+                cursor: "pointer",
+                letterSpacing: 1,
+              }}
+            >
+              Attiva posizione
+            </button>
+            <button
+              type="button"
+              onClick={handleContinueWithoutLocation}
+              style={{
+                width: "100%",
+                background: "transparent",
+                color: "#FFD36A",
+                fontWeight: 700,
+                fontSize: 14,
+                border: "1px solid #FFD36A",
+                borderRadius: 12,
+                padding: "10px 0",
+                cursor: "pointer",
+              }}
+            >
+              Continua senza posizione
+            </button>
+          </div>
+        ) : (
+          <>
+            <div style={{ color: "#FFD36A", fontWeight: 900, fontSize: 28, marginBottom: 8, textAlign: "center", letterSpacing: 1 }}>
+              {t("registerTitle")}
+            </div>
+            <form onSubmit={handleSubmit} style={{ width: "100%", maxWidth: 420, margin: "0 auto" }} autoComplete="off">
           <input
             placeholder={t("firstName")}
             value={nome}
@@ -325,7 +385,9 @@ export default function RegisterModal({ open, onClose }: Props) {
           >
             {loading ? t("registrationLoading") : t("createAccount")}
           </button>
-        </form>
+            </form>
+          </>
+        )}
         {msg && (
           <div style={{
             color: msg.toLowerCase().includes("errore") ? "#ff4d4f" : "#FFD36A",
