@@ -1219,3 +1219,237 @@
     grid-template-columns: 1fr;
   }
 }
+
+@media (max-width: 1024px) {
+  .owner-mobile-page {
+    gap: 10px;
+    padding-bottom: 84px;
+  }
+
+  .owner-mobile-topbar {
+    top: 76px;
+    border-radius: 14px;
+    padding: 8px;
+    grid-template-columns: 34px 1fr auto;
+  }
+
+  .owner-mobile-right-icons {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .owner-mobile-profile-badge {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 1px solid rgba(255, 176, 39, 0.42);
+    object-fit: cover;
+    background: #0f1724;
+  }
+
+  .owner-mobile-hero {
+    min-height: 250px;
+    border-radius: 16px;
+  }
+
+  .owner-mobile-hero-cover {
+    min-height: 250px;
+  }
+
+  .owner-mobile-plan-card {
+    border-radius: 14px;
+    padding: 9px 10px;
+  }
+
+  .owner-mobile-plan-card button {
+    font-size: 11px;
+    padding: 8px 9px;
+  }
+
+  .owner-mobile-section {
+    border-radius: 13px;
+    padding: 10px;
+  }
+
+  .owner-mobile-section-head h2 {
+    font-size: 12px;
+    letter-spacing: 0.03em;
+  }
+
+  .owner-mobile-panorama-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 7px;
+  }
+
+  .owner-mobile-panorama-grid article {
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 10px;
+    padding: 8px;
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .owner-mobile-panorama-grid span {
+    font-size: 9px;
+    text-transform: uppercase;
+    opacity: 0.72;
+    line-height: 1.2;
+    display: block;
+  }
+
+  .owner-mobile-panorama-grid strong {
+    font-size: 22px;
+    line-height: 1;
+    margin-top: 5px;
+    color: #ffd08a;
+    display: block;
+  }
+
+  .owner-mobile-double-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+
+  .owner-mobile-trend-chart {
+    height: 146px;
+  }
+
+  .owner-mobile-pie {
+    width: 102px;
+    margin: 3px auto 8px;
+  }
+
+  .owner-mobile-pie::after {
+    inset: 21px;
+  }
+
+  .owner-mobile-pie-list {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 5px;
+    font-size: 11px;
+  }
+
+  .owner-mobile-pie-list li {
+    display: grid;
+    grid-template-columns: 9px 1fr auto;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .owner-mobile-pie-list li i {
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+  }
+
+  .owner-mobile-ranked-list li,
+  .owner-mobile-review-list li {
+    font-size: 12px;
+  }
+
+  .owner-mobile-events-scroll {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(170px, 1fr);
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 3px;
+  }
+
+  .owner-mobile-events-scroll article {
+    border: 1px solid rgba(255, 255, 255, 0.09);
+    border-radius: 10px;
+    padding: 9px;
+    background: rgba(255, 255, 255, 0.02);
+    display: grid;
+    gap: 6px;
+  }
+
+  .owner-mobile-events-scroll strong {
+    font-size: 12px;
+  }
+
+  .owner-mobile-events-scroll small {
+    display: block;
+    font-size: 10px;
+    opacity: 0.72;
+  }
+
+  .owner-mobile-events-scroll em {
+    justify-self: start;
+    font-style: normal;
+    font-size: 10px;
+    color: #f7be64;
+    border: 1px solid rgba(255, 176, 39, 0.36);
+    border-radius: 999px;
+    padding: 2px 7px;
+  }
+
+  .owner-mobile-results-strip {
+    display: grid;
+    grid-auto-flow: column;
+    grid-auto-columns: minmax(110px, 1fr);
+    gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 2px;
+  }
+
+  .owner-mobile-results-strip article {
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 9px;
+    display: grid;
+    gap: 4px;
+    background: rgba(255, 255, 255, 0.02);
+  }
+
+  .owner-mobile-results-strip article span {
+    color: #ffd08a;
+    font-size: 18px;
+    font-weight: 800;
+    line-height: 1;
+  }
+
+  .owner-mobile-results-strip article small {
+    font-size: 10px;
+    opacity: 0.76;
+  }
+
+  .owner-mobile-bottom-nav {
+    border-radius: 12px;
+    padding: 5px;
+    gap: 2px;
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+  }
+
+  .owner-mobile-bottom-nav button {
+    display: grid;
+    justify-items: center;
+    gap: 4px;
+    font-size: 9px;
+    line-height: 1;
+    padding: 6px 4px;
+  }
+
+  .owner-mobile-bottom-nav button svg {
+    width: 14px;
+    height: 14px;
+  }
+}
+
+@media (max-width: 700px) {
+  .owner-mobile-double-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .owner-mobile-panorama-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

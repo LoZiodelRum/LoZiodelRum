@@ -7,17 +7,21 @@ import {
   Crown,
   Download,
   Globe,
+  Home,
   Menu,
   Mail,
   MessageSquare,
+  MoreHorizontal,
   Phone,
   QrCode,
+  ScanQrCode,
   Settings,
   Star,
   Trophy,
   UserRound,
   UserRoundPlus,
   Users,
+  Users2,
   Wine,
 } from "lucide-react";
 import { useNavigate } from "react-router-dom";
@@ -934,9 +938,12 @@ export default function OwnerDashboard() {
             </div>
             {Boolean(locale?.verificato) && <CheckCircle2 size={14} className="owner-mobile-verified" />}
           </div>
-          <button type="button" className="owner-mobile-icon-btn">
-            <Bell size={18} />
-          </button>
+          <div className="owner-mobile-right-icons">
+            <button type="button" className="owner-mobile-icon-btn">
+              <Bell size={18} />
+            </button>
+            <img src={localeLogo} alt={`Profilo ${localeName}`} className="owner-mobile-profile-badge" />
+          </div>
         </header>
 
         <section className="owner-mobile-hero" id="owner-main-dashboard">
@@ -978,87 +985,77 @@ export default function OwnerDashboard() {
         <section className="owner-mobile-section owner-mobile-kpis" id="owner-customers">
           <div className="owner-mobile-section-head">
             <h2>Panoramica</h2>
+            <button type="button">Visualizza tutto</button>
           </div>
-          <div className="owner-mobile-kpi-grid">
+          <div className="owner-mobile-panorama-grid">
             <article>
-              <span>Check-in QR</span>
+              <span>CHECK-IN QR TOTALI</span>
               <strong><AnimatedNumber value={kpis.qrCheckins} /></strong>
             </article>
             <article>
-              <span>Utenti unici</span>
+              <span>UTENTI UNICI</span>
               <strong><AnimatedNumber value={kpis.uniqueVerifiedUsers} /></strong>
             </article>
             <article>
-              <span>Drink registrati</span>
+              <span>DRINK REGISTRATI</span>
               <strong><AnimatedNumber value={kpis.drinksRegistered} /></strong>
             </article>
             <article>
-              <span>Visite ripetute</span>
+              <span>VISITE RIPETUTE</span>
               <strong><AnimatedNumber value={kpis.repeatVisits} /></strong>
             </article>
             <article>
-              <span>Recensioni</span>
+              <span>RECENSIONI</span>
               <strong><AnimatedNumber value={kpis.reviewsCount} /></strong>
             </article>
             <article>
-              <span>Valutazione media</span>
+              <span>VALUTAZIONE MEDIA</span>
               <strong><AnimatedNumber value={kpis.averageRating} decimals={1} /></strong>
             </article>
           </div>
         </section>
 
-        <section className="owner-mobile-section" id="owner-qr-stats">
-          <div className="owner-mobile-section-head">
-            <h2>QR Code</h2>
-          </div>
-          <div className="owner-mobile-qr-card">
-            {qrCodeValue ? <img src={qrCodeValue} alt="QR ufficiale locale" /> : <div className="owner-qr-placeholder">QR ufficiale in preparazione</div>}
-            <div className="owner-mobile-inline-actions">
-              <button type="button" disabled={!qrCodeValue} onClick={() => qrCodeValue && openIfAvailable(qrCodeValue)}><Download size={14} /> Scarica PNG</button>
-              <button type="button" disabled={!qrCodeValue} onClick={() => window.print()}>Stampa QR</button>
+        <section className="owner-mobile-double-grid" id="owner-qr-stats">
+          <article className="owner-mobile-section">
+            <div className="owner-mobile-section-head">
+              <h2>Andamento Check-in</h2>
+              <div className="owner-mobile-filters">
+                {[
+                  { key: "7", label: "7g" },
+                  { key: "30", label: "30g" },
+                  { key: "3m", label: "3m" },
+                  { key: "6m", label: "6m" },
+                  { key: "12m", label: "12m" },
+                ].map((filter) => (
+                  <button
+                    key={filter.key}
+                    type="button"
+                    className={trendFilter === filter.key ? "active" : ""}
+                    onClick={() => setTrendFilter(filter.key as "7" | "30" | "3m" | "6m" | "12m")}
+                  >
+                    {filter.label}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
-        </section>
-
-        <section className="owner-mobile-section">
-          <div className="owner-mobile-section-head">
-            <h2>Andamento Check-in</h2>
-            <div className="owner-mobile-filters">
-              {[
-                { key: "7", label: "7g" },
-                { key: "30", label: "30g" },
-                { key: "3m", label: "3m" },
-                { key: "6m", label: "6m" },
-                { key: "12m", label: "12m" },
-              ].map((filter) => (
-                <button
-                  key={filter.key}
-                  type="button"
-                  className={trendFilter === filter.key ? "active" : ""}
-                  onClick={() => setTrendFilter(filter.key as "7" | "30" | "3m" | "6m" | "12m")}
-                >
-                  {filter.label}
-                </button>
-              ))}
+            <div className="owner-mobile-trend-chart">
+              {trendPoints.some((point) => point.value > 0) ? (
+                <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-label="Trend check-in">
+                  <polyline points={trendPath} />
+                </svg>
+              ) : (
+                <p>Dati trend non disponibili.</p>
+              )}
             </div>
-          </div>
-          <div className="owner-mobile-trend-chart">
-            {trendPoints.some((point) => point.value > 0) ? (
-              <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-label="Trend check-in">
-                <polyline points={trendPath} />
-              </svg>
-            ) : (
-              <p>Dati trend non disponibili.</p>
-            )}
-          </div>
-        </section>
+          </article>
 
-        <section className="owner-mobile-section owner-mobile-analytics-grid">
-          <article>
-            <h3>Provenienza Clienti</h3>
+          <article className="owner-mobile-section">
+            <div className="owner-mobile-section-head">
+              <h2>Provenienza Utenti</h2>
+            </div>
             <div className="owner-mobile-pie" style={{ background: `conic-gradient(${pieGradient})` }} />
             {provenanceData.top.length ? (
-              <ul>
+              <ul className="owner-mobile-pie-list">
                 {provenanceData.top.map((item, index) => (
                   <li key={item.label}><i style={{ background: pieColors[index % pieColors.length] }} />{item.label}<strong>{item.percent}%</strong></li>
                 ))}
@@ -1067,103 +1064,86 @@ export default function OwnerDashboard() {
               <p className="owner-empty">Dati provenienza non disponibili.</p>
             )}
           </article>
-          <article>
-            <h3>Fascia eta</h3>
-            <ul className="owner-mobile-age-list">
-              {ageDistribution.map((item) => (
-                <li key={item.label}><span>{item.label}</span><div><i style={{ width: `${item.percent}%` }} /></div><strong>{item.percent}%</strong></li>
-              ))}
-            </ul>
+        </section>
+
+        <section className="owner-mobile-double-grid">
+          <article className="owner-mobile-section" id="owner-drinks">
+            <div className="owner-mobile-section-head">
+              <h2>Drink piu amati</h2>
+              <button type="button">Vedi tutti</button>
+            </div>
+            {drinkRanking.length ? (
+              <ol className="owner-mobile-ranked-list">
+                {drinkRanking.map((drink, index) => (
+                  <li key={drink.name}><span>{index + 1}. {drink.name}</span><strong>{drink.count}</strong></li>
+                ))}
+              </ol>
+            ) : (
+              <p className="owner-empty">Nessun drink registrato ancora.</p>
+            )}
           </article>
-        </section>
 
-        <section className="owner-mobile-section" id="owner-drinks">
-          <div className="owner-mobile-section-head">
-            <h2>Drink piu amati</h2>
-            <button type="button" onClick={() => scrollToSection("owner-drinks")}>Vedi tutti</button>
-          </div>
-          {drinkRanking.length ? (
-            <ol className="owner-mobile-ranked-list">
-              {drinkRanking.map((drink) => (
-                <li key={drink.name}><span>{drink.name}</span><strong>{drink.count}</strong></li>
-              ))}
-            </ol>
-          ) : (
-            <p className="owner-empty">Nessun drink registrato ancora.</p>
-          )}
-        </section>
-
-        <section className="owner-mobile-section" id="owner-reviews">
-          <div className="owner-mobile-section-head">
-            <h2>Ultime recensioni</h2>
-            <button type="button" onClick={() => scrollToSection("owner-reviews")}>Vedi tutte</button>
-          </div>
-          {latestReviews.length ? (
-            <ul className="owner-mobile-review-list">
-              {latestReviews.map((review) => (
-                <li key={review.id}>
-                  <div className="owner-mobile-review-head">
-                    {review.avatarUrl ? <img src={review.avatarUrl} alt={review.username} /> : <span>{review.username.slice(0, 1).toUpperCase()}</span>}
-                    <div>
-                      <strong>{review.username}</strong>
-                      <small>{review.dateLabel}</small>
+          <article className="owner-mobile-section" id="owner-reviews">
+            <div className="owner-mobile-section-head">
+              <h2>Ultime recensioni</h2>
+              <button type="button">Vedi tutte</button>
+            </div>
+            {latestReviews.length ? (
+              <ul className="owner-mobile-review-list">
+                {latestReviews.map((review) => (
+                  <li key={review.id}>
+                    <div className="owner-mobile-review-head">
+                      {review.avatarUrl ? <img src={review.avatarUrl} alt={review.username} /> : <span>{review.username.slice(0, 1).toUpperCase()}</span>}
+                      <div>
+                        <strong>{review.username}</strong>
+                        <small>{review.dateLabel}</small>
+                      </div>
+                      <em>{"★".repeat(Math.max(0, Math.min(5, Math.round(review.vote))))}</em>
                     </div>
-                    <em>{"★".repeat(Math.max(0, Math.min(5, Math.round(review.vote))))}</em>
-                  </div>
-                  <p>{review.comment}</p>
-                </li>
-              ))}
-            </ul>
-          ) : (
-            <p className="owner-empty">Nessuna recensione ancora disponibile.</p>
-          )}
+                    <p>{review.comment}</p>
+                  </li>
+                ))}
+              </ul>
+            ) : (
+              <p className="owner-empty">Nessuna recensione ancora disponibile.</p>
+            )}
+          </article>
         </section>
 
         <section className="owner-mobile-section" id="owner-events">
           <div className="owner-mobile-section-head">
             <h2>Eventi</h2>
+            <button type="button">Vedi tutti</button>
           </div>
           {events.length ? (
-            <ul className="owner-mobile-events-list">
+            <div className="owner-mobile-events-scroll">
               {events.map((eventItem) => (
-                <li key={eventItem.id}>
-                  <strong>{eventItem.type}</strong>
-                  <span>{eventItem.dateLabel}</span>
+                <article key={eventItem.id}>
+                  <div>
+                    <strong>{eventItem.type}</strong>
+                    <small>{eventItem.dateLabel}</small>
+                  </div>
                   <em>{eventItem.status}</em>
-                </li>
+                </article>
               ))}
-            </ul>
+            </div>
           ) : (
             <p className="owner-empty">Nessun evento disponibile.</p>
           )}
           <button className="owner-cta" type="button" onClick={() => navigate("/eventi")}>Richiedi Evento</button>
         </section>
 
-        <section className="owner-mobile-section" id="owner-academy">
-          <div className="owner-mobile-section-head">
-            <h2>Academy</h2>
-          </div>
-          <ul className="owner-list">
-            <li><span>Bartender certificati</span><strong>{academy.bartenderCertified}</strong></li>
-            <li><span>Personale certificato</span><strong>{academy.floorStaffCertified}</strong></li>
-            <li><span>Manager certificati</span><strong>{academy.managerCertified}</strong></li>
-            <li><span>Ore formazione</span><strong>{academy.trainingHours}</strong></li>
-            <li><span>Livello</span><strong>{academy.academyLevel || "Non disponibile"}</strong></li>
-          </ul>
-          <button className="owner-cta" type="button" disabled>Accedi Academy</button>
-        </section>
-
         <section className="owner-mobile-section owner-results" id="owner-rank">
-          <div className="owner-mobile-section-head"><h2>Risultati DrinkWise</h2></div>
-          <div className="owner-results-grid">
-            <article><QrCode size={16} /><span>{results.checkinsQr}</span><small>Check-in QR</small></article>
-            <article><Users size={16} /><span>{results.uniqueUsers}</span><small>Utenti unici</small></article>
-            <article><Wine size={16} /><span>{results.drinksRegistered}</span><small>Drink registrati</small></article>
-            <article><Star size={16} /><span>{results.reviews}</span><small>Recensioni</small></article>
-            <article><CalendarDays size={16} /><span>{results.requestedEvents}</span><small>Eventi richiesti</small></article>
-            <article><Trophy size={16} /><span>{results.completedEvents}</span><small>Eventi realizzati</small></article>
-            <article><Crown size={16} /><span>{results.drinkwiseScore}</span><small>DrinkWise Score</small></article>
-            <article><ChartNoAxesCombined size={16} /><span>{results.territorialPosition}</span><small>Posizione regionale</small></article>
+          <div className="owner-mobile-section-head"><h2>Risultati ottenuti con DrinkWise</h2></div>
+          <div className="owner-mobile-results-strip">
+            <article><QrCode size={14} /><span>{results.checkinsQr}</span><small>Check-in QR</small></article>
+            <article><Users size={14} /><span>{results.uniqueUsers}</span><small>Utenti unici</small></article>
+            <article><Wine size={14} /><span>{results.drinksRegistered}</span><small>Drink registrati</small></article>
+            <article><Star size={14} /><span>{results.reviews}</span><small>Recensioni</small></article>
+            <article><CalendarDays size={14} /><span>{results.requestedEvents}</span><small>Eventi richiesti</small></article>
+            <article><Trophy size={14} /><span>{results.completedEvents}</span><small>Eventi realizzati</small></article>
+            <article><Crown size={14} /><span>{results.drinkwiseScore}</span><small>DrinkWise Score</small></article>
+            <article><ChartNoAxesCombined size={14} /><span>{results.territorialPosition}</span><small>Posizione</small></article>
           </div>
         </section>
 
@@ -1191,10 +1171,38 @@ export default function OwnerDashboard() {
           </div>
         </section>
 
+        <section className="owner-mobile-section" id="owner-academy">
+          <div className="owner-mobile-section-head">
+            <h2>Academy</h2>
+            <button type="button" disabled>Accedi Academy</button>
+          </div>
+          <ul className="owner-list">
+            <li><span>Bartender certificati</span><strong>{academy.bartenderCertified}</strong></li>
+            <li><span>Personale certificato</span><strong>{academy.floorStaffCertified}</strong></li>
+            <li><span>Manager certificati</span><strong>{academy.managerCertified}</strong></li>
+            <li><span>Ore formazione</span><strong>{academy.trainingHours}</strong></li>
+            <li><span>Livello</span><strong>{academy.academyLevel || "Non disponibile"}</strong></li>
+          </ul>
+        </section>
+
+        <section className="owner-mobile-section" id="owner-profile">
+          <div className="owner-mobile-section-head"><h2>QR ufficiale</h2></div>
+          <div className="owner-mobile-qr-card">
+            {qrCodeValue ? <img src={qrCodeValue} alt="QR ufficiale locale" /> : <div className="owner-qr-placeholder">QR ufficiale in preparazione</div>}
+            <div className="owner-mobile-inline-actions">
+              <button type="button" disabled={!qrCodeValue} onClick={() => qrCodeValue && openIfAvailable(qrCodeValue)}><Download size={14} /> Scarica PNG</button>
+              <button type="button" disabled={!qrCodeValue} onClick={() => window.print()}>Stampa QR</button>
+            </div>
+          </div>
+        </section>
+
         <nav className="owner-mobile-bottom-nav" aria-label="Menu proprietario mobile">
-          {OWNER_MOBILE_MENU.map((item) => (
-            <button key={item} type="button" className={item === "Dashboard" ? "active" : ""}>{item}</button>
-          ))}
+          <button type="button" className="active"><Home size={15} />Dashboard</button>
+          <button type="button"><ScanQrCode size={15} />QR Code</button>
+          <button type="button"><Users2 size={15} />Clienti</button>
+          <button type="button"><Star size={15} />Recensioni</button>
+          <button type="button"><CalendarDays size={15} />Eventi</button>
+          <button type="button"><MoreHorizontal size={15} />Altro</button>
         </nav>
 
         {mobileOwnerMenuOpen && (
