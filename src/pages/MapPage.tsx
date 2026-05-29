@@ -379,6 +379,16 @@ export default function MapPage() {
   }, [nearbyVenues.length]);
 
   const showSkeletons = loadingVenues && venues.length === 0;
+  const statusMessage =
+    locationStatus === "checking"
+      ? "Sto aggiornando la posizione in background..."
+      : locationStatus === "requesting"
+        ? "Sto rilevando la tua posizione..."
+        : locationStatus === "granted"
+          ? null
+          : hasSavedPosition
+            ? null
+            : "Per vedere i locali più vicini a te, attiva la posizione.";
 
   return (
     <>
@@ -794,7 +804,6 @@ export default function MapPage() {
             <div className="map-title-row">
               <div>
                 <h1 className="map-title">Locali DrinkWise</h1>
-                <p className="map-subtitle">Locali nel raggio di 10 km</p>
               </div>
 
               <button className="map-recenter-btn" onClick={refreshLocation}>
@@ -915,17 +924,7 @@ export default function MapPage() {
               <span className="map-range-chip">10 km</span>
             </div>
 
-            <p className="map-status-label">
-              {locationStatus === "checking"
-                ? "Sto aggiornando la posizione in background..."
-                : locationStatus === "requesting"
-                  ? "Sto rilevando la tua posizione..."
-                  : locationStatus === "granted"
-                    ? "Locali nel raggio di 10 km dalla tua posizione."
-                    : hasSavedPosition
-                      ? "Uso l'ultima posizione salvata per mostrarti i locali vicini."
-                      : "Per vedere i locali più vicini a te, attiva la posizione."}
-            </p>
+            {statusMessage && <p className="map-status-label">{statusMessage}</p>}
 
             {showSkeletons && (
               <div className="map-state-card">
