@@ -553,6 +553,8 @@ export default function Home() {
             fontSize: 16,
             display: "flex",
             alignItems: "center",
+            justifyContent: "center",
+            width: "min(365px, 100%)",
             gap: 12,
           }}
         >
@@ -572,6 +574,8 @@ export default function Home() {
             fontSize: 16,
             display: "flex",
             alignItems: "center",
+            justifyContent: "center",
+            width: "min(365px, 100%)",
             gap: 10,
           }}
         >
