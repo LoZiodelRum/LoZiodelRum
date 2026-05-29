@@ -97,7 +97,7 @@ async function upsertProfile(supabaseAdmin: any, profile: Record<string, any>) {
 
     if (error) {
       console.error("ADMIN SAVE PROFILI ERROR", error);
-      console.error("PAYLOAD", profile);
+      console.error("ADMIN SAVE PROFILI PAYLOAD", profile);
       console.error("QUERY", {
         op: "upsert",
         table: tableName,
@@ -139,6 +139,16 @@ async function deleteProfileRow(supabaseAdmin: any, id: string) {
   }
 
   return { ok: false, tableName: null, error: { message: lastError } };
+}
+
+function toErrorResponse(error: any, fallbackMessage = "Errore salvataggio profilo") {
+  return {
+    ok: false,
+    message: error?.message || fallbackMessage,
+    code: error?.code || null,
+    details: error?.details || null,
+    hint: error?.hint || null,
+  };
 }
 
 export default async function handler(req: ApiRequest, res: ApiResponse) {
@@ -204,7 +214,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
 
       if (authResponse.error || !authResponse.data.user?.id) {
         console.error("ADMIN SAVE PROFILI ERROR", authResponse.error);
-        console.error("PAYLOAD", {
+        console.error("ADMIN SAVE PROFILI PAYLOAD", {
           mode,
           authPayload: {
             email,
@@ -218,7 +228,7 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
             },
           },
         });
-        return res.status(500).json({ ok: false, message: authResponse.error?.message || "User creation failed" });
+        return res.status(500).json(toErrorResponse(authResponse.error, "User creation failed"));
       }
 
       const profilePayload = {
@@ -232,9 +242,9 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       const savedProfile = await upsertProfile(supabaseAdmin, profilePayload);
       if (savedProfile.error) {
         console.error("ADMIN SAVE PROFILI ERROR", savedProfile.error);
-        console.error("PAYLOAD", profilePayload);
+        console.error("ADMIN SAVE PROFILI PAYLOAD", profilePayload);
         await supabaseAdmin.auth.admin.deleteUser(authResponse.data.user.id).catch(() => undefined);
-        return res.status(500).json({ ok: false, message: savedProfile.error?.message || "Profile save failed" });
+        return res.status(500).json(toErrorResponse(savedProfile.error, "Profile save failed"));
       }
 
       return res.status(200).json({ ok: true, profile: savedProfile.data, id: authResponse.data.user.id, table: savedProfile.tableName });
@@ -255,12 +265,12 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
       const authUpdate = await supabaseAdmin.auth.admin.updateUserById(id, authUpdates);
       if (authUpdate.error) {
         console.error("ADMIN SAVE PROFILI ERROR", authUpdate.error);
-        console.error("PAYLOAD", {
+        console.error("ADMIN SAVE PROFILI PAYLOAD", {
           mode,
           id,
           authUpdates,
         });
-        return res.status(500).json({ ok: false, message: authUpdate.error.message || "User update failed" });
+        return res.status(500).json(toErrorResponse(authUpdate.error, "User update failed"));
       }
     }
 
@@ -276,20 +286,14 @@ export default async function handler(req: ApiRequest, res: ApiResponse) {
     const savedProfile = await upsertProfile(supabaseAdmin, profilePayload);
     if (savedProfile.error) {
       console.error("ADMIN SAVE PROFILI ERROR", savedProfile.error);
-      console.error("PAYLOAD", profilePayload);
-      return res.status(500).json({ ok: false, message: savedProfile.error?.message || "Profile update failed" });
+      console.error("ADMIN SAVE PROFILI PAYLOAD", profilePayload);
+      return res.status(500).json(toErrorResponse(savedProfile.error, "Profile update failed"));
     }
 
     return res.status(200).json({ ok: true, profile: savedProfile.data, id, table: savedProfile.tableName });
   } catch (error: any) {
     console.error("ADMIN SAVE PROFILI ERROR", error);
-    console.error("PAYLOAD", req?.body || null);
-    return res.status(500).json({
-      ok: false,
-      message: error?.message || "Internal server error",
-      code: error?.code || null,
-      details: error?.details || null,
-      hint: error?.hint || null,
-    });
+    console.error("ADMIN SAVE PROFILI PAYLOAD", req?.body || null);
+    return res.status(500).json(toErrorResponse(error));
   }
 }

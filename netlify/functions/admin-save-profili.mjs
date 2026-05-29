@@ -91,6 +91,16 @@ async function upsertProfile(supabaseAdmin, profile) {
       .select("*")
       .single();
 
+    if (error) {
+      console.error("ADMIN SAVE PROFILI ERROR", error);
+      console.error("ADMIN SAVE PROFILI PAYLOAD", profile);
+      console.error("QUERY", {
+        op: "upsert",
+        table: tableName,
+        onConflict: "id",
+      });
+    }
+
     if (!error) {
       return { data, tableName, error: null };
     }
@@ -127,119 +137,161 @@ async function deleteProfileRow(supabaseAdmin, id) {
   return { ok: false, tableName: null, error: { message: lastError } };
 }
 
+function toErrorPayload(error, fallbackMessage = "Errore salvataggio profilo") {
+  return {
+    ok: false,
+    message: error?.message || fallbackMessage,
+    code: error?.code || null,
+    details: error?.details || null,
+    hint: error?.hint || null,
+  };
+}
+
 export async function handler(event) {
-  if (event.httpMethod !== "POST") {
-    return json(405, { ok: false, message: "Method not allowed" });
-  }
-
-  if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !ADMIN_PASSWORD) {
-    return json(500, { ok: false, message: "Server env not configured" });
-  }
-
-  const headerPassword = event.headers?.["x-admin-password"] || event.headers?.["X-Admin-Password"];
-  if (!headerPassword || headerPassword !== ADMIN_PASSWORD) {
-    return json(401, { ok: false, message: "Unauthorized" });
-  }
-
-  const parsed = JSON.parse(event.body || "{}");
-  const mode = parsed?.mode;
-  const id = String(parsed?.id || "").trim() || null;
-  const changes = parsed?.changes;
-
-  if (!mode || !["create", "update", "delete"].includes(mode)) {
-    return json(400, { ok: false, message: "Invalid mode" });
-  }
-
-  if (mode === "delete") {
-    return json(403, { ok: false, message: "Physical delete disabled by safety policy" });
-  }
-
-  if (mode !== "delete" && (!changes || typeof changes !== "object" || Array.isArray(changes))) {
-    return json(400, { ok: false, message: "Missing changes payload" });
-  }
-
-  const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
-    auth: { persistSession: false, autoRefreshToken: false },
-  });
-
-  const password = String(changes.password || "").trim();
-  const normalizedChanges = removeEmptyFields(normalizeProfileChanges(changes));
-  const email = String(normalizedChanges.email || "").trim().toLowerCase();
-
-  if (!email) {
-    return json(400, { ok: false, message: "Email obbligatoria" });
-  }
-
-  if (mode === "create") {
-    if (!password) {
-      return json(400, { ok: false, message: "Password obbligatoria per creare un utente" });
+  try {
+    if (event.httpMethod !== "POST") {
+      return json(405, { ok: false, message: "Method not allowed" });
     }
 
-    const authResponse = await supabaseAdmin.auth.admin.createUser({
-      email,
-      password,
-      email_confirm: true,
-      user_metadata: {
-        nome: normalizedChanges.nome || null,
-        cognome: normalizedChanges.cognome || null,
-        username: normalizedChanges.username || null,
-        telefono: normalizedChanges.telefono || null,
-        ruolo: normalizedChanges.ruolo || "utente",
-      },
+    if (!SUPABASE_URL || !SUPABASE_SERVICE_ROLE_KEY || !ADMIN_PASSWORD) {
+      return json(500, { ok: false, message: "Server env not configured" });
+    }
+
+    const headerPassword = event.headers?.["x-admin-password"] || event.headers?.["X-Admin-Password"];
+    if (!headerPassword || headerPassword !== ADMIN_PASSWORD) {
+      return json(401, { ok: false, message: "Unauthorized" });
+    }
+
+    const parsed = JSON.parse(event.body || "{}");
+    const mode = parsed?.mode;
+    const id = String(parsed?.id || "").trim() || null;
+    const changes = parsed?.changes;
+
+    if (!mode || !["create", "update", "delete"].includes(mode)) {
+      return json(400, { ok: false, message: "Invalid mode" });
+    }
+
+    if (mode === "delete") {
+      return json(403, { ok: false, message: "Physical delete disabled by safety policy" });
+    }
+
+    if (mode !== "delete" && (!changes || typeof changes !== "object" || Array.isArray(changes))) {
+      return json(400, { ok: false, message: "Missing changes payload" });
+    }
+
+    const supabaseAdmin = createClient(SUPABASE_URL, SUPABASE_SERVICE_ROLE_KEY, {
+      auth: { persistSession: false, autoRefreshToken: false },
     });
 
-    if (authResponse.error || !authResponse.data.user?.id) {
-      return json(500, { ok: false, message: authResponse.error?.message || "User creation failed" });
+    const password = String(changes.password || "").trim();
+    const normalizedChanges = removeEmptyFields(normalizeProfileChanges(changes));
+    const email = String(normalizedChanges.email || "").trim().toLowerCase();
+
+    if (!email) {
+      return json(400, { ok: false, message: "Email obbligatoria" });
+    }
+
+    if (mode === "create") {
+      if (!password) {
+        return json(400, { ok: false, message: "Password obbligatoria per creare un utente" });
+      }
+
+      const authResponse = await supabaseAdmin.auth.admin.createUser({
+        email,
+        password,
+        email_confirm: true,
+        user_metadata: {
+          nome: normalizedChanges.nome || null,
+          cognome: normalizedChanges.cognome || null,
+          username: normalizedChanges.username || null,
+          telefono: normalizedChanges.telefono || null,
+          ruolo: normalizedChanges.ruolo || "utente",
+        },
+      });
+
+      if (authResponse.error || !authResponse.data.user?.id) {
+        console.error("ADMIN SAVE PROFILI ERROR", authResponse.error);
+        console.error("ADMIN SAVE PROFILI PAYLOAD", {
+          mode,
+          authPayload: {
+            email,
+            email_confirm: true,
+            user_metadata: {
+              nome: normalizedChanges.nome || null,
+              cognome: normalizedChanges.cognome || null,
+              username: normalizedChanges.username || null,
+              telefono: normalizedChanges.telefono || null,
+              ruolo: normalizedChanges.ruolo || "utente",
+            },
+          },
+        });
+        return json(500, toErrorPayload(authResponse.error, "User creation failed"));
+      }
+
+      const profilePayload = {
+        ...normalizedChanges,
+        id: authResponse.data.user.id,
+        email,
+      };
+
+      console.log("PATCH UPDATE:", profilePayload);
+
+      const savedProfile = await upsertProfile(supabaseAdmin, profilePayload);
+      if (savedProfile.error) {
+        console.error("ADMIN SAVE PROFILI ERROR", savedProfile.error);
+        console.error("ADMIN SAVE PROFILI PAYLOAD", profilePayload);
+        await supabaseAdmin.auth.admin.deleteUser(authResponse.data.user.id).catch(() => undefined);
+        return json(500, toErrorPayload(savedProfile.error, "Profile save failed"));
+      }
+
+      return json(200, { ok: true, profile: savedProfile.data, id: authResponse.data.user.id, table: savedProfile.tableName });
+    }
+
+    if (!id) {
+      return json(400, { ok: false, message: "Missing id" });
+    }
+
+    const authUpdates = {};
+    if (email) authUpdates.email = email;
+    if (password) authUpdates.password = password;
+    if (typeof changes.email_verificata === "boolean" && changes.email_verificata) {
+      authUpdates.email_confirm = true;
+    }
+
+    if (Object.keys(authUpdates).length > 0) {
+      const authUpdate = await supabaseAdmin.auth.admin.updateUserById(id, authUpdates);
+      if (authUpdate.error) {
+        console.error("ADMIN SAVE PROFILI ERROR", authUpdate.error);
+        console.error("ADMIN SAVE PROFILI PAYLOAD", {
+          mode,
+          id,
+          authUpdates,
+        });
+        return json(500, toErrorPayload(authUpdate.error, "User update failed"));
+      }
     }
 
     const profilePayload = {
       ...normalizedChanges,
-      id: authResponse.data.user.id,
+      id,
       email,
+      updated_at: new Date().toISOString(),
     };
 
     console.log("PATCH UPDATE:", profilePayload);
 
     const savedProfile = await upsertProfile(supabaseAdmin, profilePayload);
     if (savedProfile.error) {
-      await supabaseAdmin.auth.admin.deleteUser(authResponse.data.user.id).catch(() => undefined);
-      return json(500, { ok: false, message: savedProfile.error?.message || "Profile save failed" });
+      console.error("ADMIN SAVE PROFILI ERROR", savedProfile.error);
+      console.error("ADMIN SAVE PROFILI PAYLOAD", profilePayload);
+      return json(500, toErrorPayload(savedProfile.error, "Profile update failed"));
     }
 
-    return json(200, { ok: true, profile: savedProfile.data, id: authResponse.data.user.id, table: savedProfile.tableName });
+    return json(200, { ok: true, profile: savedProfile.data, id, table: savedProfile.tableName });
+  } catch (error) {
+    const parsed = JSON.parse(event.body || "{}");
+    console.error("ADMIN SAVE PROFILI ERROR", error);
+    console.error("ADMIN SAVE PROFILI PAYLOAD", parsed);
+    return json(500, toErrorPayload(error));
   }
-
-  if (!id) {
-    return json(400, { ok: false, message: "Missing id" });
-  }
-
-  const authUpdates = {};
-  if (email) authUpdates.email = email;
-  if (password) authUpdates.password = password;
-  if (typeof changes.email_verificata === "boolean" && changes.email_verificata) {
-    authUpdates.email_confirm = true;
-  }
-
-  if (Object.keys(authUpdates).length > 0) {
-    const authUpdate = await supabaseAdmin.auth.admin.updateUserById(id, authUpdates);
-    if (authUpdate.error) {
-      return json(500, { ok: false, message: authUpdate.error.message || "User update failed" });
-    }
-  }
-
-  const profilePayload = {
-    ...normalizedChanges,
-    id,
-    email,
-    updated_at: new Date().toISOString(),
-  };
-
-  console.log("PATCH UPDATE:", profilePayload);
-
-  const savedProfile = await upsertProfile(supabaseAdmin, profilePayload);
-  if (savedProfile.error) {
-    return json(500, { ok: false, message: savedProfile.error?.message || "Profile update failed" });
-  }
-
-  return json(200, { ok: true, profile: savedProfile.data, id, table: savedProfile.tableName });
 }
