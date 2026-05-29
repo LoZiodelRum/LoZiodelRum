@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import { ChevronRight, MapPin, Navigation, Star } from "lucide-react";
+import { ChevronRight, MapPin, Star } from "lucide-react";
 import { AttributionControl, MapContainer, Marker, Popup, TileLayer, ZoomControl, useMap } from "react-leaflet";
 import { supabase } from "../lib/supabaseClient";
 import Navbar from "../components/Navbar";
@@ -33,8 +33,8 @@ const customIcon = L.icon({
 const userPositionIcon = L.divIcon({
   className: "dw-user-position-marker",
   html: '<div class="dw-user-position-dot"></div>',
-  iconSize: [24, 24],
-  iconAnchor: [12, 12],
+  iconSize: [28, 28],
+  iconAnchor: [14, 14],
 });
 
 type VenueRow = {
@@ -252,8 +252,6 @@ export default function MapPage() {
     hasSavedPosition,
     locationStatus,
     locationError,
-    requestLocation,
-    refreshLocation,
   } = useLocationContext();
   const cachedVenues = useMemo(() => readCachedVenues(), []);
 
@@ -261,6 +259,43 @@ export default function MapPage() {
   const [loadingVenues, setLoadingVenues] = useState(cachedVenues.length === 0);
   const [fetchError, setFetchError] = useState<string | null>(null);
   const radiusKm = 10;
+  const savedPosition = useMemo(() => {
+    if (typeof window === "undefined") return null;
+
+    try {
+      const raw = window.localStorage.getItem("drinkwise_last_position");
+      if (!raw) return null;
+      const parsed = JSON.parse(raw) as { lat?: unknown; lng?: unknown; timestamp?: unknown };
+      const lat = Number(parsed.lat);
+      const lng = Number(parsed.lng);
+      const timestamp = Number(parsed.timestamp);
+
+      if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null;
+
+      return {
+        lat,
+        lng,
+        timestamp: Number.isFinite(timestamp) ? timestamp : 0,
+      };
+    } catch {
+      return null;
+    }
+  }, [hasSavedPosition]);
+  const effectiveUserPosition = useMemo(() => {
+    if (userPosition && Number.isFinite(userPosition.timestamp) && userPosition.timestamp > 0) {
+      return userPosition;
+    }
+
+    if (savedPosition && Number.isFinite(savedPosition.timestamp) && savedPosition.timestamp > 0) {
+      return savedPosition;
+    }
+
+    return null;
+  }, [savedPosition, userPosition]);
+  const shouldShowUserMarker =
+    Boolean(effectiveUserPosition) &&
+    typeof effectiveUserPosition?.lat === "number" &&
+    typeof effectiveUserPosition?.lng === "number";
 
   useEffect(() => {
     void fetchVenues();
@@ -336,15 +371,14 @@ export default function MapPage() {
   );
 
   const nearbyVenues = useMemo(() => {
-    const hasPositionForDistance = hasRealPosition || hasSavedPosition;
-    if (!hasPositionForDistance) return [] as NearbyVenue[];
+    if (!effectiveUserPosition) return [] as NearbyVenue[];
 
     return venuesWithCoords
       .map((venue: any) => {
         const priority = getVenuePriority(venue);
         const distanceKm = getDistanceKm(
-          userPosition.lat,
-          userPosition.lng,
+          effectiveUserPosition.lat,
+          effectiveUserPosition.lng,
           venue.markerLat,
           venue.markerLng
         );
@@ -364,7 +398,7 @@ export default function MapPage() {
         if (a.priority !== b.priority) return a.priority - b.priority;
         return a.distanceKm - b.distanceKm;
       });
-  }, [hasRealPosition, hasSavedPosition, radiusKm, userPosition, venuesWithCoords]);
+  }, [effectiveUserPosition, radiusKm, venuesWithCoords]);
 
   useEffect(() => {
     console.log("MAPPA - locali in state:", venues.length);
@@ -384,11 +418,9 @@ export default function MapPage() {
       ? "Sto aggiornando la posizione in background..."
       : locationStatus === "requesting"
         ? "Sto rilevando la tua posizione..."
-        : locationStatus === "granted"
-          ? null
-          : hasSavedPosition
-            ? null
-            : "Per vedere i locali più vicini a te, attiva la posizione.";
+        : locationStatus === "denied" && !effectiveUserPosition
+          ? "Per vedere i locali piu vicini a te, attiva la posizione."
+          : null;
 
   return (
     <>
@@ -412,7 +444,7 @@ export default function MapPage() {
           .map-title-row {
             display: flex;
             align-items: center;
-            justify-content: space-between;
+            justify-content: flex-start;
             gap: 12px;
             margin-bottom: 10px;
           }
@@ -428,20 +460,6 @@ export default function MapPage() {
             margin: 4px 0 0;
             color: rgba(221, 231, 247, 0.88);
             font-size: clamp(13px, 2vw, 16px);
-          }
-
-          .map-recenter-btn {
-            border: 1px solid rgba(245, 166, 35, 0.55);
-            background: rgba(245, 166, 35, 0.15);
-            color: #f5a623;
-            border-radius: 999px;
-            padding: 8px 12px;
-            cursor: pointer;
-            display: inline-flex;
-            align-items: center;
-            gap: 7px;
-            font-weight: 700;
-            white-space: nowrap;
           }
 
           .map-geo-alert {
@@ -547,19 +565,19 @@ export default function MapPage() {
           }
 
           .dw-user-position-marker {
-            background: transparent;
-            border: none;
+            background: transparent !important;
+            border: none !important;
           }
 
           .dw-user-position-dot {
-            width: 22px;
-            height: 22px;
+            width: 24px;
+            height: 24px;
             border-radius: 999px;
             background: #2dd4ff;
             border: 4px solid #ffffff;
             box-shadow:
-              0 0 0 8px rgba(45, 212, 255, 0.22),
-              0 0 24px rgba(45, 212, 255, 0.75);
+              0 0 0 8px rgba(45, 212, 255, 0.25),
+              0 0 28px rgba(45, 212, 255, 0.85);
           }
 
           .map-nearby-section {
@@ -769,11 +787,6 @@ export default function MapPage() {
               gap: 8px;
             }
 
-            .map-recenter-btn {
-              font-size: 12px;
-              padding: 7px 10px;
-            }
-
             .map-venue-card {
               grid-template-columns: 86px minmax(0, 1fr);
             }
@@ -807,29 +820,7 @@ export default function MapPage() {
               <div>
                 <h1 className="map-title">Locali DrinkWise</h1>
               </div>
-
-              <button className="map-recenter-btn" onClick={refreshLocation}>
-                <Navigation size={16} strokeWidth={2.3} />
-                Usa la mia posizione
-              </button>
             </div>
-
-            {locationStatus === "denied" && !hasSavedPosition && (
-              <div className="map-state-card" style={{ marginBottom: 12 }}>
-                <div style={{ fontWeight: 800, marginBottom: 4 }}>
-                  Per usare al meglio DrinkWise, attiva la posizione.
-                </div>
-                <div style={{ opacity: 0.88 }}>
-                  Ti mostreremo locali, eventi e suggerimenti vicino a te.
-                </div>
-                <div style={{ opacity: 0.78, marginTop: 6 }}>
-                  Se hai negato il permesso, riattivalo dalle impostazioni del browser.
-                </div>
-                <button className="map-state-action" onClick={requestLocation}>
-                  Attiva posizione
-                </button>
-              </div>
-            )}
 
             {(locationError && locationStatus !== "denied") && (
               <div className="map-geo-alert">
@@ -839,7 +830,7 @@ export default function MapPage() {
 
             <div className="map-viewport">
               <MapContainer
-                center={[userPosition?.lat || DEFAULT_CENTER.lat, userPosition?.lng || DEFAULT_CENTER.lng]}
+                center={[effectiveUserPosition?.lat || DEFAULT_CENTER.lat, effectiveUserPosition?.lng || DEFAULT_CENTER.lng]}
                 zoom={13}
                 style={{ height: "100%", width: "100%" }}
                 zoomControl={false}
@@ -848,8 +839,8 @@ export default function MapPage() {
                 scrollWheelZoom={true}
               >
                 <MapCenterUpdater
-                  lat={userPosition?.lat || DEFAULT_CENTER.lat}
-                  lng={userPosition?.lng || DEFAULT_CENTER.lng}
+                  lat={effectiveUserPosition?.lat || DEFAULT_CENTER.lat}
+                  lng={effectiveUserPosition?.lng || DEFAULT_CENTER.lng}
                   zoom={13}
                 />
 
@@ -860,8 +851,8 @@ export default function MapPage() {
 
                 <AttributionControl position="bottomright" prefix={false} />
 
-                {hasRealPosition && userPosition?.lat && userPosition?.lng && (
-                  <Marker position={[userPosition.lat, userPosition.lng]} icon={userPositionIcon}>
+                {shouldShowUserMarker && effectiveUserPosition && (
+                  <Marker position={[effectiveUserPosition.lat, effectiveUserPosition.lng]} icon={userPositionIcon} zIndexOffset={1000}>
                     <Popup>Sei qui</Popup>
                   </Marker>
                 )}
@@ -869,8 +860,8 @@ export default function MapPage() {
                 {venuesWithCoords.map((venue: any) => {
                   const popupImage = resolveVenueImage(venue);
                   const distanceKm = getDistanceKm(
-                    userPosition.lat,
-                    userPosition.lng,
+                    (effectiveUserPosition || userPosition).lat,
+                    (effectiveUserPosition || userPosition).lng,
                     venue.markerLat,
                     venue.markerLng
                   );
@@ -1011,7 +1002,7 @@ export default function MapPage() {
 
             {!showSkeletons && venuesWithCoords.length > 0 && nearbyVenues.length === 0 && (
               <div className="map-state-card">
-                {(hasRealPosition || hasSavedPosition) ? (
+                {effectiveUserPosition ? (
                   <>
                     <div style={{ fontWeight: 800, marginBottom: 4 }}>
                       Nessun locale DrinkWise entro 10 km.
@@ -1028,9 +1019,6 @@ export default function MapPage() {
                     <div style={{ fontWeight: 800, marginBottom: 4 }}>
                       Per vedere i locali piu vicini a te, attiva la posizione.
                     </div>
-                    <button className="map-state-action" onClick={refreshLocation}>
-                      Attiva posizione
-                    </button>
                   </>
                 )}
               </div>

@@ -26,6 +26,7 @@ type LocationContextValue = {
   locationError: string | null;
   requestLocation: () => void;
   refreshLocation: () => void;
+  refreshLocationSilently: () => void;
   checkLocationSilently: () => void;
   markLocationOnboardingDone: () => void;
 };
@@ -51,6 +52,7 @@ const LocationContext = createContext<LocationContextValue>({
   locationError: null,
   requestLocation: () => undefined,
   refreshLocation: () => undefined,
+  refreshLocationSilently: () => undefined,
   checkLocationSilently: () => undefined,
   markLocationOnboardingDone: () => undefined,
 });
@@ -242,6 +244,10 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
     requestLocationInternal(0, true);
   }, [requestLocationInternal]);
 
+  const refreshLocationSilently = useCallback(() => {
+    requestLocationInternal(60000, false);
+  }, [requestLocationInternal]);
+
   const checkLocationSilently = useCallback(async () => {
     if (typeof navigator === "undefined" || !navigator.geolocation) {
       setLocationStatus("unavailable");
@@ -314,8 +320,11 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
       window.sessionStorage.setItem(LOCATION_STARTED_SESSION_KEY, "true");
     }
 
-    requestLocation();
-  }, [isAuthenticated, requestLocation]);
+    const onboardingDone = readOnboardingDoneFlag();
+    if (!onboardingDone) return;
+
+    refreshLocationSilently();
+  }, [isAuthenticated, refreshLocationSilently]);
 
   useEffect(() => {
     void checkLocationSilently();
@@ -341,6 +350,7 @@ export function LocationProvider({ children }: { children: React.ReactNode }) {
         locationError,
         requestLocation,
         refreshLocation,
+        refreshLocationSilently,
         checkLocationSilently,
         markLocationOnboardingDone,
       }}
