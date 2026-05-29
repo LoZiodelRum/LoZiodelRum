@@ -554,7 +554,7 @@ export default function Home() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            width: "min(365px, 100%)",
+            width: "min(260px, 100%)",
             gap: 12,
           }}
         >
@@ -575,7 +575,7 @@ export default function Home() {
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
-            width: "min(365px, 100%)",
+            width: "min(260px, 100%)",
             gap: 10,
           }}
         >
