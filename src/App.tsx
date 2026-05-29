@@ -56,6 +56,7 @@ import AdminPanel from "./pages/AdminPanel";
 import Bancone from "./pages/Bancone";
 import VenueDetail from "./pages/VenueDetail";
 import Venues from "./pages/Venues";
+import OwnerDashboard from "./pages/OwnerDashboard";
 
 // BARETTO
 import Baretto from "./pages/Baretto";
@@ -340,6 +341,16 @@ export default function App() {
               element={
                 <ProtectedRoute>
                   <Crea />
+                </ProtectedRoute>
+              }
+            />
+
+            {/* DASHBOARD PROPRIETARIO */}
+            <Route
+              path="/proprietario"
+              element={
+                <ProtectedRoute>
+                  <OwnerDashboard />
                 </ProtectedRoute>
               }
             />

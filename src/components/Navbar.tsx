@@ -5,7 +5,7 @@ import { useState } from "react";
 import { useTranslation } from "react-i18next";
 
 export default function Navbar() {
-  const { user, isAdmin } = useUser();
+  const { user, isAdmin, role } = useUser();
   const navigate = useNavigate();
   const location = useLocation();
 
@@ -40,6 +40,9 @@ export default function Navbar() {
       fontWeight: isActive(path) ? 700 : 400,
     };
   }
+
+  const normalizedRole = String(role || "").trim().toLowerCase();
+  const canAccessOwnerDashboard = isAdmin || normalizedRole === "proprietario";
 
   async function handleLogout() {
     await supabase.auth.signOut();
@@ -175,6 +178,12 @@ export default function Navbar() {
         <Link to="/crea" style={linkStyle("/crea")}>
           {t("create")}
         </Link>
+
+        {canAccessOwnerDashboard && (
+          <Link to="/proprietario" style={linkStyle("/proprietario")}>
+            Dashboard Proprietario
+          </Link>
+        )}
 
         <button
           onClick={handleLogout}
@@ -661,6 +670,25 @@ export default function Navbar() {
         >
             {t("create")}
         </Link>
+
+        {canAccessOwnerDashboard && (
+          <Link
+            className="mobile-menu-item"
+            to="/proprietario"
+            onClick={closeMobileMenu}
+            style={{
+              ...linkStyle("/proprietario"),
+              padding: "13px 10px",
+              borderRadius: "10px",
+              marginBottom: "4px",
+              borderBottom: "1px solid #333",
+              transition: "all 0.2s ease",
+              WebkitTapHighlightColor: "transparent",
+            }}
+          >
+            Dashboard Proprietario
+          </Link>
+        )}
 
         {isAdmin && (
           <Link
