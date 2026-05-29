@@ -1,17 +1,22 @@
 import { FormEvent, useEffect, useMemo, useState } from "react";
 import {
+  Bell,
   CalendarDays,
   ChartNoAxesCombined,
+  CheckCircle2,
   Crown,
   Download,
   Globe,
+  Menu,
   Mail,
   MessageSquare,
   Phone,
   QrCode,
+  Settings,
   Star,
   Trophy,
   UserRound,
+  UserRoundPlus,
   Users,
   Wine,
 } from "lucide-react";
@@ -45,6 +50,7 @@ type ResultsData = {
 type ReviewItem = {
   id: string;
   username: string;
+  avatarUrl?: string;
   vote: number;
   comment: string;
   dateLabel: string;
@@ -200,6 +206,42 @@ function openIfAvailable(url: string): boolean {
   return true;
 }
 
+function AnimatedNumber({ value, decimals = 0 }: { value: number; decimals?: number }) {
+  const [display, setDisplay] = useState(0);
+
+  useEffect(() => {
+    const safeValue = Number.isFinite(value) ? value : 0;
+    const duration = 700;
+    const start = performance.now();
+    let frame = 0;
+
+    const animate = (now: number) => {
+      const progress = Math.min((now - start) / duration, 1);
+      setDisplay(safeValue * progress);
+      if (progress < 1) {
+        frame = requestAnimationFrame(animate);
+      }
+    };
+
+    frame = requestAnimationFrame(animate);
+    return () => cancelAnimationFrame(frame);
+  }, [value]);
+
+  return <>{display.toFixed(decimals)}</>;
+}
+
+const OWNER_MOBILE_MENU = [
+  "Dashboard",
+  "QR Code",
+  "Clienti",
+  "Recensioni",
+  "Eventi",
+  "Academy",
+  "Pagamenti",
+  "Profilo Locale",
+  "Impostazioni",
+];
+
 export default function OwnerDashboard() {
   const navigate = useNavigate();
   const { user, role } = useUser();
@@ -274,6 +316,19 @@ export default function OwnerDashboard() {
   const [eventNotes, setEventNotes] = useState("");
   const [eventFeedback, setEventFeedback] = useState("");
   const [eventSaving, setEventSaving] = useState(false);
+  const [isCompactScreen, setIsCompactScreen] = useState(false);
+  const [mobileOwnerMenuOpen, setMobileOwnerMenuOpen] = useState(false);
+  const [trendFilter, setTrendFilter] = useState<"7" | "30" | "3m" | "6m" | "12m">("6m");
+  const [checkinRowsRaw, setCheckinRowsRaw] = useState<GenericRow[]>([]);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const mediaQuery = window.matchMedia("(max-width: 1024px)");
+    const update = () => setIsCompactScreen(mediaQuery.matches);
+    update();
+    mediaQuery.addEventListener("change", update);
+    return () => mediaQuery.removeEventListener("change", update);
+  }, []);
 
   async function resolveTable(candidates: string[]): Promise<string | null> {
     for (const table of candidates) {
@@ -482,6 +537,7 @@ export default function OwnerDashboard() {
         const drinksRows = drinksResult.rows;
         const reviewsRows = reviewsResult.rows;
         const eventsRows = eventsResult.rows;
+        setCheckinRowsRaw(checkinsRows);
 
         const userKeyCandidates = ["user_id", "profile_id", "utente_id", "customer_id"];
         const checkinUsers = checkinsRows
@@ -507,6 +563,7 @@ export default function OwnerDashboard() {
           .map((row) => ({
             id: String(row.id || crypto.randomUUID()),
             username: pickFirstText(row, ["nome_utente", "username", "utente_nome", "author_name"]) || "Utente",
+            avatarUrl: pickFirstText(row, ["avatar_url", "foto", "user_avatar", "profile_image"]),
             vote: pickFirstNumber(row, ["voto", "rating", "stelle", "score"]),
             comment:
               pickFirstText(row, ["commento", "testo", "review", "contenuto"]) ||
@@ -673,6 +730,88 @@ export default function OwnerDashboard() {
 
   const scoreLabel = results.drinkwiseScore >= 7 ? "Top locale" : results.drinkwiseScore >= 4 ? "In crescita" : "Starter";
 
+  const trendPoints = useMemo(() => {
+    const now = new Date();
+    const windows: Record<typeof trendFilter, number> = {
+      "7": 7,
+      "30": 30,
+      "3m": 90,
+      "6m": 180,
+      "12m": 365,
+    };
+    const days = windows[trendFilter];
+    const bucketCount = trendFilter === "7" ? 7 : trendFilter === "30" ? 10 : 12;
+    const bucketSize = Math.max(1, Math.floor(days / bucketCount));
+
+    const buckets = Array.from({ length: bucketCount }, (_, index) => ({
+      label: `${index + 1}`,
+      value: 0,
+    }));
+
+    for (const row of checkinRowsRaw) {
+      const createdRaw = pickFirstText(row, ["created_at", "checkin_at", "data", "date"]);
+      const createdAt = createdRaw ? new Date(createdRaw) : null;
+      if (!createdAt || Number.isNaN(createdAt.getTime())) continue;
+      const deltaDays = Math.floor((now.getTime() - createdAt.getTime()) / (1000 * 60 * 60 * 24));
+      if (deltaDays < 0 || deltaDays > days) continue;
+      const bucketIndex = bucketCount - 1 - Math.min(bucketCount - 1, Math.floor(deltaDays / bucketSize));
+      buckets[bucketIndex].value += 1;
+    }
+
+    return buckets;
+  }, [checkinRowsRaw, trendFilter]);
+
+  const provenanceData = useMemo(() => {
+    const map = new Map<string, number>();
+    for (const row of checkinRowsRaw) {
+      const city =
+        pickFirstText(row, ["citta", "city", "provenienza", "origine"]) ||
+        "Non disponibile";
+      map.set(city, (map.get(city) || 0) + 1);
+    }
+    const total = Array.from(map.values()).reduce((acc, val) => acc + val, 0);
+    const top = Array.from(map.entries())
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 5)
+      .map(([label, value]) => ({
+        label,
+        value,
+        percent: total > 0 ? Math.round((value / total) * 100) : 0,
+      }));
+    return { total, top };
+  }, [checkinRowsRaw]);
+
+  const ageDistribution = useMemo(() => {
+    const ranges = ["18-25", "26-35", "36-45", "46-60", "60+"];
+    const map = new Map<string, number>(ranges.map((range) => [range, 0]));
+
+    for (const row of checkinRowsRaw) {
+      const explicitRange = pickFirstText(row, ["fascia_eta", "age_range"]);
+      if (explicitRange && map.has(explicitRange)) {
+        map.set(explicitRange, (map.get(explicitRange) || 0) + 1);
+        continue;
+      }
+
+      const age = pickFirstNumber(row, ["eta", "age"]);
+      if (age <= 0) continue;
+      if (age <= 25) map.set("18-25", (map.get("18-25") || 0) + 1);
+      else if (age <= 35) map.set("26-35", (map.get("26-35") || 0) + 1);
+      else if (age <= 45) map.set("36-45", (map.get("36-45") || 0) + 1);
+      else if (age <= 60) map.set("46-60", (map.get("46-60") || 0) + 1);
+      else map.set("60+", (map.get("60+") || 0) + 1);
+    }
+
+    const total = Array.from(map.values()).reduce((acc, val) => acc + val, 0);
+    return ranges.map((label) => {
+      const value = map.get(label) || 0;
+      return {
+        label,
+        value,
+        percent: total > 0 ? Math.round((value / total) * 100) : 0,
+      };
+    });
+  }, [checkinRowsRaw]);
+
   async function handleEventRequestSubmit(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
@@ -751,6 +890,330 @@ export default function OwnerDashboard() {
     return (
       <div className="owner-dashboard-page">
         <div className="owner-loading-card">Caricamento dashboard proprietario...</div>
+      </div>
+    );
+  }
+
+  if (isCompactScreen) {
+    const maxTrend = Math.max(1, ...trendPoints.map((point) => point.value));
+    const trendPath = trendPoints
+      .map((point, index) => {
+        const x = (index / Math.max(1, trendPoints.length - 1)) * 100;
+        const y = 100 - (point.value / maxTrend) * 100;
+        return `${x},${y}`;
+      })
+      .join(" ");
+
+    const pieColors = ["#f4a327", "#2f89ff", "#37c79c", "#f26d6d", "#8a6dff"];
+    const pieGradient = provenanceData.top.length
+      ? provenanceData.top
+          .reduce(
+            (acc, item, index) => {
+              const start = acc.offset;
+              const end = start + item.percent;
+              acc.parts.push(`${pieColors[index % pieColors.length]} ${start}% ${end}%`);
+              acc.offset = end;
+              return acc;
+            },
+            { parts: [] as string[], offset: 0 },
+          )
+          .parts.join(", ")
+      : "#2a2f38 0% 100%";
+
+    return (
+      <div className="owner-dashboard-page owner-mobile-page">
+        <header className="owner-mobile-topbar">
+          <button type="button" className="owner-mobile-icon-btn" onClick={() => setMobileOwnerMenuOpen(true)}>
+            <Menu size={18} />
+          </button>
+          <div className="owner-mobile-brand">
+            <img src="/logo.png" alt="DrinkWise" />
+            <div>
+              <strong>DrinkWise</strong>
+              <small>{localeName}</small>
+            </div>
+            {Boolean(locale?.verificato) && <CheckCircle2 size={14} className="owner-mobile-verified" />}
+          </div>
+          <button type="button" className="owner-mobile-icon-btn">
+            <Bell size={18} />
+          </button>
+        </header>
+
+        <section className="owner-mobile-hero" id="owner-main-dashboard">
+          <img src={localeCover} alt={`Copertina locale ${localeName}`} className="owner-mobile-hero-cover" />
+          <div className="owner-mobile-hero-overlay" />
+          <div className="owner-mobile-hero-content">
+            <div className="owner-mobile-locale-row">
+              <img src={localeLogo} alt={`Logo ${localeName}`} className="owner-mobile-locale-logo" />
+              <div>
+                <span className="owner-mobile-plan-mini">{payments.plan}</span>
+                <h1>{localeName}</h1>
+                <p>{localeLocation || "Non disponibile"}</p>
+              </div>
+            </div>
+            <div className="owner-mobile-contact-row">
+              <span><Phone size={12} /> {localePhone}</span>
+              <span><Mail size={12} /> {localeMail}</span>
+              <span><Globe size={12} /> {localeWebsite || "Non disponibile"}</span>
+              <span><MessageSquare size={12} /> {[instagram, facebook, tiktok].filter(Boolean).join(" | ") || "Non disponibile"}</span>
+            </div>
+            <div className="owner-mobile-plan-card">
+              <div>
+                <small>Piano attivo</small>
+                <strong>{payments.plan}</strong>
+                <span>Scadenza {payments.nextDueDate}</span>
+              </div>
+              <button type="button" onClick={handlePayNow}>Gestisci Abbonamento</button>
+            </div>
+          </div>
+        </section>
+
+        {!locale && (
+          <section className="owner-empty-card" style={{ width: "100%", margin: 0, textAlign: "left" }}>
+            <h2>Nessun locale collegato alla tua email.</h2>
+            <p>Per il test, inserisci nel locale una email proprietario uguale alla email usata per il login.</p>
+          </section>
+        )}
+
+        <section className="owner-mobile-section owner-mobile-kpis" id="owner-customers">
+          <div className="owner-mobile-section-head">
+            <h2>Panoramica</h2>
+          </div>
+          <div className="owner-mobile-kpi-grid">
+            <article>
+              <span>Check-in QR</span>
+              <strong><AnimatedNumber value={kpis.qrCheckins} /></strong>
+            </article>
+            <article>
+              <span>Utenti unici</span>
+              <strong><AnimatedNumber value={kpis.uniqueVerifiedUsers} /></strong>
+            </article>
+            <article>
+              <span>Drink registrati</span>
+              <strong><AnimatedNumber value={kpis.drinksRegistered} /></strong>
+            </article>
+            <article>
+              <span>Visite ripetute</span>
+              <strong><AnimatedNumber value={kpis.repeatVisits} /></strong>
+            </article>
+            <article>
+              <span>Recensioni</span>
+              <strong><AnimatedNumber value={kpis.reviewsCount} /></strong>
+            </article>
+            <article>
+              <span>Valutazione media</span>
+              <strong><AnimatedNumber value={kpis.averageRating} decimals={1} /></strong>
+            </article>
+          </div>
+        </section>
+
+        <section className="owner-mobile-section" id="owner-qr-stats">
+          <div className="owner-mobile-section-head">
+            <h2>QR Code</h2>
+          </div>
+          <div className="owner-mobile-qr-card">
+            {qrCodeValue ? <img src={qrCodeValue} alt="QR ufficiale locale" /> : <div className="owner-qr-placeholder">QR ufficiale in preparazione</div>}
+            <div className="owner-mobile-inline-actions">
+              <button type="button" disabled={!qrCodeValue} onClick={() => qrCodeValue && openIfAvailable(qrCodeValue)}><Download size={14} /> Scarica PNG</button>
+              <button type="button" disabled={!qrCodeValue} onClick={() => window.print()}>Stampa QR</button>
+            </div>
+          </div>
+        </section>
+
+        <section className="owner-mobile-section">
+          <div className="owner-mobile-section-head">
+            <h2>Andamento Check-in</h2>
+            <div className="owner-mobile-filters">
+              {[
+                { key: "7", label: "7g" },
+                { key: "30", label: "30g" },
+                { key: "3m", label: "3m" },
+                { key: "6m", label: "6m" },
+                { key: "12m", label: "12m" },
+              ].map((filter) => (
+                <button
+                  key={filter.key}
+                  type="button"
+                  className={trendFilter === filter.key ? "active" : ""}
+                  onClick={() => setTrendFilter(filter.key as "7" | "30" | "3m" | "6m" | "12m")}
+                >
+                  {filter.label}
+                </button>
+              ))}
+            </div>
+          </div>
+          <div className="owner-mobile-trend-chart">
+            {trendPoints.some((point) => point.value > 0) ? (
+              <svg viewBox="0 0 100 100" preserveAspectRatio="none" aria-label="Trend check-in">
+                <polyline points={trendPath} />
+              </svg>
+            ) : (
+              <p>Dati trend non disponibili.</p>
+            )}
+          </div>
+        </section>
+
+        <section className="owner-mobile-section owner-mobile-analytics-grid">
+          <article>
+            <h3>Provenienza Clienti</h3>
+            <div className="owner-mobile-pie" style={{ background: `conic-gradient(${pieGradient})` }} />
+            {provenanceData.top.length ? (
+              <ul>
+                {provenanceData.top.map((item, index) => (
+                  <li key={item.label}><i style={{ background: pieColors[index % pieColors.length] }} />{item.label}<strong>{item.percent}%</strong></li>
+                ))}
+              </ul>
+            ) : (
+              <p className="owner-empty">Dati provenienza non disponibili.</p>
+            )}
+          </article>
+          <article>
+            <h3>Fascia eta</h3>
+            <ul className="owner-mobile-age-list">
+              {ageDistribution.map((item) => (
+                <li key={item.label}><span>{item.label}</span><div><i style={{ width: `${item.percent}%` }} /></div><strong>{item.percent}%</strong></li>
+              ))}
+            </ul>
+          </article>
+        </section>
+
+        <section className="owner-mobile-section" id="owner-drinks">
+          <div className="owner-mobile-section-head">
+            <h2>Drink piu amati</h2>
+            <button type="button" onClick={() => scrollToSection("owner-drinks")}>Vedi tutti</button>
+          </div>
+          {drinkRanking.length ? (
+            <ol className="owner-mobile-ranked-list">
+              {drinkRanking.map((drink) => (
+                <li key={drink.name}><span>{drink.name}</span><strong>{drink.count}</strong></li>
+              ))}
+            </ol>
+          ) : (
+            <p className="owner-empty">Nessun drink registrato ancora.</p>
+          )}
+        </section>
+
+        <section className="owner-mobile-section" id="owner-reviews">
+          <div className="owner-mobile-section-head">
+            <h2>Ultime recensioni</h2>
+            <button type="button" onClick={() => scrollToSection("owner-reviews")}>Vedi tutte</button>
+          </div>
+          {latestReviews.length ? (
+            <ul className="owner-mobile-review-list">
+              {latestReviews.map((review) => (
+                <li key={review.id}>
+                  <div className="owner-mobile-review-head">
+                    {review.avatarUrl ? <img src={review.avatarUrl} alt={review.username} /> : <span>{review.username.slice(0, 1).toUpperCase()}</span>}
+                    <div>
+                      <strong>{review.username}</strong>
+                      <small>{review.dateLabel}</small>
+                    </div>
+                    <em>{"★".repeat(Math.max(0, Math.min(5, Math.round(review.vote))))}</em>
+                  </div>
+                  <p>{review.comment}</p>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="owner-empty">Nessuna recensione ancora disponibile.</p>
+          )}
+        </section>
+
+        <section className="owner-mobile-section" id="owner-events">
+          <div className="owner-mobile-section-head">
+            <h2>Eventi</h2>
+          </div>
+          {events.length ? (
+            <ul className="owner-mobile-events-list">
+              {events.map((eventItem) => (
+                <li key={eventItem.id}>
+                  <strong>{eventItem.type}</strong>
+                  <span>{eventItem.dateLabel}</span>
+                  <em>{eventItem.status}</em>
+                </li>
+              ))}
+            </ul>
+          ) : (
+            <p className="owner-empty">Nessun evento disponibile.</p>
+          )}
+          <button className="owner-cta" type="button" onClick={() => navigate("/eventi")}>Richiedi Evento</button>
+        </section>
+
+        <section className="owner-mobile-section" id="owner-academy">
+          <div className="owner-mobile-section-head">
+            <h2>Academy</h2>
+          </div>
+          <ul className="owner-list">
+            <li><span>Bartender certificati</span><strong>{academy.bartenderCertified}</strong></li>
+            <li><span>Personale certificato</span><strong>{academy.floorStaffCertified}</strong></li>
+            <li><span>Manager certificati</span><strong>{academy.managerCertified}</strong></li>
+            <li><span>Ore formazione</span><strong>{academy.trainingHours}</strong></li>
+            <li><span>Livello</span><strong>{academy.academyLevel || "Non disponibile"}</strong></li>
+          </ul>
+          <button className="owner-cta" type="button" disabled>Accedi Academy</button>
+        </section>
+
+        <section className="owner-mobile-section owner-results" id="owner-rank">
+          <div className="owner-mobile-section-head"><h2>Risultati DrinkWise</h2></div>
+          <div className="owner-results-grid">
+            <article><QrCode size={16} /><span>{results.checkinsQr}</span><small>Check-in QR</small></article>
+            <article><Users size={16} /><span>{results.uniqueUsers}</span><small>Utenti unici</small></article>
+            <article><Wine size={16} /><span>{results.drinksRegistered}</span><small>Drink registrati</small></article>
+            <article><Star size={16} /><span>{results.reviews}</span><small>Recensioni</small></article>
+            <article><CalendarDays size={16} /><span>{results.requestedEvents}</span><small>Eventi richiesti</small></article>
+            <article><Trophy size={16} /><span>{results.completedEvents}</span><small>Eventi realizzati</small></article>
+            <article><Crown size={16} /><span>{results.drinkwiseScore}</span><small>DrinkWise Score</small></article>
+            <article><ChartNoAxesCombined size={16} /><span>{results.territorialPosition}</span><small>Posizione regionale</small></article>
+          </div>
+        </section>
+
+        <section className="owner-mobile-section" id="owner-payments">
+          <div className="owner-mobile-section-head"><h2>Pagamenti</h2></div>
+          <ul className="owner-list">
+            <li><span>Piano attivo</span><strong>{payments.plan}</strong></li>
+            <li><span>Prossima scadenza</span><strong>{payments.nextDueDate}</strong></li>
+            <li><span>Stato pagamento</span><strong>{payments.paymentStatus}</strong></li>
+          </ul>
+          <div className="owner-mobile-inline-actions">
+            <button type="button" onClick={handlePayNow}>Paga Ora</button>
+            <button type="button" disabled={payments.history.length === 0}>Storico Pagamenti</button>
+          </div>
+        </section>
+
+        <section className="owner-mobile-section" id="owner-marketing">
+          <div className="owner-mobile-section-head"><h2>Azioni rapide</h2></div>
+          <div className="owner-mobile-quick-actions">
+            <button type="button" onClick={() => navigate("/eventi")}>Richiedi Evento</button>
+            <button type="button" onClick={handleOpenProfileEdit}>Modifica Profilo Locale</button>
+            <button type="button" disabled><UserRoundPlus size={14} /> Invita Collaboratore</button>
+            <button type="button" disabled>Scarica Materiale Marketing</button>
+            <button type="button" disabled>Contatta Manager</button>
+          </div>
+        </section>
+
+        <nav className="owner-mobile-bottom-nav" aria-label="Menu proprietario mobile">
+          {OWNER_MOBILE_MENU.map((item) => (
+            <button key={item} type="button" className={item === "Dashboard" ? "active" : ""}>{item}</button>
+          ))}
+        </nav>
+
+        {mobileOwnerMenuOpen && (
+          <div className="owner-mobile-drawer-backdrop" onClick={() => setMobileOwnerMenuOpen(false)}>
+            <aside className="owner-mobile-drawer" onClick={(event) => event.stopPropagation()}>
+              <div className="owner-mobile-drawer-head">
+                <h3>Menu Proprietario</h3>
+                <button type="button" onClick={() => setMobileOwnerMenuOpen(false)}><Settings size={16} /></button>
+              </div>
+              <ul>
+                {OWNER_MOBILE_MENU.map((item) => (
+                  <li key={item}><button type="button" onClick={() => setMobileOwnerMenuOpen(false)}>{item}</button></li>
+                ))}
+              </ul>
+            </aside>
+          </div>
+        )}
+
+        {eventFeedback && <p className="owner-feedback">{eventFeedback}</p>}
       </div>
     );
   }
