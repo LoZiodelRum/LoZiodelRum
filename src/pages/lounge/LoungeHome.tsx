@@ -28,25 +28,25 @@ export default function LoungeHome() {
     {
       value: "0",
       title: "Locali Premium",
-      color: "#ff6b35",
+      color: "#f5a623",
       path: "/locali",
     },
     {
       value: "0",
       title: "Eventi Stasera",
-      color: "#5b5fff",
+      color: "#f5a623",
       path: "/eventi",
     },
     {
       value: "0",
       title: "Nuove Recensioni",
-      color: "#22e6c9",
+      color: "#f5a623",
       path: "/recensioni",
     },
     {
       value: "0",
       title: "Nuovi Cocktail",
-      color: "#b05cff",
+      color: "#f5a623",
       path: "/drink",
     },
   ];
@@ -175,7 +175,7 @@ export default function LoungeHome() {
                   justifyContent: "center",
                   fontSize: isMobile ? 30 : 44,
                   fontWeight: 900,
-                  boxShadow: "0 0 18px #3ffff244",
+                  boxShadow: "0 0 18px #f5a623",
                   flexShrink: 0,
                 }}
               >
@@ -415,7 +415,7 @@ export default function LoungeHome() {
                     height: isMobile ? 58 : 82,
                     borderRadius: "50%",
                     objectFit: "cover",
-                    border: "3px solid #ff66cc",
+                    border: "3px solid #f5a623",
                   }}
                 />
               ))}
