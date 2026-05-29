@@ -323,7 +323,7 @@ export default function MapPage() {
   return (
     <>
       <Navbar />
-      <div className="map-page-root" style={{ minHeight: "100vh", padding: "86px 14px 130px", color: "#edf4ff", overflowX: "hidden" }}>
+      <div className="map-page-root" style={{ minHeight: "100vh", padding: "74px 12px 138px", color: "#edf4ff", overflowX: "hidden" }}>
         <style>{`
           .map-page-shell {
             width: min(1040px, 100%);
@@ -332,11 +332,11 @@ export default function MapPage() {
 
           .map-main-box {
             background: #070d1a;
-            border: 1px solid rgba(245, 166, 35, 0.35);
-            box-shadow: 0 0 30px rgba(245, 166, 35, 0.12);
-            border-radius: 28px;
+            border: 1px solid rgba(116, 157, 255, 0.22);
+            box-shadow: 0 0 28px rgba(55, 98, 190, 0.18);
+            border-radius: 26px;
             overflow: hidden;
-            padding: 16px;
+            padding: 14px;
           }
 
           .map-title-row {
@@ -344,7 +344,7 @@ export default function MapPage() {
             align-items: center;
             justify-content: space-between;
             gap: 12px;
-            margin-bottom: 12px;
+            margin-bottom: 10px;
           }
 
           .map-title {
@@ -357,7 +357,7 @@ export default function MapPage() {
           .map-subtitle {
             margin: 4px 0 0;
             color: rgba(221, 231, 247, 0.88);
-            font-size: clamp(14px, 2.2vw, 18px);
+            font-size: clamp(13px, 2vw, 16px);
           }
 
           .map-recenter-btn {
@@ -385,9 +385,9 @@ export default function MapPage() {
           }
 
           .map-viewport {
-            height: clamp(360px, 52vh, 420px);
+            height: clamp(340px, 49vh, 404px);
             width: 100%;
-            border-radius: 22px;
+            border-radius: 20px;
             overflow: hidden;
             border: 1px solid rgba(255, 255, 255, 0.1);
           }
@@ -411,14 +411,14 @@ export default function MapPage() {
           }
 
           .map-nearby-section {
-            margin-top: 16px;
+            margin-top: 14px;
           }
 
           .map-nearby-header {
             display: flex;
             align-items: center;
             justify-content: space-between;
-            margin-bottom: 10px;
+            margin-bottom: 8px;
             padding: 0 4px;
           }
 
@@ -440,35 +440,35 @@ export default function MapPage() {
 
           .map-venues-list {
             display: grid;
-            gap: 10px;
+            gap: 9px;
           }
 
           .map-venue-card {
             background: rgba(12, 18, 34, 0.92);
             border: 1px solid rgba(255, 255, 255, 0.08);
             box-shadow: 0 0 22px rgba(0, 0, 0, 0.28);
-            border-radius: 22px;
-            padding: 14px;
+            border-radius: 20px;
+            padding: 12px;
             display: grid;
-            grid-template-columns: 96px minmax(0, 1fr) auto;
-            gap: 12px;
+            grid-template-columns: 92px minmax(0, 1fr) auto;
+            gap: 11px;
             color: #f6f9ff;
             text-align: left;
             cursor: pointer;
           }
 
           .map-venue-image {
-            width: 96px;
-            height: 76px;
-            border-radius: 14px;
+            width: 92px;
+            height: 70px;
+            border-radius: 12px;
             object-fit: cover;
             background: rgba(255, 255, 255, 0.08);
           }
 
           .map-venue-name {
             margin: 0;
-            font-size: clamp(20px, 4.8vw, 30px);
-            line-height: 1.08;
+            font-size: clamp(16px, 4.6vw, 24px);
+            line-height: 1.12;
             font-weight: 800;
           }
 
@@ -476,7 +476,7 @@ export default function MapPage() {
           .map-venue-distance {
             margin: 5px 0 0;
             color: rgba(219, 229, 243, 0.84);
-            font-size: clamp(13px, 2.8vw, 18px);
+            font-size: clamp(12px, 2.6vw, 15px);
           }
 
           .map-venue-right {
@@ -545,7 +545,7 @@ export default function MapPage() {
 
           @media (max-width: 760px) {
             .map-page-root {
-              padding: 84px 10px 138px !important;
+              padding: 72px 10px 146px !important;
             }
 
             .map-main-box {
@@ -564,7 +564,7 @@ export default function MapPage() {
             }
 
             .map-venue-card {
-              grid-template-columns: 92px minmax(0, 1fr);
+              grid-template-columns: 86px minmax(0, 1fr);
             }
 
             .map-venue-right {
