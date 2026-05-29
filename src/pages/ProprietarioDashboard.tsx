@@ -240,6 +240,7 @@ const OWNER_MOBILE_MENU = [
   "Clienti",
   "Recensioni",
   "Eventi",
+  "Prenota Evento",
   "Academy",
   "Pagamenti",
   "Profilo Locale",
@@ -322,6 +323,7 @@ export default function OwnerDashboard() {
   const [eventSaving, setEventSaving] = useState(false);
   const [isCompactScreen, setIsCompactScreen] = useState(false);
   const [mobileOwnerMenuOpen, setMobileOwnerMenuOpen] = useState(false);
+  const [activeMobileItem, setActiveMobileItem] = useState("Dashboard");
   const [trendFilter, setTrendFilter] = useState<"7" | "30" | "3m" | "6m" | "12m">("6m");
   const [checkinRowsRaw, setCheckinRowsRaw] = useState<GenericRow[]>([]);
 
@@ -874,6 +876,40 @@ export default function OwnerDashboard() {
     }
   }
 
+  function handleMobileMenuAction(item: string) {
+    if (item === "Altro") {
+      setMobileOwnerMenuOpen(true);
+      return;
+    }
+
+    if (item === "Prenota Evento") {
+      setMobileOwnerMenuOpen(false);
+      setActiveMobileItem("Eventi");
+      scrollToSection("owner-events");
+      setEventModalOpen(true);
+      return;
+    }
+
+    const sectionByItem: Record<string, string> = {
+      Dashboard: "owner-main-dashboard",
+      "QR Code": "owner-qr-stats",
+      Clienti: "owner-customers",
+      Recensioni: "owner-reviews",
+      Eventi: "owner-events",
+      Academy: "owner-academy",
+      Pagamenti: "owner-payments",
+      "Profilo Locale": "owner-profile",
+      Impostazioni: "owner-settings",
+    };
+
+    const targetSectionId = sectionByItem[item];
+    setMobileOwnerMenuOpen(false);
+    setActiveMobileItem(item);
+    if (targetSectionId) {
+      scrollToSection(targetSectionId);
+    }
+  }
+
   function handlePayNow() {
     if (openIfAvailable(payments.paymentLink)) return;
     setEventFeedback("Pagamento online in fase di attivazione.");
@@ -1139,6 +1175,9 @@ export default function OwnerDashboard() {
             ) : (
               <p className="owner-empty">Nessun evento disponibile.</p>
             )}
+            <button className="owner-cta" type="button" onClick={() => setEventModalOpen(true)}>
+              Prenota Evento
+            </button>
           </section>
 
           <section className="owner-mobile-section owner-results" id="owner-rank">
@@ -1157,12 +1196,12 @@ export default function OwnerDashboard() {
         </section>
 
         <nav className="owner-mobile-bottom-nav" aria-label="Menu proprietario mobile">
-          <button type="button" className="active"><Home size={15} />Dashboard</button>
-          <button type="button"><ScanQrCode size={15} />QR Code</button>
-          <button type="button"><Users2 size={15} />Clienti</button>
-          <button type="button"><Star size={15} />Recensioni</button>
-          <button type="button"><CalendarDays size={15} />Eventi</button>
-          <button type="button"><MoreHorizontal size={15} />Altro</button>
+          <button type="button" className={activeMobileItem === "Dashboard" ? "active" : ""} onClick={() => handleMobileMenuAction("Dashboard")}><Home size={15} />Dashboard</button>
+          <button type="button" className={activeMobileItem === "QR Code" ? "active" : ""} onClick={() => handleMobileMenuAction("QR Code")}><ScanQrCode size={15} />QR Code</button>
+          <button type="button" className={activeMobileItem === "Clienti" ? "active" : ""} onClick={() => handleMobileMenuAction("Clienti")}><Users2 size={15} />Clienti</button>
+          <button type="button" className={activeMobileItem === "Recensioni" ? "active" : ""} onClick={() => handleMobileMenuAction("Recensioni")}><Star size={15} />Recensioni</button>
+          <button type="button" className={activeMobileItem === "Eventi" ? "active" : ""} onClick={() => handleMobileMenuAction("Eventi")}><CalendarDays size={15} />Eventi</button>
+          <button type="button" onClick={() => handleMobileMenuAction("Altro")}><MoreHorizontal size={15} />Altro</button>
         </nav>
 
         {mobileOwnerMenuOpen && (
@@ -1174,7 +1213,7 @@ export default function OwnerDashboard() {
               </div>
               <ul>
                 {OWNER_MOBILE_MENU.map((item) => (
-                  <li key={item}><button type="button" onClick={() => setMobileOwnerMenuOpen(false)}>{item}</button></li>
+                  <li key={item}><button type="button" onClick={() => handleMobileMenuAction(item)}>{item}</button></li>
                 ))}
               </ul>
             </aside>
