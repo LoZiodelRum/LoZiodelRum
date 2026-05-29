@@ -413,6 +413,36 @@ export default function MapPage() {
   }, [radiusKm, userPosition, venues]);
 
   const showSkeletons = loadingVenues && venues.length === 0;
+  const venuesWithCoords = venues
+    .map((venue: any) => {
+      const latValue =
+        venue.latitudine ??
+        venue.latitude ??
+        venue.lat ??
+        venue.Latitudine ??
+        venue.Latitude;
+
+      const lngValue =
+        venue.longitudine ??
+        venue.longitude ??
+        venue.lng ??
+        venue.Longitudine ??
+        venue.Longitude;
+
+      const markerLat = Number(String(latValue).replace(",", "."));
+      const markerLng = Number(String(lngValue).replace(",", "."));
+
+      return {
+        ...venue,
+        markerLat: Number.isFinite(markerLat) ? markerLat : null,
+        markerLng: Number.isFinite(markerLng) ? markerLng : null,
+      };
+    })
+    .filter(
+      (venue: any) =>
+        venue.markerLat !== null &&
+        venue.markerLng !== null
+    );
 
   return (
     <>
@@ -867,13 +897,19 @@ export default function MapPage() {
                   <Popup>Sei qui</Popup>
                 </Marker>
 
-                {nearbyVenues.map((venue) => {
+                {venuesWithCoords.map((venue: any) => {
                   const popupImage = resolveVenueImage(venue);
+                  const distanceKm = getDistanceKm(
+                    userPosition.lat,
+                    userPosition.lng,
+                    venue.markerLat,
+                    venue.markerLng
+                  );
 
                   return (
                     <Marker
                       key={venue.id}
-                      position={[venue.latitudine, venue.longitudine]}
+                      position={[venue.markerLat, venue.markerLng]}
                       icon={customIcon}
                     >
                       <Popup>
@@ -896,7 +932,7 @@ export default function MapPage() {
                               {getTranslatedField(venue as any, "nome", i18n.language, venue.nome || "Locale")}
                             </strong>
                             <span>
-                              {venue.citta || "Locale DrinkWise"} · {formatDistance(venue.distanceKm)}
+                              {venue.citta || "Locale DrinkWise"} · {formatDistance(distanceKm)}
                             </span>
                             <button onClick={() => navigate(`/venue/${venue.id}`)}>
                               Apri scheda
