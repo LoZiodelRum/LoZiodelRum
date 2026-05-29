@@ -702,6 +702,7 @@ export default function OwnerDashboard() {
     pickFirstText(locale, ["logo_url", "avatar_url", "image_url", "immagine"]) || localeCover;
 
   const localeName = pickFirstText(locale, ["nome", "name", "nome_locale"]) || "Locale non disponibile";
+  const isLocaleNameFallback = localeName === "Locale non disponibile";
 
   const localeLocation = [
     pickFirstText(locale, ["citta", "city"]),
@@ -934,7 +935,7 @@ export default function OwnerDashboard() {
             <img src="/logo.png" alt="DrinkWise" />
             <div>
               <strong>DrinkWise</strong>
-              <small>{localeName}</small>
+              <small className={isLocaleNameFallback ? "owner-mobile-locale-fallback-text" : ""}>{localeName}</small>
             </div>
             {Boolean(locale?.verificato) && <CheckCircle2 size={14} className="owner-mobile-verified" />}
           </div>
@@ -954,7 +955,7 @@ export default function OwnerDashboard() {
               <img src={localeLogo} alt={`Logo ${localeName}`} className="owner-mobile-locale-logo" />
               <div>
                 <span className="owner-mobile-plan-mini">{payments.plan}</span>
-                <h1>{localeName}</h1>
+                <h1 className={isLocaleNameFallback ? "owner-mobile-locale-fallback-title" : ""}>{localeName}</h1>
                 <p>{localeLocation || "Non disponibile"}</p>
               </div>
             </div>
