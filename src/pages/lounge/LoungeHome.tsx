@@ -168,8 +168,8 @@ export default function LoungeHome() {
                   height: isMobile ? 120 : 160,
                   borderRadius: "50%",
                   border: isMobile
-                    ? "10px solid #3ffff2"
-                    : "14px solid #3ffff2",
+                    ? "10px solid #ffcc66"
+                    : "14px solid #ffcc66",
                   display: "flex",
                   alignItems: "center",
                   justifyContent: "center",
@@ -385,7 +385,7 @@ export default function LoungeHome() {
           >
             <div
               style={{
-                color: "#ff66cc",
+                color: "#ff6b35",
                 fontSize: isMobile ? 18 : 24,
                 fontWeight: 800,
                 marginBottom: 22,
