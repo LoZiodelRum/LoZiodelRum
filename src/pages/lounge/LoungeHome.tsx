@@ -227,7 +227,7 @@ export default function LoungeHome() {
                           height: "100%",
                           borderRadius: 20,
                           background:
-                            "linear-gradient(90deg,#3ffff2,#5b5fff)",
+                            "linear-gradient(90deg, #ffd27a 0%, #f5a623 45%, #c97d00 100%)",
                         }}
                       />
                     </div>
