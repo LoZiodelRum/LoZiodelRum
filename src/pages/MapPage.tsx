@@ -252,6 +252,7 @@ export default function MapPage() {
     hasSavedPosition,
     locationStatus,
     locationError,
+    refreshLocation,
   } = useLocationContext();
   const cachedVenues = useMemo(() => readCachedVenues(), []);
 
@@ -447,6 +448,25 @@ export default function MapPage() {
             justify-content: flex-start;
             gap: 12px;
             margin-bottom: 10px;
+          }
+
+          .map-position-cta {
+            margin-left: auto;
+            border: 1px solid rgba(45, 212, 255, 0.55);
+            background: rgba(45, 212, 255, 0.12);
+            color: #c6f5ff;
+            border-radius: 999px;
+            padding: 7px 10px;
+            font-size: 12px;
+            font-weight: 700;
+            line-height: 1;
+            cursor: pointer;
+            white-space: nowrap;
+          }
+
+          .map-position-cta:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
           }
 
           .map-title {
@@ -820,6 +840,14 @@ export default function MapPage() {
               <div>
                 <h1 className="map-title">Locali DrinkWise</h1>
               </div>
+              <button
+                type="button"
+                className="map-position-cta"
+                onClick={refreshLocation}
+                disabled={locationStatus === "checking" || locationStatus === "requesting"}
+              >
+                Utilizza la tua posizione
+              </button>
             </div>
 
             {(locationError && locationStatus !== "denied") && (
