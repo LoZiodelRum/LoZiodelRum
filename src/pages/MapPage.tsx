@@ -31,8 +31,8 @@ const customIcon = L.icon({
 });
 
 const userPositionIcon = L.divIcon({
-  className: "dw-user-marker",
-  html: '<span class="dw-user-marker-dot"></span>',
+  className: "dw-user-position-marker",
+  html: '<div class="dw-user-position-dot"></div>',
   iconSize: [24, 24],
   iconAnchor: [12, 12],
 });
@@ -546,18 +546,20 @@ export default function MapPage() {
             cursor: pointer;
           }
 
-          .dw-user-marker {
+          .dw-user-position-marker {
             background: transparent;
+            border: none;
           }
 
-          .dw-user-marker-dot {
-            display: block;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: radial-gradient(circle at 30% 30%, #b8f3ff, #32d8ff);
-            border: 2px solid rgba(255, 255, 255, 0.92);
-            box-shadow: 0 0 18px rgba(50, 216, 255, 0.55);
+          .dw-user-position-dot {
+            width: 22px;
+            height: 22px;
+            border-radius: 999px;
+            background: #2dd4ff;
+            border: 4px solid #ffffff;
+            box-shadow:
+              0 0 0 8px rgba(45, 212, 255, 0.22),
+              0 0 24px rgba(45, 212, 255, 0.75);
           }
 
           .map-nearby-section {
@@ -858,7 +860,7 @@ export default function MapPage() {
 
                 <AttributionControl position="bottomright" prefix={false} />
 
-                {hasRealPosition && (
+                {hasRealPosition && userPosition?.lat && userPosition?.lng && (
                   <Marker position={[userPosition.lat, userPosition.lng]} icon={userPositionIcon}>
                     <Popup>Sei qui</Popup>
                   </Marker>
