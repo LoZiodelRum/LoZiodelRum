@@ -1,14 +1,10 @@
 import { useNavigate } from "react-router-dom";
 import {
-  CalendarDays,
-  Compass,
   FlaskConical,
   GlassWater,
-  MapPin,
+  Martini,
   Search,
   Sparkles,
-  Star,
-  User,
   Wine,
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
@@ -24,141 +20,74 @@ type DiscoverCard = {
   borderColor: string;
   accent: string;
   glow: string;
-  placeholder?: boolean;
 };
 
 const cards: DiscoverCard[] = [
   {
-    id: "premium-bars",
-    title: "Locali Premium",
-    subtitle: "Locali selezionati vicino a te",
-    icon: MapPin,
-    to: "/locali-vicini",
-    bgGradient: "linear-gradient(135deg, rgba(185, 95, 18, 0.92), rgba(73, 35, 10, 0.96))",
-    borderColor: "rgba(255, 190, 70, 0.85)",
-    accent: "#ffbe46",
-    glow: "rgba(245, 166, 35, 0.34)",
-  },
-  {
-    id: "cocktail-bars",
-    title: "Cocktail Bar",
+    id: "cocktail",
+    title: "Cocktail",
     subtitle: "Miscelazione d'autore",
-    icon: GlassWater,
-    to: "/venues",
+    icon: Martini,
+    to: "/categoria/cocktail",
     bgGradient: "linear-gradient(135deg, rgba(190, 68, 38, 0.92), rgba(76, 24, 17, 0.96))",
     borderColor: "rgba(255, 120, 72, 0.85)",
     accent: "#ff7848",
     glow: "rgba(255, 120, 72, 0.32)",
   },
   {
-    id: "rum-rooms",
-    title: "Sale Rum",
+    id: "rum",
+    title: "Rum",
     subtitle: "Percorsi dedicati al rum",
     icon: FlaskConical,
+    to: "/categoria/rum",
     bgGradient: "linear-gradient(135deg, rgba(205, 105, 24, 0.92), rgba(82, 42, 12, 0.96))",
     borderColor: "rgba(255, 165, 70, 0.85)",
     accent: "#ffa546",
     glow: "rgba(255, 165, 70, 0.32)",
-    placeholder: true,
   },
   {
-    id: "whisky-clubs",
-    title: "Club Whisky",
-    subtitle: "Selezioni e degustazioni whisky",
+    id: "whiskey",
+    title: "Whiskey",
+    subtitle: "Selezioni e degustazioni whiskey",
     icon: Wine,
-    bgGradient: "linear-gradient(135deg, rgba(176, 112, 35, 0.92), rgba(75, 45, 15, 0.96))",
-    borderColor: "rgba(230, 166, 72, 0.85)",
-    accent: "#e6a648",
-    glow: "rgba(230, 166, 72, 0.30)",
-    placeholder: true,
+    to: "/categoria/whisky",
+    bgGradient: "linear-gradient(135deg, rgba(143, 92, 35, 0.92), rgba(67, 39, 15, 0.96))",
+    borderColor: "rgba(223, 170, 88, 0.85)",
+    accent: "#dfaa58",
+    glow: "rgba(223, 170, 88, 0.28)",
   },
   {
-    id: "signature-drinks",
-    title: "Drink Signature",
-    subtitle: "Creazioni selezionate",
-    icon: Star,
-    to: "/drink",
-    bgGradient: "linear-gradient(135deg, rgba(175, 48, 70, 0.92), rgba(76, 16, 28, 0.96))",
-    borderColor: "rgba(255, 92, 118, 0.85)",
-    accent: "#ff5c76",
-    glow: "rgba(255, 92, 118, 0.30)",
-  },
-  {
-    id: "bartender-picks",
-    title: "Scelte dei Bartender",
-    subtitle: "Consigli dai professionisti",
-    icon: User,
-    to: "/baretto",
-    bgGradient: "linear-gradient(135deg, rgba(48, 140, 94, 0.92), rgba(18, 67, 45, 0.96))",
+    id: "altri-distillati",
+    title: "Altri distillati",
+    subtitle: "Gin, tequila, mezcal e spirits",
+    icon: GlassWater,
+    to: "/categoria/distillati",
+    bgGradient: "linear-gradient(135deg, rgba(46, 143, 96, 0.92), rgba(17, 66, 44, 0.96))",
     borderColor: "rgba(106, 220, 158, 0.85)",
     accent: "#6adc9e",
-    glow: "rgba(106, 220, 158, 0.30)",
+    glow: "rgba(106, 220, 158, 0.28)",
   },
   {
-    id: "guest-shifts",
-    title: "Guest Shift",
-    subtitle: "Serate con bartender ospiti",
-    icon: CalendarDays,
-    to: "/eventi",
-    bgGradient: "linear-gradient(135deg, rgba(130, 70, 160, 0.92), rgba(56, 24, 78, 0.96))",
+    id: "vini",
+    title: "Vini",
+    subtitle: "Etichette e cantine selezionate",
+    icon: Wine,
+    to: "/vini",
+    bgGradient: "linear-gradient(135deg, rgba(121, 70, 158, 0.92), rgba(51, 23, 77, 0.96))",
     borderColor: "rgba(190, 120, 230, 0.85)",
     accent: "#be78e6",
     glow: "rgba(190, 120, 230, 0.28)",
   },
   {
-    id: "events",
-    title: "Eventi",
-    subtitle: "Esperienze live",
-    icon: CalendarDays,
-    to: "/eventi",
-    bgGradient: "linear-gradient(135deg, rgba(218, 92, 26, 0.92), rgba(84, 32, 10, 0.96))",
-    borderColor: "rgba(255, 136, 50, 0.85)",
-    accent: "#ff8832",
-    glow: "rgba(255, 136, 50, 0.32)",
-  },
-  {
-    id: "pairings",
-    title: "Abbinamenti",
-    subtitle: "Food pairing e drink",
+    id: "crea-cocktail",
+    title: "Crea il tuo cocktail",
+    subtitle: "Configura il tuo drink ideale",
     icon: Sparkles,
-    bgGradient: "linear-gradient(135deg, rgba(190, 135, 50, 0.92), rgba(76, 52, 18, 0.96))",
-    borderColor: "rgba(245, 190, 90, 0.85)",
-    accent: "#f5be5a",
-    glow: "rgba(245, 190, 90, 0.30)",
-    placeholder: true,
-  },
-  {
-    id: "bottle-collection",
-    title: "Collezione Bottiglie",
-    subtitle: "Bottiglie salvate e preferite",
-    icon: Wine,
-    bgGradient: "linear-gradient(135deg, rgba(145, 82, 42, 0.92), rgba(62, 34, 18, 0.96))",
-    borderColor: "rgba(210, 130, 72, 0.85)",
-    accent: "#d28248",
-    glow: "rgba(210, 130, 72, 0.28)",
-    placeholder: true,
-  },
-  {
-    id: "experiences",
-    title: "Esperienze",
-    subtitle: "Momenti premium selezionati",
-    icon: Sparkles,
-    to: "/eventi",
-    bgGradient: "linear-gradient(135deg, rgba(40, 125, 140, 0.92), rgba(15, 58, 67, 0.96))",
-    borderColor: "rgba(80, 205, 220, 0.82)",
-    accent: "#50cddc",
-    glow: "rgba(80, 205, 220, 0.26)",
-  },
-  {
-    id: "new-openings",
-    title: "Nuove Aperture",
-    subtitle: "Nuovi locali nel network",
-    icon: Compass,
-    to: "/venues",
-    bgGradient: "linear-gradient(135deg, rgba(210, 155, 38, 0.92), rgba(82, 58, 14, 0.96))",
-    borderColor: "rgba(255, 210, 80, 0.85)",
-    accent: "#ffd250",
-    glow: "rgba(255, 210, 80, 0.32)",
+    to: "/crea",
+    bgGradient: "linear-gradient(135deg, rgba(34, 125, 156, 0.92), rgba(10, 57, 80, 0.96))",
+    borderColor: "rgba(88, 219, 234, 0.84)",
+    accent: "#58dbea",
+    glow: "rgba(88, 219, 234, 0.28)",
   },
 ];
 
@@ -368,6 +297,10 @@ export default function DiscoverPage() {
 
         @media (max-width: 520px) {
           .discover-grid {
+            grid-template-columns: 1fr;
+          }
+
+          .discover-grid {
             gap: 10px;
           }
 
@@ -416,7 +349,6 @@ export default function DiscoverPage() {
                 onClick={() => {
                   if (card.to) navigate(card.to);
                 }}
-                aria-disabled={card.placeholder ? "true" : "false"}
               >
                 <span className="discover-icon">
                   <Icon size={22} strokeWidth={2.1} />
