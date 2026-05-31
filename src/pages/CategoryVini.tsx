@@ -8,9 +8,9 @@ import { normalizeText, safeArray, slugifySafe } from "../utils/runtime";
 
 const VINI_SELECT_ATTEMPTS = [
   "*",
-  "id, nome, nome_en, nome_bg, immagine, image, categoria, categoria_en, categoria_bg",
-  "id, nome, nome_en, nome_bg, immagine, categoria, categoria_en, categoria_bg",
-  "id, nome, nome_en, nome_bg, immagine, categoria",
+  "id, nome, nome_en, nome_de, nome_bg, immagine, image, categoria, categoria_en, categoria_de, categoria_bg",
+  "id, nome, nome_en, nome_de, nome_bg, immagine, categoria, categoria_en, categoria_de, categoria_bg",
+  "id, nome, nome_en, nome_de, nome_bg, immagine, categoria",
   "id, nome, immagine, categoria",
 ];
 
@@ -45,8 +45,8 @@ export default function CategoryVini() {
           getTranslatedField(vino, "categoria", i18n.language, ""),
           getTranslatedField(vino, "categoria", "it", ""),
           getTranslatedField(vino, "categoria", "en", ""),
+          getTranslatedField(vino, "categoria", "de", ""),
           getTranslatedField(vino, "categoria", "bg", ""),
-          getTranslatedField(vino, "categoria", "es", ""),
         ];
 
         const haystack = categoryCandidates.map(normalize).join(" ");

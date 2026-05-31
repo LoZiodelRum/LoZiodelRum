@@ -10,22 +10,22 @@ import { buildArticleLanguagePatch } from "../utils/articleAutoTranslate";
 type Article = {
   id: string;
   titolo: string;
-  titolo_es?: string | null;
+  titolo_de?: string | null;
   titolo_en?: string | null;
   titolo_bg?: string | null;
   sottotitolo?: string | null;
-  sottotitolo_es?: string | null;
+  sottotitolo_de?: string | null;
   sottotitolo_en?: string | null;
   sottotitolo_bg?: string | null;
   descrizione: string;
-  descrizione_es?: string | null;
+  descrizione_de?: string | null;
   descrizione_en?: string | null;
   descrizione_bg?: string | null;
   estratto?: string | null;
-  estratto_es?: string | null;
+  estratto_de?: string | null;
   estratto_en?: string | null;
   estratto_bg?: string | null;
-  categoria_es?: string | null;
+  categoria_de?: string | null;
   categoria_en?: string | null;
   categoria_bg?: string | null;
   immagine: string;
@@ -54,7 +54,7 @@ export default function Magazine() {
       }
 
       const normalizedLanguage = String(language || "").toLowerCase().split(/[-_]/)[0];
-      if (normalizedLanguage !== "es" && normalizedLanguage !== "bg") {
+      if (normalizedLanguage !== "de" && normalizedLanguage !== "bg") {
         setArticles(rawArticles);
         return;
       }

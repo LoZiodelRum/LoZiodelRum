@@ -103,7 +103,7 @@ export default function ArticleDetail() {
       if (!data) return;
 
       const normalizedLanguage = String(i18n.language || "").toLowerCase().split(/[-_]/)[0];
-      if (normalizedLanguage !== "es" && normalizedLanguage !== "bg") return;
+      if (normalizedLanguage !== "de" && normalizedLanguage !== "bg") return;
 
       const patch = await buildArticleLanguagePatch(data as any, normalizedLanguage, [
         "titolo",

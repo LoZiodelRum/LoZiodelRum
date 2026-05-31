@@ -14,10 +14,12 @@ type Locale = {
   id: string;
   nome: string;
   nome_en?: string | null;
+  nome_de?: string | null;
   nome_bg?: string | null;
   citta: string;
   descrizione?: string | null;
   descrizione_en?: string | null;
+  descrizione_de?: string | null;
   descrizione_bg?: string | null;
   descrizione_completa?: string | null;
   image_url: string | null;
@@ -27,6 +29,7 @@ type Articolo = {
   id: string;
   titolo: string;
   titolo_en?: string | null;
+  titolo_de?: string | null;
   titolo_bg?: string | null;
   immagine: string | null;
 };
@@ -53,7 +56,7 @@ export default function Home() {
   }, []);
 
   async function fetchLocali() {
-    const columns = "id, nome, nome_en, nome_bg, citta, descrizione, descrizione_en, descrizione_bg, descrizione_completa, image_url, image";
+    const columns = "id, nome, nome_en, nome_de, nome_bg, citta, descrizione, descrizione_en, descrizione_de, descrizione_bg, descrizione_completa, image_url, image";
 
     let rows: any[] = [];
     let error: any = null;
@@ -200,10 +203,10 @@ export default function Home() {
   async function fetchArticoli() {
     const columnsAttempts = [
       "*",
-      "id, titolo, titolo_en, titolo_bg, immagine, image, created_at",
-      "id, titolo, titolo_en, titolo_bg, immagine, created_at",
-      "id, titolo, titolo_en, titolo_bg, immagine, image",
-      "id, titolo, titolo_en, titolo_bg, immagine",
+      "id, titolo, titolo_en, titolo_de, titolo_bg, immagine, image, created_at",
+      "id, titolo, titolo_en, titolo_de, titolo_bg, immagine, created_at",
+      "id, titolo, titolo_en, titolo_de, titolo_bg, immagine, image",
+      "id, titolo, titolo_en, titolo_de, titolo_bg, immagine",
       "id, titolo, immagine",
     ];
 

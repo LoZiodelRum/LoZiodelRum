@@ -9,17 +9,17 @@ import { normalizeText, safeArray } from "../utils/runtime";
 
 const COCKTAIL_SELECT_ATTEMPTS = [
   "*",
-  "id, nome, nome_en, nome_bg, immagine, immagine_url, image, img, marca, distilleria, categoria, tipologia, tipo, tipo_distillato, categoria_distillato, base_alcolica, invecchiamento, tipo_botte, esame_visivo, esame_olfattivo, esame_gustativo, note_aromatiche, sottocategoria",
-  "id, nome, nome_en, nome_bg, immagine, marca, distilleria, categoria, tipologia, tipo, tipo_distillato, categoria_distillato, base_alcolica, invecchiamento, tipo_botte, esame_visivo, esame_olfattivo, esame_gustativo, note_aromatiche, sottocategoria",
-  "id, nome, nome_en, nome_bg, immagine, categoria, marca, distilleria",
+  "id, nome, nome_en, nome_de, nome_bg, immagine, immagine_url, image, img, marca, distilleria, categoria, tipologia, tipo, tipo_distillato, categoria_distillato, base_alcolica, invecchiamento, tipo_botte, esame_visivo, esame_olfattivo, esame_gustativo, note_aromatiche, sottocategoria",
+  "id, nome, nome_en, nome_de, nome_bg, immagine, marca, distilleria, categoria, tipologia, tipo, tipo_distillato, categoria_distillato, base_alcolica, invecchiamento, tipo_botte, esame_visivo, esame_olfattivo, esame_gustativo, note_aromatiche, sottocategoria",
+  "id, nome, nome_en, nome_de, nome_bg, immagine, categoria, marca, distilleria",
   "id, nome, immagine, categoria",
 ];
 
 const DISTILLATI_SELECT_ATTEMPTS = [
   "*",
-  "id, nome, nome_en, nome_bg, marca, categoria, tipologia, tipo, tipo_distillato, categoria_distillato, base_alcolica, invecchiamento, tipo_botte, esame_visivo, esame_olfattivo, esame_gustativo, note_aromatiche, sottocategoria, immagine, immagine_url, image, img",
-  "id, nome, nome_en, nome_bg, marca, categoria, tipologia, tipo, tipo_distillato, categoria_distillato, base_alcolica, invecchiamento, tipo_botte, esame_visivo, esame_olfattivo, esame_gustativo, note_aromatiche, sottocategoria, immagine",
-  "id, nome, nome_en, nome_bg, marca, categoria, immagine",
+  "id, nome, nome_en, nome_de, nome_bg, marca, categoria, tipologia, tipo, tipo_distillato, categoria_distillato, base_alcolica, invecchiamento, tipo_botte, esame_visivo, esame_olfattivo, esame_gustativo, note_aromatiche, sottocategoria, immagine, immagine_url, image, img",
+  "id, nome, nome_en, nome_de, nome_bg, marca, categoria, tipologia, tipo, tipo_distillato, categoria_distillato, base_alcolica, invecchiamento, tipo_botte, esame_visivo, esame_olfattivo, esame_gustativo, note_aromatiche, sottocategoria, immagine",
+  "id, nome, nome_en, nome_de, nome_bg, marca, categoria, immagine",
   "id, nome, marca, categoria, immagine",
 ];
 
@@ -109,8 +109,8 @@ export default function Drink() {
         getTranslatedField(d, "nome", i18n.language, ""),
         getTranslatedField(d, "nome", "it", ""),
         getTranslatedField(d, "nome", "en", ""),
+        getTranslatedField(d, "nome", "de", ""),
         getTranslatedField(d, "nome", "bg", ""),
-        getTranslatedField(d, "nome", "es", ""),
       ];
 
       const categoria = [

@@ -17,8 +17,8 @@ export default function Navbar() {
   const normalizedLanguage = String(i18n.language || "it").toLowerCase();
   const activeLanguage = normalizedLanguage.startsWith("en")
     ? "en"
-    : normalizedLanguage.startsWith("es")
-    ? "es"
+    : normalizedLanguage.startsWith("de")
+    ? "de"
     : normalizedLanguage.startsWith("bg")
     ? "bg"
     : "it";
@@ -295,8 +295,8 @@ export default function Navbar() {
             {formatLanguageLabel(
               activeLanguage === "en"
                 ? t("language.shortEn")
-                : activeLanguage === "es"
-                ? t("language.shortEs")
+                : activeLanguage === "de"
+                ? t("language.shortDe")
                 : activeLanguage === "bg"
                 ? t("language.shortBg")
                 : t("language.shortIt")
@@ -355,6 +355,24 @@ export default function Navbar() {
 
               <button
                 onClick={() => {
+                  i18n.changeLanguage("de");
+                  setLanguageOpen(false);
+                }}
+                style={{
+                  width: "100%",
+                  background: "transparent",
+                  border: "none",
+                  color: "#fff",
+                  padding: "12px",
+                  textAlign: "left",
+                  cursor: "pointer",
+                }}
+              >
+                {formatLanguageLabel(t("language.de"))}
+              </button>
+
+              <button
+                onClick={() => {
                   i18n.changeLanguage("bg");
                   setLanguageOpen(false);
                 }}
@@ -369,24 +387,6 @@ export default function Navbar() {
                 }}
               >
                 {formatLanguageLabel(t("language.bg"))}
-              </button>
-
-              <button
-                onClick={() => {
-                  i18n.changeLanguage("es");
-                  setLanguageOpen(false);
-                }}
-                style={{
-                  width: "100%",
-                  background: "transparent",
-                  border: "none",
-                  color: "#fff",
-                  padding: "12px",
-                  textAlign: "left",
-                  cursor: "pointer",
-                }}
-              >
-                {formatLanguageLabel(t("language.es"))}
               </button>
             </div>
           )}
@@ -601,6 +601,21 @@ export default function Navbar() {
 
             <button
               type="button"
+              onClick={() => i18n.changeLanguage("de")}
+              style={{
+                background: activeLanguage === "de" ? "rgba(245,166,35,0.18)" : "#18181b",
+                border: activeLanguage === "de" ? "1px solid rgba(245,166,35,0.55)" : "1px solid #333",
+                color: "#fff",
+                borderRadius: "10px",
+                padding: "10px 12px",
+                cursor: "pointer",
+              }}
+            >
+              {formatLanguageLabel(t("language.shortDe"))}
+            </button>
+
+            <button
+              type="button"
               onClick={() => i18n.changeLanguage("bg")}
               style={{
                 background: activeLanguage === "bg" ? "rgba(245,166,35,0.18)" : "#18181b",
@@ -612,21 +627,6 @@ export default function Navbar() {
               }}
             >
               {formatLanguageLabel(t("language.shortBg"))}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => i18n.changeLanguage("es")}
-              style={{
-                background: activeLanguage === "es" ? "rgba(245,166,35,0.18)" : "#18181b",
-                border: activeLanguage === "es" ? "1px solid rgba(245,166,35,0.55)" : "1px solid #333",
-                color: "#fff",
-                borderRadius: "10px",
-                padding: "10px 12px",
-                cursor: "pointer",
-              }}
-            >
-              {formatLanguageLabel(t("language.shortEs"))}
             </button>
           </div>
         </div>

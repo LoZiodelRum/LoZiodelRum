@@ -41,6 +41,7 @@ type VenueRow = {
   id: string;
   nome: string;
   nome_en?: string | null;
+  nome_de?: string | null;
   nome_bg?: string | null;
   citta?: string | null;
   indirizzo?: string | null;

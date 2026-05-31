@@ -450,7 +450,7 @@ export default function VenueDetail() {
 
   if (!locale) {
     const loadingLabel = getTranslatedField(
-      { label_it: "Caricamento...", label_en: "Loading...", label_bg: "Зареждане..." },
+      { label_it: "Caricamento...", label_en: "Loading...", label_de: "Laden...", label_bg: "Зареждане..." },
       "label",
       i18n.language,
       "Caricamento..."
@@ -458,8 +458,8 @@ export default function VenueDetail() {
     return <div className="page fade-in">{loadingLabel}</div>;
   }
 
-  const tr = (it: string, en: string, bg: string) =>
-    getTranslatedField({ label_it: it, label_en: en, label_bg: bg }, "label", i18n.language, it);
+  const tr = (it: string, en: string, bg: string, de = en) =>
+    getTranslatedField({ label_it: it, label_en: en, label_de: de, label_bg: bg }, "label", i18n.language, it);
 
   const placeholder = (value: string | null | undefined, label: string) =>
     value && value !== "" ? value : `Non disponibile (${label})`;

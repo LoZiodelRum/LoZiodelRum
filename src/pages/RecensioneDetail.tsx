@@ -24,9 +24,11 @@ type ReviewDetail = {
 type ReviewLocale = {
   nome?: string | null;
   nome_en?: string | null;
+  nome_de?: string | null;
   nome_bg?: string | null;
   descrizione?: string | null;
   descrizione_en?: string | null;
+  descrizione_de?: string | null;
   descrizione_bg?: string | null;
   image_url?: string | null;
   image?: string | null;
@@ -40,6 +42,8 @@ function formatDate(value: string | null | undefined, language: string, fallback
   if (Number.isNaN(parsed.getTime())) return fallback;
   const locale = String(language || "it").toLowerCase().startsWith("bg")
     ? "bg-BG"
+    : String(language || "it").toLowerCase().startsWith("de")
+      ? "de-DE"
     : String(language || "it").toLowerCase().startsWith("en")
       ? "en-GB"
       : "it-IT";
@@ -54,8 +58,8 @@ export default function RecensioneDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { i18n } = useTranslation();
-  const tr = (it: string, en: string, bg: string) =>
-    getTranslatedField({ label_it: it, label_en: en, label_bg: bg }, "label", i18n.language, it);
+  const tr = (it: string, en: string, bg: string, de = en) =>
+    getTranslatedField({ label_it: it, label_en: en, label_de: de, label_bg: bg }, "label", i18n.language, it);
 
   const [review, setReview] = useState<ReviewDetail | null>(null);
   const [reviewLocale, setReviewLocale] = useState<ReviewLocale | null>(null);
@@ -92,7 +96,7 @@ export default function RecensioneDetail() {
     if (localeId) {
       const { data: localeData, error: localeError } = await supabase
         .from("Locali")
-        .select("nome, nome_en, nome_bg, descrizione, descrizione_en, descrizione_bg, image_url, image, citta, indirizzo")
+        .select("nome, nome_en, nome_de, nome_bg, descrizione, descrizione_en, descrizione_de, descrizione_bg, image_url, image, citta, indirizzo")
         .eq("id", localeId)
         .single();
 
