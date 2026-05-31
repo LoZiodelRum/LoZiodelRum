@@ -34,7 +34,12 @@ function hasValue(value: unknown): boolean {
   return true;
 }
 
+
 function buildCandidates(baseField: string, language: SupportedLanguage): string[] {
+  if (language === "fr") {
+    // SOLO *_fr o campo base, MAI fallback a EN
+    return [`${baseField}_fr`, baseField];
+  }
   if (language === "it") {
     return [baseField, `${baseField}_it`];
   }
@@ -50,9 +55,6 @@ function buildCandidates(baseField: string, language: SupportedLanguage): string
   if (language === "bg") {
     return [`${baseField}_bg`, `${baseField}_en`, baseField];
   }
-  if (language === "fr") {
-    return [`${baseField}_fr`, `${baseField}_en`, baseField, `${baseField}_it`];
-  }
   return [baseField, `${baseField}_it`];
 }
 
@@ -66,11 +68,23 @@ export function getTranslatedField(
 
   const normalizedLanguage = normalizeLanguage(language);
   const candidates = buildCandidates(baseField, normalizedLanguage);
+  let chosenKey = null;
+  let chosenValue = fallback;
 
   for (const key of candidates) {
     const value = record[key];
-    if (hasValue(value)) return String(value).trim();
+    if (hasValue(value)) {
+      chosenKey = key;
+      chosenValue = String(value).trim();
+      break;
+    }
   }
 
-  return fallback;
+  // Log diagnostico
+  if (typeof window !== "undefined" && window?.console) {
+    // eslint-disable-next-line no-console
+    console.log("[getTranslatedField] lingua:", normalizedLanguage, "campo:", baseField, "key usata:", chosenKey, "valore:", chosenValue);
+  }
+
+  return chosenValue;
 }
