@@ -424,8 +424,95 @@ export default function Navbar() {
           gap: "6px",
         }}
       >
+        {/* SELETTORE LINGUA MOBILE/TABLET */}
+        <div className="mobile-language-zone" style={{ display: "flex", alignItems: "center", marginRight: 2 }}>
+          <div className="mobile-language-selector">
+            <div className="mobile-language-trigger-wrapper">
+              <button
+                className="mobile-language-trigger"
+                aria-label={t("aria.languageSelector")}
+                onClick={() => setLanguageOpen((prev) => !prev)}
+                style={{
+                  background: "rgba(0,0,0,0.7)",
+                  border: "1px solid #333",
+                  color: "#fff",
+                  borderRadius: "10px",
+                  fontSize: 14,
+                  padding: "6px 10px",
+                  display: "flex",
+                  alignItems: "center",
+                  gap: 6,
+                  cursor: "pointer",
+                  minWidth: 54,
+                  zIndex: 1201,
+                }}
+              >
+                <span style={{ fontSize: 18, marginRight: 2 }}>{
+                  activeLanguage === "it" ? "🇮🇹" :
+                  activeLanguage === "en" ? "🇬🇧" :
+                  activeLanguage === "de" ? "🇩🇪" :
+                  activeLanguage === "es" ? "🇪🇸" :
+                  activeLanguage === "bg" ? "🇧🇬" :
+                  activeLanguage === "fr" ? "🇫🇷" : "🌐"
+                }</span>
+                <span style={{ textTransform: "lowercase", fontWeight: 600 }}>{activeLanguage}</span>
+                <span style={{ fontSize: 12, marginLeft: 2 }}>▼</span>
+              </button>
+              {languageOpen && (
+                <div
+                  style={{
+                    position: "absolute",
+                    top: 44,
+                    right: 0,
+                    background: "#111",
+                    border: "1px solid #333",
+                    borderRadius: 10,
+                    overflow: "hidden",
+                    minWidth: 110,
+                    zIndex: 2000,
+                    boxShadow: "0 6px 32px #000b",
+                  }}
+                >
+                  {[
+                    { code: "it", label: "🇮🇹 it" },
+                    { code: "en", label: "🇬🇧 en" },
+                    { code: "de", label: "🇩🇪 de" },
+                    { code: "es", label: "🇪🇸 es" },
+                    { code: "bg", label: "🇧🇬 bg" },
+                    { code: "fr", label: "🇫🇷 fr" },
+                  ].map(({ code, label }) => (
+                    <button
+                      key={code}
+                      onClick={() => {
+                        i18n.changeLanguage(code);
+                        setLanguageOpen(false);
+                      }}
+                      style={{
+                        width: "100%",
+                        background: activeLanguage === code ? "rgba(245,166,35,0.18)" : "transparent",
+                        border: "none",
+                        color: "#fff",
+                        padding: "12px 16px",
+                        textAlign: "left",
+                        cursor: "pointer",
+                        fontWeight: activeLanguage === code ? 700 : 400,
+                        fontSize: 15,
+                        display: "flex",
+                        alignItems: "center",
+                        gap: 8,
+                        borderLeft: activeLanguage === code ? "3px solid #f5a623" : "3px solid transparent",
+                      }}
+                    >
+                      {label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+        {/* MENU HAMBURGER MOBILE */}
         <div className="mobile-menu-trigger-zone">
-          {/* MENU HAMBURGER MOBILE */}
           <button
             className="navbar-hamburger-mobile"
             onClick={() => setMenuOpen((prev) => !prev)}
@@ -565,108 +652,7 @@ export default function Navbar() {
           </Link>
         )}
 
-        <div
-          style={{
-            marginTop: "10px",
-            padding: "12px 10px 0",
-            borderTop: "1px solid #333",
-          }}
-        >
-          <div
-            style={{
-              fontSize: "12px",
-              letterSpacing: "0.08em",
-              textTransform: "uppercase",
-              color: "rgba(255,255,255,0.62)",
-              marginBottom: "10px",
-            }}
-          >
-            Lingua
-          </div>
-
-          <div
-            style={{
-              display: "grid",
-              gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
-              gap: "8px",
-            }}
-          >
-            <button
-              type="button"
-              onClick={() => i18n.changeLanguage("it")}
-              style={{
-                background: activeLanguage === "it" ? "rgba(245,166,35,0.18)" : "#18181b",
-                border: activeLanguage === "it" ? "1px solid rgba(245,166,35,0.55)" : "1px solid #333",
-                color: "#fff",
-                borderRadius: "10px",
-                padding: "10px 12px",
-                cursor: "pointer",
-              }}
-            >
-              {formatLanguageLabel(t("language.shortIt"))}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => i18n.changeLanguage("en")}
-              style={{
-                background: activeLanguage === "en" ? "rgba(245,166,35,0.18)" : "#18181b",
-                border: activeLanguage === "en" ? "1px solid rgba(245,166,35,0.55)" : "1px solid #333",
-                color: "#fff",
-                borderRadius: "10px",
-                padding: "10px 12px",
-                cursor: "pointer",
-              }}
-            >
-              {formatLanguageLabel(t("language.shortEn"))}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => i18n.changeLanguage("de")}
-              style={{
-                background: activeLanguage === "de" ? "rgba(245,166,35,0.18)" : "#18181b",
-                border: activeLanguage === "de" ? "1px solid rgba(245,166,35,0.55)" : "1px solid #333",
-                color: "#fff",
-                borderRadius: "10px",
-                padding: "10px 12px",
-                cursor: "pointer",
-              }}
-            >
-              {formatLanguageLabel(t("language.shortDe"))}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => i18n.changeLanguage("es")}
-              style={{
-                background: activeLanguage === "es" ? "rgba(245,166,35,0.18)" : "#18181b",
-                border: activeLanguage === "es" ? "1px solid rgba(245,166,35,0.55)" : "1px solid #333",
-                color: "#fff",
-                borderRadius: "10px",
-                padding: "10px 12px",
-                cursor: "pointer",
-              }}
-            >
-              {formatLanguageLabel(t("language.shortEs"))}
-            </button>
-
-            <button
-              type="button"
-              onClick={() => i18n.changeLanguage("bg")}
-              style={{
-                background: activeLanguage === "bg" ? "rgba(245,166,35,0.18)" : "#18181b",
-                border: activeLanguage === "bg" ? "1px solid rgba(245,166,35,0.55)" : "1px solid #333",
-                color: "#fff",
-                borderRadius: "10px",
-                padding: "10px 12px",
-                cursor: "pointer",
-              }}
-            >
-              {formatLanguageLabel(t("language.shortBg"))}
-            </button>
-          </div>
-        </div>
+        {/* Sezione lingua rimossa dal menu hamburger mobile/tablet */}
 
         <button
           className="mobile-menu-item mobile-logout-btn"
