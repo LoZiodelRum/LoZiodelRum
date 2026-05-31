@@ -37,8 +37,8 @@ function hasValue(value: unknown): boolean {
 
 function buildCandidates(baseField: string, language: SupportedLanguage): string[] {
   if (language === "fr") {
-    // SOLO *_fr o campo base, MAI fallback a EN
-    return [`${baseField}_fr`, baseField];
+    // FR: *_fr -> *_en -> base
+    return [`${baseField}_fr`, `${baseField}_en`, baseField];
   }
   if (language === "it") {
     return [baseField, `${baseField}_it`];
