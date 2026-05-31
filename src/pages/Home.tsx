@@ -550,15 +550,17 @@ export default function Home() {
             borderRadius: 8,
             fontWeight: "bold",
             cursor: "pointer",
-            fontSize: 16,
+            fontSize: 15,
             display: "flex",
             alignItems: "center",
             justifyContent: "center",
             width: "min(240px, 100%)",
             gap: 12,
+            whiteSpace: "nowrap",
+            flexShrink: 0,
           }}
         >
-          <ArrowRight size={20} strokeWidth={2.5} />
+          <ArrowRight size={20} strokeWidth={2.5} style={{ flexShrink: 0 }} />
           {t("home.exploreButton")}
         </button>
         <button
