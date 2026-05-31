@@ -110,24 +110,9 @@ export default function Magazine() {
     return <><Navbar /><div className="page fade-in" style={{ padding: 40 }}>{t("noArticles")}</div></>;
   }
 
-  // Resolver multilingua chirurgico per Magazine
+
   function getArticleField(article: any, field: string) {
     const lang = (i18n.language || "it").split("-")[0].toLowerCase();
-    let value = article[field];
-    if (lang === "fr") {
-      value = article[`${field}_fr`];
-      if (typeof window !== "undefined" && window?.console) {
-        // eslint-disable-next-line no-console
-        console.log("Magazine lang:", lang);
-        console.log(`Magazine ${field} scelto:`, value);
-      }
-      if (value && value.trim() !== "") return value;
-      value = article[`${field}_en`];
-      if (value && value.trim() !== "") return value;
-      value = article[field];
-      return value;
-    }
-    // fallback: usa getTranslatedField per altre lingue
     return getTranslatedField(article, field, lang, "");
   }
 

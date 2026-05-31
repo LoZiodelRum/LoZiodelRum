@@ -81,24 +81,9 @@ function renderArticleContent(raw: string, imageAlt: string) {
   });
 }
 
-// Resolver multilingua chirurgico per ArticleDetail
+
 function getArticleField(article: any, field: string, i18n: any) {
   const lang = (i18n.language || "it").split("-")[0].toLowerCase();
-  let value = article?.[field];
-  if (lang === "fr") {
-    value = article?.[`${field}_fr`];
-    if (typeof window !== "undefined" && window?.console) {
-      // eslint-disable-next-line no-console
-      console.log("ArticleDetail lang:", lang);
-      console.log(`ArticleDetail ${field} scelto:`, value);
-    }
-    if (value && value.trim() !== "") return value;
-    value = article?.[`${field}_en`];
-    if (value && value.trim() !== "") return value;
-    value = article?.[field];
-    return value;
-  }
-  // fallback: usa getTranslatedField per altre lingue
   return getTranslatedField(article, field, lang, "");
 }
 
@@ -386,6 +371,7 @@ export default function ArticleDetail() {
               <div style={overlay} />
 
               <div className="article-hero-box" style={heroBox}>
+
 
                 <span style={badge}>{getArticleField(data, "categoria", i18n) || data.categoria || "-"}</span>
 
