@@ -1,0 +1,71 @@
+{
+  "nav": {
+    "home": "Accueil",
+    "discover": "Découvrir",
+    "profile": "Profil",
+    "events": "Événements"
+  },
+  "home": {
+    "topCards": {
+      "premiumVenues": "Lieux premium",
+      "eventsTonight": "Événements ce soir",
+      "newReviews": "Nouvelles critiques",
+      "newCocktails": "Nouveaux cocktails"
+    },
+    "score": {
+      "title": "Score DrinkWise",
+      "tastings": "Dégustations",
+      "experiences": "Expériences",
+      "community": "Communauté",
+      "knowledge": "Connaissance",
+      "topCity": "Ville principale",
+      "cocktailOfMoment": "Cocktail du moment"
+    },
+    "eventsTonight": "Événements de ce soir",
+    "events": {
+      "eventMeta": "20h00 · 24 participants"
+    },
+    "news": {
+      "title": "Mises à jour du lounge",
+      "bartenderStories": "12 nouvelles histoires de barman",
+      "watchSharing": "Voir ce qu'ils partagent ✨"
+    },
+    "suggestions": {
+      "title": "Suggestions DrinkWise",
+      "rum": "Suggestion de rhum",
+      "nearbyBars": "Trouver des lieux à proximité",
+      "cocktailTonight": "Cocktail pour ce soir"
+    },
+    "enterBaretto": "Entrer dans le Baretto"
+  },
+  "discover": {
+    "title": "Découvrir",
+    "subtitle": "Explorer l'univers",
+    "searchAria": "Rechercher",
+    "banner": {
+      "title": "Découvrir",
+      "body": "Trouvez des lieux, dégustations, événements et recommandations en un seul endroit."
+    },
+    "cards": {
+      "cocktail": { "title": "Cocktails", "subtitle": "Mixologie artisanale" },
+      "rum": { "title": "Rhum", "subtitle": "Routes et sélections de rhum" },
+      "whiskey": { "title": "Whisky", "subtitle": "Dégustations et sélections de whisky" },
+      "altriDistillati": { "title": "Autres spiritueux", "subtitle": "Gin, tequila, mezcal et plus" },
+      "vini": { "title": "Vins", "subtitle": "Étiquettes et domaines sélectionnés" },
+      "magazine": { "title": "Magazine", "subtitle": "Articles, guides et analyses" },
+      "creaCocktail": { "title": "Créer votre cocktail", "subtitle": "Composez votre boisson idéale" },
+      "premiumBars": { "title": "Lieux premium", "subtitle": "Lieux sélectionnés près de chez vous" },
+      "cocktailBars": { "title": "Bars à cocktails", "subtitle": "Mixologie artisanale" },
+      "rumRooms": { "title": "Salles de rhum", "subtitle": "Routes dédiées au rhum" },
+      "whiskyClubs": { "title": "Clubs de whisky", "subtitle": "Sélections et dégustations de whisky" },
+      "signatureDrinks": { "title": "Boissons signature", "subtitle": "Créations sélectionnées" },
+      "bartenderPicks": { "title": "Sélections du barman", "subtitle": "Conseils des pros" },
+      "guestShifts": { "title": "Guest Shift", "subtitle": "Soirées avec barmans invités" },
+      "events": { "title": "Événements", "subtitle": "Expériences en direct" },
+      "pairings": { "title": "Accords", "subtitle": "Accords mets et boissons" },
+      "bottleCollection": { "title": "Collection de bouteilles", "subtitle": "Bouteilles enregistrées et favorites" },
+      "experiences": { "title": "Expériences", "subtitle": "Moments premium sélectionnés" },
+      "newOpenings": { "title": "Nouvelles ouvertures", "subtitle": "Nouveaux lieux du réseau" }
+    }
+  }
+}

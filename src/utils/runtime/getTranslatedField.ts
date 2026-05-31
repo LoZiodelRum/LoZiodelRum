@@ -17,9 +17,10 @@ DE -> _de -> _en -> base
 ES -> _es -> _en -> base
 */
 
-export type SupportedLanguage = "it" | "en" | "de" | "bg" | "es";
 
-const SUPPORTED_LANGUAGES: SupportedLanguage[] = ["it", "en", "de", "bg", "es"];
+export type SupportedLanguage = "it" | "en" | "de" | "bg" | "es" | "fr";
+
+const SUPPORTED_LANGUAGES: SupportedLanguage[] = ["it", "en", "de", "bg", "es", "fr"];
 
 function normalizeLanguage(language?: string): SupportedLanguage {
   const short = normalizeText(language || "it").split(/[-_]/)[0] as SupportedLanguage;
@@ -37,23 +38,21 @@ function buildCandidates(baseField: string, language: SupportedLanguage): string
   if (language === "it") {
     return [baseField, `${baseField}_it`];
   }
-
   if (language === "en") {
     return [`${baseField}_en`, baseField];
   }
-
   if (language === "de") {
     return [`${baseField}_de`, `${baseField}_en`, baseField];
   }
-
   if (language === "es") {
     return [`${baseField}_es`, `${baseField}_en`, baseField, `${baseField}_it`];
   }
-
   if (language === "bg") {
     return [`${baseField}_bg`, `${baseField}_en`, baseField];
   }
-
+  if (language === "fr") {
+    return [`${baseField}_fr`, `${baseField}_en`, baseField, `${baseField}_it`];
+  }
   return [baseField, `${baseField}_it`];
 }
 

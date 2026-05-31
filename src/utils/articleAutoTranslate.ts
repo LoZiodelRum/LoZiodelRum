@@ -1,6 +1,6 @@
-type TargetLanguage = "de" | "es" | "bg";
+type TargetLanguage = "de" | "es" | "bg" | "fr";
 
-const TARGET_LANGUAGES: TargetLanguage[] = ["de", "es", "bg"];
+const TARGET_LANGUAGES: TargetLanguage[] = ["de", "es", "bg", "fr"];
 const memoryCache = new Map<string, string>();
 const endpointUnavailable = new Set<string>();
 

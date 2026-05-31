@@ -15,15 +15,18 @@ export default function Navbar() {
 
   const { t, i18n } = useTranslation("navbar");
   const normalizedLanguage = String(i18n.language || "it").toLowerCase();
-  const activeLanguage = normalizedLanguage.startsWith("en")
-    ? "en"
-    : normalizedLanguage.startsWith("de")
-    ? "de"
-    : normalizedLanguage.startsWith("es")
-    ? "es"
-    : normalizedLanguage.startsWith("bg")
-    ? "bg"
-    : "it";
+  const activeLanguage: "it" | "en" | "de" | "es" | "bg" | "fr" =
+    normalizedLanguage.startsWith("en")
+      ? "en"
+      : normalizedLanguage.startsWith("de")
+      ? "de"
+      : normalizedLanguage.startsWith("es")
+      ? "es"
+      : normalizedLanguage.startsWith("bg")
+      ? "bg"
+      : normalizedLanguage.startsWith("fr")
+      ? "fr"
+      : "it";
   const formatLanguageLabel = (label: string) =>
     label.replace(/\b([A-Z]{2,})\b/g, (code) => code.toLowerCase());
 
@@ -303,6 +306,8 @@ export default function Navbar() {
                 ? t("language.shortEs")
                 : activeLanguage === "bg"
                 ? t("language.shortBg")
+                : activeLanguage === "fr"
+                ? t("language.shortFr")
                 : t("language.shortIt")
             )}
           </button>
@@ -409,6 +414,24 @@ export default function Navbar() {
                 }}
               >
                 {formatLanguageLabel(t("language.bg"))}
+              </button>
+
+              <button
+                onClick={() => {
+                  i18n.changeLanguage("fr");
+                  setLanguageOpen(false);
+                }}
+                style={{
+                  width: "100%",
+                  background: "transparent",
+                  border: "none",
+                  color: "#fff",
+                  padding: "12px",
+                  textAlign: "left",
+                  cursor: "pointer",
+                }}
+              >
+                {formatLanguageLabel(t("language.fr"))}
               </button>
             </div>
           )}
@@ -664,6 +687,21 @@ export default function Navbar() {
               }}
             >
               {formatLanguageLabel(t("language.shortBg"))}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => i18n.changeLanguage("fr")}
+              style={{
+                background: activeLanguage === "fr" ? "rgba(245,166,35,0.18)" : "#18181b",
+                border: activeLanguage === "fr" ? "1px solid rgba(245,166,35,0.55)" : "1px solid #333",
+                color: "#fff",
+                borderRadius: "10px",
+                padding: "10px 12px",
+                cursor: "pointer",
+              }}
+            >
+              {formatLanguageLabel(t("language.shortFr"))}
             </button>
           </div>
         </div>
