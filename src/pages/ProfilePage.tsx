@@ -25,20 +25,97 @@ import { supabase } from "../lib/supabaseClient";
 
 type ProfileRecord = {
   id?: string;
+  user_id?: string;
   nome?: string | null;
   cognome?: string | null;
   username?: string | null;
+  email?: string | null;
+  cellulare?: string | null;
+  telefono?: string | null;
+  city?: string | null;
+  citta?: string | null;
+  paese?: string | null;
+  foto_profilo?: string | null;
   ruolo?: string | null;
   status?: string | null;
   avatar_url?: string | null;
+  bio?: string | null;
   bio_breve?: string | null;
+  genere?: string | null;
   distillato_preferito?: string | null;
   cocktail_preferito?: string | null;
+  intensita_preferita?: string | null;
   profilo_gustativo_preferito?: string | null;
+  famiglia_aromatica_preferita?: string | null;
+  metodo_consumo_preferito?: string | null;
+  instagram?: string | null;
+  tiktok?: string | null;
+  sito_web?: string | null;
+  livello?: number | null;
+  level?: number | null;
+  punti?: number | null;
+  points?: number | null;
+  badge?: string[] | string | null;
+  badges?: string[] | string | null;
   numero_recensioni?: number | null;
   numero_locali_visitati?: number | null;
   numero_cocktail_creati?: number | null;
+  ultimo_accesso?: string | null;
+  email_verificata?: boolean | null;
+  approvato?: boolean | null;
+  [key: string]: unknown;
 };
+
+type ProfileLookupResult = {
+  tableName: string;
+  filterKey: string;
+  filterValue: string;
+  record: ProfileRecord;
+};
+
+type EditableFieldConfig = {
+  key: string;
+  label: string;
+  aliases: string[];
+  type?: "text" | "email" | "url" | "textarea";
+  readOnly?: boolean;
+};
+
+const PROFILE_TABLE_CANDIDATES = ["Profili", "profili", "profiles"];
+
+const EDITABLE_PROFILE_FIELDS: EditableFieldConfig[] = [
+  { key: "nome", label: "Nome", aliases: ["nome"] },
+  { key: "cognome", label: "Cognome", aliases: ["cognome"] },
+  { key: "username", label: "Username", aliases: ["username"] },
+  { key: "email", label: "Email", aliases: ["email"], type: "email", readOnly: true },
+  { key: "cellulare", label: "Cellulare", aliases: ["cellulare", "telefono", "phone"] },
+  { key: "citta", label: "Citta", aliases: ["citta", "city"] },
+  { key: "paese", label: "Paese", aliases: ["paese"] },
+  { key: "foto_profilo", label: "URL foto profilo", aliases: ["foto_profilo", "avatar_url"], type: "url" },
+  { key: "bio", label: "Bio", aliases: ["bio", "bio_breve"], type: "textarea" },
+  { key: "genere", label: "Genere", aliases: ["genere"] },
+  { key: "distillato_preferito", label: "Distillato preferito", aliases: ["distillato_preferito"] },
+  { key: "cocktail_preferito", label: "Cocktail preferito", aliases: ["cocktail_preferito"] },
+  { key: "intensita_preferita", label: "Intensita preferita", aliases: ["intensita_preferita"] },
+  { key: "profilo_gustativo_preferito", label: "Profilo gustativo preferito", aliases: ["profilo_gustativo_preferito"] },
+  { key: "famiglia_aromatica_preferita", label: "Famiglia aromatica preferita", aliases: ["famiglia_aromatica_preferita"] },
+  { key: "metodo_consumo_preferito", label: "Metodo consumo preferito", aliases: ["metodo_consumo_preferito"] },
+  { key: "instagram", label: "Instagram", aliases: ["instagram"] },
+  { key: "tiktok", label: "TikTok", aliases: ["tiktok"] },
+  { key: "sito_web", label: "Sito web", aliases: ["sito_web"], type: "url" },
+];
+
+const READONLY_PROFILE_FIELDS: EditableFieldConfig[] = [
+  { key: "livello", label: "Livello", aliases: ["livello", "level"] },
+  { key: "punti", label: "Punti", aliases: ["punti", "points"] },
+  { key: "badge", label: "Badge", aliases: ["badge", "badges"] },
+  { key: "numero_recensioni", label: "Numero recensioni", aliases: ["numero_recensioni"] },
+  { key: "numero_locali_visitati", label: "Numero locali visitati", aliases: ["numero_locali_visitati"] },
+  { key: "numero_cocktail_creati", label: "Numero cocktail creati", aliases: ["numero_cocktail_creati"] },
+  { key: "ultimo_accesso", label: "Ultimo accesso", aliases: ["ultimo_accesso"] },
+  { key: "email_verificata", label: "Email verificata", aliases: ["email_verificata"] },
+  { key: "approvato", label: "Approvato", aliases: ["approvato"] },
+];
 
 type ChipItem = {
   id: string;
@@ -107,6 +184,61 @@ const reservations: ReservationItem[] = [
     image: "https://images.unsplash.com/photo-1514362545857-3bc16c4c7d1b?w=400&q=80",
   },
 ];
+
+function toTextValue(value: unknown): string {
+  if (value === null || value === undefined) return "";
+  if (Array.isArray(value)) return value.filter(Boolean).join(", ");
+  return String(value);
+}
+
+function findExistingKey(record: ProfileRecord | null, aliases: string[]) {
+  if (!record) return null;
+  return aliases.find((alias) => Object.prototype.hasOwnProperty.call(record, alias)) || null;
+}
+
+function formatReadonlyValue(value: unknown): string {
+  if (value === null || value === undefined || value === "") return "Non disponibile";
+  if (typeof value === "boolean") return value ? "Si" : "No";
+  if (Array.isArray(value)) return value.length ? value.join(", ") : "Non disponibile";
+  const raw = String(value);
+  const date = new Date(raw);
+  if (!Number.isNaN(date.getTime()) && /(\d{4}-\d{2}-\d{2}|T\d{2}:\d{2}:\d{2})/.test(raw)) {
+    return new Intl.DateTimeFormat("it-IT", {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+      hour: "2-digit",
+      minute: "2-digit",
+    }).format(date);
+  }
+  return raw;
+}
+
+async function findOwnProfileRecord(user: any): Promise<ProfileLookupResult | null> {
+  if (!user?.id && !user?.email) return null;
+
+  const filters = [
+    user?.id ? { key: "id", value: String(user.id) } : null,
+    user?.id ? { key: "user_id", value: String(user.id) } : null,
+    user?.email ? { key: "email", value: String(user.email) } : null,
+  ].filter(Boolean) as Array<{ key: string; value: string }>;
+
+  for (const tableName of PROFILE_TABLE_CANDIDATES) {
+    for (const filter of filters) {
+      const result = await supabase.from(tableName).select("*").eq(filter.key, filter.value).maybeSingle();
+      if (!result.error && result.data) {
+        return {
+          tableName,
+          filterKey: filter.key,
+          filterValue: filter.value,
+          record: result.data as ProfileRecord,
+        };
+      }
+    }
+  }
+
+  return null;
+}
 
 function titleCase(value: string) {
   return value
@@ -512,6 +644,143 @@ function ProfileStyles() {
         display: inline-flex; align-items: center; gap: 8px; margin-bottom: 18px; padding: 10px 14px; border-radius: 14px;
         border: 1px solid rgba(42,241,230,0.5); background: rgba(10,32,56,0.82); color: #bffef7; cursor: pointer;
       }
+      .edit-profile-shell {
+        width: min(1040px, 100%);
+      }
+      .edit-profile-card {
+        padding: 24px;
+      }
+      .edit-profile-actions-top {
+        display: flex;
+        justify-content: flex-start;
+        margin-bottom: 20px;
+      }
+      .edit-profile-state {
+        margin: 0;
+        font-size: 16px;
+        color: rgba(227,236,255,0.82);
+      }
+      .edit-profile-form {
+        display: grid;
+        gap: 22px;
+      }
+      .edit-profile-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+      }
+      .edit-profile-field {
+        display: grid;
+        gap: 8px;
+      }
+      .edit-profile-field-full {
+        grid-column: 1 / -1;
+      }
+      .edit-profile-field span {
+        font-size: 13px;
+        font-weight: 700;
+        color: #f4b35e;
+        letter-spacing: 0.02em;
+      }
+      .edit-profile-field input,
+      .edit-profile-field textarea {
+        width: 100%;
+        border-radius: 16px;
+        border: 1px solid rgba(255,255,255,0.12);
+        background: rgba(7, 14, 28, 0.88);
+        color: #eef6ff;
+        padding: 14px 16px;
+        font: inherit;
+        outline: none;
+        transition: border-color 0.2s ease, box-shadow 0.2s ease;
+      }
+      .edit-profile-field input:focus,
+      .edit-profile-field textarea:focus {
+        border-color: rgba(255, 179, 71, 0.72);
+        box-shadow: 0 0 0 3px rgba(255, 179, 71, 0.14);
+      }
+      .edit-profile-field input[readonly] {
+        opacity: 0.78;
+        cursor: not-allowed;
+      }
+      .edit-profile-field textarea {
+        min-height: 140px;
+        resize: vertical;
+      }
+      .edit-profile-readonly-wrap {
+        display: grid;
+        gap: 14px;
+      }
+      .edit-profile-readonly-wrap h3 {
+        margin: 0;
+        font-size: 18px;
+        color: #eef6ff;
+      }
+      .edit-profile-readonly-grid {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 12px;
+      }
+      .edit-profile-readonly-card {
+        border: 1px solid rgba(255,255,255,0.09);
+        border-radius: 18px;
+        background: rgba(7, 14, 28, 0.7);
+        padding: 14px;
+        display: grid;
+        gap: 8px;
+      }
+      .edit-profile-readonly-card span {
+        font-size: 12px;
+        color: rgba(227,236,255,0.66);
+      }
+      .edit-profile-readonly-card strong {
+        font-size: 15px;
+        color: #fff4d8;
+      }
+      .edit-profile-feedback {
+        margin: 0;
+        padding: 14px 16px;
+        border-radius: 14px;
+        font-weight: 700;
+      }
+      .edit-profile-feedback.is-ok {
+        background: rgba(30, 125, 76, 0.18);
+        border: 1px solid rgba(77, 209, 132, 0.34);
+        color: #8ef0b6;
+      }
+      .edit-profile-feedback.is-error {
+        background: rgba(130, 38, 38, 0.2);
+        border: 1px solid rgba(255, 120, 120, 0.34);
+        color: #ffadad;
+      }
+      .edit-profile-footer {
+        display: flex;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .edit-profile-secondary-btn,
+      .edit-profile-primary-btn {
+        border-radius: 16px;
+        padding: 14px 18px;
+        font: inherit;
+        font-weight: 800;
+        cursor: pointer;
+      }
+      .edit-profile-secondary-btn {
+        border: 1px solid rgba(255,255,255,0.14);
+        background: rgba(31, 41, 55, 0.88);
+        color: #eef6ff;
+      }
+      .edit-profile-primary-btn {
+        border: none;
+        background: linear-gradient(135deg, #ffcf6d 0%, #ff9b35 100%);
+        color: #151008;
+        box-shadow: 0 16px 30px rgba(255, 155, 53, 0.22);
+      }
+      .edit-profile-primary-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
       @media (max-width: 768px) {
         .profile-page-root {
           padding: 100px 14px 40px !important;
@@ -524,6 +793,8 @@ function ProfileStyles() {
         .community-grid { grid-template-columns: 1fr; }
         .community-stat { border-right: 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
         .community-stat:last-child { border-bottom: 0; }
+        .edit-profile-grid { grid-template-columns: 1fr; }
+        .edit-profile-readonly-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       }
       @media (max-width: 640px) {
         .profile-topbar { gap: 8px; }
@@ -549,6 +820,11 @@ function ProfileStyles() {
         .reservation-date-box { width: 54px; border-radius: 14px; }
         .reservation-date-box strong { font-size: 22px; }
         .edit-profile-btn { width: calc(100% - 20px); padding: 16px 18px; }
+        .edit-profile-card { padding: 18px; }
+        .edit-profile-readonly-grid { grid-template-columns: 1fr; }
+        .edit-profile-footer { flex-direction: column-reverse; }
+        .edit-profile-secondary-btn,
+        .edit-profile-primary-btn { width: 100%; }
       }
     `}</style>
   );
@@ -738,12 +1014,240 @@ function SimpleProfileSubpage({ title, description, backTo }: { title: string; d
 }
 
 export function EditProfilePage() {
+  const navigate = useNavigate();
+  const { user } = useUser();
+  const [loading, setLoading] = React.useState(true);
+  const [saving, setSaving] = React.useState(false);
+  const [feedback, setFeedback] = React.useState<string | null>(null);
+  const [feedbackKind, setFeedbackKind] = React.useState<"ok" | "error" | null>(null);
+  const [profileLookup, setProfileLookup] = React.useState<ProfileLookupResult | null>(null);
+  const [formValues, setFormValues] = React.useState<Record<string, string>>({});
+  const [editableFieldMap, setEditableFieldMap] = React.useState<Record<string, string | null>>({});
+  const [readonlyEntries, setReadonlyEntries] = React.useState<Array<{ label: string; value: string }>>([]);
+
+  React.useEffect(() => {
+    let active = true;
+
+    async function loadEditProfile() {
+      if (!user) {
+        if (active) setLoading(false);
+        return;
+      }
+
+      setLoading(true);
+      setFeedback(null);
+      setFeedbackKind(null);
+
+      try {
+        const lookup = await findOwnProfileRecord(user);
+        if (!active) return;
+
+        setProfileLookup(lookup);
+
+        const record = lookup?.record || null;
+        const nextMap: Record<string, string | null> = {};
+        const nextValues: Record<string, string> = {};
+
+        for (const field of EDITABLE_PROFILE_FIELDS) {
+          const actualKey = findExistingKey(record, field.aliases);
+          nextMap[field.key] = actualKey;
+
+          if (field.key === "email") {
+            nextValues[field.key] = toTextValue(actualKey ? record?.[actualKey] : user?.email);
+            continue;
+          }
+
+          nextValues[field.key] = toTextValue(actualKey ? record?.[actualKey] : "");
+        }
+
+        const readonlyValues = READONLY_PROFILE_FIELDS.map((field) => {
+          const actualKey = findExistingKey(record, field.aliases);
+          if (!actualKey) return null;
+          return {
+            label: field.label,
+            value: formatReadonlyValue(record?.[actualKey]),
+          };
+        }).filter(Boolean) as Array<{ label: string; value: string }>;
+
+        setEditableFieldMap(nextMap);
+        setFormValues(nextValues);
+        setReadonlyEntries(readonlyValues);
+      } catch (error) {
+        console.error("[EditProfilePage] Errore caricamento profilo:", error);
+        if (active) {
+          setFeedback("Errore aggiornamento profilo");
+          setFeedbackKind("error");
+        }
+      } finally {
+        if (active) setLoading(false);
+      }
+    }
+
+    loadEditProfile();
+
+    return () => {
+      active = false;
+    };
+  }, [user]);
+
+  async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (!profileLookup || !user) {
+      setFeedback("Errore aggiornamento profilo");
+      setFeedbackKind("error");
+      return;
+    }
+
+    setSaving(true);
+    setFeedback(null);
+    setFeedbackKind(null);
+
+    try {
+      const nextUsername = formValues.username.trim();
+      if (!nextUsername) {
+        setFeedback("Errore aggiornamento profilo");
+        setFeedbackKind("error");
+        return;
+      }
+
+      const updatePayload: Record<string, string | null> = {};
+      for (const field of EDITABLE_PROFILE_FIELDS) {
+        if (field.readOnly) continue;
+        const actualKey = editableFieldMap[field.key];
+        if (!actualKey) continue;
+        const rawValue = formValues[field.key] ?? "";
+        const trimmedValue = field.type === "textarea" ? rawValue.trim() : rawValue.trim();
+        updatePayload[actualKey] = trimmedValue || null;
+      }
+
+      const result = await supabase
+        .from(profileLookup.tableName)
+        .update(updatePayload)
+        .eq(profileLookup.filterKey, profileLookup.filterValue)
+        .select("*")
+        .maybeSingle();
+
+      if (result.error) {
+        console.error("[EditProfilePage] Errore aggiornamento profilo:", result.error);
+        setFeedback("Errore aggiornamento profilo");
+        setFeedbackKind("error");
+        return;
+      }
+
+      const updatedRecord = (result.data || profileLookup.record) as ProfileRecord;
+      setProfileLookup({
+        ...profileLookup,
+        record: updatedRecord,
+      });
+      setFeedback("Profilo aggiornato correttamente");
+      setFeedbackKind("ok");
+    } catch (error) {
+      console.error("[EditProfilePage] Errore aggiornamento profilo:", error);
+      setFeedback("Errore aggiornamento profilo");
+      setFeedbackKind("error");
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  function handleChange(fieldKey: string, value: string) {
+    setFormValues((current) => ({
+      ...current,
+      [fieldKey]: value,
+    }));
+  }
+
   return (
-    <SimpleProfileSubpage
-      title="Modifica profilo"
-      description="Questa sezione e pronta per collegare il flusso di modifica completo del profilo premium DrinkWise."
-      backTo="/profilo"
-    />
+    <PageShell>
+      <ProfileStyles />
+      <LoungeBottomNavigation />
+
+      <section className="profile-shell edit-profile-shell">
+        <header className="profile-topbar">
+          <div className="profile-title-wrap">
+            <div className="profile-title-icon">
+              <UserCircle2 size={28} strokeWidth={2} />
+            </div>
+            <div>
+              <h1 className="profile-title">Modifica profilo</h1>
+              <p className="profile-subtitle">Aggiorna i dati del tuo profilo DrinkWise</p>
+            </div>
+          </div>
+        </header>
+
+        <SectionCard>
+          <div className="edit-profile-card">
+            <div className="edit-profile-actions-top">
+              <button type="button" className="simple-back-btn" onClick={() => navigate("/profilo")}>← Torna indietro</button>
+            </div>
+
+            {loading ? (
+              <p className="edit-profile-state">Caricamento profilo...</p>
+            ) : !profileLookup ? (
+              <p className="edit-profile-state">Profilo non disponibile.</p>
+            ) : (
+              <form className="edit-profile-form" onSubmit={handleSubmit}>
+                <div className="edit-profile-grid">
+                  {EDITABLE_PROFILE_FIELDS.filter((field) => field.readOnly || editableFieldMap[field.key]).map((field) => (
+                    <label
+                      key={field.key}
+                      className={field.type === "textarea" ? "edit-profile-field edit-profile-field-full" : "edit-profile-field"}
+                    >
+                      <span>{field.label}</span>
+                      {field.type === "textarea" ? (
+                        <textarea
+                          value={formValues[field.key] || ""}
+                          onChange={(event) => handleChange(field.key, event.target.value)}
+                          readOnly={Boolean(field.readOnly)}
+                          rows={5}
+                        />
+                      ) : (
+                        <input
+                          type={field.type || "text"}
+                          value={formValues[field.key] || ""}
+                          onChange={(event) => handleChange(field.key, event.target.value)}
+                          readOnly={Boolean(field.readOnly)}
+                        />
+                      )}
+                    </label>
+                  ))}
+                </div>
+
+                {readonlyEntries.length > 0 && (
+                  <div className="edit-profile-readonly-wrap">
+                    <h3>Statistiche profilo</h3>
+                    <div className="edit-profile-readonly-grid">
+                      {readonlyEntries.map((entry) => (
+                        <div key={entry.label} className="edit-profile-readonly-card">
+                          <span>{entry.label}</span>
+                          <strong>{entry.value}</strong>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {feedback && (
+                  <p className={feedbackKind === "ok" ? "edit-profile-feedback is-ok" : "edit-profile-feedback is-error"}>
+                    {feedback}
+                  </p>
+                )}
+
+                <div className="edit-profile-footer">
+                  <button type="button" className="edit-profile-secondary-btn" onClick={() => navigate("/profilo")}>Torna indietro</button>
+                  <button type="submit" className="edit-profile-primary-btn" disabled={saving}>
+                    {saving ? "Salvataggio..." : "Salva modifiche"}
+                  </button>
+                </div>
+              </form>
+            )}
+          </div>
+        </SectionCard>
+
+        <div style={{ height: 140 }} />
+      </section>
+    </PageShell>
   );
 }
 
