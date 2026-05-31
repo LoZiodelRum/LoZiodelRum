@@ -27,14 +27,18 @@ export default function Navbar() {
 
   function closeMobileMenu() {
     setMenuOpen(false);
+    setLanguageOpen(false);
   }
 
-  function isActive(path: string) {
-    if (path === "/") return location.pathname === "/";
-    return location.pathname.startsWith(path);
+  function isActive(path: string | string[]) {
+    const paths = Array.isArray(path) ? path : [path];
+    return paths.some((entry) => {
+      if (entry === "/") return location.pathname === "/";
+      return location.pathname.startsWith(entry);
+    });
   }
 
-  function linkStyle(path: string) {
+  function linkStyle(path: string | string[]) {
     return {
       color: isActive(path) ? "#f5a623" : "#fff",
       textDecoration: "none",
@@ -61,6 +65,13 @@ export default function Navbar() {
   const ownerRoles = ["proprietario", "owner", "proprietari", "gestore", "locale", "proprietario locale"];
   const adminRoles = ["admin", "amministratore"];
   const normalizedProfileFallbackRole = normalizeRole(profileRoleFallback);
+  const hasOwnerRole =
+    ownerRoles.includes(normalizedRole) ||
+    ownerRoles.includes(normalizedProfileFallbackRole);
+  const hasAdminRole =
+    isAdmin ||
+    adminRoles.includes(normalizedRole) ||
+    adminRoles.includes(normalizedProfileFallbackRole);
 
   useEffect(() => {
     let cancelled = false;
@@ -113,13 +124,8 @@ export default function Navbar() {
     };
   }, [user?.id, user?.email]);
 
-  const canAccessOwnerDashboard =
-    isAdmin ||
-    ownerRoles.includes(normalizedRole) ||
-    adminRoles.includes(normalizedRole) ||
-    ownerRoles.includes(normalizedProfileFallbackRole) ||
-    adminRoles.includes(normalizedProfileFallbackRole) ||
-    location.pathname.startsWith("/proprietario");
+  const canAccessOwnerDashboard = hasOwnerRole || (location.pathname.startsWith("/proprietario") && !hasAdminRole);
+  const canAccessAdminDashboard = hasAdminRole || location.pathname.startsWith("/admin");
 
   async function handleLogout() {
     await supabase.auth.signOut();
@@ -232,33 +238,19 @@ export default function Navbar() {
           {t("home")}
         </Link>
 
-        <Link to="/mappa" style={linkStyle("/mappa")}>
-          {t("map")}
-        </Link>
-
-        <Link to="/drink" style={linkStyle("/drink")}>
-          {t("drink")}
-        </Link>
-
-        <Link to="/vini" style={linkStyle("/vini")}>
-          {t("wines")}
-        </Link>
-
-        <Link to="/magazine" style={linkStyle("/magazine")}>
-          {t("magazine")}
-        </Link>
-
-        <Link to="/community" style={linkStyle("/community")}>
+        <Link to="/lounge" style={linkStyle(["/lounge", "/community"])}>
           Lounge
-        </Link>
-
-        <Link to="/crea" style={linkStyle("/crea")}>
-          {t("create")}
         </Link>
 
         {canAccessOwnerDashboard && (
           <Link to="/proprietario" style={linkStyle("/proprietario")}>
             Dashboard
+          </Link>
+        )}
+
+        {canAccessAdminDashboard && (
+          <Link to="/admin" style={linkStyle("/admin")}>
+            Dashboard Admin
           </Link>
         )}
 
@@ -399,12 +391,6 @@ export default function Navbar() {
             </div>
           )}
         </div>
-
-        {isAdmin && (
-          <Link to="/admin" style={linkStyle("/admin")}>
-            {t("controlPanel")}
-          </Link>
-        )}
       </div>
 
       <div
@@ -416,150 +402,6 @@ export default function Navbar() {
           gap: "6px",
         }}
       >
-        <div className="mobile-language-zone">
-          {/* BANDIERA MOBILE */}
-          <div
-            className="mobile-language-selector languageSelectorWrapper"
-            style={{
-              position: "relative",
-              display: "none",
-              marginLeft: 0,
-              marginRight: 0,
-            }}
-          >
-            <div className="mobile-language-trigger-wrapper">
-              <button
-                className="mobile-language-trigger languageButton"
-                onClick={() => setLanguageOpen(!languageOpen)}
-                style={{
-                  background: "transparent",
-                  border: "none",
-                  color: "#fff",
-                  cursor: "pointer",
-                  fontWeight: 400,
-                  fontSize: "14px",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "4px",
-                  lineHeight: 1,
-                  whiteSpace: "nowrap",
-                }}
-              >
-                <span className="languageButtonContent">
-                  <span style={{ fontSize: "14px", lineHeight: 1 }}>
-                    {activeLanguage === "en"
-                      ? "🇬🇧"
-                      : activeLanguage === "es"
-                      ? "🇪🇸"
-                      : activeLanguage === "bg"
-                      ? "🇧🇬"
-                      : "🇮🇹"}
-                  </span>
-                  <span style={{ lineHeight: 1, whiteSpace: "nowrap" }}>
-                    {(activeLanguage === "en"
-                      ? t("language.codeEn")
-                      : activeLanguage === "es"
-                      ? t("language.codeEs")
-                      : activeLanguage === "bg"
-                      ? t("language.codeBg")
-                      : t("language.codeIt")
-                    ).toLowerCase()}
-                  </span>
-                </span>
-              </button>
-            </div>
-
-            {languageOpen && (
-              <div
-                className="futureDropdownContainer"
-                style={{
-                  position: "absolute",
-                  top: "42px",
-                  right: 0,
-                  background: "#111",
-                  border: "1px solid #333",
-                  borderRadius: "10px",
-                  overflow: "hidden",
-                  minWidth: "110px",
-                  zIndex: 9999,
-                }}
-              >
-                <button
-                  onClick={() => {
-                    i18n.changeLanguage("it");
-                    setLanguageOpen(false);
-                  }}
-                  style={{
-                    width: "100%",
-                    background: "transparent",
-                    border: "none",
-                    color: "#fff",
-                    padding: "12px",
-                    textAlign: "left",
-                    cursor: "pointer",
-                  }}
-                >
-                  {formatLanguageLabel(t("language.it"))}
-                </button>
-
-                <button
-                  onClick={() => {
-                    i18n.changeLanguage("en");
-                    setLanguageOpen(false);
-                  }}
-                  style={{
-                    width: "100%",
-                    background: "transparent",
-                    border: "none",
-                    color: "#fff",
-                    padding: "12px",
-                    textAlign: "left",
-                    cursor: "pointer",
-                  }}
-                >
-                  {formatLanguageLabel(t("language.en"))}
-                </button>
-
-                <button
-                  onClick={() => {
-                    i18n.changeLanguage("bg");
-                    setLanguageOpen(false);
-                  }}
-                  style={{
-                    width: "100%",
-                    background: "transparent",
-                    border: "none",
-                    color: "#fff",
-                    padding: "12px",
-                    textAlign: "left",
-                    cursor: "pointer",
-                  }}
-                >
-                  {formatLanguageLabel(t("language.bg"))}
-                </button>
-
-                <button
-                  onClick={() => {
-                    i18n.changeLanguage("es");
-                    setLanguageOpen(false);
-                  }}
-                  style={{
-                    width: "100%",
-                    background: "transparent",
-                    border: "none",
-                    color: "#fff",
-                    padding: "12px",
-                    textAlign: "left",
-                    cursor: "pointer",
-                  }}
-                >
-                  {formatLanguageLabel(t("language.es"))}
-                </button>
-              </div>
-            )}
-          </div>
-        </div>
-
         <div className="mobile-menu-trigger-zone">
           {/* MENU HAMBURGER MOBILE */}
           <button
@@ -648,78 +490,10 @@ export default function Navbar() {
 
         <Link
           className="mobile-menu-item"
-          to="/mappa"
-          onClick={closeMobileMenu}
-          style={{
-            ...linkStyle("/mappa"),
-            padding: "13px 10px",
-            borderRadius: "10px",
-            marginBottom: "4px",
-            borderBottom: "1px solid #333",
-            transition: "all 0.2s ease",
-            WebkitTapHighlightColor: "transparent",
-          }}
-        >
-            {t("map")}
-        </Link>
-
-        <Link
-          className="mobile-menu-item"
-          to="/drink"
-          onClick={closeMobileMenu}
-          style={{
-            ...linkStyle("/drink"),
-            padding: "13px 10px",
-            borderRadius: "10px",
-            marginBottom: "4px",
-            borderBottom: "1px solid #333",
-            transition: "all 0.2s ease",
-            WebkitTapHighlightColor: "transparent",
-          }}
-        >
-            {t("drink")}
-        </Link>
-
-        <Link
-          className="mobile-menu-item"
-          to="/vini"
-          onClick={closeMobileMenu}
-          style={{
-            ...linkStyle("/vini"),
-            padding: "13px 10px",
-            borderRadius: "10px",
-            marginBottom: "4px",
-            borderBottom: "1px solid #333",
-            transition: "all 0.2s ease",
-            WebkitTapHighlightColor: "transparent",
-          }}
-        >
-            {t("wines")}
-        </Link>
-
-        <Link
-          className="mobile-menu-item"
-          to="/magazine"
-          onClick={closeMobileMenu}
-          style={{
-            ...linkStyle("/magazine"),
-            padding: "13px 10px",
-            borderRadius: "10px",
-            marginBottom: "4px",
-            borderBottom: "1px solid #333",
-            transition: "all 0.2s ease",
-            WebkitTapHighlightColor: "transparent",
-          }}
-        >
-            {t("magazine")}
-        </Link>
-
-        <Link
-          className="mobile-menu-item"
           to="/lounge"
           onClick={closeMobileMenu}
           style={{
-            ...linkStyle("/lounge"),
+            ...linkStyle(["/lounge", "/community"]),
             padding: "13px 10px",
             borderRadius: "10px",
             marginBottom: "4px",
@@ -729,23 +503,6 @@ export default function Navbar() {
           }}
         >
             Lounge
-        </Link>
-
-        <Link
-          className="mobile-menu-item"
-          to="/crea"
-          onClick={closeMobileMenu}
-          style={{
-            ...linkStyle("/crea"),
-            padding: "13px 10px",
-            borderRadius: "10px",
-            marginBottom: "4px",
-            borderBottom: "1px solid #333",
-            transition: "all 0.2s ease",
-            WebkitTapHighlightColor: "transparent",
-          }}
-        >
-            {t("create")}
         </Link>
 
         {canAccessOwnerDashboard && (
@@ -767,7 +524,7 @@ export default function Navbar() {
           </Link>
         )}
 
-        {isAdmin && (
+        {canAccessAdminDashboard && (
           <Link
             className="mobile-menu-item"
             to="/admin"
@@ -782,9 +539,97 @@ export default function Navbar() {
               WebkitTapHighlightColor: "transparent",
             }}
           >
-            {t("controlPanel")}
+            Dashboard Admin
           </Link>
         )}
+
+        <div
+          style={{
+            marginTop: "10px",
+            padding: "12px 10px 0",
+            borderTop: "1px solid #333",
+          }}
+        >
+          <div
+            style={{
+              fontSize: "12px",
+              letterSpacing: "0.08em",
+              textTransform: "uppercase",
+              color: "rgba(255,255,255,0.62)",
+              marginBottom: "10px",
+            }}
+          >
+            Lingua
+          </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(2, minmax(0, 1fr))",
+              gap: "8px",
+            }}
+          >
+            <button
+              type="button"
+              onClick={() => i18n.changeLanguage("it")}
+              style={{
+                background: activeLanguage === "it" ? "rgba(245,166,35,0.18)" : "#18181b",
+                border: activeLanguage === "it" ? "1px solid rgba(245,166,35,0.55)" : "1px solid #333",
+                color: "#fff",
+                borderRadius: "10px",
+                padding: "10px 12px",
+                cursor: "pointer",
+              }}
+            >
+              {formatLanguageLabel(t("language.shortIt"))}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => i18n.changeLanguage("en")}
+              style={{
+                background: activeLanguage === "en" ? "rgba(245,166,35,0.18)" : "#18181b",
+                border: activeLanguage === "en" ? "1px solid rgba(245,166,35,0.55)" : "1px solid #333",
+                color: "#fff",
+                borderRadius: "10px",
+                padding: "10px 12px",
+                cursor: "pointer",
+              }}
+            >
+              {formatLanguageLabel(t("language.shortEn"))}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => i18n.changeLanguage("bg")}
+              style={{
+                background: activeLanguage === "bg" ? "rgba(245,166,35,0.18)" : "#18181b",
+                border: activeLanguage === "bg" ? "1px solid rgba(245,166,35,0.55)" : "1px solid #333",
+                color: "#fff",
+                borderRadius: "10px",
+                padding: "10px 12px",
+                cursor: "pointer",
+              }}
+            >
+              {formatLanguageLabel(t("language.shortBg"))}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => i18n.changeLanguage("es")}
+              style={{
+                background: activeLanguage === "es" ? "rgba(245,166,35,0.18)" : "#18181b",
+                border: activeLanguage === "es" ? "1px solid rgba(245,166,35,0.55)" : "1px solid #333",
+                color: "#fff",
+                borderRadius: "10px",
+                padding: "10px 12px",
+                cursor: "pointer",
+              }}
+            >
+              {formatLanguageLabel(t("language.shortEs"))}
+            </button>
+          </div>
+        </div>
 
         <button
           className="mobile-menu-item mobile-logout-btn"
