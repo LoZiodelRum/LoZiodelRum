@@ -532,17 +532,47 @@ export default function Home() {
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(0,0,0,0.22), rgba(0,0,0,0.38) 45%, rgba(0,0,0,0.86) 100%)", zIndex: 1 }} />
         <div className="hero-mobile-content" style={{ position: "relative", zIndex: 2, width: "100%", maxWidth: 1180, padding: "0 20px 6px" }}>
           <p className="hero-mobile-badge" style={{ display: "none" }}>{t("home.heroBadge")}</p>
-          <h1 className="hero-mobile-title" style={{ fontSize: "clamp(20px, 4vw, 32px)", marginBottom: 20, fontWeight: 800, lineHeight: 1.2, display: "flex", flexDirection: "column", alignItems: "center", textAlign: "center" }}>
+          <h1
+            className="hero-mobile-title"
+            style={{
+              fontSize:
+                i18n.language === "de"
+                  ? "clamp(2rem, 7vw, 3.5rem)"
+                  : "clamp(20px, 4vw, 32px)",
+              marginBottom: 16,
+              fontWeight: 800,
+              lineHeight: 1.05,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+              textAlign: "center",
+              wordBreak: "normal",
+              overflowWrap: "break-word",
+              maxWidth: "100%",
+              paddingLeft: 8,
+              paddingRight: 8,
+            }}
+          >
             <span className="hero-mobile-title-line" style={{ color: "#ffffff" }}>{t("home.heroTitleLine1")}</span>
             <span className="hero-mobile-title-line" style={{ color: "#f5a623" }}>{t("home.heroTitleLine2")}</span>
           </h1>
-          <p className="hero-mobile-subtitle" style={{ opacity: 0.85, marginBottom: 30, fontSize: "clamp(14px, 2.5vw, 18px)" }}>
+          <p className="hero-mobile-subtitle" style={{ opacity: 0.85, marginBottom: 12, fontSize: "clamp(14px, 2.5vw, 18px)" }}>
             {t("home.heroSubtitle")}
           </p>
         </div>
       </div>
 
-      <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap", padding: "32px 20px 0" }}>
+      <div
+        className="hero-mobile-buttons"
+        style={{
+          display: "flex",
+          gap: 16,
+          justifyContent: "center",
+          flexWrap: "wrap",
+          padding: "0 20px 0",
+          marginTop: 0,
+        }}
+      >
         <button
           onClick={() => navigate("/lounge")}
           style={{
