@@ -91,7 +91,6 @@ const EDITABLE_PROFILE_FIELDS: EditableFieldConfig[] = [
   { key: "cellulare", label: "Cellulare", aliases: ["cellulare", "telefono", "phone"] },
   { key: "citta", label: "Citta", aliases: ["citta", "city"] },
   { key: "paese", label: "Paese", aliases: ["paese"] },
-  { key: "foto_profilo", label: "URL foto profilo", aliases: ["foto_profilo", "avatar_url"], type: "url" },
   { key: "bio", label: "Bio", aliases: ["bio", "bio_breve"], type: "textarea" },
   { key: "genere", label: "Genere", aliases: ["genere"] },
   { key: "distillato_preferito", label: "Distillato preferito", aliases: ["distillato_preferito"] },
@@ -214,6 +213,17 @@ function formatReadonlyValue(value: unknown): string {
   return raw;
 }
 
+function getProfileImageUrl(record: ProfileRecord | null, metadata?: Record<string, unknown>) {
+  return String(
+    record?.foto_profilo ||
+      record?.avatar_url ||
+      metadata?.foto_profilo ||
+      metadata?.avatar_url ||
+      metadata?.picture ||
+      "",
+  ).trim();
+}
+
 async function findOwnProfileRecord(user: any): Promise<ProfileLookupResult | null> {
   if (!user?.id && !user?.email) return null;
 
@@ -309,7 +319,7 @@ function useProfileData() {
         return;
       }
 
-      const query = "id, nome, cognome, username, ruolo, status, avatar_url, bio_breve, distillato_preferito, cocktail_preferito, profilo_gustativo_preferito, numero_recensioni, numero_locali_visitati, numero_cocktail_creati";
+      const query = "id, nome, cognome, username, ruolo, status, avatar_url, foto_profilo, bio_breve, distillato_preferito, cocktail_preferito, profilo_gustativo_preferito, numero_recensioni, numero_locali_visitati, numero_cocktail_creati";
       const primary = await supabase.from("Profili").select(query).eq("id", user.id).maybeSingle();
       const fallback = !primary.data
         ? await supabase.from("profili").select(query).eq("id", user.id).maybeSingle()
@@ -342,7 +352,7 @@ function useProfileData() {
     String(profile?.username || metadata.username || user?.email?.split("@")[0] || "Ospite DrinkWise");
 
   const memberRole = normalizeRoleLabel(String(profile?.ruolo || role || metadata.ruolo || "Founding Member"));
-  const avatarUrl = String(profile?.avatar_url || metadata.avatar_url || metadata.picture || "").trim() || null;
+  const avatarUrl = getProfileImageUrl(profile, metadata) || null;
   const bio = String(profile?.bio_breve || metadata.bio_breve || metadata.bio || "").trim() || "Colleziona esperienze premium, lascia recensioni e costruisce il proprio percorso DrinkWise.";
   const dynamicBadges = buildDynamicBadges(profile, memberRole);
   const tasteProfile = buildTasteProfile(profile);
@@ -664,6 +674,72 @@ function ProfileStyles() {
         display: grid;
         gap: 22px;
       }
+      .edit-profile-photo-block {
+        display: grid;
+        gap: 12px;
+        padding: 18px;
+        border-radius: 20px;
+        border: 1px solid rgba(255, 192, 91, 0.24);
+        background: linear-gradient(160deg, rgba(31, 19, 6, 0.42), rgba(8, 14, 28, 0.86));
+      }
+      .edit-profile-photo-label {
+        font-size: 13px;
+        font-weight: 800;
+        color: #f4b35e;
+        letter-spacing: 0.02em;
+      }
+      .edit-profile-photo-row {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+      }
+      .edit-profile-photo-avatar,
+      .edit-profile-photo-fallback {
+        width: 112px;
+        height: 112px;
+        border-radius: 50%;
+        border: 2px solid rgba(255, 192, 91, 0.52);
+        flex: 0 0 auto;
+      }
+      .edit-profile-photo-avatar {
+        object-fit: cover;
+        background: rgba(7, 14, 28, 0.9);
+      }
+      .edit-profile-photo-fallback {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: radial-gradient(circle at 30% 30%, rgba(255,205,108,0.3), rgba(13,20,34,0.95));
+        color: #fff2d6;
+        font-size: 32px;
+        font-weight: 900;
+      }
+      .edit-profile-photo-actions {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .edit-profile-photo-btn {
+        border: none;
+        border-radius: 14px;
+        padding: 12px 16px;
+        font: inherit;
+        font-weight: 800;
+        cursor: pointer;
+        background: linear-gradient(135deg, #ffcf6d 0%, #ff9b35 100%);
+        color: #1a1308;
+        box-shadow: 0 14px 28px rgba(255, 155, 53, 0.18);
+      }
+      .edit-profile-photo-btn.is-secondary {
+        background: rgba(255,255,255,0.08);
+        color: #eef6ff;
+        border: 1px solid rgba(255,255,255,0.12);
+        box-shadow: none;
+      }
+      .edit-profile-photo-btn:disabled {
+        opacity: 0.6;
+        cursor: not-allowed;
+      }
       .edit-profile-grid {
         display: grid;
         grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -793,6 +869,7 @@ function ProfileStyles() {
         .community-grid { grid-template-columns: 1fr; }
         .community-stat { border-right: 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
         .community-stat:last-child { border-bottom: 0; }
+        .edit-profile-photo-row { flex-direction: column; align-items: flex-start; }
         .edit-profile-grid { grid-template-columns: 1fr; }
         .edit-profile-readonly-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       }
@@ -821,6 +898,10 @@ function ProfileStyles() {
         .reservation-date-box strong { font-size: 22px; }
         .edit-profile-btn { width: calc(100% - 20px); padding: 16px 18px; }
         .edit-profile-card { padding: 18px; }
+        .edit-profile-photo-avatar,
+        .edit-profile-photo-fallback { width: 96px; height: 96px; }
+        .edit-profile-photo-actions { width: 100%; }
+        .edit-profile-photo-btn { width: 100%; text-align: center; }
         .edit-profile-readonly-grid { grid-template-columns: 1fr; }
         .edit-profile-footer { flex-direction: column-reverse; }
         .edit-profile-secondary-btn,
@@ -1018,12 +1099,23 @@ export function EditProfilePage() {
   const { user } = useUser();
   const [loading, setLoading] = React.useState(true);
   const [saving, setSaving] = React.useState(false);
+  const [uploadingPhoto, setUploadingPhoto] = React.useState(false);
   const [feedback, setFeedback] = React.useState<string | null>(null);
   const [feedbackKind, setFeedbackKind] = React.useState<"ok" | "error" | null>(null);
   const [profileLookup, setProfileLookup] = React.useState<ProfileLookupResult | null>(null);
   const [formValues, setFormValues] = React.useState<Record<string, string>>({});
   const [editableFieldMap, setEditableFieldMap] = React.useState<Record<string, string | null>>({});
   const [readonlyEntries, setReadonlyEntries] = React.useState<Array<{ label: string; value: string }>>([]);
+  const cameraInputRef = React.useRef<HTMLInputElement | null>(null);
+  const galleryInputRef = React.useRef<HTMLInputElement | null>(null);
+
+  const profileImageUrl = getProfileImageUrl(profileLookup?.record || null, (user?.user_metadata || {}) as Record<string, unknown>);
+  const profileImageInitials = String(formValues.nome || formValues.username || user?.email || "DW")
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((part) => part.charAt(0).toUpperCase())
+    .join("") || "DW";
 
   React.useEffect(() => {
     let active = true;
@@ -1158,6 +1250,93 @@ export function EditProfilePage() {
     }));
   }
 
+  async function handleProfilePhotoUpload(file: File | null | undefined) {
+    if (!file || !profileLookup || !user?.id) return;
+
+    const allowedMimeTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
+    const allowedExtensions = new Set(["jpg", "jpeg", "png", "webp"]);
+    const fileExtension = String(file.name.split(".").pop() || "").toLowerCase();
+
+    if ((!allowedMimeTypes.has(file.type) && !allowedExtensions.has(fileExtension)) || !allowedExtensions.has(fileExtension)) {
+      setFeedback("Errore caricamento immagine");
+      setFeedbackKind("error");
+      return;
+    }
+
+    if (file.size > 5 * 1024 * 1024) {
+      setFeedback("Errore caricamento immagine");
+      setFeedbackKind("error");
+      return;
+    }
+
+    setUploadingPhoto(true);
+    setFeedback(null);
+    setFeedbackKind(null);
+
+    try {
+      const safeExtension = fileExtension === "jpeg" ? "jpg" : fileExtension;
+      const filePath = `profiles/${user.id}_${Date.now()}.${safeExtension || "jpg"}`;
+      const uploadResult = await supabase.storage
+        .from("drink-images")
+        .upload(filePath, file, { upsert: true, contentType: file.type || "image/jpeg" });
+
+      if (uploadResult.error) {
+        console.error("[EditProfilePage] Errore caricamento immagine:", uploadResult.error);
+        setFeedback("Errore caricamento immagine");
+        setFeedbackKind("error");
+        return;
+      }
+
+      const { data } = supabase.storage.from("drink-images").getPublicUrl(filePath);
+      const imageUrl = data.publicUrl;
+      const updatePayload: Record<string, string | null> = {};
+
+      if (Object.prototype.hasOwnProperty.call(profileLookup.record || {}, "foto_profilo")) {
+        updatePayload.foto_profilo = imageUrl;
+      }
+      if (Object.prototype.hasOwnProperty.call(profileLookup.record || {}, "avatar_url")) {
+        updatePayload.avatar_url = imageUrl;
+      }
+      if (!Object.keys(updatePayload).length) {
+        updatePayload.avatar_url = imageUrl;
+      }
+
+      const updateResult = await supabase
+        .from(profileLookup.tableName)
+        .update(updatePayload)
+        .eq(profileLookup.filterKey, profileLookup.filterValue)
+        .select("*")
+        .maybeSingle();
+
+      if (updateResult.error) {
+        console.error("[EditProfilePage] Errore aggiornamento foto profilo:", updateResult.error);
+        setFeedback("Errore caricamento immagine");
+        setFeedbackKind("error");
+        return;
+      }
+
+      const updatedRecord = (updateResult.data || {
+        ...profileLookup.record,
+        ...updatePayload,
+      }) as ProfileRecord;
+
+      setProfileLookup({
+        ...profileLookup,
+        record: updatedRecord,
+      });
+      setFeedback("Upload completato");
+      setFeedbackKind("ok");
+    } catch (error) {
+      console.error("[EditProfilePage] Errore caricamento immagine:", error);
+      setFeedback("Errore caricamento immagine");
+      setFeedbackKind("error");
+    } finally {
+      setUploadingPhoto(false);
+      if (cameraInputRef.current) cameraInputRef.current.value = "";
+      if (galleryInputRef.current) galleryInputRef.current.value = "";
+    }
+  }
+
   return (
     <PageShell>
       <ProfileStyles />
@@ -1188,6 +1367,46 @@ export function EditProfilePage() {
               <p className="edit-profile-state">Profilo non disponibile.</p>
             ) : (
               <form className="edit-profile-form" onSubmit={handleSubmit}>
+                <div className="edit-profile-photo-block">
+                  <span className="edit-profile-photo-label">Foto profilo</span>
+                  <div className="edit-profile-photo-row">
+                    {profileImageUrl ? (
+                      <img className="edit-profile-photo-avatar" src={profileImageUrl} alt="Foto profilo" />
+                    ) : (
+                      <div className="edit-profile-photo-fallback">{profileImageInitials}</div>
+                    )}
+
+                    <div className="edit-profile-photo-actions">
+                      <button type="button" className="edit-profile-photo-btn" onClick={() => cameraInputRef.current?.click()} disabled={uploadingPhoto}>
+                        {uploadingPhoto ? "Caricamento..." : "Scatta foto"}
+                      </button>
+                      <button type="button" className="edit-profile-photo-btn" onClick={() => galleryInputRef.current?.click()} disabled={uploadingPhoto}>
+                        {uploadingPhoto ? "Caricamento..." : "Carica da dispositivo"}
+                      </button>
+                      {profileImageUrl && (
+                        <button type="button" className="edit-profile-photo-btn is-secondary" onClick={() => galleryInputRef.current?.click()} disabled={uploadingPhoto}>
+                          Cambia foto
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                  <input
+                    ref={cameraInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    capture="environment"
+                    style={{ display: "none" }}
+                    onChange={(event) => void handleProfilePhotoUpload(event.target.files?.[0])}
+                  />
+                  <input
+                    ref={galleryInputRef}
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    style={{ display: "none" }}
+                    onChange={(event) => void handleProfilePhotoUpload(event.target.files?.[0])}
+                  />
+                </div>
+
                 <div className="edit-profile-grid">
                   {EDITABLE_PROFILE_FIELDS.filter((field) => field.readOnly || editableFieldMap[field.key]).map((field) => (
                     <label
