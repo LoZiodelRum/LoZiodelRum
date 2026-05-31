@@ -541,7 +541,7 @@ export default function Home() {
 
       <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap", padding: "32px 20px 0" }}>
         <button
-          onClick={() => navigate("/venues")}
+          onClick={() => navigate("/lounge")}
           style={{
             background: "#f5a623",
             color: "#0b0b0b",
