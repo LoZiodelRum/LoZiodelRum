@@ -54,7 +54,7 @@ export default function Magazine() {
       }
 
       const normalizedLanguage = String(language || "").toLowerCase().split(/[-_]/)[0];
-      if (normalizedLanguage !== "de" && normalizedLanguage !== "bg") {
+      if (normalizedLanguage !== "de" && normalizedLanguage !== "es" && normalizedLanguage !== "bg") {
         setArticles(rawArticles);
         return;
       }

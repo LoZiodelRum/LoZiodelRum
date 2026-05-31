@@ -5,7 +5,7 @@ IMPORTANT:
 All translated runtime fields MUST pass through getTranslatedField().
 
 DO NOT:
-- access *_en/_bg/_de directly in UI runtime
+- access *_en/_bg/_de/_es directly in UI runtime
 - create local fallback chains
 - duplicate translation resolver logic
 
@@ -14,11 +14,12 @@ IT -> base
 EN -> _en -> base
 BG -> _bg -> _en -> base
 DE -> _de -> _en -> base
+ES -> _es -> _en -> base
 */
 
-export type SupportedLanguage = "it" | "en" | "de" | "bg";
+export type SupportedLanguage = "it" | "en" | "de" | "bg" | "es";
 
-const SUPPORTED_LANGUAGES: SupportedLanguage[] = ["it", "en", "de", "bg"];
+const SUPPORTED_LANGUAGES: SupportedLanguage[] = ["it", "en", "de", "bg", "es"];
 
 function normalizeLanguage(language?: string): SupportedLanguage {
   const short = normalizeText(language || "it").split(/[-_]/)[0] as SupportedLanguage;
@@ -43,6 +44,10 @@ function buildCandidates(baseField: string, language: SupportedLanguage): string
 
   if (language === "de") {
     return [`${baseField}_de`, `${baseField}_en`, baseField];
+  }
+
+  if (language === "es") {
+    return [`${baseField}_es`, `${baseField}_en`, baseField, `${baseField}_it`];
   }
 
   if (language === "bg") {

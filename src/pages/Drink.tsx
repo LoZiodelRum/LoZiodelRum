@@ -111,6 +111,7 @@ export default function Drink() {
         getTranslatedField(d, "nome", "en", ""),
         getTranslatedField(d, "nome", "de", ""),
         getTranslatedField(d, "nome", "bg", ""),
+        getTranslatedField(d, "nome", "es", ""),
       ];
 
       const categoria = [

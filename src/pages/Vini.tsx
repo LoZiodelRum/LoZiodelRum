@@ -81,6 +81,7 @@ export default function Vini() {
         getTranslatedField(vino, "categoria", "en", ""),
         getTranslatedField(vino, "categoria", "de", ""),
         getTranslatedField(vino, "categoria", "bg", ""),
+        getTranslatedField(vino, "categoria", "es", ""),
       ];
 
       const haystack = categoryCandidates.map(normalize).join(" ");

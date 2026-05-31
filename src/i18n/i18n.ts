@@ -5,37 +5,45 @@ import it from "./locales/it/translation.json";
 import en from "./locales/en/translation.json";
 import bg from "./locales/bg/translation.json";
 import de from "./locales/de/translation.json";
+import es from "./locales/es/translation.json";
 import itNavbar from "../locales/it/navbar.json";
 import enNavbar from "../locales/en/navbar.json";
 import bgNavbar from "../locales/bg/navbar.json";
 import deNavbar from "../locales/de/navbar.json";
+import esNavbar from "../locales/es/navbar.json";
 import itHome from "../locales/it/home.json";
 import enHome from "../locales/en/home.json";
 import bgHome from "../locales/bg/home.json";
 import deHome from "../locales/de/home.json";
+import esHome from "../locales/es/home.json";
 import itCommunity from "../locales/it/community.json";
 import enCommunity from "../locales/en/community.json";
 import bgCommunity from "../locales/bg/community.json";
 import deCommunity from "../locales/de/community.json";
+import esCommunity from "../locales/es/community.json";
 import itDrink from "../locales/it/drink.json";
 import enDrink from "../locales/en/drink.json";
 import bgDrink from "../locales/bg/drink.json";
 import deDrink from "../locales/de/drink.json";
+import esDrink from "../locales/es/drink.json";
 import itCommon from "../locales/it/common.json";
 import enCommon from "../locales/en/common.json";
 import bgCommon from "../locales/bg/common.json";
 import deCommon from "../locales/de/common.json";
+import esCommon from "../locales/es/common.json";
 import itAuth from "../locales/it/auth.json";
 import enAuth from "../locales/en/auth.json";
 import bgAuth from "../locales/bg/auth.json";
 import deAuth from "../locales/de/auth.json";
+import esAuth from "../locales/es/auth.json";
 import itLounge from "../locales/it/lounge.json";
 import enLounge from "../locales/en/lounge.json";
 import bgLounge from "../locales/bg/lounge.json";
 import deLounge from "../locales/de/lounge.json";
+import esLounge from "../locales/es/lounge.json";
 
 const LANGUAGE_STORAGE_KEY = "drinkwise-language";
-const SUPPORTED_LANGUAGES = ["it", "en", "de", "bg"] as const;
+const SUPPORTED_LANGUAGES = ["it", "en", "de", "bg", "es"] as const;
 
 function normalizeLanguage(input?: string | null): (typeof SUPPORTED_LANGUAGES)[number] {
   const short = String(input || "it").toLowerCase().split(/[-_]/)[0];
@@ -111,6 +119,16 @@ i18n.use(initReactI18next).init({
       common: deCommon,
       auth: deAuth,
       lounge: deLounge,
+    },
+    es: {
+      translation: es,
+      navbar: esNavbar,
+      home: esHome,
+      community: esCommunity,
+      drink: esDrink,
+      common: esCommon,
+      auth: esAuth,
+      lounge: esLounge,
     },
   },
 

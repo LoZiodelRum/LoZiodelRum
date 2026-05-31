@@ -19,6 +19,8 @@ export default function Navbar() {
     ? "en"
     : normalizedLanguage.startsWith("de")
     ? "de"
+    : normalizedLanguage.startsWith("es")
+    ? "es"
     : normalizedLanguage.startsWith("bg")
     ? "bg"
     : "it";
@@ -297,6 +299,8 @@ export default function Navbar() {
                 ? t("language.shortEn")
                 : activeLanguage === "de"
                 ? t("language.shortDe")
+                : activeLanguage === "es"
+                ? t("language.shortEs")
                 : activeLanguage === "bg"
                 ? t("language.shortBg")
                 : t("language.shortIt")
@@ -369,6 +373,24 @@ export default function Navbar() {
                 }}
               >
                 {formatLanguageLabel(t("language.de"))}
+              </button>
+
+              <button
+                onClick={() => {
+                  i18n.changeLanguage("es");
+                  setLanguageOpen(false);
+                }}
+                style={{
+                  width: "100%",
+                  background: "transparent",
+                  border: "none",
+                  color: "#fff",
+                  padding: "12px",
+                  textAlign: "left",
+                  cursor: "pointer",
+                }}
+              >
+                {formatLanguageLabel(t("language.es"))}
               </button>
 
               <button
@@ -612,6 +634,21 @@ export default function Navbar() {
               }}
             >
               {formatLanguageLabel(t("language.shortDe"))}
+            </button>
+
+            <button
+              type="button"
+              onClick={() => i18n.changeLanguage("es")}
+              style={{
+                background: activeLanguage === "es" ? "rgba(245,166,35,0.18)" : "#18181b",
+                border: activeLanguage === "es" ? "1px solid rgba(245,166,35,0.55)" : "1px solid #333",
+                color: "#fff",
+                borderRadius: "10px",
+                padding: "10px 12px",
+                cursor: "pointer",
+              }}
+            >
+              {formatLanguageLabel(t("language.shortEs"))}
             </button>
 
             <button
