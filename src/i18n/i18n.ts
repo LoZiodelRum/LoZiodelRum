@@ -138,6 +138,16 @@ i18n.use(initReactI18next).init({
       auth: esAuth,
       lounge: esLounge,
     },
+    fr: {
+      translation: fr,
+      navbar: frNavbar,
+      home: frHome,
+      community: frCommunity,
+      drink: frDrink,
+      common: frCommon,
+      auth: frAuth,
+      lounge: frLounge,
+    },
   },
 
   ns: ["translation", "navbar", "home", "community", "drink", "common", "auth", "lounge"],
