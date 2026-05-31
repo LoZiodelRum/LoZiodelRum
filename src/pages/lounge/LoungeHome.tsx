@@ -52,22 +52,7 @@ export default function LoungeHome() {
   ];
 
   const openNearbyBars = () => {
-    if (!navigator.geolocation) {
-      alert("Geolocalizzazione non supportata");
-      return;
-    }
-
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const lat = position.coords.latitude;
-        const lng = position.coords.longitude;
-
-        navigate(`/locali-vicini?lat=${lat}&lng=${lng}`);
-      },
-      () => {
-        alert("Impossibile ottenere la posizione");
-      }
-    );
+    navigate("/mappa");
   };
 
   return (
