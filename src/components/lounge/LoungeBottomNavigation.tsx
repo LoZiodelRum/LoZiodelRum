@@ -6,6 +6,7 @@ import {
 } from "lucide-react";
 import type { LucideIcon } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 
 type LoungeNavItem = {
   label: string;
@@ -14,16 +15,18 @@ type LoungeNavItem = {
   match: string;
 };
 
-const items: LoungeNavItem[] = [
-  { label: "Home", to: "/lounge", icon: House, match: "/lounge" },
-  { label: "Discover", to: "/discover", icon: Compass, match: "/discover" },
-  { label: "Profilo", to: "/profilo", icon: UserCircle2, match: "/profilo" },
-  { label: "Eventi", to: "/eventi", icon: CalendarDays, match: "/eventi" },
-];
 
 export default function LoungeBottomNavigation() {
   const navigate = useNavigate();
   const location = useLocation();
+  const { t } = useTranslation("lounge");
+
+  const items: LoungeNavItem[] = [
+    { label: t("nav.home"), to: "/lounge", icon: House, match: "/lounge" },
+    { label: t("nav.discover"), to: "/discover", icon: Compass, match: "/discover" },
+    { label: t("nav.profile"), to: "/profilo", icon: UserCircle2, match: "/profilo" },
+    { label: t("nav.events"), to: "/eventi", icon: CalendarDays, match: "/eventi" },
+  ];
 
   return (
     <>

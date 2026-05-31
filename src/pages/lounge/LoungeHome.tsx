@@ -1,9 +1,11 @@
 import { useNavigate } from "react-router-dom";
 import React from "react";
 import LoungeBottomNavigation from "../../components/lounge/LoungeBottomNavigation";
+import { useTranslation } from "react-i18next";
 
 export default function LoungeHome() {
   const navigate = useNavigate();
+  const { t } = useTranslation("lounge");
 
   const isMobile = window.innerWidth < 980;
 
@@ -27,25 +29,25 @@ export default function LoungeHome() {
   const topCards = [
     {
       value: "0",
-      title: "Locali Premium",
+      title: t("home.topCards.premiumVenues"),
       color: "#f5a623",
       path: "/locali",
     },
     {
       value: "0",
-      title: "Eventi Stasera",
+      title: t("home.topCards.eventsTonight"),
       color: "#f5a623",
       path: "/eventi",
     },
     {
       value: "0",
-      title: "Nuove Recensioni",
+      title: t("home.topCards.newReviews"),
       color: "#f5a623",
       path: "/recensioni",
     },
     {
       value: "0",
-      title: "Nuovi Cocktail",
+      title: t("home.topCards.newCocktails"),
       color: "#f5a623",
       path: "/drink",
     },
@@ -174,10 +176,10 @@ export default function LoungeHome() {
                 }}
               >
                 {[
-                  ["Degustazioni", 64],
-                  ["Esperienze", 58],
-                  ["Community", 70],
-                  ["Conoscenza", 71],
+                  [t("home.score.tastings"), 64],
+                  [t("home.score.experiences"), 58],
+                  [t("home.score.community"), 70],
+                  [t("home.score.knowledge"), 71],
                 ].map(([label, value]) => (
                   <div
                     key={label}
@@ -244,7 +246,7 @@ export default function LoungeHome() {
                   fontWeight: 600,
                 }}
               >
-                Top City
+                {t("home.score.topCity")}
               </div>
 
               <div
@@ -272,7 +274,7 @@ export default function LoungeHome() {
                   fontWeight: 600,
                 }}
               >
-                Cocktail del Momento
+                {t("home.score.cocktailOfMoment")}
               </div>
 
               <div
@@ -313,7 +315,7 @@ export default function LoungeHome() {
                 marginBottom: 18,
               }}
             >
-              Eventi di Stasera
+              {t("home.eventsTonight")}
             </div>
 
             <img
@@ -358,7 +360,7 @@ export default function LoungeHome() {
                 fontSize: isMobile ? 14 : 18,
               }}
             >
-              8:00 PM · 24 partecipanti
+              {t("home.events.eventMeta")}
             </div>
           </div>
 
@@ -376,7 +378,7 @@ export default function LoungeHome() {
                 marginBottom: 22,
               }}
             >
-              Novità dalla Lounge
+              {t("home.news.title")}
             </div>
 
             <div
@@ -414,7 +416,7 @@ export default function LoungeHome() {
                 marginBottom: 18,
               }}
             >
-              12 nuove storie bartender
+              {t("home.news.bartenderStories")}
             </div>
 
             <div
@@ -423,7 +425,7 @@ export default function LoungeHome() {
                 fontSize: isMobile ? 14 : 18,
               }}
             >
-              Guarda cosa stanno condividendo ✨
+              {t("home.news.watchSharing")}
             </div>
           </div>
         </div>
@@ -443,7 +445,7 @@ export default function LoungeHome() {
               marginBottom: 20,
             }}
           >
-            Suggerimenti DrinkWise
+            {t("home.suggestions.title")}
           </div>
 
           <div
@@ -467,7 +469,7 @@ export default function LoungeHome() {
                 cursor: "pointer",
               }}
             >
-              Suggerimento Rum
+              {t("home.suggestions.rum")}
             </div>
 
             <div
@@ -482,7 +484,7 @@ export default function LoungeHome() {
                 cursor: "pointer",
               }}
             >
-              Trova locali vicino a te
+              {t("home.suggestions.nearbyBars")}
             </div>
 
             <div
@@ -497,7 +499,7 @@ export default function LoungeHome() {
                 cursor: "pointer",
               }}
             >
-              Cocktail per stasera
+              {t("home.suggestions.cocktailTonight")}
             </div>
           </div>
         </div>
@@ -527,7 +529,7 @@ export default function LoungeHome() {
               minWidth: isMobile ? "unset" : 260,
             }}
           >
-            Entra nel Baretto
+            {t("home.enterBaretto")}
           </button>
         </div>
 

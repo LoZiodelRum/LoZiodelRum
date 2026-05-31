@@ -1,4 +1,5 @@
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import {
   CalendarDays,
   Compass,
@@ -29,11 +30,22 @@ type DiscoverCard = {
   placeholder?: boolean;
 };
 
-const cards: DiscoverCard[] = [
+type CardConfig = {
+  id: string;
+  tKey: string;
+  icon: LucideIcon;
+  to?: string;
+  bgGradient: string;
+  borderColor: string;
+  accent: string;
+  glow: string;
+  placeholder?: boolean;
+};
+
+const CARD_CONFIG: CardConfig[] = [
   {
     id: "cocktail",
-    title: "Cocktail",
-    subtitle: "Miscelazione d'autore",
+    tKey: "cocktail",
     icon: Martini,
     to: "/categoria/cocktail",
     bgGradient: "linear-gradient(135deg, rgba(190, 68, 38, 0.92), rgba(76, 24, 17, 0.96))",
@@ -43,8 +55,7 @@ const cards: DiscoverCard[] = [
   },
   {
     id: "rum",
-    title: "Rum",
-    subtitle: "Percorsi dedicati al rum",
+    tKey: "rum",
     icon: FlaskConical,
     to: "/categoria/rum",
     bgGradient: "linear-gradient(135deg, rgba(205, 105, 24, 0.92), rgba(82, 42, 12, 0.96))",
@@ -54,8 +65,7 @@ const cards: DiscoverCard[] = [
   },
   {
     id: "whiskey",
-    title: "Whiskey",
-    subtitle: "Selezioni e degustazioni whiskey",
+    tKey: "whiskey",
     icon: Wine,
     to: "/categoria/whisky",
     bgGradient: "linear-gradient(135deg, rgba(143, 92, 35, 0.92), rgba(67, 39, 15, 0.96))",
@@ -65,8 +75,7 @@ const cards: DiscoverCard[] = [
   },
   {
     id: "altri-distillati",
-    title: "Altri distillati",
-    subtitle: "Gin, tequila, mezcal e spirits",
+    tKey: "altriDistillati",
     icon: GlassWater,
     to: "/categoria/distillati",
     bgGradient: "linear-gradient(135deg, rgba(46, 143, 96, 0.92), rgba(17, 66, 44, 0.96))",
@@ -76,8 +85,7 @@ const cards: DiscoverCard[] = [
   },
   {
     id: "vini",
-    title: "Vini",
-    subtitle: "Etichette e cantine selezionate",
+    tKey: "vini",
     icon: Wine,
     to: "/vini",
     bgGradient: "linear-gradient(135deg, rgba(121, 70, 158, 0.92), rgba(51, 23, 77, 0.96))",
@@ -87,8 +95,7 @@ const cards: DiscoverCard[] = [
   },
   {
     id: "magazine",
-    title: "Magazine",
-    subtitle: "Articoli, guide e approfondimenti",
+    tKey: "magazine",
     icon: Newspaper,
     to: "/magazine",
     bgGradient: "linear-gradient(135deg, rgba(36, 134, 158, 0.92), rgba(10, 54, 78, 0.96))",
@@ -98,8 +105,7 @@ const cards: DiscoverCard[] = [
   },
   {
     id: "crea-cocktail",
-    title: "Crea il tuo cocktail",
-    subtitle: "Configura il tuo drink ideale",
+    tKey: "creaCocktail",
     icon: Sparkles,
     to: "/crea",
     bgGradient: "linear-gradient(135deg, rgba(34, 125, 156, 0.92), rgba(10, 57, 80, 0.96))",
@@ -109,8 +115,7 @@ const cards: DiscoverCard[] = [
   },
   {
     id: "premium-bars",
-    title: "Locali Premium",
-    subtitle: "Locali selezionati vicino a te",
+    tKey: "premiumBars",
     icon: MapPin,
     to: "/locali-vicini",
     bgGradient: "linear-gradient(135deg, rgba(185, 95, 18, 0.92), rgba(73, 35, 10, 0.96))",
@@ -120,8 +125,7 @@ const cards: DiscoverCard[] = [
   },
   {
     id: "cocktail-bars",
-    title: "Cocktail Bar",
-    subtitle: "Miscelazione d'autore",
+    tKey: "cocktailBars",
     icon: GlassWater,
     to: "/venues",
     bgGradient: "linear-gradient(135deg, rgba(190, 68, 38, 0.92), rgba(76, 24, 17, 0.96))",
@@ -131,8 +135,7 @@ const cards: DiscoverCard[] = [
   },
   {
     id: "rum-rooms",
-    title: "Sale Rum",
-    subtitle: "Percorsi dedicati al rum",
+    tKey: "rumRooms",
     icon: FlaskConical,
     bgGradient: "linear-gradient(135deg, rgba(205, 105, 24, 0.92), rgba(82, 42, 12, 0.96))",
     borderColor: "rgba(255, 165, 70, 0.85)",
@@ -142,8 +145,7 @@ const cards: DiscoverCard[] = [
   },
   {
     id: "whisky-clubs",
-    title: "Club Whisky",
-    subtitle: "Selezioni e degustazioni whisky",
+    tKey: "whiskyClubs",
     icon: Wine,
     bgGradient: "linear-gradient(135deg, rgba(176, 112, 35, 0.92), rgba(75, 45, 15, 0.96))",
     borderColor: "rgba(230, 166, 72, 0.85)",
@@ -153,8 +155,7 @@ const cards: DiscoverCard[] = [
   },
   {
     id: "signature-drinks",
-    title: "Drink Signature",
-    subtitle: "Creazioni selezionate",
+    tKey: "signatureDrinks",
     icon: Star,
     to: "/drink",
     bgGradient: "linear-gradient(135deg, rgba(175, 48, 70, 0.92), rgba(76, 16, 28, 0.96))",
@@ -164,8 +165,7 @@ const cards: DiscoverCard[] = [
   },
   {
     id: "bartender-picks",
-    title: "Scelte dei Bartender",
-    subtitle: "Consigli dai professionisti",
+    tKey: "bartenderPicks",
     icon: User,
     to: "/baretto",
     bgGradient: "linear-gradient(135deg, rgba(48, 140, 94, 0.92), rgba(18, 67, 45, 0.96))",
@@ -175,8 +175,7 @@ const cards: DiscoverCard[] = [
   },
   {
     id: "guest-shifts",
-    title: "Guest Shift",
-    subtitle: "Serate con bartender ospiti",
+    tKey: "guestShifts",
     icon: CalendarDays,
     to: "/eventi",
     bgGradient: "linear-gradient(135deg, rgba(130, 70, 160, 0.92), rgba(56, 24, 78, 0.96))",
@@ -186,8 +185,7 @@ const cards: DiscoverCard[] = [
   },
   {
     id: "events",
-    title: "Eventi",
-    subtitle: "Esperienze live",
+    tKey: "events",
     icon: CalendarDays,
     to: "/eventi",
     bgGradient: "linear-gradient(135deg, rgba(218, 92, 26, 0.92), rgba(84, 32, 10, 0.96))",
@@ -197,8 +195,7 @@ const cards: DiscoverCard[] = [
   },
   {
     id: "pairings",
-    title: "Abbinamenti",
-    subtitle: "Food pairing e drink",
+    tKey: "pairings",
     icon: Sparkles,
     bgGradient: "linear-gradient(135deg, rgba(190, 135, 50, 0.92), rgba(76, 52, 18, 0.96))",
     borderColor: "rgba(245, 190, 90, 0.85)",
@@ -208,8 +205,7 @@ const cards: DiscoverCard[] = [
   },
   {
     id: "bottle-collection",
-    title: "Collezione Bottiglie",
-    subtitle: "Bottiglie salvate e preferite",
+    tKey: "bottleCollection",
     icon: Wine,
     bgGradient: "linear-gradient(135deg, rgba(145, 82, 42, 0.92), rgba(62, 34, 18, 0.96))",
     borderColor: "rgba(210, 130, 72, 0.85)",
@@ -219,8 +215,7 @@ const cards: DiscoverCard[] = [
   },
   {
     id: "experiences",
-    title: "Esperienze",
-    subtitle: "Momenti premium selezionati",
+    tKey: "experiences",
     icon: Sparkles,
     to: "/eventi",
     bgGradient: "linear-gradient(135deg, rgba(40, 125, 140, 0.92), rgba(15, 58, 67, 0.96))",
@@ -230,8 +225,7 @@ const cards: DiscoverCard[] = [
   },
   {
     id: "new-openings",
-    title: "Nuove Aperture",
-    subtitle: "Nuovi locali nel network",
+    tKey: "newOpenings",
     icon: Compass,
     to: "/venues",
     bgGradient: "linear-gradient(135deg, rgba(210, 155, 38, 0.92), rgba(82, 58, 14, 0.96))",
@@ -243,6 +237,13 @@ const cards: DiscoverCard[] = [
 
 export default function DiscoverPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation("lounge");
+
+  const cards: DiscoverCard[] = CARD_CONFIG.map((cfg) => ({
+    ...cfg,
+    title: t(`discover.cards.${cfg.tKey}.title`),
+    subtitle: t(`discover.cards.${cfg.tKey}.subtitle`),
+  }));
 
   return (
     <div
@@ -476,9 +477,9 @@ export default function DiscoverPage() {
         <header className="discover-header">
           <div>
             <h1 className="discover-title">Discover</h1>
-            <p className="discover-subtitle">Esplora l&apos;universo <b>DrinkWise</b></p>
+            <p className="discover-subtitle">{t("discover.subtitle")} <b>DrinkWise</b></p>
           </div>
-          <button className="discover-search" aria-label="Ricerca">
+          <button className="discover-search" aria-label={t("discover.searchAria")}>
             <Search size={34} strokeWidth={2.1} />
           </button>
         </header>
@@ -517,7 +518,7 @@ export default function DiscoverPage() {
         <div className="discover-banner">
           <div>
             <h3>Discover</h3>
-            <p>Scopri locali, degustazioni, eventi e raccomandazioni in un unico spazio.</p>
+            <p>{t("discover.banner.body")}</p>
           </div>
           <div className="discover-banner-orb" aria-hidden="true" />
         </div>

@@ -1,0 +1,71 @@
+{
+  "nav": {
+    "home": "Inicio",
+    "discover": "Descubrir",
+    "profile": "Perfil",
+    "events": "Eventos"
+  },
+  "home": {
+    "topCards": {
+      "premiumVenues": "Locales Premium",
+      "eventsTonight": "Eventos Esta Noche",
+      "newReviews": "Nuevas Reseñas",
+      "newCocktails": "Nuevos Cócteles"
+    },
+    "score": {
+      "title": "DrinkWise Score",
+      "tastings": "Degustaciones",
+      "experiences": "Experiencias",
+      "community": "Comunidad",
+      "knowledge": "Conocimiento",
+      "topCity": "Top Ciudad",
+      "cocktailOfMoment": "Cóctel del Momento"
+    },
+    "eventsTonight": "Eventos de Esta Noche",
+    "events": {
+      "eventMeta": "8:00 PM · 24 participantes"
+    },
+    "news": {
+      "title": "Novedades del Lounge",
+      "bartenderStories": "12 nuevas historias de bartenders",
+      "watchSharing": "Mira lo que están compartiendo ✨"
+    },
+    "suggestions": {
+      "title": "Sugerencias DrinkWise",
+      "rum": "Sugerencia de Ron",
+      "nearbyBars": "Encuentra locales cerca de ti",
+      "cocktailTonight": "Cóctel para esta noche"
+    },
+    "enterBaretto": "Entrar en el Baretto"
+  },
+  "discover": {
+    "title": "Descubrir",
+    "subtitle": "Explora el universo",
+    "searchAria": "Buscar",
+    "banner": {
+      "title": "Descubrir",
+      "body": "Encuentra locales, degustaciones, eventos y recomendaciones en un solo lugar."
+    },
+    "cards": {
+      "cocktail": { "title": "Cócteles", "subtitle": "Mixología de autor" },
+      "rum": { "title": "Ron", "subtitle": "Rutas dedicadas al ron" },
+      "whiskey": { "title": "Whiskey", "subtitle": "Selecciones y degustaciones de whiskey" },
+      "altriDistillati": { "title": "Otros destilados", "subtitle": "Gin, tequila, mezcal y spirits" },
+      "vini": { "title": "Vinos", "subtitle": "Etiquetas y bodegas seleccionadas" },
+      "magazine": { "title": "Revista", "subtitle": "Artículos, guías y análisis" },
+      "creaCocktail": { "title": "Crea tu cóctel", "subtitle": "Configura tu bebida ideal" },
+      "premiumBars": { "title": "Locales Premium", "subtitle": "Locales seleccionados cerca de ti" },
+      "cocktailBars": { "title": "Cocktail Bars", "subtitle": "Mixología de autor" },
+      "rumRooms": { "title": "Salas de Ron", "subtitle": "Rutas dedicadas al ron" },
+      "whiskyClubs": { "title": "Clubes de Whisky", "subtitle": "Selecciones y degustaciones de whisky" },
+      "signatureDrinks": { "title": "Bebidas Signature", "subtitle": "Creaciones seleccionadas" },
+      "bartenderPicks": { "title": "Selecciones del Bartender", "subtitle": "Consejos de los profesionales" },
+      "guestShifts": { "title": "Guest Shift", "subtitle": "Noches con bartenders invitados" },
+      "events": { "title": "Eventos", "subtitle": "Experiencias en vivo" },
+      "pairings": { "title": "Maridajes", "subtitle": "Food pairing y bebidas" },
+      "bottleCollection": { "title": "Colección de Botellas", "subtitle": "Botellas guardadas y favoritas" },
+      "experiences": { "title": "Experiencias", "subtitle": "Momentos premium seleccionados" },
+      "newOpenings": { "title": "Nuevas Aperturas", "subtitle": "Nuevos locales en la red" }
+    }
+  }
+}

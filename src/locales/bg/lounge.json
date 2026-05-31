@@ -1,0 +1,71 @@
+{
+  "nav": {
+    "home": "Начало",
+    "discover": "Открий",
+    "profile": "Профил",
+    "events": "Събития"
+  },
+  "home": {
+    "topCards": {
+      "premiumVenues": "Премиум заведения",
+      "eventsTonight": "Събития тази вечер",
+      "newReviews": "Нови отзиви",
+      "newCocktails": "Нови коктейли"
+    },
+    "score": {
+      "title": "DrinkWise Score",
+      "tastings": "Дегустации",
+      "experiences": "Преживявания",
+      "community": "Общност",
+      "knowledge": "Знания",
+      "topCity": "Топ град",
+      "cocktailOfMoment": "Коктейл на момента"
+    },
+    "eventsTonight": "Събития тази вечер",
+    "events": {
+      "eventMeta": "8:00 PM · 24 участника"
+    },
+    "news": {
+      "title": "Новини от Lounge",
+      "bartenderStories": "12 нови истории на барманите",
+      "watchSharing": "Виж какво споделят ✨"
+    },
+    "suggestions": {
+      "title": "Препоръки на DrinkWise",
+      "rum": "Препоръка за ром",
+      "nearbyBars": "Намери заведения близо до теб",
+      "cocktailTonight": "Коктейл за тази вечер"
+    },
+    "enterBaretto": "Влез в Baretto"
+  },
+  "discover": {
+    "title": "Открий",
+    "subtitle": "Изследвай вселената",
+    "searchAria": "Търсене",
+    "banner": {
+      "title": "Открий",
+      "body": "Намери заведения, дегустации, събития и препоръки на едно място."
+    },
+    "cards": {
+      "cocktail": { "title": "Коктейли", "subtitle": "Висша миксология" },
+      "rum": { "title": "Ром", "subtitle": "Маршрути за ром" },
+      "whiskey": { "title": "Уиски", "subtitle": "Дегустации и избор на уиски" },
+      "altriDistillati": { "title": "Други дестилати", "subtitle": "Джин, текила, мескал и др." },
+      "vini": { "title": "Вина", "subtitle": "Избрани етикети и винарни" },
+      "magazine": { "title": "Списание", "subtitle": "Статии, ръководства и прозрения" },
+      "creaCocktail": { "title": "Създай своя коктейл", "subtitle": "Конфигурирай идеалната си напитка" },
+      "premiumBars": { "title": "Премиум заведения", "subtitle": "Избрани заведения близо до теб" },
+      "cocktailBars": { "title": "Коктейл барове", "subtitle": "Висша миксология" },
+      "rumRooms": { "title": "Ром стаи", "subtitle": "Маршрути за ром" },
+      "whiskyClubs": { "title": "Уиски клубове", "subtitle": "Дегустации на уиски" },
+      "signatureDrinks": { "title": "Сигнатурни напитки", "subtitle": "Избрани творения" },
+      "bartenderPicks": { "title": "Избор на бармана", "subtitle": "Съвети от професионалистите" },
+      "guestShifts": { "title": "Гост смяна", "subtitle": "Вечери с гост-бармани" },
+      "events": { "title": "Събития", "subtitle": "Живи преживявания" },
+      "pairings": { "title": "Комбинации", "subtitle": "Хранителни двойки и напитки" },
+      "bottleCollection": { "title": "Колекция бутилки", "subtitle": "Запазени и любими бутилки" },
+      "experiences": { "title": "Преживявания", "subtitle": "Избрани премиум моменти" },
+      "newOpenings": { "title": "Нови открития", "subtitle": "Нови заведения в мрежата" }
+    }
+  }
+}

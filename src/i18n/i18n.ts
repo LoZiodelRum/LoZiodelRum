@@ -29,6 +29,10 @@ import itAuth from "../locales/it/auth.json";
 import enAuth from "../locales/en/auth.json";
 import bgAuth from "../locales/bg/auth.json";
 import esAuth from "../locales/es/auth.json";
+import itLounge from "../locales/it/lounge.json";
+import enLounge from "../locales/en/lounge.json";
+import bgLounge from "../locales/bg/lounge.json";
+import esLounge from "../locales/es/lounge.json";
 
 const LANGUAGE_STORAGE_KEY = "drinkwise-language";
 const SUPPORTED_LANGUAGES = ["it", "en", "bg", "es"] as const;
@@ -76,6 +80,7 @@ i18n.use(initReactI18next).init({
       drink: itDrink,
       common: itCommon,
       auth: itAuth,
+      lounge: itLounge,
     },
     en: {
       translation: en,
@@ -85,6 +90,7 @@ i18n.use(initReactI18next).init({
       drink: enDrink,
       common: enCommon,
       auth: enAuth,
+      lounge: enLounge,
     },
     bg: {
       translation: bg,
@@ -94,6 +100,7 @@ i18n.use(initReactI18next).init({
       drink: bgDrink,
       common: bgCommon,
       auth: bgAuth,
+      lounge: bgLounge,
     },
     es: {
       translation: es,
@@ -103,10 +110,11 @@ i18n.use(initReactI18next).init({
       drink: esDrink,
       common: esCommon,
       auth: esAuth,
+      lounge: esLounge,
     },
   },
 
-  ns: ["translation", "navbar", "home", "community", "drink", "common", "auth"],
+  ns: ["translation", "navbar", "home", "community", "drink", "common", "auth", "lounge"],
   defaultNS: "translation",
   supportedLngs: [...SUPPORTED_LANGUAGES],
   nonExplicitSupportedLngs: true,

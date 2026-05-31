@@ -1,0 +1,71 @@
+{
+  "nav": {
+    "home": "Home",
+    "discover": "Discover",
+    "profile": "Profile",
+    "events": "Events"
+  },
+  "home": {
+    "topCards": {
+      "premiumVenues": "Premium Venues",
+      "eventsTonight": "Events Tonight",
+      "newReviews": "New Reviews",
+      "newCocktails": "New Cocktails"
+    },
+    "score": {
+      "title": "DrinkWise Score",
+      "tastings": "Tastings",
+      "experiences": "Experiences",
+      "community": "Community",
+      "knowledge": "Knowledge",
+      "topCity": "Top City",
+      "cocktailOfMoment": "Cocktail of the Moment"
+    },
+    "eventsTonight": "Tonight's Events",
+    "events": {
+      "eventMeta": "8:00 PM · 24 participants"
+    },
+    "news": {
+      "title": "Lounge Updates",
+      "bartenderStories": "12 new bartender stories",
+      "watchSharing": "See what they're sharing ✨"
+    },
+    "suggestions": {
+      "title": "DrinkWise Suggestions",
+      "rum": "Rum Suggestion",
+      "nearbyBars": "Find venues near you",
+      "cocktailTonight": "Cocktail for tonight"
+    },
+    "enterBaretto": "Enter the Baretto"
+  },
+  "discover": {
+    "title": "Discover",
+    "subtitle": "Explore the universe",
+    "searchAria": "Search",
+    "banner": {
+      "title": "Discover",
+      "body": "Find venues, tastings, events and recommendations all in one place."
+    },
+    "cards": {
+      "cocktail": { "title": "Cocktails", "subtitle": "Craft mixology" },
+      "rum": { "title": "Rum", "subtitle": "Rum routes and selections" },
+      "whiskey": { "title": "Whiskey", "subtitle": "Whiskey tastings and selections" },
+      "altriDistillati": { "title": "Other Spirits", "subtitle": "Gin, tequila, mezcal and more" },
+      "vini": { "title": "Wines", "subtitle": "Selected labels and wineries" },
+      "magazine": { "title": "Magazine", "subtitle": "Articles, guides and insights" },
+      "creaCocktail": { "title": "Create your cocktail", "subtitle": "Build your ideal drink" },
+      "premiumBars": { "title": "Premium Venues", "subtitle": "Selected venues near you" },
+      "cocktailBars": { "title": "Cocktail Bars", "subtitle": "Craft mixology" },
+      "rumRooms": { "title": "Rum Rooms", "subtitle": "Dedicated rum routes" },
+      "whiskyClubs": { "title": "Whisky Clubs", "subtitle": "Whisky selections and tastings" },
+      "signatureDrinks": { "title": "Signature Drinks", "subtitle": "Curated creations" },
+      "bartenderPicks": { "title": "Bartender Picks", "subtitle": "Tips from the pros" },
+      "guestShifts": { "title": "Guest Shift", "subtitle": "Evenings with guest bartenders" },
+      "events": { "title": "Events", "subtitle": "Live experiences" },
+      "pairings": { "title": "Pairings", "subtitle": "Food pairing and drinks" },
+      "bottleCollection": { "title": "Bottle Collection", "subtitle": "Saved and favourite bottles" },
+      "experiences": { "title": "Experiences", "subtitle": "Premium curated moments" },
+      "newOpenings": { "title": "New Openings", "subtitle": "New venues in the network" }
+    }
+  }
+}

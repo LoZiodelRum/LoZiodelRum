@@ -1,0 +1,71 @@
+{
+  "nav": {
+    "home": "Home",
+    "discover": "Discover",
+    "profile": "Profilo",
+    "events": "Eventi"
+  },
+  "home": {
+    "topCards": {
+      "premiumVenues": "Locali Premium",
+      "eventsTonight": "Eventi Stasera",
+      "newReviews": "Nuove Recensioni",
+      "newCocktails": "Nuovi Cocktail"
+    },
+    "score": {
+      "title": "DrinkWise Score",
+      "tastings": "Degustazioni",
+      "experiences": "Esperienze",
+      "community": "Community",
+      "knowledge": "Conoscenza",
+      "topCity": "Top City",
+      "cocktailOfMoment": "Cocktail del Momento"
+    },
+    "eventsTonight": "Eventi di Stasera",
+    "events": {
+      "eventMeta": "8:00 PM · 24 partecipanti"
+    },
+    "news": {
+      "title": "Novità dalla Lounge",
+      "bartenderStories": "12 nuove storie bartender",
+      "watchSharing": "Guarda cosa stanno condividendo ✨"
+    },
+    "suggestions": {
+      "title": "Suggerimenti DrinkWise",
+      "rum": "Suggerimento Rum",
+      "nearbyBars": "Trova locali vicino a te",
+      "cocktailTonight": "Cocktail per stasera"
+    },
+    "enterBaretto": "Entra nel Baretto"
+  },
+  "discover": {
+    "title": "Discover",
+    "subtitle": "Esplora l'universo",
+    "searchAria": "Ricerca",
+    "banner": {
+      "title": "Discover",
+      "body": "Scopri locali, degustazioni, eventi e raccomandazioni in un unico spazio."
+    },
+    "cards": {
+      "cocktail": { "title": "Cocktail", "subtitle": "Miscelazione d'autore" },
+      "rum": { "title": "Rum", "subtitle": "Percorsi dedicati al rum" },
+      "whiskey": { "title": "Whiskey", "subtitle": "Selezioni e degustazioni whiskey" },
+      "altriDistillati": { "title": "Altri distillati", "subtitle": "Gin, tequila, mezcal e spirits" },
+      "vini": { "title": "Vini", "subtitle": "Etichette e cantine selezionate" },
+      "magazine": { "title": "Magazine", "subtitle": "Articoli, guide e approfondimenti" },
+      "creaCocktail": { "title": "Crea il tuo cocktail", "subtitle": "Configura il tuo drink ideale" },
+      "premiumBars": { "title": "Locali Premium", "subtitle": "Locali selezionati vicino a te" },
+      "cocktailBars": { "title": "Cocktail Bar", "subtitle": "Miscelazione d'autore" },
+      "rumRooms": { "title": "Sale Rum", "subtitle": "Percorsi dedicati al rum" },
+      "whiskyClubs": { "title": "Club Whisky", "subtitle": "Selezioni e degustazioni whisky" },
+      "signatureDrinks": { "title": "Drink Signature", "subtitle": "Creazioni selezionate" },
+      "bartenderPicks": { "title": "Scelte dei Bartender", "subtitle": "Consigli dai professionisti" },
+      "guestShifts": { "title": "Guest Shift", "subtitle": "Serate con bartender ospiti" },
+      "events": { "title": "Eventi", "subtitle": "Esperienze live" },
+      "pairings": { "title": "Abbinamenti", "subtitle": "Food pairing e drink" },
+      "bottleCollection": { "title": "Collezione Bottiglie", "subtitle": "Bottiglie salvate e preferite" },
+      "experiences": { "title": "Esperienze", "subtitle": "Momenti premium selezionati" },
+      "newOpenings": { "title": "Nuove Aperture", "subtitle": "Nuovi locali nel network" }
+    }
+  }
+}
