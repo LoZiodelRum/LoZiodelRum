@@ -81,6 +81,27 @@ function renderArticleContent(raw: string, imageAlt: string) {
   });
 }
 
+// Resolver multilingua chirurgico per ArticleDetail
+function getArticleField(article: any, field: string, i18n: any) {
+  const lang = (i18n.language || "it").split("-")[0].toLowerCase();
+  let value = article?.[field];
+  if (lang === "fr") {
+    value = article?.[`${field}_fr`];
+    if (typeof window !== "undefined" && window?.console) {
+      // eslint-disable-next-line no-console
+      console.log("ArticleDetail lang:", lang);
+      console.log(`ArticleDetail ${field} scelto:`, value);
+    }
+    if (value && value.trim() !== "") return value;
+    value = article?.[`${field}_en`];
+    if (value && value.trim() !== "") return value;
+    value = article?.[field];
+    return value;
+  }
+  // fallback: usa getTranslatedField per altre lingue
+  return getTranslatedField(article, field, lang, "");
+}
+
 export default function ArticleDetail() {
   const { id } = useParams();
   const { role } = useUser(); // ✅
@@ -365,16 +386,17 @@ export default function ArticleDetail() {
               <div style={overlay} />
 
               <div className="article-hero-box" style={heroBox}>
-                <span style={badge}>{getTranslatedField(data as any, "categoria", i18n.language, data.categoria || "-")}</span>
 
-                <h1 className="article-hero-title" style={title}>{getTranslatedField(data as any, "titolo", i18n.language, data.titolo || t("articleFallback"))}</h1>
+                <span style={badge}>{getArticleField(data, "categoria", i18n) || data.categoria || "-"}</span>
+
+                <h1 className="article-hero-title" style={title}>{getArticleField(data, "titolo", i18n) || data.titolo || t("articleFallback")}</h1>
 
                 <p className="article-hero-subtitle" style={subtitle}>
                   {
-                    getTranslatedField(data as any, "sottotitolo", i18n.language, "")
-                    || getTranslatedField(data as any, "estratto", i18n.language, "")
-                    || getTranslatedField(data as any, "contenuto", i18n.language, "").slice(0, 260)
-                    || getTranslatedField(data as any, "descrizione", i18n.language, "")
+                    getArticleField(data, "sottotitolo", i18n)
+                    || getArticleField(data, "estratto", i18n)
+                    || (getArticleField(data, "contenuto", i18n) || "").slice(0, 260)
+                    || getArticleField(data, "descrizione", i18n)
                     || data.sottotitolo
                     || data.estratto
                     || data.contenuto?.slice?.(0, 260)
@@ -394,7 +416,7 @@ export default function ArticleDetail() {
               <div className="article-box" style={articleBox}>
                 <div className="article-content magazine-article-content" style={articleContent}>
                   {renderArticleContent(
-                    getTranslatedField(data as any, "contenuto", i18n.language, data.contenuto || ""),
+                    getArticleField(data, "contenuto", i18n) || data.contenuto || "",
                     t("articleImageAlt")
                   )}
                 </div>

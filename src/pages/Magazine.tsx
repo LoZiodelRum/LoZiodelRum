@@ -110,6 +110,27 @@ export default function Magazine() {
     return <><Navbar /><div className="page fade-in" style={{ padding: 40 }}>{t("noArticles")}</div></>;
   }
 
+  // Resolver multilingua chirurgico per Magazine
+  function getArticleField(article: any, field: string) {
+    const lang = (i18n.language || "it").split("-")[0].toLowerCase();
+    let value = article[field];
+    if (lang === "fr") {
+      value = article[`${field}_fr`];
+      if (typeof window !== "undefined" && window?.console) {
+        // eslint-disable-next-line no-console
+        console.log("Magazine lang:", lang);
+        console.log(`Magazine ${field} scelto:`, value);
+      }
+      if (value && value.trim() !== "") return value;
+      value = article[`${field}_en`];
+      if (value && value.trim() !== "") return value;
+      value = article[field];
+      return value;
+    }
+    // fallback: usa getTranslatedField per altre lingue
+    return getTranslatedField(article, field, lang, "");
+  }
+
   return (
     <>
       <Navbar />
@@ -166,12 +187,12 @@ export default function Magazine() {
         <h2 className="mobile-articles-title">{t("articlesTitle")}</h2>
         <div className="magazine-uniform-grid">
           {articles.map((article) => {
-            const articleTitle = getTranslatedField(article, "titolo", language, "");
+            const articleTitle = getArticleField(article, "titolo");
             const articlePreview =
-              getTranslatedField(article, "sottotitolo", language, "")
-              || getTranslatedField(article, "estratto", language, "")
-              || getTranslatedField(article, "descrizione", language, "")
-              || getTranslatedField(article, "contenuto", language, "");
+              getArticleField(article, "sottotitolo")
+              || getArticleField(article, "estratto")
+              || getArticleField(article, "descrizione")
+              || getArticleField(article, "contenuto");
 
             return (
             <Link key={article.id} to={`/magazine/${article.id}`} className="drink-card magazine-uniform-card">
