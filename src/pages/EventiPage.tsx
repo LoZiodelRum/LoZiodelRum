@@ -1,5 +1,6 @@
 import React, { useState, useMemo } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import LoungeBottomNavigation from "../components/lounge/LoungeBottomNavigation";
 
 /* ──────────────────────── TIPI ──────────────────────── */
@@ -216,27 +217,14 @@ function WeekCard({ evento, onClick }: { evento: Evento; onClick: () => void }) 
 }
 
 /* ──────────────────────── CALENDARIO ──────────────────────── */
-const GIORNI = ["Lun", "Mar", "Mer", "Gio", "Ven", "Sab", "Dom"];
-const MESI = [
-  "Gennaio", "Febbraio", "Marzo", "Aprile", "Maggio", "Giugno",
-  "Luglio", "Agosto", "Settembre", "Ottobre", "Novembre", "Dicembre",
-];
+// I giorni e i mesi ora sono presi da i18n
 
-function Calendario({
-  eventiDate,
-  selectedDate,
-  onSelectDate,
-}: {
-  eventiDate: Set<string>;
-  selectedDate: string;
-  onSelectDate: (d: string) => void;
-}) {
+function Calendario({ eventiDate, selectedDate, onSelectDate }: { eventiDate: Set<string>; selectedDate: string; onSelectDate: (d: string) => void; }) {
   const [viewYear, setViewYear] = useState(oggi.getFullYear());
   const [viewMonth, setViewMonth] = useState(oggi.getMonth());
-
+  const { t } = useTranslation("lounge");
   const days = useMemo(() => {
     const first = new Date(viewYear, viewMonth, 1);
-    // 0=Dom → converti in lun=0
     const startDow = (first.getDay() + 6) % 7;
     const total = new Date(viewYear, viewMonth + 1, 0).getDate();
     const cells: (number | null)[] = [];
@@ -244,7 +232,6 @@ function Calendario({
     for (let i = 1; i <= total; i++) cells.push(i);
     return cells;
   }, [viewYear, viewMonth]);
-
   function prevMonth() {
     if (viewMonth === 0) { setViewMonth(11); setViewYear(y => y - 1); }
     else setViewMonth(m => m - 1);
@@ -253,31 +240,23 @@ function Calendario({
     if (viewMonth === 11) { setViewMonth(0); setViewYear(y => y + 1); }
     else setViewMonth(m => m + 1);
   }
-
   const todayStr = fmt(oggi);
-
+  const giorni = t("calendar.days", { returnObjects: true }) as string[];
+  const mesi = t("calendar.months", { returnObjects: true }) as string[];
   return (
     <div>
       {/* Header mese */}
       <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 18 }}>
-        <button
-          onClick={prevMonth}
-          style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.12)", color: "#fff", borderRadius: 10, width: 36, height: 36, cursor: "pointer", fontSize: 16 }}
-        >‹</button>
-        <span style={{ fontWeight: 700, fontSize: 17, color: "#fff" }}>{MESI[viewMonth]} {viewYear}</span>
-        <button
-          onClick={nextMonth}
-          style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.12)", color: "#fff", borderRadius: 10, width: 36, height: 36, cursor: "pointer", fontSize: 16 }}
-        >›</button>
+        <button onClick={prevMonth} style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.12)", color: "#fff", borderRadius: 10, width: 36, height: 36, cursor: "pointer", fontSize: 16 }}>‹</button>
+        <span style={{ fontWeight: 700, fontSize: 17, color: "#fff" }}>{mesi[viewMonth]} {viewYear}</span>
+        <button onClick={nextMonth} style={{ background: "rgba(255,255,255,0.07)", border: "1px solid rgba(255,255,255,0.12)", color: "#fff", borderRadius: 10, width: 36, height: 36, cursor: "pointer", fontSize: 16 }}>›</button>
       </div>
-
       {/* Giorni settimana */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 2, marginBottom: 6 }}>
-        {GIORNI.map(g => (
+        {giorni.map(g => (
           <div key={g} style={{ textAlign: "center", fontSize: 11, color: TEXT_DIM, fontWeight: 600, paddingBottom: 4 }}>{g}</div>
         ))}
       </div>
-
       {/* Celle */}
       <div style={{ display: "grid", gridTemplateColumns: "repeat(7, 1fr)", gap: 2 }}>
         {days.map((day, i) => {
@@ -334,14 +313,13 @@ function Calendario({
 /* ──────────────────────── PAGINA PRINCIPALE ──────────────────────── */
 export default function EventiPage() {
   const navigate = useNavigate();
+  const { t } = useTranslation("lounge");
   const [selectedDate, setSelectedDate] = useState<string>(fmt(oggi));
 
   const eventiDate = useMemo(() => new Set(EVENTI.map(e => e.data)), []);
-
   const eventiInArrivo = useMemo(() =>
     EVENTI.slice().sort((a, b) => a.data.localeCompare(b.data)).slice(0, 4),
   []);
-
   const eventiSettimana = useMemo(() => {
     const start = oggi;
     const end = addDays(oggi, 7);
@@ -350,7 +328,6 @@ export default function EventiPage() {
       return d >= start && d <= end;
     }).slice(0, 4);
   }, []);
-
   const eventiGiornoSelezionato = useMemo(() =>
     EVENTI.filter(e => e.data === selectedDate),
   [selectedDate]);
@@ -396,9 +373,9 @@ export default function EventiPage() {
                 fontSize: 24,
               }}>🗓️</div>
               <div>
-                <h1 className="eventi-page-title" style={{ margin: 0, fontSize: 28, fontWeight: 900 }}>Calendario Eventi</h1>
+                <h1 className="eventi-page-title" style={{ margin: 0, fontSize: 28, fontWeight: 900 }}>{t("events.calendarTitle")}</h1>
                 <p className="eventi-page-subtitle" style={{ margin: 0, fontSize: 14, color: TEXT_DIM }}>
-                  Il meglio della scena premium
+                  {t("events.premiumScene")}
                 </p>
               </div>
             </div>
@@ -413,7 +390,7 @@ export default function EventiPage() {
                 }}
                 onClick={() => navigate("/eventi/tutti")}
               >
-                🍸 Tutti gli Eventi
+                🍸 {t("events.allEvents")}
               </button>
               <button
                 style={{
@@ -425,7 +402,7 @@ export default function EventiPage() {
                 }}
                 onClick={() => navigate("/prenota-evento")}
               >
-                + Prenota Evento
+                + {t("events.bookEvent")}
               </button>
             </div>
           </div>
@@ -460,7 +437,7 @@ export default function EventiPage() {
                   cursor: "pointer",
                 }}
               >
-                🍸 Tutti gli Eventi
+                🍸 {t("events.allEvents")}
               </button>
               <button
                 onClick={() => navigate("/prenota-evento")}
@@ -472,7 +449,7 @@ export default function EventiPage() {
                   cursor: "pointer",
                 }}
               >
-                + Prenota Evento
+                + {t("events.bookEvent")}
               </button>
             </div>
 
@@ -496,7 +473,7 @@ export default function EventiPage() {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <span style={{ fontSize: 18 }}>🕐</span>
-                <span style={{ fontWeight: 800, fontSize: 17 }}>In Arrivo</span>
+                <span style={{ fontWeight: 800, fontSize: 17 }}>{t("events.incoming")}</span>
               </div>
               <button
                 onClick={() => navigate("/eventi/tutti")}
