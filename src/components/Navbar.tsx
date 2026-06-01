@@ -38,6 +38,15 @@ function LogoutSymbol({ size = 20 }: { size?: number }) {
   );
 }
 
+const LANGUAGE_OPTIONS = [
+  { code: "it", shortLabel: "it", desktopLabel: "🇮🇹 it", mobileLabel: "🇮🇹 IT" },
+  { code: "en", shortLabel: "en", desktopLabel: "🇬🇧 en", mobileLabel: "🇬🇧 EN" },
+  { code: "de", shortLabel: "de", desktopLabel: "🇩🇪 de", mobileLabel: "🇩🇪 DE" },
+  { code: "es", shortLabel: "es", desktopLabel: "🇪🇸 es", mobileLabel: "🇪🇸 ES" },
+  { code: "bg", shortLabel: "bg", desktopLabel: "🇧🇬 bg", mobileLabel: "🇧🇬 BG" },
+  { code: "fr", shortLabel: "fr", desktopLabel: "🇫🇷 fr", mobileLabel: "🇫🇷 fr" },
+] as const;
+
 export default function Navbar() {
   const { user, isAdmin, role } = useUser();
   const navigate = useNavigate();
@@ -61,6 +70,7 @@ export default function Navbar() {
     : "it";
   const formatLanguageLabel = (label: string) =>
     label.replace(/\b([A-Z]{2,})\b/g, (code) => code.toLowerCase());
+  const activeLanguageOption = LANGUAGE_OPTIONS.find((option) => option.code === activeLanguage) || LANGUAGE_OPTIONS[0];
 
   function closeLanguageMenu() {
     setLanguageOpen(false);
@@ -302,19 +312,7 @@ export default function Navbar() {
               gap: "6px",
             }}
           >
-            {formatLanguageLabel(
-              activeLanguage === "en"
-                ? t("language.shortEn")
-                : activeLanguage === "de"
-                ? t("language.shortDe")
-                : activeLanguage === "es"
-                ? t("language.shortEs")
-                : activeLanguage === "bg"
-                ? t("language.shortBg")
-                : activeLanguage === "fr"
-                ? "fr"
-                : t("language.shortIt")
-            )}
+            {activeLanguageOption.desktopLabel}
           </button>
 
           {languageOpen && (
@@ -331,113 +329,26 @@ export default function Navbar() {
                 zIndex: 9999,
               }}
             >
-              <button
-                onClick={() => {
-                  i18n.changeLanguage("it");
-                  setLanguageOpen(false);
-                }}
-                style={{
-                  width: "100%",
-                  background: "transparent",
-                  border: "none",
-                  color: "#fff",
-                  padding: "12px",
-                  textAlign: "left",
-                  cursor: "pointer",
-                }}
-              >
-                {formatLanguageLabel(t("language.it"))}
-              </button>
-
-              <button
-                onClick={() => {
-                  i18n.changeLanguage("en");
-                  setLanguageOpen(false);
-                }}
-                style={{
-                  width: "100%",
-                  background: "transparent",
-                  border: "none",
-                  color: "#fff",
-                  padding: "12px",
-                  textAlign: "left",
-                  cursor: "pointer",
-                }}
-              >
-                {formatLanguageLabel(t("language.en"))}
-              </button>
-
-              <button
-                onClick={() => {
-                  i18n.changeLanguage("de");
-                  setLanguageOpen(false);
-                }}
-                style={{
-                  width: "100%",
-                  background: "transparent",
-                  border: "none",
-                  color: "#fff",
-                  padding: "12px",
-                  textAlign: "left",
-                  cursor: "pointer",
-                }}
-              >
-                {formatLanguageLabel(t("language.de"))}
-              </button>
-
-              <button
-                onClick={() => {
-                  i18n.changeLanguage("es");
-                  setLanguageOpen(false);
-                }}
-                style={{
-                  width: "100%",
-                  background: "transparent",
-                  border: "none",
-                  color: "#fff",
-                  padding: "12px",
-                  textAlign: "left",
-                  cursor: "pointer",
-                }}
-              >
-                {formatLanguageLabel(t("language.es"))}
-              </button>
-
-              <button
-                onClick={() => {
-                  i18n.changeLanguage("bg");
-                  setLanguageOpen(false);
-                }}
-                style={{
-                  width: "100%",
-                  background: "transparent",
-                  border: "none",
-                  color: "#fff",
-                  padding: "12px",
-                  textAlign: "left",
-                  cursor: "pointer",
-                }}
-              >
-                {formatLanguageLabel(t("language.bg"))}
-              </button>
-
-              <button
-                onClick={() => {
-                  i18n.changeLanguage("fr");
-                  setLanguageOpen(false);
-                }}
-                style={{
-                  width: "100%",
-                  background: "transparent",
-                  border: "none",
-                  color: "#fff",
-                  padding: "12px",
-                  textAlign: "left",
-                  cursor: "pointer",
-                }}
-              >
-                🇫🇷 fr
-              </button>
+              {LANGUAGE_OPTIONS.map((option) => (
+                <button
+                  key={option.code}
+                  onClick={() => {
+                    i18n.changeLanguage(option.code);
+                    setLanguageOpen(false);
+                  }}
+                  style={{
+                    width: "100%",
+                    background: "transparent",
+                    border: "none",
+                    color: "#fff",
+                    padding: "12px",
+                    textAlign: "left",
+                    cursor: "pointer",
+                  }}
+                >
+                  {option.desktopLabel}
+                </button>
+              ))}
             </div>
           )}
         </div>
@@ -530,14 +441,7 @@ export default function Navbar() {
                     boxShadow: "0 6px 32px #000b",
                   }}
                 >
-                  {[
-                    { code: "it", label: "🇮🇹 IT" },
-                    { code: "en", label: "🇬🇧 EN" },
-                    { code: "de", label: "🇩🇪 DE" },
-                    { code: "es", label: "🇪🇸 ES" },
-                    { code: "bg", label: "🇧🇬 BG" },
-                    { code: "fr", label: "🇫🇷 fr" },
-                  ].map(({ code, label }) => (
+                  {LANGUAGE_OPTIONS.map(({ code, mobileLabel: label }) => (
                     <button
                       key={code}
                       onClick={() => {
