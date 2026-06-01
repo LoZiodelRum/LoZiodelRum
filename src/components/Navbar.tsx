@@ -1,4 +1,5 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
+import { LogOut } from "lucide-react";
 import { useUser } from "../context/UserContext";
 import { supabase } from "../lib/supabaseClient";
 import { useEffect, useState } from "react";
@@ -9,7 +10,6 @@ export default function Navbar() {
   const navigate = useNavigate();
   const location = useLocation();
 
-  const [menuOpen, setMenuOpen] = useState(false);
   const [languageOpen, setLanguageOpen] = useState(false);
   const [profileRoleFallback, setProfileRoleFallback] = useState("");
 
@@ -29,8 +29,7 @@ export default function Navbar() {
   const formatLanguageLabel = (label: string) =>
     label.replace(/\b([A-Z]{2,})\b/g, (code) => code.toLowerCase());
 
-  function closeMobileMenu() {
-    setMenuOpen(false);
+  function closeLanguageMenu() {
     setLanguageOpen(false);
   }
 
@@ -132,8 +131,8 @@ export default function Navbar() {
   const canAccessAdminDashboard = hasAdminRole || location.pathname.startsWith("/admin");
 
   async function handleLogout() {
+    closeLanguageMenu();
     await supabase.auth.signOut();
-    closeMobileMenu();
     navigate("/");
     window.location.reload();
   }
@@ -170,7 +169,7 @@ export default function Navbar() {
           flexShrink: 0,
         }}
         onClick={() => {
-          closeMobileMenu();
+          closeLanguageMenu();
 
           if (user) {
             navigate("/home");
@@ -259,21 +258,25 @@ export default function Navbar() {
         )}
 
         <button
+          type="button"
           onClick={handleLogout}
+          aria-label={t("logout")}
+          title={t("logout")}
           style={{
-            background: "none",
-            border: "none",
-            color: "#fff",
+            width: 40,
+            height: 40,
+            borderRadius: 12,
+            border: "1px solid rgba(245,166,35,0.28)",
+            background: "rgba(245,166,35,0.08)",
+            color: "#f5a623",
             cursor: "pointer",
-            padding: 0,
-            font: "inherit",
             display: "inline-flex",
             alignItems: "center",
-            whiteSpace: "nowrap",
+            justifyContent: "center",
             flexShrink: 0,
           }}
         >
-          Esci
+          <LogOut size={20} strokeWidth={2.2} />
         </button>
 
         {/* SELETTORE LINGUA DESKTOP */}
@@ -520,15 +523,16 @@ export default function Navbar() {
             </div>
           </div>
         </div>
-        {/* MENU HAMBURGER MOBILE */}
-        <div className="mobile-menu-trigger-zone">
+        <div className="mobile-logout-zone">
           <button
-            className="navbar-hamburger-mobile"
-            onClick={() => setMenuOpen((prev) => !prev)}
-            aria-label={t("aria.openMenu")}
+            type="button"
+            className="navbar-logout-mobile"
+            onClick={handleLogout}
+            aria-label={t("logout")}
+            title={t("logout")}
             style={{
-              background: "none",
-              border: "none",
+              background: "rgba(245,166,35,0.08)",
+              border: "1px solid rgba(245,166,35,0.28)",
               color: "#f5a623",
               fontSize: "26px",
               cursor: "pointer",
@@ -537,146 +541,15 @@ export default function Navbar() {
               lineHeight: 1,
               borderRadius: "8px",
               display: "none",
+              width: 40,
+              height: 40,
+              alignItems: "center",
+              justifyContent: "center",
             }}
           >
-            ☰
+            <LogOut size={20} strokeWidth={2.2} />
           </button>
         </div>
-      </div>
-
-      {/* OVERLAY */}
-      {menuOpen && (
-        <div
-          className="mobile-menu-overlay"
-          onClick={closeMobileMenu}
-          style={{
-            position: "fixed",
-            inset: 0,
-            background: "rgba(0,0,0,0.36)",
-            backdropFilter: "blur(3px)",
-            WebkitBackdropFilter: "blur(3px)",
-            zIndex: 1090,
-          }}
-        />
-      )}
-
-      {/* MOBILE MENU */}
-      <div
-        className="mobile-menu"
-        style={{
-          position: "fixed",
-          top: 70,
-          right: 0,
-          width: "80vw",
-          maxWidth: "300px",
-          height: "calc(100vh - 70px)",
-          background: "rgba(10,10,12,0.96)",
-          display: "none",
-          flexDirection: "column",
-          padding: "16px 14px",
-          zIndex: 1100,
-          transition: "transform 0.25s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease",
-          overflowY: "auto",
-          overflowX: "hidden",
-          borderLeft: "1px solid #2f2f36",
-          borderTopLeftRadius: "16px",
-          borderBottomLeftRadius: "16px",
-          boxShadow: "-14px 0 34px rgba(0,0,0,0.42)",
-          opacity: menuOpen ? 1 : 0,
-          pointerEvents: menuOpen ? "auto" : "none",
-          transform: menuOpen
-            ? "translateX(0) translateY(0)"
-            : "translateX(100%) translateY(8px)",
-        }}
-      >
-        <Link
-          className="mobile-menu-item"
-          to="/home"
-          onClick={closeMobileMenu}
-          style={{
-            ...linkStyle("/home"),
-            padding: "13px 10px",
-            borderRadius: "10px",
-            marginBottom: "4px",
-            borderBottom: "1px solid #333",
-            transition: "all 0.2s ease",
-            WebkitTapHighlightColor: "transparent",
-          }}
-        >
-            {t("home")}
-        </Link>
-
-        <Link
-          className="mobile-menu-item"
-          to="/lounge"
-          onClick={closeMobileMenu}
-          style={{
-            ...linkStyle(["/lounge", "/community"]),
-            padding: "13px 10px",
-            borderRadius: "10px",
-            marginBottom: "4px",
-            borderBottom: "1px solid #333",
-            transition: "all 0.2s ease",
-            WebkitTapHighlightColor: "transparent",
-          }}
-        >
-            Lounge
-        </Link>
-
-        {canAccessOwnerDashboard && (
-          <Link
-            className="mobile-menu-item"
-            to="/proprietario"
-            onClick={closeMobileMenu}
-            style={{
-              ...linkStyle("/proprietario"),
-              padding: "13px 10px",
-              borderRadius: "10px",
-              marginBottom: "4px",
-              borderBottom: "1px solid #333",
-              transition: "all 0.2s ease",
-              WebkitTapHighlightColor: "transparent",
-            }}
-          >
-            Dashboard
-          </Link>
-        )}
-
-        {canAccessAdminDashboard && (
-          <Link
-            className="mobile-menu-item"
-            to="/admin"
-            onClick={closeMobileMenu}
-            style={{
-              ...linkStyle("/admin"),
-              padding: "13px 10px",
-              borderRadius: "10px",
-              marginBottom: "4px",
-              borderBottom: "1px solid #333",
-              transition: "all 0.2s ease",
-              WebkitTapHighlightColor: "transparent",
-            }}
-          >
-            Dashboard Admin
-          </Link>
-        )}
-
-        <button
-          className="mobile-menu-item mobile-logout-btn"
-          onClick={handleLogout}
-          style={{
-            marginTop: "12px",
-            background: "#222",
-            border: "1px solid #444",
-            color: "#fff",
-            borderRadius: "10px",
-            padding: "12px 12px",
-            cursor: "pointer",
-            transition: "all 0.2s ease",
-          }}
-        >
-          Esci
-        </button>
       </div>
 
       {/* STYLE RESPONSIVE */}
@@ -749,13 +622,13 @@ export default function Navbar() {
             display: flex !important;
             margin-left: auto !important;
             align-items: center !important;
-            gap: 4px !important;
+            gap: 8px !important;
             flex-shrink: 0;
             transition: all 0.2s ease;
           }
 
           .mobile-language-zone,
-          .mobile-menu-trigger-zone {
+          .mobile-logout-zone {
             display: flex;
             align-items: center;
           }
@@ -764,7 +637,7 @@ export default function Navbar() {
             position: relative;
           }
 
-          .navbar-hamburger-mobile {
+          .navbar-logout-mobile {
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
@@ -830,43 +703,15 @@ export default function Navbar() {
             margin-top: 2px;
           }
 
-          .mobile-menu {
-            display: flex !important;
-            z-index: 1300 !important;
-            will-change: transform, opacity;
-            contain: paint;
-          }
-
-          .mobile-menu-overlay {
-            z-index: 1290 !important;
-            transition: opacity 0.25s ease;
-            will-change: opacity;
-          }
-
-          .mobile-menu-item:hover,
-          .mobile-menu-item:active {
-            background: rgba(245, 166, 35, 0.12);
-          }
-
-          .navbar-hamburger-mobile:active,
+          .navbar-logout-mobile:active,
           .mobile-language-trigger:active {
             transform: scale(0.97);
             background: rgba(245, 166, 35, 0.12);
           }
 
-          .mobile-menu-trigger-zone {
-            margin-left: 2px;
-          }
-
           .mobile-language-trigger:hover {
             background: rgba(245, 166, 35, 0.08);
             border-color: rgba(245, 166, 35, 0.28);
-          }
-
-          .mobile-logout-btn:hover,
-          .mobile-logout-btn:active {
-            border-color: #5d5d69;
-            background: #2a2a2d;
           }
         }
 
@@ -879,15 +724,7 @@ export default function Navbar() {
             display: none !important;
           }
 
-          .navbar-hamburger-mobile {
-            display: none !important;
-          }
-
-          .mobile-language-selector {
-            display: none !important;
-          }
-
-          .mobile-menu {
+          .navbar-logout-mobile {
             display: none !important;
           }
         }

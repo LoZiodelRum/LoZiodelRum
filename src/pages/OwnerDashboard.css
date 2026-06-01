@@ -1152,62 +1152,6 @@
     color: #f7be64;
   }
 
-  .owner-mobile-drawer-backdrop {
-    position: fixed;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.5);
-    z-index: 20;
-    display: grid;
-    justify-items: start;
-  }
-
-  .owner-mobile-drawer {
-    width: min(270px, 80vw);
-    height: 100%;
-    background: #09111b;
-    border-right: 1px solid rgba(255, 176, 39, 0.22);
-    padding: 14px;
-  }
-
-  .owner-mobile-drawer-head {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 12px;
-  }
-
-  .owner-mobile-drawer-head h3 {
-    margin: 0;
-    font-size: 15px;
-    color: #f7be64;
-  }
-
-  .owner-mobile-drawer-head button {
-    border: 1px solid rgba(255, 176, 39, 0.3);
-    background: #101826;
-    color: #f7be64;
-    border-radius: 8px;
-    width: 30px;
-    height: 30px;
-  }
-
-  .owner-mobile-drawer ul {
-    list-style: none;
-    margin: 0;
-    padding: 0;
-    display: grid;
-    gap: 6px;
-  }
-
-  .owner-mobile-drawer li button {
-    border: 1px solid rgba(255, 255, 255, 0.08);
-    background: #111b29;
-    color: #fff;
-    width: 100%;
-    text-align: left;
-    border-radius: 8px;
-    padding: 9px 10px;
-  }
 }
 
 @media (max-width: 768px) {

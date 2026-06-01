@@ -8,14 +8,13 @@ import {
   Download,
   Globe,
   Home,
-  Menu,
   Mail,
   MessageSquare,
   MoreHorizontal,
   Phone,
   QrCode,
   ScanQrCode,
-  Settings,
+  LogOut,
   Star,
   Trophy,
   UserRound,
@@ -234,19 +233,6 @@ function AnimatedNumber({ value, decimals = 0 }: { value: number; decimals?: num
   return <>{display.toFixed(decimals)}</>;
 }
 
-const OWNER_MOBILE_MENU = [
-  "Dashboard",
-  "QR Code",
-  "Clienti",
-  "Recensioni",
-  "Eventi",
-  "Prenota Evento",
-  "Academy",
-  "Pagamenti",
-  "Profilo Locale",
-  "Impostazioni",
-];
-
 export default function OwnerDashboard() {
   const navigate = useNavigate();
   const { user, role } = useUser();
@@ -322,7 +308,6 @@ export default function OwnerDashboard() {
   const [eventFeedback, setEventFeedback] = useState("");
   const [eventSaving, setEventSaving] = useState(false);
   const [isCompactScreen, setIsCompactScreen] = useState(false);
-  const [mobileOwnerMenuOpen, setMobileOwnerMenuOpen] = useState(false);
   const [activeMobileItem, setActiveMobileItem] = useState("Dashboard");
   const [trendFilter, setTrendFilter] = useState<"7" | "30" | "3m" | "6m" | "12m">("6m");
   const [checkinRowsRaw, setCheckinRowsRaw] = useState<GenericRow[]>([]);
@@ -335,6 +320,12 @@ export default function OwnerDashboard() {
     mediaQuery.addEventListener("change", update);
     return () => mediaQuery.removeEventListener("change", update);
   }, []);
+
+  async function handleLogout() {
+    await supabase.auth.signOut();
+    navigate("/");
+    window.location.reload();
+  }
 
   async function resolveTable(candidates: string[]): Promise<string | null> {
     for (const table of candidates) {
@@ -923,13 +914,7 @@ export default function OwnerDashboard() {
   }
 
   function handleMobileMenuAction(item: string) {
-    if (item === "Altro") {
-      setMobileOwnerMenuOpen(true);
-      return;
-    }
-
     if (item === "Prenota Evento") {
-      setMobileOwnerMenuOpen(false);
       setActiveMobileItem("Eventi");
       scrollToSection("owner-events");
       setEventModalOpen(true);
@@ -949,10 +934,15 @@ export default function OwnerDashboard() {
     };
 
     const targetSectionId = sectionByItem[item];
-    setMobileOwnerMenuOpen(false);
     setActiveMobileItem(item);
     if (targetSectionId) {
       scrollToSection(targetSectionId);
+      return;
+    }
+
+    if (item === "Altro") {
+      setActiveMobileItem("Impostazioni");
+      scrollToSection("owner-settings");
     }
   }
 
@@ -1010,8 +1000,8 @@ export default function OwnerDashboard() {
     return (
       <div className="owner-dashboard-page owner-mobile-page">
         <header className="owner-mobile-topbar">
-          <button type="button" className="owner-mobile-icon-btn" onClick={() => setMobileOwnerMenuOpen(true)}>
-            <Menu size={18} />
+          <button type="button" className="owner-mobile-icon-btn" onClick={handleLogout} aria-label="Logout" title="Logout">
+            <LogOut size={18} />
           </button>
           <div className="owner-mobile-brand">
             <img src="/logo.png" alt="DrinkWise" />
@@ -1249,22 +1239,6 @@ export default function OwnerDashboard() {
           <button type="button" className={activeMobileItem === "Eventi" ? "active" : ""} onClick={() => handleMobileMenuAction("Eventi")}><CalendarDays size={15} />Eventi</button>
           <button type="button" onClick={() => handleMobileMenuAction("Altro")}><MoreHorizontal size={15} />Altro</button>
         </nav>
-
-        {mobileOwnerMenuOpen && (
-          <div className="owner-mobile-drawer-backdrop" onClick={() => setMobileOwnerMenuOpen(false)}>
-            <aside className="owner-mobile-drawer" onClick={(event) => event.stopPropagation()}>
-              <div className="owner-mobile-drawer-head">
-                <h3>Menu Proprietario</h3>
-                <button type="button" onClick={() => setMobileOwnerMenuOpen(false)}><Settings size={16} /></button>
-              </div>
-              <ul>
-                {OWNER_MOBILE_MENU.map((item) => (
-                  <li key={item}><button type="button" onClick={() => handleMobileMenuAction(item)}>{item}</button></li>
-                ))}
-              </ul>
-            </aside>
-          </div>
-        )}
 
         {eventFeedback && <p className="owner-feedback">{eventFeedback}</p>}
       </div>
