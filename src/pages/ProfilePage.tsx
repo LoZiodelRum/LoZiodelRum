@@ -1287,79 +1287,55 @@ export function EditProfilePage() {
         return;
       }
 
-      const { data } = supabase.storage.from("images").getPublicUrl(filePath);
-      const imageUrl = data.publicUrl;
-      const tableCandidates = Array.from(
-        new Set([profileLookup.tableName, ...PROFILE_TABLE_CANDIDATES]),
-      );
-      const filters = Array.from(
-        new Set(
-          [
-            profileLookup.filterValue
-              ? `${profileLookup.filterKey}:${profileLookup.filterValue}`
-              : null,
-            user.id ? `id:${String(user.id)}` : null,
-            user.id ? `user_id:${String(user.id)}` : null,
-            user.email ? `email:${String(user.email)}` : null,
-          ].filter(Boolean) as string[],
-        ),
-      ).map((entry) => {
-        const separatorIndex = entry.indexOf(":");
-        return {
-          key: entry.slice(0, separatorIndex),
-          value: entry.slice(separatorIndex + 1),
-        };
-      });
+      const { data: urlData } = supabase.storage.from("images").getPublicUrl(filePath);
+      const imageUrl = urlData.publicUrl;
 
-      let updatedRecord: ProfileRecord | null = null;
-      let lastUpdateError: unknown = null;
-
-      for (const tableName of tableCandidates) {
-        for (const filter of filters) {
-          const updateResult = await supabase
-            .from(tableName)
-            .update({ avatar_url: imageUrl })
-            .eq(filter.key, filter.value)
-            .select("*")
-            .maybeSingle();
-
-          if (updateResult.error) {
-            lastUpdateError = updateResult.error;
-            continue;
-          }
-
-          if (updateResult.data) {
-            if (
-              tableName === profileLookup.tableName &&
-              filter.key === profileLookup.filterKey &&
-              filter.value === profileLookup.filterValue
-            ) {
-              updatedRecord = updateResult.data as ProfileRecord;
-            } else if (!updatedRecord) {
-              updatedRecord = updateResult.data as ProfileRecord;
-            }
-            break;
-          }
-        }
+      // Build update payload: always set avatar_url; also set foto_profilo if the column exists in the record.
+      const updatePayload: Record<string, string> = { avatar_url: imageUrl };
+      if (Object.prototype.hasOwnProperty.call(profileLookup.record || {}, "foto_profilo")) {
+        updatePayload.foto_profilo = imageUrl;
       }
 
-      if (!updatedRecord) {
-        console.error("[EditProfilePage] Errore aggiornamento avatar_url:", lastUpdateError);
+      // 1. Best-effort update of the profile table.
+      // Do NOT chain .select() after .update(): if the RLS SELECT policy is more restrictive than
+      // the UPDATE policy, Supabase returns {data: null, error: null} even on success, making the
+      // code believe 0 rows were updated. Without .select() we rely only on `error` presence.
+      const tryTables = Array.from(new Set([profileLookup.tableName, "Profili", "profili"]));
+      let dbUpdateOk = false;
+      for (const tbl of tryTables) {
+        const { error: updateError } = await supabase
+          .from(tbl)
+          .update(updatePayload)
+          .eq("id", String(user.id));
+        if (!updateError) {
+          dbUpdateOk = true;
+          break;
+        }
+        console.warn(`[EditProfilePage] avatar_url update su ${tbl} fallito:`, updateError.message);
+      }
+
+      // 2. Guaranteed persistence path: store avatar_url in auth user_metadata.
+      // This survives logout/login and is already read by getProfileImageUrl via metadata?.avatar_url.
+      // supabase.auth.updateUser also fires onAuthStateChange → user context re-renders immediately.
+      const { error: authUpdateError } = await supabase.auth.updateUser({
+        data: { avatar_url: imageUrl },
+      });
+      if (authUpdateError) {
+        console.warn("[EditProfilePage] updateUser metadata fallito:", authUpdateError.message);
+      }
+
+      if (!dbUpdateOk && authUpdateError) {
         setFeedback("Errore caricamento immagine");
         setFeedbackKind("error");
         return;
       }
 
-      const mergedRecord = {
+      // 3. Update local React state so the avatar shows immediately in the edit form.
+      const mergedRecord: ProfileRecord = {
         ...profileLookup.record,
-        ...updatedRecord,
-        avatar_url: imageUrl,
-      } as ProfileRecord;
-
-      setProfileLookup({
-        ...profileLookup,
-        record: mergedRecord,
-      });
+        ...updatePayload,
+      };
+      setProfileLookup({ ...profileLookup, record: mergedRecord });
       setFeedback("Upload completato");
       setFeedbackKind("ok");
     } catch (error) {
