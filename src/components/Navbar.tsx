@@ -282,28 +282,6 @@ export default function Navbar() {
           </Link>
         )}
 
-        <button
-          type="button"
-          onClick={handleLogout}
-          aria-label={t("logout")}
-          title={t("logout")}
-          style={{
-            width: 48,
-            height: 48,
-            borderRadius: 14,
-            border: "1px solid rgba(245,166,35,0.28)",
-            background: "rgba(245,166,35,0.08)",
-            color: "#f5a623",
-            cursor: "pointer",
-            display: "inline-flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexShrink: 0,
-          }}
-        >
-          <LogoutSymbol size={22} />
-        </button>
-
         {/* SELETTORE LINGUA DESKTOP */}
         <div
           style={{
@@ -443,6 +421,28 @@ export default function Navbar() {
             </div>
           )}
         </div>
+
+        <button
+          type="button"
+          onClick={handleLogout}
+          aria-label={t("logout")}
+          title={t("logout")}
+          style={{
+            width: 48,
+            height: 48,
+            borderRadius: 14,
+            border: "1px solid rgba(245,166,35,0.28)",
+            background: "rgba(245,166,35,0.08)",
+            color: "#f5a623",
+            cursor: "pointer",
+            display: "inline-flex",
+            alignItems: "center",
+            justifyContent: "center",
+            flexShrink: 0,
+          }}
+        >
+          <LogoutSymbol size={28} />
+        </button>
       </div>
 
       <div
