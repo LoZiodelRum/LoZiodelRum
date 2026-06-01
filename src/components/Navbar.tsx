@@ -559,20 +559,19 @@ export default function Navbar() {
               background: "rgba(245,166,35,0.08)",
               border: "1px solid rgba(245,166,35,0.28)",
               color: "#f5a623",
-              fontSize: "26px",
               cursor: "pointer",
-              padding: "6px 8px",
+              padding: "6px 10px",
               marginLeft: 0,
               lineHeight: 1,
-              borderRadius: "8px",
+              borderRadius: "10px",
               display: "none",
-              width: 40,
-              height: 40,
+              minWidth: 68,
+              minHeight: 34,
               alignItems: "center",
               justifyContent: "center",
             }}
           >
-            <LogoutSymbol size={20} />
+            <LogoutSymbol size={18} />
           </button>
         </div>
       </div>
@@ -666,9 +665,9 @@ export default function Navbar() {
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
-            min-width: 38px !important;
-            min-height: 38px !important;
-            padding: 7px 9px !important;
+            min-width: 68px !important;
+            min-height: 34px !important;
+            padding: 6px 10px !important;
             margin-left: 0 !important;
             transition: background-color 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
             -webkit-tap-highlight-color: transparent;
