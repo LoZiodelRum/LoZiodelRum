@@ -186,14 +186,14 @@ export default function Navbar() {
 
   const dashboardItems = hasAdminRole
     ? [
-        { id: "admin", label: "Dashboard Admin", shortLabel: "Admin", path: ADMIN_DASHBOARD_PATH },
-        { id: "owner", label: "Dashboard Proprietario", shortLabel: "Proprietario", path: OWNER_DASHBOARD_PATH },
-        { id: "bartender", label: "Dashboard Bartender", shortLabel: "Bartender", path: BARTENDER_DASHBOARD_PATH },
+        { id: "admin", label: "Dashboard Admin", path: ADMIN_DASHBOARD_PATH },
+        { id: "owner", label: "Dashboard Proprietario", path: OWNER_DASHBOARD_PATH },
+        { id: "bartender", label: "Dashboard Bartender", path: BARTENDER_DASHBOARD_PATH },
       ]
     : hasOwnerRole
-    ? [{ id: "owner", label: "Dashboard", shortLabel: "Dashboard", path: OWNER_DASHBOARD_PATH }]
+    ? [{ id: "owner", label: "Dashboard Proprietario", path: OWNER_DASHBOARD_PATH }]
     : hasBartenderRole
-    ? [{ id: "bartender", label: "Dashboard", shortLabel: "Dashboard", path: BARTENDER_DASHBOARD_PATH }]
+    ? [{ id: "bartender", label: "Dashboard Bartender", path: BARTENDER_DASHBOARD_PATH }]
     : [];
 
   const shouldShowDashboard = dashboardItems.length > 0;
@@ -382,7 +382,10 @@ export default function Navbar() {
           }}
         >
           <button
-            onClick={() => setLanguageOpen(!languageOpen)}
+            onClick={() => {
+              setDashboardOpen(false);
+              setLanguageOpen(!languageOpen);
+            }}
             style={{
               background: "transparent",
               border: "none",
@@ -468,86 +471,16 @@ export default function Navbar() {
           gap: "6px",
         }}
       >
-        {shouldShowDashboard && (
-          <div className="mobile-dashboard-zone" style={{ position: "relative", display: "flex", alignItems: "center" }}>
-            <button
-              type="button"
-              aria-label="Dashboard menu"
-              onClick={() => {
-                setLanguageOpen(false);
-                if (hasAdminRole) {
-                  setDashboardOpen((prev) => !prev);
-                } else {
-                  handleDashboardNavigate(dashboardItems[0].path);
-                }
-              }}
-              style={{
-                background: "rgba(0,0,0,0.58)",
-                border: "1px solid rgba(255,255,255,0.12)",
-                color: "#fff",
-                borderRadius: "10px",
-                fontSize: 13,
-                padding: "6px 8px",
-                display: "flex",
-                alignItems: "center",
-                gap: 6,
-                cursor: "pointer",
-                minWidth: 92,
-                zIndex: 1201,
-                whiteSpace: "nowrap",
-              }}
-            >
-              <span style={{ fontWeight: 700 }}>Dashboard</span>
-                {hasAdminRole && <span style={{ fontSize: 10, opacity: 0.8 }}>▼</span>}
-            </button>
-
-            {hasAdminRole && dashboardOpen && (
-              <div
-                style={{
-                  position: "absolute",
-                  top: 42,
-                  right: 0,
-                  background: "#111",
-                  border: "1px solid rgba(255,255,255,0.10)",
-                  borderRadius: 10,
-                  overflow: "hidden",
-                  minWidth: 160,
-                  zIndex: 2000,
-                  boxShadow: "0 6px 32px #000b",
-                }}
-              >
-                {dashboardItems.map((item) => (
-                  <button
-                    key={item.id}
-                    type="button"
-                    onClick={() => handleDashboardNavigate(item.path)}
-                    style={{
-                      width: "100%",
-                      background: "transparent",
-                      border: "none",
-                      color: "#fff",
-                      padding: "9px 12px",
-                      textAlign: "left",
-                      cursor: "pointer",
-                      fontSize: 13,
-                    }}
-                  >
-                    {item.shortLabel}
-                  </button>
-                ))}
-              </div>
-            )}
-
-          </div>
-        )}
-
         <div className="mobile-language-zone" style={{ display: "flex", alignItems: "center", marginRight: 0 }}>
           <div className="mobile-language-selector">
             <div className="mobile-language-trigger-wrapper">
               <button
                 className="mobile-language-trigger"
                 aria-label={t("aria.languageSelector")}
-                onClick={() => setLanguageOpen((prev) => !prev)}
+                onClick={() => {
+                  setDashboardOpen(false);
+                  setLanguageOpen((prev) => !prev);
+                }}
                 style={{
                   background: "rgba(0,0,0,0.58)",
                   border: "1px solid rgba(255,255,255,0.12)",
@@ -656,6 +589,37 @@ export default function Navbar() {
         </div>
       </div>
 
+      {shouldShowDashboard && (
+        <div className="mobile-dashboard-floating">
+          <button
+            type="button"
+            className="mobile-dashboard-trigger"
+            aria-label="Dashboard menu"
+            onClick={() => {
+              setLanguageOpen(false);
+              setDashboardOpen((prev) => !prev);
+            }}
+          >
+            Dashboard ▼
+          </button>
+
+          {dashboardOpen && (
+            <div className="mobile-dashboard-dropdown">
+              {dashboardItems.map((item) => (
+                <button
+                  key={item.id}
+                  type="button"
+                  onClick={() => handleDashboardNavigate(item.path)}
+                  className="mobile-dashboard-item"
+                >
+                  {item.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* STYLE RESPONSIVE */}
       <style>{`
         html,
@@ -663,6 +627,10 @@ export default function Navbar() {
         #root {
           overflow-x: hidden !important;
           max-width: 100vw !important;
+        }
+
+        .mobile-dashboard-floating {
+          display: none;
         }
 
         @media (max-width: 900px) {
@@ -729,6 +697,50 @@ export default function Navbar() {
             gap: 8px !important;
             flex-shrink: 0;
             transition: all 0.2s ease;
+          }
+
+          .mobile-dashboard-floating {
+            display: block;
+            position: absolute;
+            top: calc(100% + 6px);
+            right: 0;
+            z-index: 1305;
+          }
+
+          .mobile-dashboard-trigger {
+            border: 1px solid rgba(255,255,255,0.12);
+            background: rgba(7, 11, 18, 0.9);
+            color: #fff;
+            border-radius: 10px;
+            padding: 6px 10px;
+            font-size: 13px;
+            font-weight: 700;
+            cursor: pointer;
+            white-space: nowrap;
+          }
+
+          .mobile-dashboard-dropdown {
+            position: absolute;
+            top: 40px;
+            right: 0;
+            min-width: 220px;
+            background: #111;
+            border: 1px solid rgba(255,255,255,0.10);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 6px 32px #000b;
+            z-index: 2000;
+          }
+
+          .mobile-dashboard-item {
+            width: 100%;
+            background: transparent;
+            border: none;
+            color: #fff;
+            padding: 10px 12px;
+            text-align: left;
+            cursor: pointer;
+            font-size: 13px;
           }
 
           .mobile-language-zone,
@@ -825,6 +837,10 @@ export default function Navbar() {
           }
 
           .mobile-nav-controls {
+            display: none !important;
+          }
+
+          .mobile-dashboard-floating {
             display: none !important;
           }
 
