@@ -1,10 +1,37 @@
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import Navbar from "../components/Navbar";
+import { useUser } from "../context/UserContext";
 
 export default function Community() {
   const navigate = useNavigate();
   const { t } = useTranslation("community");
+  const { user, role, isAdmin } = useUser();
+
+  const normalizedRole = String(
+    role ||
+      user?.ruolo ||
+      user?.role ||
+      user?.tipo ||
+      user?.userRole ||
+      user?.user_metadata?.ruolo ||
+      user?.user_metadata?.role ||
+      user?.user_metadata?.tipo ||
+      user?.user_metadata?.userRole ||
+      user?.app_metadata?.ruolo ||
+      user?.app_metadata?.role ||
+      ""
+  )
+    .trim()
+    .toLowerCase();
+
+  const panelPath = isAdmin
+    ? "/admin"
+    : ["proprietario", "owner", "proprietari", "gestore", "locale", "proprietario locale"].includes(normalizedRole)
+    ? "/proprietario"
+    : ["bartender"].includes(normalizedRole)
+    ? "/bancone"
+    : "/admin";
 
   const barettoMessages = [
     {
@@ -780,7 +807,7 @@ export default function Community() {
           <button onClick={() => navigate("/mappa")}>{t("bottomNav.map")}</button>
           <button onClick={() => navigate("/drink")}>{t("bottomNav.drink")}</button>
           <button className="active" onClick={() => navigate("/community")}>{t("bottomNav.community")}</button>
-          <button onClick={() => navigate("/dashboard")}>{t("bottomNav.panel")}</button>
+          <button onClick={() => navigate(panelPath)}>{t("bottomNav.panel")}</button>
         </nav>
       </div>
     </>

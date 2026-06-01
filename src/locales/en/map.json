@@ -1,5 +1,27 @@
 {
-  "title": "Map",
-  "searchPlaceholder": "Search venue or city",
-  "emptyState": "No venues found"
+  "map": {
+    "title": "DrinkWise Venues",
+    "useLocation": "Use your location",
+    "nearbyVenues": "Venues near you",
+    "enableLocationMessage": "To view venues near you, enable location.",
+    "loadError": "Map loading failed. Please try again shortly.",
+    "refreshingLocation": "Refreshing your location in the background...",
+    "requestingLocation": "Detecting your location...",
+    "updatingNearby": "Updating venues near you...",
+    "youAreHere": "You are here",
+    "openVenue": "Open venue",
+    "venueFallback": "Venue",
+    "cityFallback": "City unavailable",
+    "distanceFromYou": "{{distance}} from you",
+    "noCoordinatesTitle": "No venues with available coordinates.",
+    "noCoordinatesDescription": "Make sure venues have saved latitude and longitude.",
+    "noNearbyTitle": "No DrinkWise venues within {{radius}} km.",
+    "noNearbyDescription": "The map still shows all venues in the network.",
+    "exploreAll": "Explore all venues",
+    "badges": {
+      "exclusive": "Exclusive",
+      "premium": "Premium",
+      "network": "Network"
+    }
+  }
 }

@@ -62,7 +62,7 @@ type VenueRow = {
 type NearbyVenue = VenueRow & {
   distanceKm: number;
   priority: number;
-  badgeLabel: "Exclusive" | "Premium" | "Network";
+  badgeKey: "exclusive" | "premium" | "network";
   badgeVariant: "exclusive" | "premium" | "network";
   computedRating: number | null;
 };
@@ -127,10 +127,10 @@ function getVenuePriority(venue: VenueRow) {
   return 3;
 }
 
-function getBadgeByPriority(priority: number): NearbyVenue["badgeLabel"] {
-  if (priority === 1) return "Exclusive";
-  if (priority === 2) return "Premium";
-  return "Network";
+function getBadgeKeyByPriority(priority: number): NearbyVenue["badgeKey"] {
+  if (priority === 1) return "exclusive";
+  if (priority === 2) return "premium";
+  return "network";
 }
 
 function getBadgeVariant(priority: number): NearbyVenue["badgeVariant"] {
@@ -246,7 +246,7 @@ function MapCenterUpdater({
 
 export default function MapPage() {
   const navigate = useNavigate();
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation("map");
   const {
     userPosition,
     hasRealPosition,
@@ -319,7 +319,7 @@ export default function MapPage() {
     console.log("MAPPA - errore Supabase:", error);
 
     if (error) {
-      setFetchError("Errore nel caricamento della mappa. Riprova tra poco.");
+      setFetchError(t("map.loadError"));
       setLoadingVenues(false);
       setVenues([]);
       return;
@@ -389,7 +389,7 @@ export default function MapPage() {
           ...venue,
           distanceKm,
           priority,
-          badgeLabel: getBadgeByPriority(priority),
+          badgeKey: getBadgeKeyByPriority(priority),
           badgeVariant: getBadgeVariant(priority),
           computedRating: computeRating(venue),
         } satisfies NearbyVenue;
@@ -417,11 +417,11 @@ export default function MapPage() {
   const showSkeletons = loadingVenues && venues.length === 0;
   const statusMessage =
     locationStatus === "checking"
-      ? "Sto aggiornando la posizione in background..."
+      ? t("map.refreshingLocation")
       : locationStatus === "requesting"
-        ? "Sto rilevando la tua posizione..."
+        ? t("map.requestingLocation")
         : locationStatus === "denied" && !effectiveUserPosition
-          ? "Per vedere i locali piu vicini a te, attiva la posizione."
+          ? t("map.enableLocationMessage")
           : null;
 
   return (
@@ -839,7 +839,7 @@ export default function MapPage() {
           <div className="map-main-box">
             <div className="map-title-row">
               <div>
-                <h1 className="map-title">Locali DrinkWise</h1>
+                <h1 className="map-title">{t("map.title")}</h1>
               </div>
               <button
                 type="button"
@@ -847,7 +847,7 @@ export default function MapPage() {
                 onClick={refreshLocation}
                 disabled={locationStatus === "checking" || locationStatus === "requesting"}
               >
-                Utilizza la tua posizione
+                {t("map.useLocation")}
               </button>
             </div>
 
@@ -882,7 +882,7 @@ export default function MapPage() {
 
                 {shouldShowUserMarker && effectiveUserPosition && (
                   <Marker position={[effectiveUserPosition.lat, effectiveUserPosition.lng]} icon={userPositionIcon} zIndexOffset={1000}>
-                    <Popup>Sei qui</Popup>
+                    <Popup>{t("map.youAreHere")}</Popup>
                   </Marker>
                 )}
 
@@ -907,7 +907,7 @@ export default function MapPage() {
                             {popupImage ? (
                               <img
                                 src={popupImage}
-                                alt={getTranslatedField(venue as any, "nome", i18n.language, venue.nome || "Locale DrinkWise")}
+                                alt={getTranslatedField(venue as any, "nome", i18n.language, venue.nome || t("map.venueFallback"))}
                                 className="dw-map-popup-image"
                                 loading="lazy"
                               />
@@ -918,13 +918,13 @@ export default function MapPage() {
 
                           <div className="dw-map-popup-content">
                             <strong>
-                              {getTranslatedField(venue as any, "nome", i18n.language, venue.nome || "Locale")}
+                              {getTranslatedField(venue as any, "nome", i18n.language, venue.nome || t("map.venueFallback"))}
                             </strong>
                             <span>
-                              {venue.citta || "Locale DrinkWise"} · {formatDistance(distanceKm)}
+                              {(venue.citta || t("map.cityFallback"))} · {formatDistance(distanceKm)}
                             </span>
                             <button onClick={() => navigate(`/venue/${venue.id}`)}>
-                              Apri scheda
+                              {t("map.openVenue")}
                             </button>
                           </div>
                         </div>
@@ -942,7 +942,7 @@ export default function MapPage() {
 
           <section className="map-nearby-section">
             <div className="map-nearby-header">
-              <h2 className="map-nearby-title">Locali vicino a te</h2>
+              <h2 className="map-nearby-title">{t("map.nearbyVenues")}</h2>
               <span className="map-range-chip">10 km</span>
             </div>
 
@@ -950,7 +950,7 @@ export default function MapPage() {
 
             {showSkeletons && (
               <div className="map-state-card">
-                <div style={{ marginBottom: 12 }}>Sto aggiornando i locali vicino a te...</div>
+                <div style={{ marginBottom: 12 }}>{t("map.updatingNearby")}</div>
                 <div className="map-venues-list">
                   {[0, 1, 2].map((item) => (
                     <div key={item} className="map-skeleton-card" aria-hidden="true">
@@ -974,10 +974,10 @@ export default function MapPage() {
                     venue as any,
                     "nome",
                     i18n.language,
-                    venue.nome || "Locale DrinkWise"
+                    venue.nome || t("map.venueFallback")
                   );
-                  const venueType = venue.tipo_locale?.trim() || "Locale";
-                  const city = venue.citta?.trim() || "Citta non disponibile";
+                  const venueType = venue.tipo_locale?.trim() || t("map.venueFallback");
+                  const city = venue.citta?.trim() || t("map.cityFallback");
                   const image =
                     venue.image_url ||
                     venue.image ||
@@ -996,7 +996,9 @@ export default function MapPage() {
                         <p className="map-venue-meta">
                           {city} · {venueType}
                         </p>
-                        <p className="map-venue-distance">{formatDistance(venue.distanceKm)} da te</p>
+                        <p className="map-venue-distance">
+                          {t("map.distanceFromYou", { distance: formatDistance(venue.distanceKm) })}
+                        </p>
                         {venue.computedRating !== null && (
                           <p className="map-venue-distance" style={{ display: "inline-flex", alignItems: "center", gap: 6 }}>
                             <Star size={14} strokeWidth={2.2} color="#f5c264" />
@@ -1006,9 +1008,9 @@ export default function MapPage() {
                       </div>
 
                       <div className="map-venue-right">
-                        <span className={`map-venue-badge ${venue.badgeVariant}`}>{venue.badgeLabel}</span>
+                        <span className={`map-venue-badge ${venue.badgeVariant}`}>{t(`map.badges.${venue.badgeKey}`)}</span>
                         <span className="map-open-cta">
-                          Apri scheda
+                          {t("map.openVenue")}
                           <ChevronRight size={16} strokeWidth={2.2} />
                         </span>
                       </div>
@@ -1021,10 +1023,10 @@ export default function MapPage() {
             {!showSkeletons && venuesWithCoords.length === 0 && (
               <div className="map-state-card">
                 <div style={{ fontWeight: 800, marginBottom: 4 }}>
-                  Nessun locale con coordinate disponibili.
+                  {t("map.noCoordinatesTitle")}
                 </div>
                 <div style={{ opacity: 0.88 }}>
-                  Controlla che i locali abbiano latitudine e longitudine salvate.
+                  {t("map.noCoordinatesDescription")}
                 </div>
               </div>
             )}
@@ -1034,19 +1036,19 @@ export default function MapPage() {
                 {effectiveUserPosition ? (
                   <>
                     <div style={{ fontWeight: 800, marginBottom: 4 }}>
-                      Nessun locale DrinkWise entro 10 km.
+                      {t("map.noNearbyTitle", { radius: radiusKm })}
                     </div>
                     <div style={{ opacity: 0.88 }}>
-                      La mappa mostra comunque tutti i locali del network.
+                      {t("map.noNearbyDescription")}
                     </div>
                     <button className="map-state-action" onClick={() => navigate("/venues")}>
-                      Esplora tutti i locali
+                      {t("map.exploreAll")}
                     </button>
                   </>
                 ) : (
                   <>
                     <div style={{ fontWeight: 800, marginBottom: 4 }}>
-                      Per vedere i locali piu vicini a te, attiva la posizione.
+                      {t("map.enableLocationMessage")}
                     </div>
                   </>
                 )}

@@ -1,5 +1,27 @@
 {
-  "title": "Carte",
-  "searchPlaceholder": "Rechercher un lieu ou une ville",
-  "emptyState": "Aucun lieu trouvé"
+  "map": {
+    "title": "Lieux DrinkWise",
+    "useLocation": "Utiliser votre position",
+    "nearbyVenues": "Lieux pres de vous",
+    "enableLocationMessage": "Pour voir les lieux proches de vous, activez la localisation.",
+    "loadError": "Erreur lors du chargement de la carte. Veuillez reessayer bientot.",
+    "refreshingLocation": "Mise a jour de votre position en arriere-plan...",
+    "requestingLocation": "Detection de votre position...",
+    "updatingNearby": "Mise a jour des lieux proches de vous...",
+    "youAreHere": "Vous etes ici",
+    "openVenue": "Ouvrir la fiche",
+    "venueFallback": "Lieu",
+    "cityFallback": "Ville indisponible",
+    "distanceFromYou": "{{distance}} de vous",
+    "noCoordinatesTitle": "Aucun lieu avec des coordonnees disponibles.",
+    "noCoordinatesDescription": "Verifiez que les lieux ont une latitude et une longitude enregistrees.",
+    "noNearbyTitle": "Aucun lieu DrinkWise dans un rayon de {{radius}} km.",
+    "noNearbyDescription": "La carte affiche quand meme tous les lieux du reseau.",
+    "exploreAll": "Explorer tous les lieux",
+    "badges": {
+      "exclusive": "Exclusif",
+      "premium": "Premium",
+      "network": "Reseau"
+    }
+  }
 }

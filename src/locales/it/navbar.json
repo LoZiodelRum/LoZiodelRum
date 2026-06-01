@@ -35,6 +35,7 @@
     "bg": "🇧🇬 BG"
   },
   "aria": {
-    "openMenu": "Apri menu"
+    "openMenu": "Apri menu",
+    "languageSelector": "Selettore lingua"
   }
 }

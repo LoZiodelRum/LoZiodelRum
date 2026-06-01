@@ -129,8 +129,7 @@ export default function Navbar() {
     adminRoles.includes(normalizedProfileFallbackRole);
 
   const OWNER_DASHBOARD_PATH = "/proprietario";
-  // Keep configured path explicit; if project adds this route later, navbar is already wired.
-  const BARTENDER_DASHBOARD_PATH = "/dashboard-bartender";
+  const BARTENDER_DASHBOARD_PATH = "/bancone";
   const ADMIN_DASHBOARD_PATH = "/admin";
 
   useEffect(() => {

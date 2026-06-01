@@ -1,5 +1,27 @@
 {
-  "title": "Karte",
-  "searchPlaceholder": "Lokal oder Stadt suchen",
-  "emptyState": "Keine Lokale gefunden"
+  "map": {
+    "title": "DrinkWise Lokale",
+    "useLocation": "Deinen Standort verwenden",
+    "nearbyVenues": "Lokale in deiner Nahe",
+    "enableLocationMessage": "Um Lokale in deiner Nahe zu sehen, aktiviere den Standort.",
+    "loadError": "Fehler beim Laden der Karte. Bitte versuche es in Kurze erneut.",
+    "refreshingLocation": "Dein Standort wird im Hintergrund aktualisiert...",
+    "requestingLocation": "Dein Standort wird ermittelt...",
+    "updatingNearby": "Lokale in deiner Nahe werden aktualisiert...",
+    "youAreHere": "Du bist hier",
+    "openVenue": "Lokal offnen",
+    "venueFallback": "Lokal",
+    "cityFallback": "Stadt nicht verfugbar",
+    "distanceFromYou": "{{distance}} von dir entfernt",
+    "noCoordinatesTitle": "Keine Lokale mit verfugbaren Koordinaten.",
+    "noCoordinatesDescription": "Prufe, dass Lokale gespeicherte Breiten- und Langenkoordinaten haben.",
+    "noNearbyTitle": "Keine DrinkWise Lokale im Umkreis von {{radius}} km.",
+    "noNearbyDescription": "Die Karte zeigt weiterhin alle Lokale im Netzwerk.",
+    "exploreAll": "Alle Lokale entdecken",
+    "badges": {
+      "exclusive": "Exklusiv",
+      "premium": "Premium",
+      "network": "Netzwerk"
+    }
+  }
 }

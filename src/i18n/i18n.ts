@@ -37,6 +37,12 @@ import bgCommon from "../locales/bg/common.json";
 import deCommon from "../locales/de/common.json";
 import esCommon from "../locales/es/common.json";
 import frCommon from "../locales/fr/common.json";
+import itMap from "../locales/it/map.json";
+import enMap from "../locales/en/map.json";
+import bgMap from "../locales/bg/map.json";
+import deMap from "../locales/de/map.json";
+import esMap from "../locales/es/map.json";
+import frMap from "../locales/fr/map.json";
 import itAuth from "../locales/it/auth.json";
 import enAuth from "../locales/en/auth.json";
 import bgAuth from "../locales/bg/auth.json";
@@ -95,6 +101,7 @@ i18n.use(initReactI18next).init({
       community: itCommunity,
       drink: itDrink,
       common: itCommon,
+      map: itMap,
       auth: itAuth,
       lounge: itLounge,
     },
@@ -105,6 +112,7 @@ i18n.use(initReactI18next).init({
       community: enCommunity,
       drink: enDrink,
       common: enCommon,
+      map: enMap,
       auth: enAuth,
       lounge: enLounge,
     },
@@ -115,6 +123,7 @@ i18n.use(initReactI18next).init({
       community: bgCommunity,
       drink: bgDrink,
       common: bgCommon,
+      map: bgMap,
       auth: bgAuth,
       lounge: bgLounge,
     },
@@ -125,6 +134,7 @@ i18n.use(initReactI18next).init({
       community: deCommunity,
       drink: deDrink,
       common: deCommon,
+      map: deMap,
       auth: deAuth,
       lounge: deLounge,
     },
@@ -135,6 +145,7 @@ i18n.use(initReactI18next).init({
       community: esCommunity,
       drink: esDrink,
       common: esCommon,
+      map: esMap,
       auth: esAuth,
       lounge: esLounge,
     },
@@ -145,12 +156,13 @@ i18n.use(initReactI18next).init({
       community: frCommunity,
       drink: frDrink,
       common: frCommon,
+      map: frMap,
       auth: frAuth,
       lounge: frLounge,
     },
   },
 
-  ns: ["translation", "navbar", "home", "community", "drink", "common", "auth", "lounge"],
+  ns: ["translation", "navbar", "home", "community", "drink", "common", "map", "auth", "lounge"],
   defaultNS: "translation",
   supportedLngs: [...SUPPORTED_LANGUAGES],
   nonExplicitSupportedLngs: true,

@@ -1,5 +1,27 @@
 {
-  "title": "Map",
-  "searchPlaceholder": "Search venue or city",
-  "emptyState": "No venues found"
+  "map": {
+    "title": "Locales DrinkWise",
+    "useLocation": "Usa tu ubicacion",
+    "nearbyVenues": "Locales cerca de ti",
+    "enableLocationMessage": "Para ver los locales cercanos, activa la ubicacion.",
+    "loadError": "Error al cargar el mapa. Intentalo de nuevo en breve.",
+    "refreshingLocation": "Actualizando tu ubicacion en segundo plano...",
+    "requestingLocation": "Detectando tu ubicacion...",
+    "updatingNearby": "Actualizando locales cercanos...",
+    "youAreHere": "Estas aqui",
+    "openVenue": "Abrir ficha",
+    "venueFallback": "Local",
+    "cityFallback": "Ciudad no disponible",
+    "distanceFromYou": "{{distance}} de ti",
+    "noCoordinatesTitle": "No hay locales con coordenadas disponibles.",
+    "noCoordinatesDescription": "Comprueba que los locales tengan latitud y longitud guardadas.",
+    "noNearbyTitle": "No hay locales DrinkWise en un radio de {{radius}} km.",
+    "noNearbyDescription": "El mapa sigue mostrando todos los locales de la red.",
+    "exploreAll": "Explora todos los locales",
+    "badges": {
+      "exclusive": "Exclusivo",
+      "premium": "Premium",
+      "network": "Red"
+    }
+  }
 }

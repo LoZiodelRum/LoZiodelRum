@@ -1,5 +1,27 @@
 {
-  "title": "Карта",
-  "searchPlaceholder": "Търсете място или град",
-  "emptyState": "Няма намерени места"
+  "map": {
+    "title": "DrinkWise локации",
+    "useLocation": "Използвай моята локация",
+    "nearbyVenues": "Локации близо до теб",
+    "enableLocationMessage": "За да видиш локации близо до теб, активирай местоположението.",
+    "loadError": "Грешка при зареждане на картата. Опитай отново след малко.",
+    "refreshingLocation": "Обновявам местоположението ти във фонов режим...",
+    "requestingLocation": "Установявам местоположението ти...",
+    "updatingNearby": "Обновявам локациите близо до теб...",
+    "youAreHere": "Ти си тук",
+    "openVenue": "Отвори обекта",
+    "venueFallback": "Обект",
+    "cityFallback": "Градът не е наличен",
+    "distanceFromYou": "{{distance}} от теб",
+    "noCoordinatesTitle": "Няма обекти с налични координати.",
+    "noCoordinatesDescription": "Провери дали обектите имат запазени ширина и дължина.",
+    "noNearbyTitle": "Няма DrinkWise обекти в радиус от {{radius}} км.",
+    "noNearbyDescription": "Картата все пак показва всички обекти в мрежата.",
+    "exploreAll": "Разгледай всички обекти",
+    "badges": {
+      "exclusive": "Ексклузивно",
+      "premium": "Премиум",
+      "network": "Мрежа"
+    }
+  }
 }
