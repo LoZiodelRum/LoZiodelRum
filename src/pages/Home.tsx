@@ -40,6 +40,8 @@ const HOME_HERO_MAX_RETRIES = 2;
 export default function Home() {
   const { isAdmin } = useUser();
   const { t, i18n } = useTranslation("home");
+  const normalizedLanguage = String(i18n.language || "it").toLowerCase();
+  const isCompactMobileHeroLanguage = normalizedLanguage.startsWith("de") || normalizedLanguage.startsWith("bg");
   const [locali, setLocali] = useState<Locale[]>([]);
   const [articoli, setArticoli] = useState<Articolo[]>([]);
   const [editingLocaleId, setEditingLocaleId] = useState<string | null>(null);
@@ -309,6 +311,10 @@ export default function Home() {
             margin: 0 auto 10px auto !important;
           }
           .hero-mobile-title { font-size: clamp(26px, 6.9vw, 36px) !important; line-height: 1.05 !important; }
+          .hero-mobile-title.hero-mobile-title-compact {
+            font-size: clamp(22px, 5.9vw, 30px) !important;
+            line-height: 1.01 !important;
+          }
           .hero-mobile-title span {
             font-size: inherit !important;
             line-height: inherit !important;
@@ -317,6 +323,12 @@ export default function Home() {
           .hero-mobile-title-line {
             display: block !important;
             white-space: nowrap !important;
+          }
+          .hero-mobile-title-compact .hero-mobile-title-line {
+            white-space: normal !important;
+            overflow-wrap: anywhere !important;
+            word-break: normal !important;
+            hyphens: auto !important;
           }
           .hero-mobile-subtitle {
             font-size: clamp(14px, 5vw, 20px) !important;
@@ -533,21 +545,23 @@ export default function Home() {
         <div className="hero-mobile-content" style={{ position: "relative", zIndex: 2, width: "100%", maxWidth: 1180, padding: "0 20px 6px" }}>
           <p className="hero-mobile-badge" style={{ display: "none" }}>{t("home.heroBadge")}</p>
           <h1
-            className="hero-mobile-title"
+            className={`hero-mobile-title${isCompactMobileHeroLanguage ? " hero-mobile-title-compact" : ""}`}
             style={{
               fontSize:
                 i18n.language === "de"
-                  ? "clamp(2rem, 7vw, 3.5rem)"
+                  ? "clamp(1.7rem, 5.9vw, 2.7rem)"
+                  : i18n.language === "bg"
+                  ? "clamp(1.72rem, 6vw, 2.8rem)"
                   : "clamp(20px, 4vw, 32px)",
               marginBottom: 10,
               fontWeight: 800,
-              lineHeight: 1.05,
+              lineHeight: isCompactMobileHeroLanguage ? 1.01 : 1.05,
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
               textAlign: "center",
               wordBreak: "normal",
-              overflowWrap: "break-word",
+              overflowWrap: isCompactMobileHeroLanguage ? "anywhere" : "break-word",
               maxWidth: "100%",
               paddingLeft: 8,
               paddingRight: 8,
