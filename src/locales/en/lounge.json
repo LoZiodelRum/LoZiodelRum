@@ -3,7 +3,8 @@
     "home": "Home",
     "discover": "Discover",
     "profile": "Profile",
-    "events": "Events"
+    "events": "Events",
+    "aria": "Lounge navigation"
   },
   "home": {
     "topCards": {
@@ -23,12 +24,15 @@
     },
     "eventsTonight": "Tonight's Events",
     "events": {
-      "eventMeta": "8:00 PM · 24 participants"
+      "eventMeta": "8:00 PM - 24 participants",
+      "headlineTop": "Caribbean",
+      "headlineBottom": "Rum Night",
+      "liveBadge": "LIVE"
     },
     "news": {
       "title": "Lounge Updates",
       "bartenderStories": "12 new bartender stories",
-      "watchSharing": "See what they're sharing ✨"
+      "watchSharing": "See what they are sharing"
     },
     "suggestions": {
       "title": "DrinkWise Suggestions",
@@ -66,6 +70,26 @@
       "bottleCollection": { "title": "Bottle Collection", "subtitle": "Saved and favourite bottles" },
       "experiences": { "title": "Experiences", "subtitle": "Premium curated moments" },
       "newOpenings": { "title": "New Openings", "subtitle": "New venues in the network" }
+    }
+  },
+  "calendar": {
+    "days": ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"],
+    "months": ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"]
+  },
+  "events": {
+    "calendarTitle": "Event Calendar",
+    "premiumScene": "The premium beverage scene",
+    "allEvents": "All Events",
+    "bookEvent": "Book Event",
+    "incoming": "Incoming",
+    "seeAll": "See All",
+    "thisWeek": "This Week",
+    "eventsOnDate_one": "{{count}} event",
+    "eventsOnDate_other": "{{count}} events",
+    "onDate": "on {{date}}",
+    "footer": {
+      "monthStats": "{{total}} events this month - 4 premium masterclasses",
+      "guestBartenders": "2 guest bartenders coming soon"
     }
   }
 }

@@ -457,7 +457,7 @@ export default function EventiPage() {
             {eventiGiornoSelezionato.length > 0 && (
               <div style={{ marginTop: 22 }}>
                 <div style={{ fontSize: 13, color: TEXT_DIM, marginBottom: 10, fontWeight: 600 }}>
-                  {eventiGiornoSelezionato.length} evento{eventiGiornoSelezionato.length > 1 ? "i" : ""} il {selectedDate}
+                  {t("events.eventsOnDate", { count: eventiGiornoSelezionato.length })} {t("events.onDate", { date: selectedDate })}
                 </div>
                 <div style={{ display: "flex", flexDirection: "column", gap: 8 }}>
                   {eventiGiornoSelezionato.map(ev => (
@@ -479,7 +479,7 @@ export default function EventiPage() {
                 onClick={() => navigate("/eventi/tutti")}
                 style={{ background: "none", border: "none", color: NEON_BLUE, fontWeight: 600, fontSize: 13, cursor: "pointer" }}
               >
-                Vedi Tutto ›
+                {t("events.seeAll")} ›
               </button>
             </div>
             <div
@@ -503,13 +503,13 @@ export default function EventiPage() {
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 14 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
                 <span style={{ fontSize: 18 }}>📅</span>
-                <span style={{ fontWeight: 800, fontSize: 17 }}>Questa Settimana</span>
+                <span style={{ fontWeight: 800, fontSize: 17 }}>{t("events.thisWeek")}</span>
               </div>
               <button
                 onClick={() => navigate("/eventi/tutti")}
                 style={{ background: "none", border: "none", color: NEON_BLUE, fontWeight: 600, fontSize: 13, cursor: "pointer" }}
               >
-                Vedi Tutto ›
+                {t("events.seeAll")} ›
               </button>
             </div>
             <div className="eventi-week-grid" style={{ display: "grid", gridTemplateColumns: "repeat(2, 1fr)", gap: 14 }}>
@@ -534,9 +534,9 @@ export default function EventiPage() {
           >
             <div>
               <div style={{ fontWeight: 700, fontSize: 14, color: "#fff", marginBottom: 4 }}>
-                {EVENTI.length} eventi questo mese · 4 masterclass premium
+                {t("events.footer.monthStats", { total: EVENTI.length })}
               </div>
-              <div style={{ fontSize: 13, color: TEXT_DIM }}>2 bartender ospiti in arrivo</div>
+              <div style={{ fontSize: 13, color: TEXT_DIM }}>{t("events.footer.guestBartenders")}</div>
             </div>
             <div style={{ fontSize: 36, flexShrink: 0 }}>🍸</div>
           </div>

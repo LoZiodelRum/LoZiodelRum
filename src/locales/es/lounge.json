@@ -1,71 +1,95 @@
 {
   "nav": {
-    "home": "Home",
-    "discover": "Discover",
-    "profile": "Profile",
-    "events": "Events"
+    "home": "Inicio",
+    "discover": "Descubrir",
+    "profile": "Perfil",
+    "events": "Eventos",
+    "aria": "Navegacion Lounge"
   },
   "home": {
     "topCards": {
-      "premiumVenues": "Premium Venues",
-      "eventsTonight": "Events Tonight",
-      "newReviews": "New Reviews",
-      "newCocktails": "New Cocktails"
+      "premiumVenues": "Locales Premium",
+      "eventsTonight": "Eventos Esta Noche",
+      "newReviews": "Nuevas Resenas",
+      "newCocktails": "Nuevos Cocteles"
     },
     "score": {
-      "title": "DrinkWise Score",
-      "tastings": "Tastings",
-      "experiences": "Experiences",
-      "community": "Community",
-      "knowledge": "Knowledge",
-      "topCity": "Top City",
-      "cocktailOfMoment": "Cocktail of the Moment"
+      "title": "Puntuacion DrinkWise",
+      "tastings": "Degustaciones",
+      "experiences": "Experiencias",
+      "community": "Comunidad",
+      "knowledge": "Conocimiento",
+      "topCity": "Ciudad Top",
+      "cocktailOfMoment": "Coctel del Momento"
     },
-    "eventsTonight": "Tonight's Events",
+    "eventsTonight": "Eventos de esta noche",
     "events": {
-      "eventMeta": "8:00 PM · 24 participants"
+      "eventMeta": "20:00 - 24 participantes",
+      "headlineTop": "Noche Caribe",
+      "headlineBottom": "Rum Night",
+      "liveBadge": "EN VIVO"
     },
     "news": {
-      "title": "Lounge Updates",
-      "bartenderStories": "12 new bartender stories",
-      "watchSharing": "See what they're sharing ✨"
+      "title": "Novedades Lounge",
+      "bartenderStories": "12 nuevas historias de bartender",
+      "watchSharing": "Mira lo que estan compartiendo"
     },
     "suggestions": {
-      "title": "DrinkWise Suggestions",
-      "rum": "Rum Suggestion",
-      "nearbyBars": "Find venues near you",
-      "cocktailTonight": "Cocktail for tonight"
+      "title": "Sugerencias DrinkWise",
+      "rum": "Sugerencia de Rum",
+      "nearbyBars": "Encuentra locales cercanos",
+      "cocktailTonight": "Coctel para esta noche"
     },
-    "enterBaretto": "Enter the Baretto"
+    "enterBaretto": "Entrar al Baretto"
   },
   "discover": {
-    "title": "Discover",
-    "subtitle": "Explore the universe",
-    "searchAria": "Search",
+    "title": "Descubrir",
+    "subtitle": "Explora el universo",
+    "searchAria": "Buscar",
     "banner": {
-      "title": "Discover",
-      "body": "Find venues, tastings, events and recommendations all in one place."
+      "title": "Descubrir",
+      "body": "Encuentra locales, catas, eventos y recomendaciones en un solo lugar."
     },
     "cards": {
-      "cocktail": { "title": "Cocktails", "subtitle": "Craft mixology" },
-      "rum": { "title": "Rum", "subtitle": "Rum routes and selections" },
-      "whiskey": { "title": "Whiskey", "subtitle": "Whiskey tastings and selections" },
-      "altriDistillati": { "title": "Other Spirits", "subtitle": "Gin, tequila, mezcal and more" },
-      "vini": { "title": "Wines", "subtitle": "Selected labels and wineries" },
-      "magazine": { "title": "Magazine", "subtitle": "Articles, guides and insights" },
-      "creaCocktail": { "title": "Create your cocktail", "subtitle": "Build your ideal drink" },
-      "premiumBars": { "title": "Premium Venues", "subtitle": "Selected venues near you" },
-      "cocktailBars": { "title": "Cocktail Bars", "subtitle": "Craft mixology" },
-      "rumRooms": { "title": "Rum Rooms", "subtitle": "Dedicated rum routes" },
-      "whiskyClubs": { "title": "Whisky Clubs", "subtitle": "Whisky selections and tastings" },
-      "signatureDrinks": { "title": "Signature Drinks", "subtitle": "Curated creations" },
-      "bartenderPicks": { "title": "Bartender Picks", "subtitle": "Tips from the pros" },
-      "guestShifts": { "title": "Guest Shift", "subtitle": "Evenings with guest bartenders" },
-      "events": { "title": "Events", "subtitle": "Live experiences" },
-      "pairings": { "title": "Pairings", "subtitle": "Food pairing and drinks" },
-      "bottleCollection": { "title": "Bottle Collection", "subtitle": "Saved and favourite bottles" },
-      "experiences": { "title": "Experiences", "subtitle": "Premium curated moments" },
-      "newOpenings": { "title": "New Openings", "subtitle": "New venues in the network" }
+      "cocktail": { "title": "Cocteles", "subtitle": "Mixologia de autor" },
+      "rum": { "title": "Rum", "subtitle": "Rutas y selecciones de rum" },
+      "whiskey": { "title": "Whiskey", "subtitle": "Catas y selecciones de whiskey" },
+      "altriDistillati": { "title": "Otros Destilados", "subtitle": "Gin, tequila, mezcal y mas" },
+      "vini": { "title": "Vinos", "subtitle": "Etiquetas y bodegas seleccionadas" },
+      "magazine": { "title": "Magazine", "subtitle": "Articulos, guias e ideas" },
+      "creaCocktail": { "title": "Crea tu coctel", "subtitle": "Construye tu bebida ideal" },
+      "premiumBars": { "title": "Locales Premium", "subtitle": "Locales seleccionados cerca de ti" },
+      "cocktailBars": { "title": "Cocktail Bars", "subtitle": "Mixologia artesanal" },
+      "rumRooms": { "title": "Rum Rooms", "subtitle": "Rutas dedicadas al rum" },
+      "whiskyClubs": { "title": "Whisky Clubs", "subtitle": "Selecciones y catas de whisky" },
+      "signatureDrinks": { "title": "Signature Drinks", "subtitle": "Creaciones seleccionadas" },
+      "bartenderPicks": { "title": "Selecciones Bartender", "subtitle": "Consejos de profesionales" },
+      "guestShifts": { "title": "Guest Shift", "subtitle": "Noches con bartenders invitados" },
+      "events": { "title": "Eventos", "subtitle": "Experiencias en vivo" },
+      "pairings": { "title": "Maridajes", "subtitle": "Food pairing y bebidas" },
+      "bottleCollection": { "title": "Coleccion de Botellas", "subtitle": "Botellas guardadas y favoritas" },
+      "experiences": { "title": "Experiencias", "subtitle": "Momentos premium curados" },
+      "newOpenings": { "title": "Nuevas Aperturas", "subtitle": "Nuevos locales en la red" }
+    }
+  },
+  "calendar": {
+    "days": ["Lun", "Mar", "Mie", "Jue", "Vie", "Sab", "Dom"],
+    "months": ["Enero", "Febrero", "Marzo", "Abril", "Mayo", "Junio", "Julio", "Agosto", "Septiembre", "Octubre", "Noviembre", "Diciembre"]
+  },
+  "events": {
+    "calendarTitle": "Calendario de Eventos",
+    "premiumScene": "La escena premium de bebidas",
+    "allEvents": "Todos los Eventos",
+    "bookEvent": "Reservar Evento",
+    "incoming": "Proximos",
+    "seeAll": "Ver Todo",
+    "thisWeek": "Esta Semana",
+    "eventsOnDate_one": "{{count}} evento",
+    "eventsOnDate_other": "{{count}} eventos",
+    "onDate": "el {{date}}",
+    "footer": {
+      "monthStats": "{{total}} eventos este mes - 4 masterclass premium",
+      "guestBartenders": "2 bartenders invitados en camino"
     }
   }
 }

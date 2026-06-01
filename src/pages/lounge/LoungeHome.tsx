@@ -138,7 +138,7 @@ export default function LoungeHome() {
                 fontWeight: 800,
               }}
             >
-              DrinkWise Score
+              {t("home.score.title")}
             </h2>
 
             <div
@@ -338,9 +338,9 @@ export default function LoungeHome() {
                 marginBottom: 16,
               }}
             >
-              Caribbean
+              {t("home.events.headlineTop")}
               <br />
-              Rum Night
+              {t("home.events.headlineBottom")}
             </div>
 
             <div
@@ -351,7 +351,7 @@ export default function LoungeHome() {
                 marginBottom: 10,
               }}
             >
-              ● LIVE
+              ● {t("home.events.liveBadge")}
             </div>
 
             <div

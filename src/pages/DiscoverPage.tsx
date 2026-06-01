@@ -476,7 +476,7 @@ export default function DiscoverPage() {
       <section className="discover-shell">
         <header className="discover-header">
           <div>
-            <h1 className="discover-title">Discover</h1>
+            <h1 className="discover-title">{t("discover.title")}</h1>
             <p className="discover-subtitle">{t("discover.subtitle")} <b>DrinkWise</b></p>
           </div>
           <button className="discover-search" aria-label={t("discover.searchAria")}>
@@ -517,7 +517,7 @@ export default function DiscoverPage() {
 
         <div className="discover-banner">
           <div>
-            <h3>Discover</h3>
+            <h3>{t("discover.banner.title")}</h3>
             <p>{t("discover.banner.body")}</p>
           </div>
           <div className="discover-banner-orb" aria-hidden="true" />

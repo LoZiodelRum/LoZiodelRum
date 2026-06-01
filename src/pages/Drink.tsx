@@ -9,17 +9,17 @@ import { normalizeText, safeArray } from "../utils/runtime";
 
 const COCKTAIL_SELECT_ATTEMPTS = [
   "*",
-  "id, nome, nome_en, nome_de, nome_bg, immagine, immagine_url, image, img, marca, distilleria, categoria, tipologia, tipo, tipo_distillato, categoria_distillato, base_alcolica, invecchiamento, tipo_botte, esame_visivo, esame_olfattivo, esame_gustativo, note_aromatiche, sottocategoria",
-  "id, nome, nome_en, nome_de, nome_bg, immagine, marca, distilleria, categoria, tipologia, tipo, tipo_distillato, categoria_distillato, base_alcolica, invecchiamento, tipo_botte, esame_visivo, esame_olfattivo, esame_gustativo, note_aromatiche, sottocategoria",
-  "id, nome, nome_en, nome_de, nome_bg, immagine, categoria, marca, distilleria",
+  "id, nome, nome_en, nome_de, nome_bg, nome_es, nome_fr, immagine, immagine_url, image, img, marca, marca_en, marca_de, marca_bg, marca_es, marca_fr, distilleria, categoria, categoria_en, categoria_de, categoria_bg, categoria_es, categoria_fr, tipologia, tipo, tipo_distillato, categoria_distillato, base_alcolica, invecchiamento, tipo_botte, esame_visivo, esame_olfattivo, esame_gustativo, note_aromatiche, sottocategoria",
+  "id, nome, nome_en, nome_de, nome_bg, nome_es, nome_fr, immagine, marca, marca_en, marca_de, marca_bg, marca_es, marca_fr, distilleria, categoria, categoria_en, categoria_de, categoria_bg, categoria_es, categoria_fr, tipologia, tipo, tipo_distillato, categoria_distillato, base_alcolica, invecchiamento, tipo_botte, esame_visivo, esame_olfattivo, esame_gustativo, note_aromatiche, sottocategoria",
+  "id, nome, nome_en, nome_de, nome_bg, nome_es, nome_fr, immagine, categoria, categoria_en, categoria_de, categoria_bg, categoria_es, categoria_fr, marca, marca_en, marca_de, marca_bg, marca_es, marca_fr, distilleria",
   "id, nome, immagine, categoria",
 ];
 
 const DISTILLATI_SELECT_ATTEMPTS = [
   "*",
-  "id, nome, nome_en, nome_de, nome_bg, marca, categoria, tipologia, tipo, tipo_distillato, categoria_distillato, base_alcolica, invecchiamento, tipo_botte, esame_visivo, esame_olfattivo, esame_gustativo, note_aromatiche, sottocategoria, immagine, immagine_url, image, img",
-  "id, nome, nome_en, nome_de, nome_bg, marca, categoria, tipologia, tipo, tipo_distillato, categoria_distillato, base_alcolica, invecchiamento, tipo_botte, esame_visivo, esame_olfattivo, esame_gustativo, note_aromatiche, sottocategoria, immagine",
-  "id, nome, nome_en, nome_de, nome_bg, marca, categoria, immagine",
+  "id, nome, nome_en, nome_de, nome_bg, nome_es, nome_fr, marca, marca_en, marca_de, marca_bg, marca_es, marca_fr, categoria, categoria_en, categoria_de, categoria_bg, categoria_es, categoria_fr, tipologia, tipo, tipo_distillato, categoria_distillato, base_alcolica, invecchiamento, tipo_botte, esame_visivo, esame_olfattivo, esame_gustativo, note_aromatiche, sottocategoria, immagine, immagine_url, image, img",
+  "id, nome, nome_en, nome_de, nome_bg, nome_es, nome_fr, marca, marca_en, marca_de, marca_bg, marca_es, marca_fr, categoria, categoria_en, categoria_de, categoria_bg, categoria_es, categoria_fr, tipologia, tipo, tipo_distillato, categoria_distillato, base_alcolica, invecchiamento, tipo_botte, esame_visivo, esame_olfattivo, esame_gustativo, note_aromatiche, sottocategoria, immagine",
+  "id, nome, nome_en, nome_de, nome_bg, nome_es, nome_fr, marca, marca_en, marca_de, marca_bg, marca_es, marca_fr, categoria, categoria_en, categoria_de, categoria_bg, categoria_es, categoria_fr, immagine",
   "id, nome, marca, categoria, immagine",
 ];
 

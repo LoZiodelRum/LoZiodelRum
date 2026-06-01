@@ -20,10 +20,10 @@ type VinoCard = {
 
 const VINI_SELECT_ATTEMPTS = [
   "*",
-  "id, nome, nome_en, nome_de, nome_bg, immagine, image, categoria, categoria_en, categoria_de, categoria_bg, alcol, alcol_en, alcol_de, alcol_bg, grado_alcolico, descrizione, descrizione_en, descrizione_de, descrizione_bg",
-  "id, nome, nome_en, nome_de, nome_bg, immagine, categoria, categoria_en, categoria_de, categoria_bg, alcol, alcol_en, alcol_de, alcol_bg, grado_alcolico, descrizione, descrizione_en, descrizione_de, descrizione_bg",
-  "id, nome, nome_en, nome_de, nome_bg, immagine, categoria, categoria_en, categoria_de, categoria_bg, grado_alcolico, descrizione, descrizione_en, descrizione_de, descrizione_bg",
-  "id, nome, nome_en, nome_de, nome_bg, immagine, categoria, grado_alcolico, descrizione",
+  "id, nome, nome_en, nome_de, nome_bg, nome_es, nome_fr, immagine, image, categoria, categoria_en, categoria_de, categoria_bg, categoria_es, categoria_fr, alcol, alcol_en, alcol_de, alcol_bg, alcol_es, alcol_fr, grado_alcolico, descrizione, descrizione_en, descrizione_de, descrizione_bg, descrizione_es, descrizione_fr",
+  "id, nome, nome_en, nome_de, nome_bg, nome_es, nome_fr, immagine, categoria, categoria_en, categoria_de, categoria_bg, categoria_es, categoria_fr, alcol, alcol_en, alcol_de, alcol_bg, alcol_es, alcol_fr, grado_alcolico, descrizione, descrizione_en, descrizione_de, descrizione_bg, descrizione_es, descrizione_fr",
+  "id, nome, nome_en, nome_de, nome_bg, nome_es, nome_fr, immagine, categoria, categoria_en, categoria_de, categoria_bg, categoria_es, categoria_fr, grado_alcolico, descrizione, descrizione_en, descrizione_de, descrizione_bg, descrizione_es, descrizione_fr",
+  "id, nome, nome_en, nome_de, nome_bg, nome_es, nome_fr, immagine, categoria, grado_alcolico, descrizione",
   "id, nome, immagine, categoria, grado_alcolico, descrizione",
 ];
 

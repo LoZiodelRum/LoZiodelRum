@@ -8,9 +8,9 @@ import { normalizeText, safeArray, slugifySafe } from "../utils/runtime";
 
 const VINI_SELECT_ATTEMPTS = [
   "*",
-  "id, nome, nome_en, nome_de, nome_bg, immagine, image, categoria, categoria_en, categoria_de, categoria_bg",
-  "id, nome, nome_en, nome_de, nome_bg, immagine, categoria, categoria_en, categoria_de, categoria_bg",
-  "id, nome, nome_en, nome_de, nome_bg, immagine, categoria",
+  "id, nome, nome_en, nome_de, nome_bg, nome_es, nome_fr, immagine, image, categoria, categoria_en, categoria_de, categoria_bg, categoria_es, categoria_fr",
+  "id, nome, nome_en, nome_de, nome_bg, nome_es, nome_fr, immagine, categoria, categoria_en, categoria_de, categoria_bg, categoria_es, categoria_fr",
+  "id, nome, nome_en, nome_de, nome_bg, nome_es, nome_fr, immagine, categoria",
   "id, nome, immagine, categoria",
 ];
 

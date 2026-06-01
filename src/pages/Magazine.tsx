@@ -13,18 +13,28 @@ type Article = {
   titolo_de?: string | null;
   titolo_en?: string | null;
   titolo_bg?: string | null;
+  titolo_es?: string | null;
+  titolo_fr?: string | null;
   sottotitolo?: string | null;
   sottotitolo_de?: string | null;
   sottotitolo_en?: string | null;
   sottotitolo_bg?: string | null;
+  sottotitolo_es?: string | null;
+  sottotitolo_fr?: string | null;
   descrizione: string;
   descrizione_de?: string | null;
   descrizione_en?: string | null;
   descrizione_bg?: string | null;
+  descrizione_es?: string | null;
+  descrizione_fr?: string | null;
   estratto?: string | null;
   estratto_de?: string | null;
   estratto_en?: string | null;
   estratto_bg?: string | null;
+  estratto_es?: string | null;
+  estratto_fr?: string | null;
+  categoria_es?: string | null;
+  categoria_fr?: string | null;
   categoria_de?: string | null;
   categoria_en?: string | null;
   categoria_bg?: string | null;
@@ -54,7 +64,7 @@ export default function Magazine() {
       }
 
       const normalizedLanguage = String(language || "").toLowerCase().split(/[-_]/)[0];
-      if (normalizedLanguage !== "de" && normalizedLanguage !== "es" && normalizedLanguage !== "bg") {
+      if (normalizedLanguage !== "de" && normalizedLanguage !== "es" && normalizedLanguage !== "bg" && normalizedLanguage !== "fr") {
         setArticles(rawArticles);
         return;
       }

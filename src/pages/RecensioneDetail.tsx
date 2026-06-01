@@ -26,10 +26,14 @@ type ReviewLocale = {
   nome_en?: string | null;
   nome_de?: string | null;
   nome_bg?: string | null;
+  nome_es?: string | null;
+  nome_fr?: string | null;
   descrizione?: string | null;
   descrizione_en?: string | null;
   descrizione_de?: string | null;
   descrizione_bg?: string | null;
+  descrizione_es?: string | null;
+  descrizione_fr?: string | null;
   image_url?: string | null;
   image?: string | null;
   citta?: string | null;
@@ -44,6 +48,10 @@ function formatDate(value: string | null | undefined, language: string, fallback
     ? "bg-BG"
     : String(language || "it").toLowerCase().startsWith("de")
       ? "de-DE"
+    : String(language || "it").toLowerCase().startsWith("es")
+      ? "es-ES"
+    : String(language || "it").toLowerCase().startsWith("fr")
+      ? "fr-FR"
     : String(language || "it").toLowerCase().startsWith("en")
       ? "en-GB"
       : "it-IT";
@@ -58,8 +66,8 @@ export default function RecensioneDetail() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { i18n } = useTranslation();
-  const tr = (it: string, en: string, bg: string, de = en) =>
-    getTranslatedField({ label_it: it, label_en: en, label_de: de, label_bg: bg }, "label", i18n.language, it);
+  const tr = (it: string, en: string, bg: string, de = en, es = en, fr = en) =>
+    getTranslatedField({ label_it: it, label_en: en, label_de: de, label_bg: bg, label_es: es, label_fr: fr }, "label", i18n.language, it);
 
   const [review, setReview] = useState<ReviewDetail | null>(null);
   const [reviewLocale, setReviewLocale] = useState<ReviewLocale | null>(null);
@@ -96,7 +104,7 @@ export default function RecensioneDetail() {
     if (localeId) {
       const { data: localeData, error: localeError } = await supabase
         .from("Locali")
-        .select("nome, nome_en, nome_de, nome_bg, descrizione, descrizione_en, descrizione_de, descrizione_bg, image_url, image, citta, indirizzo")
+        .select("nome, nome_en, nome_de, nome_bg, nome_es, nome_fr, descrizione, descrizione_en, descrizione_de, descrizione_bg, descrizione_es, descrizione_fr, image_url, image, citta, indirizzo")
         .eq("id", localeId)
         .single();
 

@@ -4,17 +4,8 @@ import { normalizeText } from "./normalizeText";
 IMPORTANT:
 All translated runtime fields MUST pass through getTranslatedField().
 
-DO NOT:
-- access *_en/_bg/_de/_es directly in UI runtime
-- create local fallback chains
-- duplicate translation resolver logic
-
 Fallback architecture:
-IT -> base
-EN -> _en -> base
-BG -> _bg -> _en -> base
-DE -> _de -> _en -> base
-ES -> _es -> _en -> base
+selected language -> Italian base -> first available translated value
 */
 
 
@@ -36,26 +27,17 @@ function hasValue(value: unknown): boolean {
 
 
 function buildCandidates(baseField: string, language: SupportedLanguage): string[] {
-  if (language === "fr") {
-    // FR: *_fr -> *_en -> base
-    return [`${baseField}_fr`, `${baseField}_en`, baseField];
-  }
-  if (language === "it") {
-    return [baseField, `${baseField}_it`];
-  }
-  if (language === "en") {
-    return [`${baseField}_en`, baseField];
-  }
-  if (language === "de") {
-    return [`${baseField}_de`, `${baseField}_en`, baseField];
-  }
-  if (language === "es") {
-    return [`${baseField}_es`, `${baseField}_en`, baseField, `${baseField}_it`];
-  }
-  if (language === "bg") {
-    return [`${baseField}_bg`, `${baseField}_en`, baseField];
-  }
-  return [baseField, `${baseField}_it`];
+  const selected = language === "it" ? [baseField, `${baseField}_it`] : [`${baseField}_${language}`];
+  const italian = [baseField, `${baseField}_it`];
+  const available = [
+    `${baseField}_en`,
+    `${baseField}_de`,
+    `${baseField}_es`,
+    `${baseField}_bg`,
+    `${baseField}_fr`,
+  ];
+
+  return Array.from(new Set([...selected, ...italian, ...available]));
 }
 
 export function getTranslatedField(
@@ -68,22 +50,14 @@ export function getTranslatedField(
 
   const normalizedLanguage = normalizeLanguage(language);
   const candidates = buildCandidates(baseField, normalizedLanguage);
-  let chosenKey = null;
   let chosenValue = fallback;
 
   for (const key of candidates) {
     const value = record[key];
     if (hasValue(value)) {
-      chosenKey = key;
       chosenValue = String(value).trim();
       break;
     }
-  }
-
-  // Log diagnostico
-  if (typeof window !== "undefined" && window?.console) {
-    // eslint-disable-next-line no-console
-    console.log("[getTranslatedField] lingua:", normalizedLanguage, "campo:", baseField, "key usata:", chosenKey, "valore:", chosenValue);
   }
 
   return chosenValue;

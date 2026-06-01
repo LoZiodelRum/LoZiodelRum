@@ -15,9 +15,13 @@ type Venue = {
   nome_en?: string | null;
   nome_de?: string | null;
   nome_bg?: string | null;
+  nome_es?: string | null;
+  nome_fr?: string | null;
   descrizione_en?: string | null;
   descrizione_de?: string | null;
   descrizione_bg?: string | null;
+  descrizione_es?: string | null;
+  descrizione_fr?: string | null;
   image_url?: string | null;
   image?: string | null;
 };
@@ -34,6 +38,8 @@ export default function Venues() {
       label_en: "All venues",
       label_de: "Alle Lokale",
       label_bg: "Всички заведения",
+      label_es: "Todos los locales",
+      label_fr: "Tous les lieux",
     },
     "label",
     i18n.language,
@@ -45,6 +51,8 @@ export default function Venues() {
       label_en: "results",
       label_de: "Ergebnisse",
       label_bg: "резултати",
+      label_es: "resultados",
+      label_fr: "resultats",
     },
     "label",
     i18n.language,
@@ -56,6 +64,8 @@ export default function Venues() {
       label_en: "Location not available",
       label_de: "Standort nicht verfugbar",
       label_bg: "Местоположението не е налично",
+      label_es: "Ubicacion no disponible",
+      label_fr: "Lieu non disponible",
     },
     "label",
     i18n.language,
@@ -69,7 +79,7 @@ export default function Venues() {
   async function fetchVenues() {
     const { data, error } = await supabase
       .from("Locali")
-      .select("id, nome, nome_en, nome_de, nome_bg, citta, indirizzo, descrizione, descrizione_en, descrizione_de, descrizione_bg, image_url, image")
+      .select("id, nome, nome_en, nome_de, nome_bg, nome_es, nome_fr, citta, indirizzo, descrizione, descrizione_en, descrizione_de, descrizione_bg, descrizione_es, descrizione_fr, image_url, image")
       .or("status.eq.approved,approvato.eq.true")
       .order("nome", { ascending: true });
 

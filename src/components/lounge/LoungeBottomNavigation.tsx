@@ -135,7 +135,7 @@ export default function LoungeBottomNavigation() {
         }
       `}</style>
 
-      <nav className="lounge-bottom-nav-shell" aria-label="Navigazione Lounge">
+      <nav className="lounge-bottom-nav-shell" aria-label={t("nav.aria")}>
         <div className="lounge-bottom-nav">
           {items.map((item) => {
             const Icon = item.icon;

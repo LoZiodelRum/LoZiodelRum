@@ -1,71 +1,95 @@
 {
   "nav": {
-    "home": "Home",
-    "discover": "Discover",
-    "profile": "Profile",
-    "events": "Events"
+    "home": "Начало",
+    "discover": "Открий",
+    "profile": "Профил",
+    "events": "Събития",
+    "aria": "Навигация Lounge"
   },
   "home": {
     "topCards": {
-      "premiumVenues": "Premium Venues",
-      "eventsTonight": "Events Tonight",
-      "newReviews": "New Reviews",
-      "newCocktails": "New Cocktails"
+      "premiumVenues": "Премиум локации",
+      "eventsTonight": "Събития тази вечер",
+      "newReviews": "Нови ревюта",
+      "newCocktails": "Нови коктейли"
     },
     "score": {
-      "title": "DrinkWise Score",
-      "tastings": "Tastings",
-      "experiences": "Experiences",
-      "community": "Community",
-      "knowledge": "Knowledge",
-      "topCity": "Top City",
-      "cocktailOfMoment": "Cocktail of the Moment"
+      "title": "DrinkWise Резултат",
+      "tastings": "Дегустации",
+      "experiences": "Изживявания",
+      "community": "Общност",
+      "knowledge": "Знание",
+      "topCity": "Топ град",
+      "cocktailOfMoment": "Коктейл на момента"
     },
-    "eventsTonight": "Tonight's Events",
+    "eventsTonight": "Събития тази вечер",
     "events": {
-      "eventMeta": "8:00 PM · 24 participants"
+      "eventMeta": "20:00 - 24 участници",
+      "headlineTop": "Карибска",
+      "headlineBottom": "Rum Night",
+      "liveBadge": "НА ЖИВО"
     },
     "news": {
-      "title": "Lounge Updates",
-      "bartenderStories": "12 new bartender stories",
-      "watchSharing": "See what they're sharing ✨"
+      "title": "Lounge новини",
+      "bartenderStories": "12 нови истории от бармани",
+      "watchSharing": "Виж какво споделят"
     },
     "suggestions": {
-      "title": "DrinkWise Suggestions",
-      "rum": "Rum Suggestion",
-      "nearbyBars": "Find venues near you",
-      "cocktailTonight": "Cocktail for tonight"
+      "title": "DrinkWise предложения",
+      "rum": "Rum предложение",
+      "nearbyBars": "Намери места близо до теб",
+      "cocktailTonight": "Коктейл за тази вечер"
     },
-    "enterBaretto": "Enter the Baretto"
+    "enterBaretto": "Влез в Baretto"
   },
   "discover": {
-    "title": "Discover",
-    "subtitle": "Explore the universe",
-    "searchAria": "Search",
+    "title": "Открий",
+    "subtitle": "Изследвай вселената",
+    "searchAria": "Търсене",
     "banner": {
-      "title": "Discover",
-      "body": "Find venues, tastings, events and recommendations all in one place."
+      "title": "Открий",
+      "body": "Намери локации, дегустации, събития и препоръки на едно място."
     },
     "cards": {
-      "cocktail": { "title": "Cocktails", "subtitle": "Craft mixology" },
-      "rum": { "title": "Rum", "subtitle": "Rum routes and selections" },
-      "whiskey": { "title": "Whiskey", "subtitle": "Whiskey tastings and selections" },
-      "altriDistillati": { "title": "Other Spirits", "subtitle": "Gin, tequila, mezcal and more" },
-      "vini": { "title": "Wines", "subtitle": "Selected labels and wineries" },
-      "magazine": { "title": "Magazine", "subtitle": "Articles, guides and insights" },
-      "creaCocktail": { "title": "Create your cocktail", "subtitle": "Build your ideal drink" },
-      "premiumBars": { "title": "Premium Venues", "subtitle": "Selected venues near you" },
-      "cocktailBars": { "title": "Cocktail Bars", "subtitle": "Craft mixology" },
-      "rumRooms": { "title": "Rum Rooms", "subtitle": "Dedicated rum routes" },
-      "whiskyClubs": { "title": "Whisky Clubs", "subtitle": "Whisky selections and tastings" },
-      "signatureDrinks": { "title": "Signature Drinks", "subtitle": "Curated creations" },
-      "bartenderPicks": { "title": "Bartender Picks", "subtitle": "Tips from the pros" },
-      "guestShifts": { "title": "Guest Shift", "subtitle": "Evenings with guest bartenders" },
-      "events": { "title": "Events", "subtitle": "Live experiences" },
-      "pairings": { "title": "Pairings", "subtitle": "Food pairing and drinks" },
-      "bottleCollection": { "title": "Bottle Collection", "subtitle": "Saved and favourite bottles" },
-      "experiences": { "title": "Experiences", "subtitle": "Premium curated moments" },
-      "newOpenings": { "title": "New Openings", "subtitle": "New venues in the network" }
+      "cocktail": { "title": "Коктейли", "subtitle": "Авторска миксология" },
+      "rum": { "title": "Rum", "subtitle": "Rum маршрути и селекции" },
+      "whiskey": { "title": "Whiskey", "subtitle": "Whiskey дегустации и селекции" },
+      "altriDistillati": { "title": "Други дестилати", "subtitle": "Gin, tequila, mezcal и още" },
+      "vini": { "title": "Вина", "subtitle": "Избрани етикети и изби" },
+      "magazine": { "title": "Magazine", "subtitle": "Статии, ръководства и анализи" },
+      "creaCocktail": { "title": "Създай коктейл", "subtitle": "Създай идеалната си напитка" },
+      "premiumBars": { "title": "Премиум локации", "subtitle": "Избрани места близо до теб" },
+      "cocktailBars": { "title": "Cocktail барове", "subtitle": "Занаятчийска миксология" },
+      "rumRooms": { "title": "Rum зали", "subtitle": "Специални rum маршрути" },
+      "whiskyClubs": { "title": "Whisky клубове", "subtitle": "Whisky селекции и дегустации" },
+      "signatureDrinks": { "title": "Signature Drinks", "subtitle": "Подбрани авторски напитки" },
+      "bartenderPicks": { "title": "Избор на бармана", "subtitle": "Съвети от професионалисти" },
+      "guestShifts": { "title": "Guest Shift", "subtitle": "Вечери с гост бармани" },
+      "events": { "title": "Събития", "subtitle": "Живи преживявания" },
+      "pairings": { "title": "Съчетания", "subtitle": "Food pairing и напитки" },
+      "bottleCollection": { "title": "Колекция бутилки", "subtitle": "Запазени и любими бутилки" },
+      "experiences": { "title": "Изживявания", "subtitle": "Премиум подбрани моменти" },
+      "newOpenings": { "title": "Нови откривания", "subtitle": "Нови локации в мрежата" }
+    }
+  },
+  "calendar": {
+    "days": ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Нд"],
+    "months": ["Януари", "Февруари", "Март", "Април", "Май", "Юни", "Юли", "Август", "Септември", "Октомври", "Ноември", "Декември"]
+  },
+  "events": {
+    "calendarTitle": "Календар на събитията",
+    "premiumScene": "Премиум сцената на напитките",
+    "allEvents": "Всички събития",
+    "bookEvent": "Резервирай събитие",
+    "incoming": "Предстоящи",
+    "seeAll": "Виж всички",
+    "thisWeek": "Тази седмица",
+    "eventsOnDate_one": "{{count}} събитие",
+    "eventsOnDate_other": "{{count}} събития",
+    "onDate": "на {{date}}",
+    "footer": {
+      "monthStats": "{{total}} събития този месец - 4 премиум мастъркласа",
+      "guestBartenders": "2 гост бармана предстоят"
     }
   }
 }
