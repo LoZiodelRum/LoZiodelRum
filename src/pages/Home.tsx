@@ -469,38 +469,48 @@ export default function Home() {
 
         @media (min-width: 1024px) {
           .hero-section {
-            height: 86vh !important;
-            min-height: 86vh !important;
-            padding-bottom: 54px !important;
-            align-items: flex-start !important;
+            align-items: stretch !important;
+            justify-content: center !important;
+            padding: 0 !important;
           }
 
           .hero-mobile-content {
-            padding: 0 24px 0 !important;
-            margin-top: clamp(18px, 4vh, 46px) !important;
+            width: min(100%, 1180px) !important;
+            max-width: 1180px !important;
+            min-height: 100% !important;
+            box-sizing: border-box !important;
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            justify-content: center !important;
+            padding: clamp(96px, 18vh, 180px) 24px 0 !important;
           }
 
-          .hero-mobile-badge {
-            margin-bottom: 14px !important;
+          .hero-copy-block {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: center !important;
+            gap: 24px !important;
+            width: 100% !important;
+            max-width: 900px !important;
           }
 
           .hero-mobile-title {
-            margin-bottom: 12px !important;
+            margin-bottom: 0 !important;
           }
 
           .hero-mobile-subtitle {
-            margin-bottom: 10px !important;
+            margin: 0 !important;
+            max-width: 760px !important;
           }
 
           .hero-mobile-buttons {
-            margin-top: -10px !important;
-            padding: 0 24px 0 !important;
+            margin-top: 40px !important;
+            padding: 0 !important;
             position: relative !important;
             z-index: 3 !important;
-          }
-
-          .hero-mobile-btn {
-            width: min(260px, 100%) !important;
+            width: 100% !important;
+            justify-content: center !important;
           }
 
           .hero-video-desktop {
@@ -579,93 +589,97 @@ export default function Home() {
         <div style={{ position: "absolute", inset: 0, background: "linear-gradient(to bottom, rgba(0,0,0,0.22), rgba(0,0,0,0.38) 45%, rgba(0,0,0,0.86) 100%)", zIndex: 1 }} />
         <div className="hero-mobile-content" style={{ position: "relative", zIndex: 2, width: "100%", maxWidth: 1180, padding: "0 20px 6px" }}>
           <p className="hero-mobile-badge" style={{ display: "none" }}>{t("home.heroBadge")}</p>
-          <h1
-            className={`hero-mobile-title${isCompactMobileHeroLanguage ? " hero-mobile-title-compact" : ""}`}
+          <div className="hero-copy-block">
+            <h1
+              className={`hero-mobile-title${isCompactMobileHeroLanguage ? " hero-mobile-title-compact" : ""}`}
+              style={{
+                fontSize:
+                  i18n.language === "de"
+                    ? "clamp(1.7rem, 5.9vw, 2.7rem)"
+                    : i18n.language === "bg"
+                    ? "clamp(1.72rem, 6vw, 2.8rem)"
+                    : "clamp(20px, 4vw, 32px)",
+                marginBottom: 10,
+                fontWeight: 800,
+                lineHeight: isCompactMobileHeroLanguage ? 1.01 : 1.05,
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                textAlign: "center",
+                wordBreak: "normal",
+                overflowWrap: isCompactMobileHeroLanguage ? "anywhere" : "break-word",
+                maxWidth: "100%",
+                paddingLeft: 8,
+                paddingRight: 8,
+              }}
+            >
+              <span className="hero-mobile-title-line" style={{ color: "#ffffff" }}>{t("home.heroTitleLine1")}</span>
+              <span className="hero-mobile-title-line" style={{ color: "#f5a623" }}>{t("home.heroTitleLine2")}</span>
+            </h1>
+            <p className="hero-mobile-subtitle" style={{ opacity: 0.85, marginBottom: 8, fontSize: "clamp(14px, 2.5vw, 18px)" }}>
+              {t("home.heroSubtitle")}
+            </p>
+          </div>
+
+          <div
+            className="hero-mobile-buttons"
             style={{
-              fontSize:
-                i18n.language === "de"
-                  ? "clamp(1.7rem, 5.9vw, 2.7rem)"
-                  : i18n.language === "bg"
-                  ? "clamp(1.72rem, 6vw, 2.8rem)"
-                  : "clamp(20px, 4vw, 32px)",
-              marginBottom: 10,
-              fontWeight: 800,
-              lineHeight: isCompactMobileHeroLanguage ? 1.01 : 1.05,
               display: "flex",
-              flexDirection: "column",
-              alignItems: "center",
-              textAlign: "center",
-              wordBreak: "normal",
-              overflowWrap: isCompactMobileHeroLanguage ? "anywhere" : "break-word",
-              maxWidth: "100%",
-              paddingLeft: 8,
-              paddingRight: 8,
+              gap: 16,
+              justifyContent: "center",
+              flexWrap: "wrap",
+              padding: "0 20px 8px",
+              marginTop: 0,
             }}
           >
-            <span className="hero-mobile-title-line" style={{ color: "#ffffff" }}>{t("home.heroTitleLine1")}</span>
-            <span className="hero-mobile-title-line" style={{ color: "#f5a623" }}>{t("home.heroTitleLine2")}</span>
-          </h1>
-          <p className="hero-mobile-subtitle" style={{ opacity: 0.85, marginBottom: 8, fontSize: "clamp(14px, 2.5vw, 18px)" }}>
-            {t("home.heroSubtitle")}
-          </p>
+            <button
+              className="hero-mobile-btn"
+              onClick={() => navigate("/lounge")}
+              style={{
+                background: "#f5a623",
+                color: "#0b0b0b",
+                border: "none",
+                padding: "14px 32px",
+                borderRadius: 8,
+                fontWeight: "bold",
+                cursor: "pointer",
+                fontSize: 15,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "min(240px, 100%)",
+                gap: 12,
+                whiteSpace: "nowrap",
+                flexShrink: 0,
+              }}
+            >
+              <ArrowRight size={20} strokeWidth={2.5} style={{ flexShrink: 0 }} />
+              {t("home.exploreButton")}
+            </button>
+            <button
+              className="hero-mobile-btn"
+              onClick={() => navigate("/mappa")}
+              style={{
+                background: "#f5a623",
+                color: "#0b0b0b",
+                border: "none",
+                padding: "14px 32px",
+                borderRadius: 8,
+                fontWeight: "bold",
+                cursor: "pointer",
+                fontSize: 16,
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                width: "min(240px, 100%)",
+                gap: 10,
+              }}
+            >
+              <MapPin size={20} strokeWidth={2.5} />
+              {t("home.mapButton")}
+            </button>
+          </div>
         </div>
-      </div>
-
-      <div
-        className="hero-mobile-buttons"
-        style={{
-          display: "flex",
-          gap: 16,
-          justifyContent: "center",
-          flexWrap: "wrap",
-          padding: "0 20px 8px",
-          marginTop: 0,
-        }}
-      >
-        <button
-          onClick={() => navigate("/lounge")}
-          style={{
-            background: "#f5a623",
-            color: "#0b0b0b",
-            border: "none",
-            padding: "14px 32px",
-            borderRadius: 8,
-            fontWeight: "bold",
-            cursor: "pointer",
-            fontSize: 15,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            width: "min(240px, 100%)",
-            gap: 12,
-            whiteSpace: "nowrap",
-            flexShrink: 0,
-          }}
-        >
-          <ArrowRight size={20} strokeWidth={2.5} style={{ flexShrink: 0 }} />
-          {t("home.exploreButton")}
-        </button>
-        <button
-          onClick={() => navigate("/mappa")}
-          style={{
-            background: "#f5a623",
-            color: "#0b0b0b",
-            border: "none",
-            padding: "14px 32px",
-            borderRadius: 8,
-            fontWeight: "bold",
-            cursor: "pointer",
-            fontSize: 16,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            width: "min(240px, 100%)",
-            gap: 10,
-          }}
-        >
-          <MapPin size={20} strokeWidth={2.5} />
-          {t("home.mapButton")}
-        </button>
       </div>
 
       <section className="content-section content-section-first locali-section" style={{ padding: "40px 60px", maxWidth: 1400, margin: "68px auto 0" }}>
