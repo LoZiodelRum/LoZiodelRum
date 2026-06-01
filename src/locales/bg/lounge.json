@@ -64,6 +64,7 @@
       "whiskyClubs": { "title": "Whisky клубове", "subtitle": "Whisky селекции и дегустации" },
       "signatureDrinks": { "title": "Signature Drinks", "subtitle": "Подбрани авторски напитки" },
       "bartenderPicks": { "title": "Избор на бармана", "subtitle": "Съвети от професионалисти" },
+      "bancone": { "title": "Bancone", "subtitle": "Влез в чата на DrinkWise общността" },
       "guestShifts": { "title": "Guest Shift", "subtitle": "Вечери с гост бармани" },
       "events": { "title": "Събития", "subtitle": "Живи преживявания" },
       "pairings": { "title": "Съчетания", "subtitle": "Food pairing и напитки" },

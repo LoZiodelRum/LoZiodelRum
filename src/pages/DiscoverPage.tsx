@@ -174,6 +174,16 @@ const CARD_CONFIG: CardConfig[] = [
     glow: "rgba(106, 220, 158, 0.30)",
   },
   {
+    id: "bancone",
+    tKey: "bancone",
+    icon: Martini,
+    to: "/bancone",
+    bgGradient: "linear-gradient(135deg, rgba(34, 125, 156, 0.92), rgba(10, 57, 80, 0.96))",
+    borderColor: "rgba(88, 219, 234, 0.84)",
+    accent: "#58dbea",
+    glow: "rgba(88, 219, 234, 0.28)",
+  },
+  {
     id: "guest-shifts",
     tKey: "guestShifts",
     icon: CalendarDays,

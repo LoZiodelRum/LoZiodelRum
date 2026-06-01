@@ -64,6 +64,7 @@
       "whiskyClubs": { "title": "Whisky Clubs", "subtitle": "Selections et degustations whisky" },
       "signatureDrinks": { "title": "Signature Drinks", "subtitle": "Creations selectionnees" },
       "bartenderPicks": { "title": "Choix Bartender", "subtitle": "Conseils des pros" },
+      "bancone": { "title": "Bancone", "subtitle": "Entrez dans le chat de la communaute DrinkWise" },
       "guestShifts": { "title": "Guest Shift", "subtitle": "Soirees avec bartenders invites" },
       "events": { "title": "Evenements", "subtitle": "Experiences live" },
       "pairings": { "title": "Accords", "subtitle": "Food pairing et boissons" },
