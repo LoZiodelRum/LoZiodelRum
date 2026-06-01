@@ -468,6 +468,41 @@ export default function Home() {
         }
 
         @media (min-width: 1024px) {
+          .hero-section {
+            height: 86vh !important;
+            min-height: 86vh !important;
+            padding-bottom: 54px !important;
+            align-items: flex-start !important;
+          }
+
+          .hero-mobile-content {
+            padding: 0 24px 0 !important;
+            margin-top: clamp(18px, 4vh, 46px) !important;
+          }
+
+          .hero-mobile-badge {
+            margin-bottom: 14px !important;
+          }
+
+          .hero-mobile-title {
+            margin-bottom: 12px !important;
+          }
+
+          .hero-mobile-subtitle {
+            margin-bottom: 10px !important;
+          }
+
+          .hero-mobile-buttons {
+            margin-top: -10px !important;
+            padding: 0 24px 0 !important;
+            position: relative !important;
+            z-index: 3 !important;
+          }
+
+          .hero-mobile-btn {
+            width: min(260px, 100%) !important;
+          }
+
           .hero-video-desktop {
             object-fit: cover !important;
             object-position: center 34% !important;
