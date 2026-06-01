@@ -53,6 +53,7 @@ export default function Navbar() {
   const location = useLocation();
 
   const [languageOpen, setLanguageOpen] = useState(false);
+  const [dashboardOpen, setDashboardOpen] = useState(false);
   const [profileRoleFallback, setProfileRoleFallback] = useState("");
 
   const { t, i18n } = useTranslation("navbar");
@@ -74,6 +75,10 @@ export default function Navbar() {
 
   function closeLanguageMenu() {
     setLanguageOpen(false);
+  }
+
+  function closeDashboardMenu() {
+    setDashboardOpen(false);
   }
 
   function isActive(path: string | string[]) {
@@ -109,15 +114,24 @@ export default function Navbar() {
   );
 
   const ownerRoles = ["proprietario", "owner", "proprietari", "gestore", "locale", "proprietario locale"];
+  const bartenderRoles = ["bartender"];
   const adminRoles = ["admin", "amministratore"];
   const normalizedProfileFallbackRole = normalizeRole(profileRoleFallback);
   const hasOwnerRole =
     ownerRoles.includes(normalizedRole) ||
     ownerRoles.includes(normalizedProfileFallbackRole);
+  const hasBartenderRole =
+    bartenderRoles.includes(normalizedRole) ||
+    bartenderRoles.includes(normalizedProfileFallbackRole);
   const hasAdminRole =
     isAdmin ||
     adminRoles.includes(normalizedRole) ||
     adminRoles.includes(normalizedProfileFallbackRole);
+
+  const OWNER_DASHBOARD_PATH = "/proprietario";
+  // Keep configured path explicit; if project adds this route later, navbar is already wired.
+  const BARTENDER_DASHBOARD_PATH = "/dashboard-bartender";
+  const ADMIN_DASHBOARD_PATH = "/admin";
 
   useEffect(() => {
     let cancelled = false;
@@ -170,11 +184,30 @@ export default function Navbar() {
     };
   }, [user?.id, user?.email]);
 
-  const canAccessOwnerDashboard = hasOwnerRole || (location.pathname.startsWith("/proprietario") && !hasAdminRole);
-  const canAccessAdminDashboard = hasAdminRole || location.pathname.startsWith("/admin");
+  const dashboardItems = hasAdminRole
+    ? [
+        { id: "admin", label: "Dashboard Admin", shortLabel: "Admin", path: ADMIN_DASHBOARD_PATH },
+        { id: "owner", label: "Dashboard Proprietario", shortLabel: "Proprietario", path: OWNER_DASHBOARD_PATH },
+        { id: "bartender", label: "Dashboard Bartender", shortLabel: "Bartender", path: BARTENDER_DASHBOARD_PATH },
+      ]
+    : hasOwnerRole
+    ? [{ id: "owner", label: "Dashboard", shortLabel: "Dashboard", path: OWNER_DASHBOARD_PATH }]
+    : hasBartenderRole
+    ? [{ id: "bartender", label: "Dashboard", shortLabel: "Dashboard", path: BARTENDER_DASHBOARD_PATH }]
+    : [];
+
+  const shouldShowDashboard = dashboardItems.length > 0;
+  const isAnyDashboardActive = dashboardItems.some((item) => isActive(item.path));
+
+  function handleDashboardNavigate(path: string) {
+    closeLanguageMenu();
+    closeDashboardMenu();
+    navigate(path);
+  }
 
   async function handleLogout() {
     closeLanguageMenu();
+    closeDashboardMenu();
     await supabase.auth.signOut();
     navigate("/");
     window.location.reload();
@@ -213,6 +246,7 @@ export default function Navbar() {
         }}
         onClick={() => {
           closeLanguageMenu();
+          closeDashboardMenu();
 
           if (user) {
             navigate("/home");
@@ -280,16 +314,65 @@ export default function Navbar() {
           marginLeft: "auto",
         }}
       >
-        {canAccessOwnerDashboard && (
-          <Link to="/proprietario" style={linkStyle("/proprietario")}>
-            Dashboard
-          </Link>
-        )}
+        {shouldShowDashboard && (
+          <div style={{ position: "relative" }}>
+            <button
+              type="button"
+              onClick={() => {
+                setDashboardOpen((prev) => !prev);
+                setLanguageOpen(false);
+              }}
+              style={{
+                background: "transparent",
+                border: "none",
+                color: isAnyDashboardActive ? "#f5a623" : "#fff",
+                cursor: "pointer",
+                fontWeight: isAnyDashboardActive ? 700 : 400,
+                fontSize: "16px",
+                display: "flex",
+                alignItems: "center",
+                gap: "6px",
+                padding: 0,
+              }}
+            >
+              Dashboard {hasAdminRole ? "▼" : ""}
+            </button>
 
-        {canAccessAdminDashboard && (
-          <Link to="/admin" style={linkStyle("/admin")}>
-            Dashboard Admin
-          </Link>
+            {hasAdminRole && dashboardOpen && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: "42px",
+                  right: 0,
+                  background: "#111",
+                  border: "1px solid #333",
+                  borderRadius: "10px",
+                  overflow: "hidden",
+                  minWidth: "220px",
+                  zIndex: 9999,
+                }}
+              >
+                {dashboardItems.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => handleDashboardNavigate(item.path)}
+                    style={{
+                      width: "100%",
+                      background: "transparent",
+                      border: "none",
+                      color: "#fff",
+                      padding: "12px",
+                      textAlign: "left",
+                      cursor: "pointer",
+                    }}
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
         )}
 
         {/* SELETTORE LINGUA DESKTOP */}
@@ -385,6 +468,79 @@ export default function Navbar() {
           gap: "6px",
         }}
       >
+        {shouldShowDashboard && (
+          <div className="mobile-dashboard-zone" style={{ position: "relative", display: "flex", alignItems: "center" }}>
+            <button
+              type="button"
+              aria-label="Dashboard menu"
+              onClick={() => {
+                setLanguageOpen(false);
+                if (hasAdminRole) {
+                  setDashboardOpen((prev) => !prev);
+                } else {
+                  handleDashboardNavigate(dashboardItems[0].path);
+                }
+              }}
+              style={{
+                background: "rgba(0,0,0,0.58)",
+                border: "1px solid rgba(255,255,255,0.12)",
+                color: "#fff",
+                borderRadius: "10px",
+                fontSize: 13,
+                padding: "6px 8px",
+                display: "flex",
+                alignItems: "center",
+                gap: 6,
+                cursor: "pointer",
+                minWidth: 92,
+                zIndex: 1201,
+                whiteSpace: "nowrap",
+              }}
+            >
+              <span style={{ fontWeight: 700 }}>Dashboard</span>
+                {hasAdminRole && <span style={{ fontSize: 10, opacity: 0.8 }}>▼</span>}
+            </button>
+
+            {hasAdminRole && dashboardOpen && (
+              <div
+                style={{
+                  position: "absolute",
+                  top: 42,
+                  right: 0,
+                  background: "#111",
+                  border: "1px solid rgba(255,255,255,0.10)",
+                  borderRadius: 10,
+                  overflow: "hidden",
+                  minWidth: 160,
+                  zIndex: 2000,
+                  boxShadow: "0 6px 32px #000b",
+                }}
+              >
+                {dashboardItems.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    onClick={() => handleDashboardNavigate(item.path)}
+                    style={{
+                      width: "100%",
+                      background: "transparent",
+                      border: "none",
+                      color: "#fff",
+                      padding: "9px 12px",
+                      textAlign: "left",
+                      cursor: "pointer",
+                      fontSize: 13,
+                    }}
+                  >
+                    {item.shortLabel}
+                  </button>
+                ))}
+              </div>
+            )}
+
+          </div>
+        )}
+
         <div className="mobile-language-zone" style={{ display: "flex", alignItems: "center", marginRight: 0 }}>
           <div className="mobile-language-selector">
             <div className="mobile-language-trigger-wrapper">
