@@ -1,9 +1,42 @@
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { LogOut } from "lucide-react";
 import { useUser } from "../context/UserContext";
 import { supabase } from "../lib/supabaseClient";
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+
+function LogoutSymbol({ size = 20 }: { size?: number }) {
+  return (
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="none"
+      aria-hidden="true"
+    >
+      <path
+        d="M10 4H6c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h4"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M14 8l4 4-4 4"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+      <path
+        d="M8 12h10"
+        stroke="currentColor"
+        strokeWidth="2.2"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      />
+    </svg>
+  );
+}
 
 export default function Navbar() {
   const { user, isAdmin, role } = useUser();
@@ -237,14 +270,6 @@ export default function Navbar() {
           marginLeft: "auto",
         }}
       >
-        <Link to="/home" style={linkStyle("/home")}>
-          {t("home")}
-        </Link>
-
-        <Link to="/lounge" style={linkStyle(["/lounge", "/community"])}>
-          Lounge
-        </Link>
-
         {canAccessOwnerDashboard && (
           <Link to="/proprietario" style={linkStyle("/proprietario")}>
             Dashboard
@@ -276,7 +301,7 @@ export default function Navbar() {
             flexShrink: 0,
           }}
         >
-          <LogOut size={20} strokeWidth={2.2} />
+          <LogoutSymbol size={20} />
         </button>
 
         {/* SELETTORE LINGUA DESKTOP */}
@@ -547,7 +572,7 @@ export default function Navbar() {
               justifyContent: "center",
             }}
           >
-            <LogOut size={20} strokeWidth={2.2} />
+            <LogoutSymbol size={20} />
           </button>
         </div>
       </div>
