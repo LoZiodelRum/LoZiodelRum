@@ -716,16 +716,25 @@ function ProfileStyles() {
       }
       .edit-profile-photo-actions {
         display: flex;
-        flex-wrap: wrap;
+        flex-wrap: nowrap;
         gap: 10px;
+        align-items: center;
+        max-width: 100%;
       }
       .edit-profile-photo-btn {
         border: none;
-        border-radius: 14px;
-        padding: 12px 16px;
+        border-radius: 12px;
+        height: 42px;
+        padding: 0 18px;
         font: inherit;
+        font-size: 15px;
+        line-height: 1;
         font-weight: 800;
         cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        white-space: nowrap;
         background: linear-gradient(135deg, #ffcf6d 0%, #ff9b35 100%);
         color: #1a1308;
         box-shadow: 0 14px 28px rgba(255, 155, 53, 0.18);
@@ -870,6 +879,7 @@ function ProfileStyles() {
         .community-stat { border-right: 0; border-bottom: 1px solid rgba(255,255,255,0.08); }
         .community-stat:last-child { border-bottom: 0; }
         .edit-profile-photo-row { flex-direction: column; align-items: flex-start; }
+        .edit-profile-photo-actions { flex-wrap: wrap; }
         .edit-profile-grid { grid-template-columns: 1fr; }
         .edit-profile-readonly-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
       }
@@ -900,8 +910,20 @@ function ProfileStyles() {
         .edit-profile-card { padding: 18px; }
         .edit-profile-photo-avatar,
         .edit-profile-photo-fallback { width: 96px; height: 96px; }
-        .edit-profile-photo-actions { width: 100%; }
-        .edit-profile-photo-btn { width: 100%; text-align: center; }
+        .edit-profile-photo-actions {
+          width: auto;
+          max-width: 100%;
+          gap: 10px;
+          flex-wrap: wrap;
+        }
+        .edit-profile-photo-btn {
+          width: auto;
+          height: 38px;
+          font-size: 14px;
+          padding: 0 14px;
+          border-radius: 10px;
+          text-align: center;
+        }
         .edit-profile-readonly-grid { grid-template-columns: 1fr; }
         .edit-profile-footer { flex-direction: column-reverse; }
         .edit-profile-secondary-btn,
