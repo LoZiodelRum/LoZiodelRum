@@ -288,9 +288,9 @@ export default function Navbar() {
           aria-label={t("logout")}
           title={t("logout")}
           style={{
-            width: 40,
-            height: 40,
-            borderRadius: 12,
+            width: 48,
+            height: 48,
+            borderRadius: 14,
             border: "1px solid rgba(245,166,35,0.28)",
             background: "rgba(245,166,35,0.08)",
             color: "#f5a623",
@@ -301,7 +301,7 @@ export default function Navbar() {
             flexShrink: 0,
           }}
         >
-          <LogoutSymbol size={20} />
+          <LogoutSymbol size={22} />
         </button>
 
         {/* SELETTORE LINGUA DESKTOP */}
@@ -560,18 +560,18 @@ export default function Navbar() {
               border: "1px solid rgba(245,166,35,0.28)",
               color: "#f5a623",
               cursor: "pointer",
-              padding: "6px 10px",
+              padding: 0,
               marginLeft: 0,
               lineHeight: 1,
               borderRadius: "10px",
               display: "none",
-              minWidth: 68,
-              minHeight: 34,
+              width: 34,
+              height: 34,
               alignItems: "center",
               justifyContent: "center",
             }}
           >
-            <LogoutSymbol size={18} />
+            <LogoutSymbol size={16} />
           </button>
         </div>
       </div>
@@ -665,9 +665,9 @@ export default function Navbar() {
             display: flex !important;
             align-items: center !important;
             justify-content: center !important;
-            min-width: 68px !important;
-            min-height: 34px !important;
-            padding: 6px 10px !important;
+            width: 34px !important;
+            height: 34px !important;
+            padding: 0 !important;
             margin-left: 0 !important;
             transition: background-color 0.2s ease, transform 0.2s ease, opacity 0.2s ease;
             -webkit-tap-highlight-color: transparent;
