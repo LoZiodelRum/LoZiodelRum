@@ -1277,7 +1277,7 @@ export function EditProfilePage() {
       const safeExtension = fileExtension === "jpeg" ? "jpg" : fileExtension;
       const filePath = `profiles/${user.id}_${Date.now()}.${safeExtension || "jpg"}`;
       const uploadResult = await supabase.storage
-        .from("drink-images")
+        .from("images")
         .upload(filePath, file, { upsert: true, contentType: file.type || "image/jpeg" });
 
       if (uploadResult.error) {
@@ -1287,42 +1287,78 @@ export function EditProfilePage() {
         return;
       }
 
-      const { data } = supabase.storage.from("drink-images").getPublicUrl(filePath);
+      const { data } = supabase.storage.from("images").getPublicUrl(filePath);
       const imageUrl = data.publicUrl;
-      const updatePayload: Record<string, string | null> = {};
+      const tableCandidates = Array.from(
+        new Set([profileLookup.tableName, ...PROFILE_TABLE_CANDIDATES]),
+      );
+      const filters = Array.from(
+        new Set(
+          [
+            profileLookup.filterValue
+              ? `${profileLookup.filterKey}:${profileLookup.filterValue}`
+              : null,
+            user.id ? `id:${String(user.id)}` : null,
+            user.id ? `user_id:${String(user.id)}` : null,
+            user.email ? `email:${String(user.email)}` : null,
+          ].filter(Boolean) as string[],
+        ),
+      ).map((entry) => {
+        const separatorIndex = entry.indexOf(":");
+        return {
+          key: entry.slice(0, separatorIndex),
+          value: entry.slice(separatorIndex + 1),
+        };
+      });
 
-      if (Object.prototype.hasOwnProperty.call(profileLookup.record || {}, "foto_profilo")) {
-        updatePayload.foto_profilo = imageUrl;
-      }
-      if (Object.prototype.hasOwnProperty.call(profileLookup.record || {}, "avatar_url")) {
-        updatePayload.avatar_url = imageUrl;
-      }
-      if (!Object.keys(updatePayload).length) {
-        updatePayload.avatar_url = imageUrl;
+      let updatedRecord: ProfileRecord | null = null;
+      let lastUpdateError: unknown = null;
+
+      for (const tableName of tableCandidates) {
+        for (const filter of filters) {
+          const updateResult = await supabase
+            .from(tableName)
+            .update({ avatar_url: imageUrl })
+            .eq(filter.key, filter.value)
+            .select("*")
+            .maybeSingle();
+
+          if (updateResult.error) {
+            lastUpdateError = updateResult.error;
+            continue;
+          }
+
+          if (updateResult.data) {
+            if (
+              tableName === profileLookup.tableName &&
+              filter.key === profileLookup.filterKey &&
+              filter.value === profileLookup.filterValue
+            ) {
+              updatedRecord = updateResult.data as ProfileRecord;
+            } else if (!updatedRecord) {
+              updatedRecord = updateResult.data as ProfileRecord;
+            }
+            break;
+          }
+        }
       }
 
-      const updateResult = await supabase
-        .from(profileLookup.tableName)
-        .update(updatePayload)
-        .eq(profileLookup.filterKey, profileLookup.filterValue)
-        .select("*")
-        .maybeSingle();
-
-      if (updateResult.error) {
-        console.error("[EditProfilePage] Errore aggiornamento foto profilo:", updateResult.error);
+      if (!updatedRecord) {
+        console.error("[EditProfilePage] Errore aggiornamento avatar_url:", lastUpdateError);
         setFeedback("Errore caricamento immagine");
         setFeedbackKind("error");
         return;
       }
 
-      const updatedRecord = (updateResult.data || {
+      const mergedRecord = {
         ...profileLookup.record,
-        ...updatePayload,
-      }) as ProfileRecord;
+        ...updatedRecord,
+        avatar_url: imageUrl,
+      } as ProfileRecord;
 
       setProfileLookup({
         ...profileLookup,
-        record: updatedRecord,
+        record: mergedRecord,
       });
       setFeedback("Upload completato");
       setFeedbackKind("ok");
