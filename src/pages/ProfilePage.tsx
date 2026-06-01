@@ -724,10 +724,10 @@ function ProfileStyles() {
       .edit-profile-photo-btn {
         border: none;
         border-radius: 12px;
-        height: 42px;
-        padding: 0 18px;
+        height: 36px;
+        padding: 0 14px;
         font: inherit;
-        font-size: 15px;
+        font-size: 13px;
         line-height: 1;
         font-weight: 800;
         cursor: pointer;
@@ -918,10 +918,10 @@ function ProfileStyles() {
         }
         .edit-profile-photo-btn {
           width: auto;
-          height: 38px;
-          font-size: 14px;
-          padding: 0 14px;
-          border-radius: 10px;
+          height: 34px;
+          font-size: 12px;
+          padding: 0 12px;
+          border-radius: 9px;
           text-align: center;
         }
         .edit-profile-readonly-grid { grid-template-columns: 1fr; }
