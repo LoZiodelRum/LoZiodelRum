@@ -281,17 +281,17 @@ export default function Home() {
         @media (max-width: 768px) {
           .hero-section {
             display: flex !important;
-            min-height: 100svh !important;
+            min-height: 78svh !important;
             width: 100% !important;
             margin-left: 0 !important;
             margin-right: 0 !important;
             padding-top: 0 !important;
-            padding-bottom: 72px !important;
+            padding-bottom: 24px !important;
             align-items: flex-end !important;
           }
           .hero-mobile-content {
             margin-top: 0 !important;
-            padding: 0 16px 12px !important;
+            padding: 0 16px 8px !important;
             width: 100% !important;
             max-width: none !important;
           }
@@ -305,10 +305,10 @@ export default function Home() {
             border-radius: 999px !important;
             width: fit-content !important;
             font-size: 12px !important;
-            padding: 6px 10px !important;
-            margin: 0 auto 16px auto !important;
+            padding: 5px 10px !important;
+            margin: 0 auto 10px auto !important;
           }
-          .hero-mobile-title { font-size: clamp(28px, 7.2vw, 38px) !important; line-height: 1.08 !important; }
+          .hero-mobile-title { font-size: clamp(26px, 6.9vw, 36px) !important; line-height: 1.05 !important; }
           .hero-mobile-title span {
             font-size: inherit !important;
             line-height: inherit !important;
@@ -320,7 +320,7 @@ export default function Home() {
           }
           .hero-mobile-subtitle {
             font-size: clamp(14px, 5vw, 20px) !important;
-            line-height: 1.4 !important;
+            line-height: 1.32 !important;
             max-width: 300px !important;
             margin-left: auto !important;
             margin-right: auto !important;
@@ -329,8 +329,8 @@ export default function Home() {
             width: 100% !important;
             display: flex !important;
             flex-direction: column !important;
-            gap: 12px !important;
-            margin-top: 24px !important;
+            gap: 10px !important;
+            margin-top: 10px !important;
             margin-bottom: 0 !important;
           }
           .hero-mobile-buttons {
@@ -539,7 +539,7 @@ export default function Home() {
                 i18n.language === "de"
                   ? "clamp(2rem, 7vw, 3.5rem)"
                   : "clamp(20px, 4vw, 32px)",
-              marginBottom: 16,
+              marginBottom: 10,
               fontWeight: 800,
               lineHeight: 1.05,
               display: "flex",
@@ -556,7 +556,7 @@ export default function Home() {
             <span className="hero-mobile-title-line" style={{ color: "#ffffff" }}>{t("home.heroTitleLine1")}</span>
             <span className="hero-mobile-title-line" style={{ color: "#f5a623" }}>{t("home.heroTitleLine2")}</span>
           </h1>
-          <p className="hero-mobile-subtitle" style={{ opacity: 0.85, marginBottom: 12, fontSize: "clamp(14px, 2.5vw, 18px)" }}>
+          <p className="hero-mobile-subtitle" style={{ opacity: 0.85, marginBottom: 8, fontSize: "clamp(14px, 2.5vw, 18px)" }}>
             {t("home.heroSubtitle")}
           </p>
         </div>
@@ -569,7 +569,7 @@ export default function Home() {
           gap: 16,
           justifyContent: "center",
           flexWrap: "wrap",
-          padding: "0 20px 0",
+          padding: "0 20px 8px",
           marginTop: 0,
         }}
       >

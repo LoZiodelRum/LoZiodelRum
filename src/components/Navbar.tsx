@@ -23,6 +23,8 @@ export default function Navbar() {
     ? "es"
     : normalizedLanguage.startsWith("bg")
     ? "bg"
+    : normalizedLanguage.startsWith("fr")
+    ? "fr"
     : "it";
   const formatLanguageLabel = (label: string) =>
     label.replace(/\b([A-Z]{2,})\b/g, (code) => code.toLowerCase());
@@ -424,8 +426,7 @@ export default function Navbar() {
           gap: "6px",
         }}
       >
-        {/* SELETTORE LINGUA MOBILE/TABLET */}
-        <div className="mobile-language-zone" style={{ display: "flex", alignItems: "center", marginRight: 2 }}>
+        <div className="mobile-language-zone" style={{ display: "flex", alignItems: "center", marginRight: 0 }}>
           <div className="mobile-language-selector">
             <div className="mobile-language-trigger-wrapper">
               <button
@@ -433,53 +434,61 @@ export default function Navbar() {
                 aria-label={t("aria.languageSelector")}
                 onClick={() => setLanguageOpen((prev) => !prev)}
                 style={{
-                  background: "rgba(0,0,0,0.7)",
-                  border: "1px solid #333",
+                  background: "rgba(0,0,0,0.58)",
+                  border: "1px solid rgba(255,255,255,0.12)",
                   color: "#fff",
                   borderRadius: "10px",
-                  fontSize: 14,
-                  padding: "6px 10px",
+                  fontSize: 13,
+                  padding: "6px 8px",
                   display: "flex",
                   alignItems: "center",
                   gap: 6,
                   cursor: "pointer",
-                  minWidth: 54,
+                  minWidth: 68,
                   zIndex: 1201,
+                  whiteSpace: "nowrap",
                 }}
               >
-                <span style={{ fontSize: 18, marginRight: 2 }}>{
-                  activeLanguage === "it" ? "🇮🇹" :
-                  activeLanguage === "en" ? "🇬🇧" :
-                  activeLanguage === "de" ? "🇩🇪" :
-                  activeLanguage === "es" ? "🇪🇸" :
-                  activeLanguage === "bg" ? "🇧🇬" :
-                  activeLanguage === "fr" ? "🇫🇷" : "🌐"
-                }</span>
-                <span style={{ textTransform: "lowercase", fontWeight: 600 }}>{activeLanguage}</span>
-                <span style={{ fontSize: 12, marginLeft: 2 }}>▼</span>
+                <span style={{ fontSize: 16, lineHeight: 1 }}>
+                  {activeLanguage === "it"
+                    ? "🇮🇹"
+                    : activeLanguage === "en"
+                    ? "🇬🇧"
+                    : activeLanguage === "de"
+                    ? "🇩🇪"
+                    : activeLanguage === "es"
+                    ? "🇪🇸"
+                    : activeLanguage === "bg"
+                    ? "🇧🇬"
+                    : activeLanguage === "fr"
+                    ? "🇫🇷"
+                    : "🌐"}
+                </span>
+                <span style={{ textTransform: "uppercase", fontWeight: 700, letterSpacing: 0.3 }}>{activeLanguage}</span>
+                <span style={{ fontSize: 10, marginLeft: 1, opacity: 0.8 }}>▼</span>
               </button>
               {languageOpen && (
                 <div
                   style={{
                     position: "absolute",
-                    top: 44,
+                    top: 42,
                     right: 0,
                     background: "#111",
-                    border: "1px solid #333",
+                    border: "1px solid rgba(255,255,255,0.10)",
                     borderRadius: 10,
                     overflow: "hidden",
-                    minWidth: 110,
+                    minWidth: 104,
                     zIndex: 2000,
                     boxShadow: "0 6px 32px #000b",
                   }}
                 >
                   {[
-                    { code: "it", label: "🇮🇹 it" },
-                    { code: "en", label: "🇬🇧 en" },
-                    { code: "de", label: "🇩🇪 de" },
-                    { code: "es", label: "🇪🇸 es" },
-                    { code: "bg", label: "🇧🇬 bg" },
-                    { code: "fr", label: "🇫🇷 fr" },
+                    { code: "it", label: "🇮🇹 IT" },
+                    { code: "en", label: "🇬🇧 EN" },
+                    { code: "de", label: "🇩🇪 DE" },
+                    { code: "es", label: "🇪🇸 ES" },
+                    { code: "bg", label: "🇧🇬 BG" },
+                    { code: "fr", label: "🇫🇷 FR" },
                   ].map(({ code, label }) => (
                     <button
                       key={code}
@@ -492,11 +501,11 @@ export default function Navbar() {
                         background: activeLanguage === code ? "rgba(245,166,35,0.18)" : "transparent",
                         border: "none",
                         color: "#fff",
-                        padding: "12px 16px",
+                        padding: "9px 12px",
                         textAlign: "left",
                         cursor: "pointer",
                         fontWeight: activeLanguage === code ? 700 : 400,
-                        fontSize: 15,
+                        fontSize: 13,
                         display: "flex",
                         alignItems: "center",
                         gap: 8,
@@ -652,8 +661,6 @@ export default function Navbar() {
           </Link>
         )}
 
-        {/* Sezione lingua rimossa dal menu hamburger mobile/tablet */}
-
         <button
           className="mobile-menu-item mobile-logout-btn"
           onClick={handleLogout}
@@ -753,6 +760,10 @@ export default function Navbar() {
             align-items: center;
           }
 
+          .mobile-language-zone {
+            position: relative;
+          }
+
           .navbar-hamburger-mobile {
             display: flex !important;
             align-items: center !important;
@@ -771,7 +782,6 @@ export default function Navbar() {
             margin-left: 0 !important;
             margin-right: 0 !important;
             align-items: center !important;
-            transform: translateX(2px);
             transition: all 0.2s ease;
           }
 
@@ -786,10 +796,10 @@ export default function Navbar() {
             display: flex !important;
             align-items: center !important;
             gap: 6px !important;
-            font-size: 14px !important;
+            font-size: 13px !important;
             line-height: 1 !important;
             white-space: nowrap !important;
-            padding: 8px 8px !important;
+            padding: 6px 8px !important;
             border-radius: 10px;
             border: 1px solid rgba(255, 255, 255, 0.12);
             background: rgba(255, 255, 255, 0.03);
@@ -842,6 +852,10 @@ export default function Navbar() {
           .mobile-language-trigger:active {
             transform: scale(0.97);
             background: rgba(245, 166, 35, 0.12);
+          }
+
+          .mobile-menu-trigger-zone {
+            margin-left: 2px;
           }
 
           .mobile-language-trigger:hover {
