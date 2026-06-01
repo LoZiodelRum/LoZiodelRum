@@ -312,7 +312,7 @@ export default function Navbar() {
                 : activeLanguage === "bg"
                 ? t("language.shortBg")
                 : activeLanguage === "fr"
-                ? "FR"
+                ? "fr"
                 : t("language.shortIt")
             )}
           </button>
@@ -436,7 +436,7 @@ export default function Navbar() {
                   cursor: "pointer",
                 }}
               >
-                🇫🇷 FR
+                🇫🇷 fr
               </button>
             </div>
           )}
@@ -536,7 +536,7 @@ export default function Navbar() {
                     { code: "de", label: "🇩🇪 DE" },
                     { code: "es", label: "🇪🇸 ES" },
                     { code: "bg", label: "🇧🇬 BG" },
-                    { code: "fr", label: "🇫🇷 FR" },
+                    { code: "fr", label: "🇫🇷 fr" },
                   ].map(({ code, label }) => (
                     <button
                       key={code}
