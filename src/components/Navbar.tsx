@@ -44,7 +44,7 @@ const LANGUAGE_OPTIONS = [
   { code: "de", shortLabel: "de", desktopLabel: "🇩🇪 de", mobileLabel: "🇩🇪 DE" },
   { code: "es", shortLabel: "es", desktopLabel: "🇪🇸 es", mobileLabel: "🇪🇸 ES" },
   { code: "bg", shortLabel: "bg", desktopLabel: "🇧🇬 bg", mobileLabel: "🇧🇬 BG" },
-  { code: "fr", shortLabel: "fr", desktopLabel: "🇫🇷 fr", mobileLabel: "🇫🇷 fr" },
+  { code: "fr", shortLabel: "fr", desktopLabel: "🇫🇷 fr", mobileLabel: "🇫🇷 FR" },
 ] as const;
 
 export default function Navbar() {
