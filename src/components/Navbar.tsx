@@ -311,6 +311,8 @@ export default function Navbar() {
                 ? t("language.shortEs")
                 : activeLanguage === "bg"
                 ? t("language.shortBg")
+                : activeLanguage === "fr"
+                ? "FR"
                 : t("language.shortIt")
             )}
           </button>
@@ -417,6 +419,24 @@ export default function Navbar() {
                 }}
               >
                 {formatLanguageLabel(t("language.bg"))}
+              </button>
+
+              <button
+                onClick={() => {
+                  i18n.changeLanguage("fr");
+                  setLanguageOpen(false);
+                }}
+                style={{
+                  width: "100%",
+                  background: "transparent",
+                  border: "none",
+                  color: "#fff",
+                  padding: "12px",
+                  textAlign: "left",
+                  cursor: "pointer",
+                }}
+              >
+                🇫🇷 FR
               </button>
             </div>
           )}
