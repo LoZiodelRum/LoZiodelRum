@@ -1,13 +1,11 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
-import { useTranslation } from "react-i18next";
 import {
   Compass,
-  Wine,
   CalendarDays,
   MessageCircle,
-  QrCode,
   ChevronRight,
+  Map,
 } from "lucide-react";
 
 import LoungeBottomNavigation from "../../components/lounge/LoungeBottomNavigation";
@@ -15,7 +13,6 @@ import { useUser } from "../../context/UserContext";
 
 export default function HomeV2() {
   const navigate = useNavigate();
-  const { t } = useTranslation();
   const { profile } = useUser() as any;
 
   const firstName =
@@ -31,9 +28,8 @@ export default function HomeV2() {
       <div
         style={{
           minHeight: "100vh",
-          background:
-            "radial-gradient(circle at top, #071326 0%, #020817 45%, #01040d 100%)",
-          color: "#fff",
+          background: "#05070d",
+          color: "#ffffff",
           padding: "20px 16px 140px",
         }}
       >
@@ -90,9 +86,9 @@ export default function HomeV2() {
           />
 
           <KpiCard
-            icon={<Wine size={18} />}
-            title="Drink"
-            onClick={() => navigate("/drink")}
+            icon={<Map size={18} />}
+            title="Mappa"
+            onClick={() => navigate("/mappa")}
           />
 
           <KpiCard
@@ -106,33 +102,6 @@ export default function HomeV2() {
             title="Baretto"
             onClick={() => navigate("/baretto")}
           />
-        </div>
-
-        {/* QR */}
-
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "center",
-            marginTop: 26,
-            marginBottom: 26,
-          }}
-        >
-          <button
-            style={{
-              width: 92,
-              height: 92,
-              borderRadius: "50%",
-              border: "none",
-              cursor: "pointer",
-              background:
-                "linear-gradient(135deg,#42f5df,#5df7d3,#6ffff0)",
-              color: "#04131e",
-              boxShadow: "0 0 35px rgba(66,245,223,.45)",
-            }}
-          >
-            <QrCode size={40} />
-          </button>
         </div>
 
         {/* LOCALI */}
@@ -176,14 +145,16 @@ function KpiCard({
     <div
       onClick={onClick}
       style={{
-        background: "rgba(255,255,255,0.04)",
+        background: "#081426",
         border: "1px solid rgba(255,255,255,0.08)",
         borderRadius: 18,
         padding: 18,
         cursor: "pointer",
       }}
     >
-      <div style={{ marginBottom: 10 }}>{icon}</div>
+      <div style={{ marginBottom: 10 }}>
+        {icon}
+      </div>
 
       <div
         style={{
@@ -211,7 +182,7 @@ function SectionCard({
       onClick={onClick}
       style={{
         marginBottom: 16,
-        background: "rgba(255,255,255,0.04)",
+        background: "#081426",
         border: "1px solid rgba(255,255,255,0.08)",
         borderRadius: 20,
         padding: 18,
