@@ -26,7 +26,7 @@ const firstName =
   const pageStyle: React.CSSProperties = {
   minHeight: "100vh",
   background: "...",
-  padding: isMobile ? "10px 14px 40px" : "10px 24px 40px",
+  padding: isMobile ? "25px 18px 40px" : "40px 32px 40px",
   color: "white",
 };
 
@@ -74,12 +74,14 @@ const firstName =
     <>
       <LoungeBottomNavigation />
       <div style={pageStyle}>
-      <div
-        style={{
-          maxWidth: 1450,
-          margin: "0 auto",
-        }}
-      >
+     <div
+  style={{
+    maxWidth: 1450,
+    margin: "0 auto",
+    paddingLeft: isMobile ? 8 : 16,
+    paddingRight: isMobile ? 8 : 16,
+  }}
+>
        <div
   style={{
     display: "flex",
