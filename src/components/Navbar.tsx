@@ -48,9 +48,22 @@ const LANGUAGE_OPTIONS = [
 ] as const;
 
 export default function Navbar() {
+  const location = useLocation();
+
+const isMobile =
+  typeof window !== "undefined" &&
+  window.innerWidth <= 768;
+
+if (isMobile) {
+  return null;
+}
+
+  // Nascondi la navbar nella nuova Home V0
+  if (location.pathname === "/lounge") {
+    return null;
+  }
   const { user, isAdmin, role } = useUser();
   const navigate = useNavigate();
-  const location = useLocation();
 
   const [languageOpen, setLanguageOpen] = useState(false);
   const [dashboardOpen, setDashboardOpen] = useState(false);

@@ -1,30 +1,37 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import {
-  MapPin,
-  ChevronRight,
-  Calendar,
-  MessageCircle,
-  Sparkles,
-} from "lucide-react";
+import { MapPin, Calendar, MessageCircle, Sparkles } from "lucide-react";
+import { supabase } from "../../../lib/supabaseClient";
+import { useUser } from "../../../context/UserContext";
 
-interface HomeScreenProps {
-  onNavigate?: (tab: string) => void;
-}
+type Venue = {
+  id: string;
+  nome: string;
+  citta?: string | null;
+  indirizzo?: string | null;
+  image_url?: string | null;
+  image?: string | null;
+};
 
-export default function HomeScreen({
-  onNavigate,
-}: HomeScreenProps) {
+export default function HomeV0() {
   const navigate = useNavigate();
+  const { user } = useUser();
 
-  const go = (path: string) => {
-    if (onNavigate) {
-      onNavigate(path);
-      return;
-    }
+  const [venues, setVenues] = useState<Venue[]>([]);
 
-    navigate(path);
-  };
+  useEffect(() => {
+    loadVenues();
+  }, []);
+
+  async function loadVenues() {
+    const { data } = await supabase
+      .from("Locali")
+      .select("id,nome,citta,indirizzo,image,image_url")
+      .or("status.eq.approved,approvato.eq.true")
+      .limit(6);
+
+    setVenues(data || []);
+  }
 
   const greeting =
     new Date().getHours() >= 18 ||
@@ -32,23 +39,16 @@ export default function HomeScreen({
       ? "Buonasera"
       : "Buongiorno";
 
-  const user = {
-    nome: "Amico",
-    livello: 0,
-    xp: 0,
-    avatar:
-      "https://ui-avatars.com/api/?name=DrinkWise",
-  };
-
-  const eventiStasera = 0;
-  const communityOnline = 0;
+  const displayName =
+    user?.user_metadata?.username ||
+    "User";
 
   return (
     <div
       style={{
         minHeight: "100vh",
-        paddingBottom: "140px",
         color: "#fff",
+        paddingBottom: "180px",
       }}
     >
       {/* HEADER */}
@@ -82,7 +82,7 @@ export default function HomeScreen({
                   margin: 0,
                 }}
               >
-                {greeting}, {user.nome}
+                {greeting}, {displayName}
               </p>
 
               <span>👋</span>
@@ -108,61 +108,29 @@ export default function HomeScreen({
               }}
             >
               <MapPin size={16} />
-              <span>Posizione non disponibile</span>
+              <span>Community Beverage Network</span>
             </div>
           </div>
 
           <div
             style={{
-              textAlign: "center",
+              width: 78,
+              height: 78,
+              borderRadius: "50%",
+              border: "4px solid #27e3d8",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              fontWeight: 700,
+              fontSize: 22,
             }}
           >
-            <div
-              style={{
-                position: "relative",
-              }}
-            >
-              <img
-                src={user.avatar}
-                alt="avatar"
-                style={{
-                  width: 78,
-                  height: 78,
-                  borderRadius: "50%",
-                  border: "4px solid #27e3d8",
-                }}
-              />
-
-              <div
-                style={{
-                  position: "absolute",
-                  top: -8,
-                  right: -8,
-                  background: "#22c55e",
-                  color: "#fff",
-                  borderRadius: 999,
-                  padding: "6px 10px",
-                  fontSize: 12,
-                  fontWeight: 700,
-                }}
-              >
-                L{user.livello}
-              </div>
-            </div>
-
-            <div
-              style={{
-                marginTop: 10,
-                opacity: 0.75,
-              }}
-            >
-              {user.xp} XP
-            </div>
+            U
           </div>
         </div>
       </header>
 
-      {/* BOX KPI */}
+      {/* KPI */}
 
       <section
         style={{
@@ -177,35 +145,35 @@ export default function HomeScreen({
           }}
         >
           <InfoCard
-            title="Consiglio dello Zio"
-            value="Rum consigliato"
+            title="Discover"
+            value="Esplora"
             icon={<Sparkles size={14} />}
-            color="#f59e0b"
-            onClick={() => go("/drink")}
+            color="#52f7eb"
+            onClick={() => navigate("/discover")}
           />
 
           <InfoCard
-            title="Eventi Stasera"
-            value={String(eventiStasera)}
+            title="Mappa"
+            value={String(venues.length)}
+            icon={<MapPin size={14} />}
+            color="#52f7eb"
+            onClick={() => navigate("/mappa")}
+          />
+
+          <InfoCard
+            title="Eventi"
+            value="0"
             icon={<Calendar size={14} />}
             color="#f59e0b"
-            onClick={() => go("/eventi")}
+            onClick={() => navigate("/eventi")}
           />
 
           <InfoCard
-            title="Community Live"
-            value={String(communityOnline)}
+            title="Baretto"
+            value="Live"
             icon={<MessageCircle size={14} />}
             color="#9333ea"
-            onClick={() => go("/lounge")}
-          />
-
-          <InfoCard
-            title="Il Bancone"
-            value="Entra nella chat"
-            icon={<MessageCircle size={14} />}
-            color="#9333ea"
-            onClick={() => go("/baretto")}
+            onClick={() => navigate("/baretto")}
           />
         </div>
       </section>
@@ -222,13 +190,22 @@ export default function HomeScreen({
           padding: "0 16px",
         }}
       >
-        <EmptyCard text="Nessun locale disponibile" />
-        <EmptyCard text="Nessun locale disponibile" />
+        {venues.length === 0 ? (
+          <EmptyCard text="Nessun locale disponibile" />
+        ) : (
+          venues.map((venue) => (
+            <VenuePreview
+              key={venue.id}
+              venue={venue}
+              onClick={() => navigate(`/venue/${venue.id}`)}
+            />
+          ))
+        )}
       </div>
 
       {/* EVENTI */}
 
-      <SectionHeader title="Stasera in evidenza" />
+      <SectionHeader title="Eventi" />
 
       <div
         style={{
@@ -275,13 +252,65 @@ export default function HomeScreen({
   );
 }
 
-function InfoCard({
-  title,
-  value,
-  icon,
-  color,
+function VenuePreview({
+  venue,
   onClick,
-}: any) {
+}: {
+  venue: Venue;
+  onClick: () => void;
+}) {
+  const image =
+    venue.image_url ||
+    venue.image ||
+    "https://via.placeholder.com/600x400?text=DrinkWise";
+
+  return (
+    <div
+      onClick={onClick}
+      style={{
+        minWidth: 220,
+        maxWidth: 220,
+        cursor: "pointer",
+        borderRadius: 20,
+        overflow: "hidden",
+        background: "rgba(255,255,255,.04)",
+        border: "1px solid rgba(255,255,255,.08)",
+      }}
+    >
+      <img
+        src={image}
+        alt={venue.nome}
+        style={{
+          width: "100%",
+          height: 140,
+          objectFit: "cover",
+        }}
+      />
+
+      <div style={{ padding: 12 }}>
+        <div
+          style={{
+            fontWeight: 700,
+            marginBottom: 6,
+          }}
+        >
+          {venue.nome}
+        </div>
+
+        <div
+          style={{
+            fontSize: 12,
+            opacity: 0.7,
+          }}
+        >
+          {venue.citta || venue.indirizzo || "-"}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function InfoCard({ title, value, icon, color, onClick }: any) {
   return (
     <div
       onClick={onClick}
@@ -313,13 +342,7 @@ function InfoCard({
           {title}
         </span>
 
-        <div
-          style={{
-            color,
-          }}
-        >
-          {icon}
-        </div>
+        <div style={{ color }}>{icon}</div>
       </div>
 
       <div
@@ -334,17 +357,11 @@ function InfoCard({
   );
 }
 
-function SectionHeader({
-  title,
-}: {
-  title: string;
-}) {
+function SectionHeader({ title }: { title: string }) {
   return (
     <div
       style={{
         padding: "28px 16px 14px",
-        display: "flex",
-        justifyContent: "space-between",
       }}
     >
       <h2
@@ -357,17 +374,11 @@ function SectionHeader({
       >
         {title}
       </h2>
-
-      <ChevronRight />
     </div>
   );
 }
 
-function EmptyCard({
-  text,
-}: {
-  text: string;
-}) {
+function EmptyCard({ text }: { text: string }) {
   return (
     <div
       style={{
@@ -385,3 +396,4 @@ function EmptyCard({
       {text}
     </div>
   );
+}

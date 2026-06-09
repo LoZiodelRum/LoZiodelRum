@@ -1,66 +1,95 @@
-'use client'
-
-import { motion } from 'framer-motion'
-import { Sparkles } from 'lucide-react'
-import { Card } from '@/components/ui/card'
-import { Badge } from '@/components/ui/badge'
-import type { Drink } from '@/lib/types'
+import { Sparkles } from "lucide-react";
 
 interface DrinkCardProps {
-  drink: Drink
-  index: number
+  drink: {
+    id?: string;
+    name?: string;
+    venue_name?: string;
+    image_url?: string;
+    price?: number | string;
+  };
+  index?: number;
 }
 
-export function DrinkCard({ drink, index }: DrinkCardProps) {
+export function DrinkCard({ drink }: DrinkCardProps) {
+  const image =
+    drink?.image_url ||
+    "https://via.placeholder.com/600x400?text=DrinkWise";
+
   return (
-    <motion.div
-      initial={{ opacity: 0, scale: 0.9 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ delay: index * 0.1, duration: 0.3 }}
+    <div
+      style={{
+        minWidth: 220,
+        maxWidth: 220,
+        borderRadius: 18,
+        overflow: "hidden",
+        background: "rgba(255,255,255,0.04)",
+        border: "1px solid rgba(255,255,255,0.08)",
+      }}
     >
-      <Card className="relative w-[140px] overflow-hidden glass border-border/50 flex-shrink-0">
-        {/* Drink Image */}
-        <div className="relative h-28 overflow-hidden">
-          <img
-            src={drink.image_url}
-            alt={drink.name}
-            className="h-full w-full object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-transparent to-transparent" />
-          
-          {/* New badge */}
-          {drink.is_new && (
-            <div className="absolute top-2 left-2">
-              <Badge className="bg-primary/90 text-primary-foreground border-0 text-[10px] px-1.5 py-0.5">
-                NEW
-              </Badge>
-            </div>
-          )}
+      <div
+        style={{
+          height: 130,
+          overflow: "hidden",
+        }}
+      >
+        <img
+          src={image}
+          alt={drink?.name || "Drink"}
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+          }}
+        />
+      </div>
 
-          {/* Points badge */}
-          {drink.points_bonus > 0 && (
-            <div className="absolute top-2 right-2">
-              <Badge className="bg-accent/90 text-accent-foreground border-0 text-[10px] px-1.5 py-0.5">
-                +{drink.points_bonus} XP
-              </Badge>
-            </div>
-          )}
+      <div
+        style={{
+          padding: 12,
+        }}
+      >
+        <div
+          style={{
+            fontWeight: 700,
+            fontSize: 15,
+            color: "#fff",
+            marginBottom: 8,
+          }}
+        >
+          {drink?.name || "Drink non disponibile"}
         </div>
 
-        {/* Drink Info */}
-        <div className="p-2.5">
-          <h4 className="font-medium text-sm text-foreground truncate">{drink.name}</h4>
-          <p className="text-[10px] text-muted-foreground truncate mt-0.5">
-            @ {drink.venue_name}
-          </p>
-          <div className="flex items-center justify-between mt-2">
-            <span className="text-sm font-semibold text-primary">
-              €{drink.price}
-            </span>
-            <Sparkles className="h-3.5 w-3.5 text-accent" />
-          </div>
+        <div
+          style={{
+            fontSize: 12,
+            opacity: 0.7,
+            color: "#fff",
+            marginBottom: 10,
+          }}
+        >
+          {drink?.venue_name || "-"}
         </div>
-      </Card>
-    </motion.div>
-  )
+
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <span
+            style={{
+              fontWeight: 700,
+              color: "#52f7eb",
+            }}
+          >
+            {drink?.price ? `€${drink.price}` : "-"}
+          </span>
+
+          <Sparkles size={16} color="#52f7eb" />
+        </div>
+      </div>
+    </div>
+  );
 }
