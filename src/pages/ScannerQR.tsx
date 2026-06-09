@@ -1,41 +1,45 @@
 import { useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { X, Target } from "lucide-react";
-import { Html5QrcodeScanner } from "html5-qrcode";
+import { Html5Qrcode } from "html5-qrcode";
 
 export default function ScannerQR() {
   const navigate = useNavigate();
 
   useEffect(() => {
-    console.log("ScannerQR caricato");
+    let scanner: Html5Qrcode | null = null;
 
-    const scanner = new Html5QrcodeScanner(
-      "reader",
-      {
-        fps: 10,
-        qrbox: 260,
-      },
-      false
-    );
+    const startScanner = async () => {
+      try {
+        scanner = new Html5Qrcode("reader");
 
-    console.log("Scanner creato");
+        await scanner.start(
+          { facingMode: "environment" },
+          {
+            fps: 10,
+            qrbox: { width: 260, height: 260 },
+            aspectRatio: 1,
+          },
+          (decodedText) => {
+            console.log("QR LETTO:", decodedText);
+          },
+          () => {}
+        );
 
-    scanner.render(
-      (decodedText) => {
-        console.log("QR LETTO:", decodedText);
-      },
-      (error) => {
-        // evita spam in console
+        console.log("Fotocamera posteriore avviata");
+      } catch (err) {
+        console.error("Errore scanner:", err);
       }
-    );
+    };
 
-    console.log("Render scanner");
+    startScanner();
 
     return () => {
-      scanner
-        .clear()
-        .then(() => console.log("Scanner chiuso"))
-        .catch(() => {});
+      try {
+        scanner?.clear();
+      } catch {
+        // ignora
+      }
     };
   }, []);
 
@@ -55,8 +59,6 @@ export default function ScannerQR() {
           margin: "0 auto",
         }}
       >
-        {/* HEADER */}
-
         <div
           style={{
             display: "flex",
@@ -91,8 +93,6 @@ export default function ScannerQR() {
           </button>
         </div>
 
-        {/* SCANNER */}
-
         <div
           style={{
             border: "4px solid #1de9f6",
@@ -101,9 +101,16 @@ export default function ScannerQR() {
             boxShadow: "0 0 40px rgba(0,255,255,.15)",
             marginBottom: 32,
             background: "#000",
+            height: 420,
           }}
         >
-          <div id="reader" />
+          <div
+            id="reader"
+            style={{
+              width: "100%",
+              height: "100%",
+            }}
+          />
         </div>
 
         <div
@@ -116,8 +123,6 @@ export default function ScannerQR() {
         >
           Inquadra il QR code del locale
         </div>
-
-        {/* BADGE */}
 
         <div
           style={{
