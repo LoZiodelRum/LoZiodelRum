@@ -48,7 +48,7 @@ import ProfilePage, {
 } from "./pages/ProfilePage";
 
 // LOUNGE
-import LoungeShell from "./pages/lounge/LoungeShell";
+import LoungeHome from "./pages/lounge/LoungeHome";
 
 // ALTRE PAGINE
 import Crea from "./pages/Crea";
@@ -251,7 +251,7 @@ export default function App() {
               path="/community"
               element={
                 <ProtectedRoute>
-                  <LoungeShell />
+                  <LoungeHome />
                 </ProtectedRoute>
               }
             />
@@ -260,7 +260,7 @@ export default function App() {
               path="/lounge"
               element={
                 <ProtectedRoute>
-                  <LoungeShell />
+                  <LoungeHome />
                 </ProtectedRoute>
               }
             />

@@ -2,20 +2,33 @@ import { useNavigate } from "react-router-dom";
 import React from "react";
 import LoungeBottomNavigation from "../../components/lounge/LoungeBottomNavigation";
 import { useTranslation } from "react-i18next";
+import { useUser } from "../../context/UserContext";
 
 export default function LoungeHome() {
   const navigate = useNavigate();
   const { t } = useTranslation("lounge");
+  const { user } = useUser() as any;
+
+const avatarUrl =
+  user?.user_metadata?.foto_profilo ||
+  user?.user_metadata?.avatar_url ||
+  user?.user_metadata?.picture ||
+  "";
+
+const firstName =
+  user?.user_metadata?.nome ||
+  user?.user_metadata?.username ||
+  user?.email?.split("@")[0] ||
+  "Utente";
 
   const isMobile = window.innerWidth < 980;
 
   const pageStyle: React.CSSProperties = {
-    minHeight: "100vh",
-    background:
-      "radial-gradient(circle at top, #071326 0%, #020817 45%, #01040d 100%)",
-    padding: isMobile ? "100px 14px 40px" : "120px 24px 40px",
-    color: "white",
-  };
+  minHeight: "100vh",
+  background: "...",
+  padding: isMobile ? "10px 14px 40px" : "10px 24px 40px",
+  color: "white",
+};
 
   const cardStyle: React.CSSProperties = {
     background: "rgba(7,15,35,0.88)",
@@ -67,6 +80,121 @@ export default function LoungeHome() {
           margin: "0 auto",
         }}
       >
+       <div
+  style={{
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    marginBottom: 30,
+  }}
+>
+  <div>
+    <div
+      style={{
+        color: "#f5b942",
+        fontSize: 13,
+        fontWeight: 700,
+        letterSpacing: 2,
+        textTransform: "uppercase",
+        marginBottom: 12,
+      }}
+    >
+      BUONGIORNO, {firstName.toUpperCase()} 👋
+    </div>
+
+    <h1
+      style={{
+        margin: 0,
+        fontSize: isMobile ? 34 : 42,
+        fontWeight: 900,
+      }}
+    >
+      DrinkWise
+    </h1>
+
+    <div
+      style={{
+        marginTop: 14,
+        color: "rgba(255,255,255,.65)",
+        fontSize: 18,
+      }}
+    >
+      📍 Napoli
+    </div>
+  </div>
+
+  <div
+    style={{
+      position: "relative",
+      width: 90,
+      textAlign: "center",
+    }}
+  >
+   <div
+  style={{
+    width: 90,
+    height: 90,
+    borderRadius: "50%",
+    border: "5px solid #2fd4df",
+    overflow: "hidden",
+    background: "#0b1320",
+  }}
+>
+  {avatarUrl ? (
+    <img
+      src={avatarUrl}
+      alt={firstName}
+      style={{
+        width: "100%",
+        height: "100%",
+        objectFit: "cover",
+      }}
+    />
+  ) : (
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        fontSize: 42,
+        fontWeight: 800,
+        color: "#2fd4df",
+      }}
+    >
+      {firstName.charAt(0).toUpperCase()}
+    </div>
+  )}
+</div>
+
+    <div
+      style={{
+        position: "absolute",
+        top: -8,
+        right: -10,
+        background: "#2fdc7d",
+        color: "#fff",
+        borderRadius: 20,
+        padding: "6px 12px",
+        fontSize: 14,
+        fontWeight: 800,
+      }}
+    >
+      L0
+    </div>
+
+    <div
+      style={{
+        marginTop: 10,
+        color: "rgba(255,255,255,.7)",
+        fontWeight: 600,
+      }}
+    >
+      0 XP
+    </div>
+  </div>
+</div>
         {/* TOP CARDS */}
         <div
           style={{
