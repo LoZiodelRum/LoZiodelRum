@@ -50,7 +50,7 @@ export default function ScannerQR() {
         background:
           "radial-gradient(circle at top,#071326 0%,#020817 45%,#01040d 100%)",
         color: "white",
-        padding: "24px",
+        padding: "16px",
       }}
     >
       <div
@@ -69,7 +69,7 @@ export default function ScannerQR() {
         >
           <h1
             style={{
-              fontSize: 42,
+              fontSize: 28,
               fontWeight: 800,
               margin: 0,
             }}
@@ -80,8 +80,8 @@ export default function ScannerQR() {
           <button
             onClick={() => navigate(-1)}
             style={{
-              width: 56,
-              height: 56,
+              width: 48,
+              height: 48,
               borderRadius: "50%",
               border: "1px solid rgba(255,255,255,.1)",
               background: "#050b16",
@@ -89,7 +89,7 @@ export default function ScannerQR() {
               cursor: "pointer",
             }}
           >
-            <X size={28} />
+            <X size={22} />
           </button>
         </div>
 
@@ -99,9 +99,9 @@ export default function ScannerQR() {
             borderRadius: 32,
             overflow: "hidden",
             boxShadow: "0 0 40px rgba(0,255,255,.15)",
-            marginBottom: 32,
+            marginBottom: 20,
             background: "#000",
-            height: 420,
+            height: 250,
           }}
         >
           <div
@@ -117,8 +117,8 @@ export default function ScannerQR() {
           style={{
             textAlign: "center",
             color: "rgba(255,255,255,.7)",
-            fontSize: 22,
-            marginBottom: 40,
+            fontSize: 16,
+            marginBottom: 20,
           }}
         >
           Inquadra il QR code del locale
@@ -129,16 +129,16 @@ export default function ScannerQR() {
             background: "#050b16",
             borderRadius: 30,
             border: "1px solid rgba(255,255,255,.08)",
-            padding: 24,
+            padding: 16,
             display: "flex",
             alignItems: "center",
-            gap: 20,
+            gap: 14,
           }}
         >
           <div
             style={{
-              width: 72,
-              height: 72,
+              width: 56,
+              height: 56,
               borderRadius: 24,
               background: "rgba(0,255,255,.08)",
               display: "flex",
@@ -146,13 +146,13 @@ export default function ScannerQR() {
               alignItems: "center",
             }}
           >
-            <Target size={34} color="#1de9f6" />
+            <Target size={24} color="#1de9f6" />
           </div>
 
           <div>
             <div
               style={{
-                fontSize: 34,
+                fontSize: 24,
                 fontWeight: 800,
               }}
             >
