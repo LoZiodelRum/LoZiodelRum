@@ -2,6 +2,7 @@ import React from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import MainLayout from "./layouts/MainLayout";
 import RuntimeErrorBoundary from "./components/RuntimeErrorBoundary";
+import ScannerQR from "./pages/ScannerQR";
 
 // Scroll automatico top pagina
 function ScrollToTop() {
@@ -264,7 +265,14 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
-
+<Route
+  path="/scanner"
+  element={
+    <ProtectedRoute>
+      <ScannerQR />
+    </ProtectedRoute>
+  }
+/>
             {/* EVENTI */}
             <Route
               path="/eventi"

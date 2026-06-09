@@ -107,11 +107,11 @@ export default function LoungeBottomNavigation() {
         .dw-qr{
           position:absolute;
           left:50%;
-          top:-30px;
+          top:-20px;
           transform:translateX(-50%);
-          width:76px;
-          height:76px;
-          border-radius:50%;
+          width:68px;
+          height:68px;
+          border-radius:40%;
           border:4px solid #081120;
           background:linear-gradient(
             135deg,
@@ -181,7 +181,7 @@ export default function LoungeBottomNavigation() {
 
           <button
             className="dw-qr"
-            onClick={() => navigate("/scan")}
+            onClick={() => navigate("/scanner")}
           >
             <QrCode size={34} />
           </button>
