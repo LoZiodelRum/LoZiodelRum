@@ -156,14 +156,14 @@ export default function RegisterModal({ open, onClose }: Props) {
     markLocationOnboardingDone();
     setShowLocationOnboarding(false);
     onClose();
-    navigate("/home");
+   navigate("/lounge");
   }
 
   function handleEnableLocation() {
     requestLocation();
     setShowLocationOnboarding(false);
     onClose();
-    navigate("/home");
+    navigate("/lounge");
   }
 
   return (

@@ -87,7 +87,7 @@ function Auth() {
     // Login riuscito, redirect
     setLoading(false);
     setMsg("");
-    navigate("/home");
+    navigate("/lounge");
   }
 
 
