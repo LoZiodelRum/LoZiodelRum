@@ -22,6 +22,7 @@ import type { LucideIcon } from "lucide-react";
 import LoungeBottomNavigation from "../components/lounge/LoungeBottomNavigation";
 import { useUser } from "../context/UserContext";
 import { supabase } from "../lib/supabaseClient";
+import { useTranslation } from "react-i18next";
 
 type ProfileRecord = {
   id?: string;
@@ -936,6 +937,23 @@ function ProfileStyles() {
 
 export default function ProfilePage() {
   const navigate = useNavigate();
+  const { i18n } = useTranslation();
+
+const [languageOpen, setLanguageOpen] = React.useState(false);
+
+const activeLanguage = String(i18n.language || "it")
+  .toLowerCase()
+  .startsWith("en")
+  ? "en"
+  : String(i18n.language || "it").toLowerCase().startsWith("de")
+  ? "de"
+  : String(i18n.language || "it").toLowerCase().startsWith("es")
+  ? "es"
+  : String(i18n.language || "it").toLowerCase().startsWith("bg")
+  ? "bg"
+  : String(i18n.language || "it").toLowerCase().startsWith("fr")
+  ? "fr"
+  : "it";
   const {
     displayName,
     memberRole,
@@ -978,7 +996,92 @@ export default function ProfilePage() {
             </div>
           </div>
 
-          <div className="profile-topbar-actions">
+          <div
+  className="profile-topbar-actions"
+  style={{ position: "relative" }}
+>
+            <ProfileHeaderButton
+  onClick={() => setLanguageOpen((prev) => !prev)}
+>
+  <span style={{ fontSize: 16, lineHeight: 1 }}>
+    {activeLanguage === "it"
+      ? "🇮🇹"
+      : activeLanguage === "en"
+      ? "🇬🇧"
+      : activeLanguage === "de"
+      ? "🇩🇪"
+      : activeLanguage === "es"
+      ? "🇪🇸"
+      : activeLanguage === "bg"
+      ? "🇧🇬"
+      : activeLanguage === "fr"
+      ? "🇫🇷"
+      : "🌐"}
+  </span>
+
+  <span
+    style={{
+      textTransform: "uppercase",
+      fontWeight: 700,
+      letterSpacing: 0.3,
+      marginLeft: 6,
+    }}
+  >
+    {activeLanguage}
+  </span>
+</ProfileHeaderButton>
+{languageOpen && (
+  <div
+    style={{
+      position: "absolute",
+      top: 70,
+      right: 0,
+      background: "#111",
+      border: "1px solid rgba(255,255,255,0.10)",
+      borderRadius: 10,
+      overflow: "hidden",
+      minWidth: 120,
+      zIndex: 9999,
+      boxShadow: "0 6px 32px #000b",
+    }}
+  >
+    {[
+      { code: "it", label: "🇮🇹 IT" },
+      { code: "en", label: "🇬🇧 EN" },
+      { code: "de", label: "🇩🇪 DE" },
+      { code: "es", label: "🇪🇸 ES" },
+      { code: "bg", label: "🇧🇬 BG" },
+      { code: "fr", label: "🇫🇷 FR" },
+    ].map((lang) => (
+      <button
+        key={lang.code}
+        onClick={() => {
+          i18n.changeLanguage(lang.code);
+          setLanguageOpen(false);
+        }}
+        style={{
+          width: "100%",
+          background:
+            activeLanguage === lang.code
+              ? "rgba(245,166,35,0.18)"
+              : "transparent",
+          border: "none",
+          color: "#fff",
+          padding: "10px 12px",
+          textAlign: "left",
+          cursor: "pointer",
+          fontWeight: activeLanguage === lang.code ? 700 : 400,
+          borderLeft:
+            activeLanguage === lang.code
+              ? "3px solid #f5a623"
+              : "3px solid transparent",
+        }}
+      >
+        {lang.label}
+      </button>
+    ))}
+  </div>
+)}
             <ProfileHeaderButton onClick={() => navigate("/discover")}>
               <Grid2X2 size={28} strokeWidth={2} />
             </ProfileHeaderButton>
@@ -1119,6 +1222,23 @@ function SimpleProfileSubpage({ title, description, backTo }: { title: string; d
 
 export function EditProfilePage() {
   const navigate = useNavigate();
+  const { i18n } = useTranslation();
+
+const [languageOpen, setLanguageOpen] = React.useState(false);
+
+const activeLanguage = String(i18n.language || "it")
+  .toLowerCase()
+  .startsWith("en")
+  ? "en"
+  : String(i18n.language || "it").toLowerCase().startsWith("de")
+  ? "de"
+  : String(i18n.language || "it").toLowerCase().startsWith("es")
+  ? "es"
+  : String(i18n.language || "it").toLowerCase().startsWith("bg")
+  ? "bg"
+  : String(i18n.language || "it").toLowerCase().startsWith("fr")
+  ? "fr"
+  : "it";
   const { user } = useUser();
   const [loading, setLoading] = React.useState(true);
   const [saving, setSaving] = React.useState(false);
