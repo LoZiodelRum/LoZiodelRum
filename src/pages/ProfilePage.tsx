@@ -107,6 +107,7 @@ const EDITABLE_PROFILE_FIELDS: EditableFieldConfig[] = [
 const READONLY_PROFILE_FIELDS: EditableFieldConfig[] = [
   { key: "livello", label: "Livello", aliases: ["livello", "level"] },
   { key: "punti", label: "Punti", aliases: ["punti", "points"] },
+  { key: "ruolo", label: "Ruolo", aliases: ["ruolo", "role"] },
   { key: "badge", label: "Badge", aliases: ["badge", "badges"] },
   { key: "numero_recensioni", label: "Numero recensioni", aliases: ["numero_recensioni"] },
   { key: "numero_locali_visitati", label: "Numero locali visitati", aliases: ["numero_locali_visitati"] },
@@ -1130,15 +1131,16 @@ export function EditProfilePage() {
   const [readonlyEntries, setReadonlyEntries] = React.useState<Array<{ label: string; value: string }>>([]);
   const cameraInputRef = React.useRef<HTMLInputElement | null>(null);
   const galleryInputRef = React.useRef<HTMLInputElement | null>(null);
-
   const profileImageUrl = getProfileImageUrl(profileLookup?.record || null, (user?.user_metadata || {}) as Record<string, unknown>);
-  const profileImageInitials = String(formValues.nome || formValues.username || user?.email || "DW")
-    .split(/\s+/)
+  const profileImageInitials = String(formValues.nome || formValues.username || user?.email || "DW") 
+  
+  .split(/\s+/)
     .filter(Boolean)
     .slice(0, 2)
     .map((part) => part.charAt(0).toUpperCase())
     .join("") || "DW";
-
+const ruoloAttuale =
+  readonlyEntries.find((entry) => entry.label === "Ruolo")?.value?.toLowerCase() || "";
   React.useEffect(() => {
     let active = true;
 
@@ -1467,6 +1469,51 @@ export function EditProfilePage() {
                   ))}
                 </div>
 
+<div className="edit-profile-readonly-wrap">
+  <h3>Tipo di Account</h3>
+
+  <div className="edit-profile-readonly-grid">
+
+    <div className="edit-profile-readonly-card">
+      <span>Account attuale</span>
+      <strong>
+        {ruoloAttuale
+          ? ruoloAttuale.charAt(0).toUpperCase() + ruoloAttuale.slice(1)
+          : "Utente"}
+      </strong>
+    </div>
+
+    {!ruoloAttuale && (
+      <>
+        <div
+          className="edit-profile-readonly-card"
+          onClick={() => navigate("/registrazione-proprietario")}
+          style={{ cursor: "pointer" }}
+        >
+          <span>Diventa Proprietario</span>
+          <strong>Attiva</strong>
+        </div>
+
+        <div
+          className="edit-profile-readonly-card"
+          onClick={() => navigate("/registrazione-bartender")}
+          style={{ cursor: "pointer" }}
+        >
+          <span>Diventa Bartender</span>
+          <strong>Attiva</strong>
+        </div>
+      </>
+    )}
+
+    {ruoloAttuale && (
+      <div className="edit-profile-readonly-card">
+        <span>Modifica ruolo</span>
+        <strong>Contatta l'amministrazione</strong>
+      </div>
+    )}
+
+  </div>
+</div>
                 {readonlyEntries.length > 0 && (
                   <div className="edit-profile-readonly-wrap">
                     <h3>Statistiche profilo</h3>

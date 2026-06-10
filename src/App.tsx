@@ -3,6 +3,8 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import MainLayout from "./layouts/MainLayout";
 import RuntimeErrorBoundary from "./components/RuntimeErrorBoundary";
 import ScannerQR from "./pages/ScannerQR";
+import RegistrazioneProprietario from "./pages/RegistrazioneProprietario";
+import RegistrazioneBartender from "./pages/RegistrazioneBartender";
 
 // Scroll automatico top pagina
 function ScrollToTop() {
@@ -124,7 +126,23 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
+<Route
+  path="/registrazione-proprietario"
+  element={
+    <ProtectedRoute>
+      <RegistrazioneProprietario />
+    </ProtectedRoute>
+  }
+/>
 
+<Route
+  path="/registrazione-bartender"
+  element={
+    <ProtectedRoute>
+      <RegistrazioneBartender />
+    </ProtectedRoute>
+  }
+/>
             <Route
               path="/profilo/preferenze"
               element={
