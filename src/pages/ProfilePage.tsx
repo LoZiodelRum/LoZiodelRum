@@ -1505,13 +1505,6 @@ const ruoloAttuale =
       </>
     )}
 
-    {ruoloAttuale && (
-      <div className="edit-profile-readonly-card">
-        <span>Modifica ruolo</span>
-        <strong>Contatta l'amministrazione</strong>
-      </div>
-    )}
-
   </div>
 </div>
                 {readonlyEntries.length > 0 && (
