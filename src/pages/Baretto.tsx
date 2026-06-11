@@ -178,18 +178,18 @@ function RoomCard({
         background: "linear-gradient(180deg,#0c1830 0%, #0b1628 100%)",
         border: "1px solid rgba(212,165,74,0.15)",
         borderRadius: "24px",
-        padding: "18px",
+        padding: "14px",
         display: "flex",
         alignItems: "center",
-        gap: "18px",
+        gap: "10px",
         boxShadow: "0 8px 24px rgba(0,0,0,0.25)",
       }}
     >
       <div
         style={{
-          width: "80px",
-          height: "80px",
-          minWidth: "80px",
+          width: "56px",
+          height: "56px",
+          minWidth: "56px",
           borderRadius: "50%",
           overflow: "hidden",
           border: "2px solid rgba(212,165,74,0.4)",
@@ -214,7 +214,7 @@ function RoomCard({
         <h3
           style={{
             margin: 0,
-            fontSize: "22px",
+            fontSize: "17px",
             color: "#fff",
             marginBottom: "8px",
           }}
@@ -223,20 +223,24 @@ function RoomCard({
         </h3>
 
         <div
-          style={{
-            color: "#d7dbe3",
-            fontSize: "14px",
-            marginBottom: "12px",
-            lineHeight: 1.5,
-          }}
-        >
+  style={{
+    color: "#d7dbe3",
+    fontSize: "13px",
+    marginBottom: "8px",
+    lineHeight: 1.4,
+    overflow: "hidden",
+    display: "-webkit-box",
+    WebkitLineClamp: 2,
+    WebkitBoxOrient: "vertical",
+  }}
+>
           {room.descrizione || "Discussioni e confronto tra appassionati"}
         </div>
 
         <div
           style={{
             display: "flex",
-            gap: "18px",
+            gap: "12px",
             color: "#9ca3af",
             fontSize: "13px",
           }}
@@ -255,10 +259,10 @@ function RoomCard({
           background: "transparent",
           border: "2px solid #D4A54A",
           color: "#D4A54A",
-          padding: "12px 22px",
-          borderRadius: "14px",
+          padding: "8px 14px",
+          borderRadius: "10px",
           fontWeight: 700,
-          fontSize: "15px",
+          fontSize: "12px",
           cursor: "pointer",
           transition: "all .2s ease",
         }}
