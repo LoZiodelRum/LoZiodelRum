@@ -95,8 +95,31 @@ export default function BarettoChat() {
   return (
     <div style={{ paddingTop: 47, minHeight: "100vh" }}>
       <ChatWindow>
-      <div style={{ padding: 15, borderBottom: "1px solid #ddd", display: "flex", alignItems: "center", gap: 10 }}>
-        <button onClick={() => navigate("/baretto")} style={{ background: "#2c1e14", color: "#fff", border: "none", width: 35, height: 35, borderRadius: 8, cursor: "pointer" }}>←</button>
+      <div
+  style={{
+    padding: "18px",
+    background: "#101826",
+    borderBottom: "1px solid #1f2937",
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
+  }}
+>
+       <button
+  onClick={() => navigate("/baretto")}
+  style={{
+    background: "#D4A54A",
+    color: "#000",
+    border: "none",
+    width: 42,
+    height: 42,
+    borderRadius: 12,
+    cursor: "pointer",
+    fontWeight: 700,
+  }}
+>
+  ←
+</button>
         <div>
           <strong style={{ color: "#c9a86a" }}>Tavolo: {room}</strong>
         </div>
