@@ -65,7 +65,7 @@ import OwnerDashboard from "./pages/ProprietarioDashboard";
 import Baretto from "./pages/Baretto";
 import BarettoMobile from "./pages/BarettoMobile";
 import BarettoChat from "./pages/BarettoChat";
-
+import BarettoCreate from "./pages/BarettoCreate";
 export default function App() {
   // FIX SSR / MOBILE
   const [isMobile, setIsMobile] = React.useState(false);
@@ -340,7 +340,14 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
-
+<Route
+  path="/baretto/create"
+  element={
+    <ProtectedRoute>
+      <BarettoCreate />
+    </ProtectedRoute>
+  }
+/>
             {/* FALLBACK BARETTO */}
             <Route
               path="/baretto/*"
