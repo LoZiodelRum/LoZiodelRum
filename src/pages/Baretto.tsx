@@ -72,26 +72,51 @@ export default function Baretto() {
           responsabile.
         </p>
       </div>
+<div
+  style={{
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "30px",
+  }}
+>
+  <div
+    style={{
+      display: "inline-flex",
+      alignItems: "center",
+      gap: "10px",
+      background: "#0d1b2d",
+      border: "1px solid #1f324b",
+      padding: "12px 18px",
+      borderRadius: "999px",
+    }}
+  >
+    <span style={{ color: "#00d84a", fontSize: "20px" }}>
+      ●
+    </span>
 
-      <div
-        style={{
-          display: "inline-flex",
-          alignItems: "center",
-          gap: "10px",
-          background: "#0d1b2d",
-          border: "1px solid #1f324b",
-          padding: "12px 18px",
-          borderRadius: "999px",
-          marginBottom: "30px",
-        }}
-      >
-        <span style={{ color: "#00d84a", fontSize: "20px" }}>●</span>
+    <span>
+      {onlineUsers} utenti online
+    </span>
+  </div>
 
-        <span>
-          {onlineUsers} utenti online
-        </span>
-      </div>
-
+  <button
+    onClick={() => navigate("/baretto/create")}
+    style={{
+      background: "#D4A54A",
+      color: "#000",
+      border: "none",
+      padding: "12px 18px",
+      borderRadius: "999px",
+      fontWeight: 700,
+      cursor: "pointer",
+      whiteSpace: "nowrap",
+      marginLeft: "auto",
+    }}
+  >
+    ➕ Crea Tavolo
+  </button>
+</div>
       {loading && (
         <div>Caricamento tavoli...</div>
       )}
@@ -140,27 +165,6 @@ export default function Baretto() {
           </div>
         </>
       )}
-
-      <button
-        onClick={() => navigate("/baretto/create")}
-        style={{
-          position: "fixed",
-          right: "25px",
-          bottom: "100px",
-          width: "70px",
-          height: "70px",
-          borderRadius: "50%",
-          border: "none",
-          background: "#d4a54a",
-          color: "#000",
-          fontSize: "36px",
-          fontWeight: "bold",
-          cursor: "pointer",
-          boxShadow: "0 0 25px rgba(212,165,74,0.4)",
-        }}
-      >
-        +
-      </button>
     </div>
   );
 }
