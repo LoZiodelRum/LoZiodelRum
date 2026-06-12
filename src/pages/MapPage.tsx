@@ -427,7 +427,7 @@ export default function MapPage() {
   return (
     <>
       <Navbar />
-      <div className="map-page-root" style={{ minHeight: "100vh", padding: "0px 12px 138px", color: "#edf4ff", overflowX: "hidden" }}>
+      <div className="map-page-root" style={{ minHeight: "100vh", padding: "15px 12px 138px", color: "#edf4ff", overflowX: "hidden" }}>
         <style>{`
           .map-page-shell {
             width: min(1040px, 100%);

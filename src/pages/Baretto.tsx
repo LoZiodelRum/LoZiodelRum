@@ -42,7 +42,7 @@ export default function Baretto() {
     minHeight: "100vh",
     background: "#050d1a",
     color: "#fff",
-    paddingTop: "0px",
+    paddingTop: "15px",
     paddingLeft: "24px",
     paddingRight: "24px",
     paddingBottom: "120px",

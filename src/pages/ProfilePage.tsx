@@ -402,7 +402,7 @@ function PageShell({ children }: { children: React.ReactNode }) {
         minHeight: "100vh",
         background: pageBackground,
         color: "#eef6ff",
-        padding: "0px 24px 40px",
+        padding: "15px 24px 40px",
         overflowX: "hidden",
       }}
     >
