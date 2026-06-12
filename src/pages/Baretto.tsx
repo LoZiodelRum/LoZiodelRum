@@ -37,15 +37,17 @@ export default function Baretto() {
   const tavoliNormali = rooms.filter((r) => !r.ufficiale);
 
   return (
-    <div
-      style={{
-        minHeight: "100vh",
-        background: "#050d1a",
-        color: "#fff",
-        padding: "24px",
-        paddingBottom: "120px",
-      }}
-    >
+   <div
+  style={{
+    minHeight: "100vh",
+    background: "#050d1a",
+    color: "#fff",
+    paddingTop: "0px",
+    paddingLeft: "24px",
+    paddingRight: "24px",
+    paddingBottom: "120px",
+  }}
+>
       <div
         style={{
           textAlign: "center",

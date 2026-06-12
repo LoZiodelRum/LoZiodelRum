@@ -26,7 +26,7 @@ const firstName =
   const pageStyle: React.CSSProperties = {
   minHeight: "100vh",
   background: "...",
-  padding: isMobile ? "25px 18px 40px" : "40px 32px 40px",
+  padding: isMobile ? "0px 18px 40px" : "40px 32px 40px",
   color: "white",
 };
 

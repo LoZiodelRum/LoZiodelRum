@@ -402,7 +402,7 @@ function PageShell({ children }: { children: React.ReactNode }) {
         minHeight: "100vh",
         background: pageBackground,
         color: "#eef6ff",
-        padding: "120px 24px 40px",
+        padding: "0px 24px 40px",
         overflowX: "hidden",
       }}
     >
@@ -870,7 +870,7 @@ function ProfileStyles() {
       }
       @media (max-width: 768px) {
         .profile-page-root {
-          padding: 100px 14px 40px !important;
+          padding: 0px 14px 40px !important;
         }
       }
       @media (max-width: 900px) {
