@@ -191,9 +191,9 @@ function RoomCard({
     >
       <div
         style={{
-          width: "56px",
-          height: "56px",
-          minWidth: "56px",
+          width: "44px",
+          height: "44px",
+          minWidth: "44px",
           borderRadius: "50%",
           overflow: "hidden",
           border: "2px solid rgba(212,165,74,0.4)",
@@ -218,9 +218,9 @@ function RoomCard({
         <h3
           style={{
             margin: 0,
-            fontSize: "17px",
+            fontSize: "15px",
             color: "#fff",
-            marginBottom: "8px",
+            marginBottom: "4px",
           }}
         >
           {room.nome}
@@ -229,8 +229,8 @@ function RoomCard({
         <div
   style={{
     color: "#d7dbe3",
-    fontSize: "13px",
-    marginBottom: "8px",
+    fontSize: "11px",
+    marginBottom: "4px",
     lineHeight: 1.4,
     overflow: "hidden",
     display: "-webkit-box",
@@ -244,9 +244,9 @@ function RoomCard({
         <div
           style={{
             display: "flex",
-            gap: "12px",
+            gap: "8px",
             color: "#9ca3af",
-            fontSize: "13px",
+            fontSize: "11px",
           }}
         >
           <span>👥 {room.member_count || 0}</span>
@@ -261,12 +261,12 @@ function RoomCard({
         }
         style={{
           background: "transparent",
-          border: "2px solid #D4A54A",
+          border: "1px solid #D4A54A",
           color: "#D4A54A",
-          padding: "8px 14px",
-          borderRadius: "10px",
+          padding: "6px 12px",
+          borderRadius: "8px",
           fontWeight: 700,
-          fontSize: "12px",
+          fontSize: "11px",
           cursor: "pointer",
           transition: "all .2s ease",
         }}
