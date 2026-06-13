@@ -326,6 +326,40 @@ if (isMobile) {
           marginLeft: "auto",
         }}
       >
+       <Link to="/home" style={linkStyle("/home")}>
+  Home
+</Link>
+
+<Link to="/mappa" style={linkStyle("/mappa")}>
+  Mappa
+</Link>
+
+<Link
+  to="/venues"
+  style={linkStyle("/venues")}
+>
+  Locali
+</Link>
+
+<Link to="/drink" style={linkStyle("/drink")}>
+  Drink
+</Link>
+
+<Link to="/vini" style={linkStyle("/vini")}>
+  Vini
+</Link>
+
+<Link to="/magazine" style={linkStyle("/magazine")}>
+  Magazine
+</Link>
+
+<Link to="/eventi" style={linkStyle("/eventi")}>
+  Eventi
+</Link>
+
+<Link to="/lounge" style={linkStyle("/lounge")}>
+  Lounge
+</Link> 
         {shouldShowDashboard && (
           <div style={{ position: "relative" }}>
             <button
