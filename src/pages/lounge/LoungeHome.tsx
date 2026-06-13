@@ -22,6 +22,12 @@ const firstName =
   "Utente";
 
   const isMobile = window.innerWidth < 980;
+const level = 0;
+const xp = 0;
+const checkins = 0;
+const visitedVenues = 0;
+const streak = 0;
+const rankPosition = 0;
 
   const pageStyle: React.CSSProperties = {
   minHeight: "100vh",
@@ -244,181 +250,91 @@ const firstName =
             </div>
           ))}
         </div>
+<div
+  style={{
+    ...cardStyle,
+    padding: isMobile ? 22 : 28,
+    marginBottom: isMobile ? 18 : 26,
+  }}
+>
+  <div
+    style={{
+      display: "flex",
+      justifyContent: "space-between",
+      marginBottom: 8,
+      fontWeight: 700,
+    }}
+  >
+    <span>Progressione</span>
+    <span>{xp} / 1000</span>
+  </div>
 
-        {/* SCORE SECTION */}
-        <div
-          style={{
-            display: "grid",
-            gridTemplateColumns: isMobile ? "1fr" : "1.8fr 0.9fr",
-            gap: isMobile ? 16 : 22,
-            marginBottom: isMobile ? 18 : 26,
-          }}
-        >
-          <div
-            style={{
-              ...cardStyle,
-              padding: isMobile ? 18 : 24,
-            }}
-          >
-            <h2
-              style={{
-                marginTop: 0,
-                marginBottom: isMobile ? 20 : 28,
-                fontSize: isMobile ? 22 : 30,
-                fontWeight: 800,
-              }}
-            >
-              {t("home.score.title")}
-            </h2>
+  <div
+    style={{
+      height: 14,
+      borderRadius: 20,
+      background: "rgba(255,255,255,.08)",
+      overflow: "hidden",
+      marginBottom: 10,
+    }}
+  >
+    <div
+      style={{
+        width: "0%",
+        height: "100%",
+        background:
+          "linear-gradient(90deg,#2fd4df,#46f2e1,#69ffe9)",
+      }}
+    />
+  </div>
 
-            <div
-              style={{
-                display: "flex",
-                gap: isMobile ? 22 : 34,
-                flexWrap: "wrap",
-                alignItems: "center",
-              }}
-            >
-              <div
-                style={{
-                  width: isMobile ? 120 : 160,
-                  height: isMobile ? 120 : 160,
-                  borderRadius: "50%",
-                  border: isMobile
-                    ? "10px solid #ffcc66"
-                    : "14px solid #ffcc66",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  fontSize: isMobile ? 30 : 44,
-                  fontWeight: 900,
-                  boxShadow: "0 0 18px #f5a623",
-                  flexShrink: 0,
-                }}
-              >
-                78
-              </div>
+  <div
+    style={{
+      textAlign: "center",
+      color: "rgba(255,255,255,.65)",
+      marginBottom: 24,
+    }}
+  >
+    1000 XP al prossimo livello
+  </div>
 
-              <div
-                style={{
-                  flex: 1,
-                  minWidth: isMobile ? "100%" : 260,
-                }}
-              >
-                {[
-                  [t("home.score.tastings"), 64],
-                  [t("home.score.experiences"), 58],
-                  [t("home.score.community"), 70],
-                  [t("home.score.knowledge"), 71],
-                ].map(([label, value]) => (
-                  <div
-                    key={label}
-                    style={{
-                      marginBottom: isMobile ? 18 : 24,
-                    }}
-                  >
-                    <div
-                      style={{
-                        display: "flex",
-                        justifyContent: "space-between",
-                        marginBottom: 8,
-                        fontSize: isMobile ? 13 : 15,
-                        fontWeight: 600,
-                      }}
-                    >
-                      <span>{label}</span>
-                      <span>{value}</span>
-                    </div>
+  <div
+    style={{
+      display: "grid",
+      gridTemplateColumns: "repeat(4,1fr)",
+      gap: 14,
+      textAlign: "center",
+    }}
+  >
+    <div>
+      <div style={{ fontSize: 28, fontWeight: 900, color: "#2fd4df" }}>
+        {checkins}
+      </div>
+      <div style={{ opacity: 0.7 }}>Check-in</div>
+    </div>
 
-                    <div
-                      style={{
-                        width: "100%",
-                        height: isMobile ? 10 : 12,
-                        borderRadius: 20,
-                        background: "rgba(255,255,255,0.08)",
-                      }}
-                    >
-                      <div
-                        style={{
-                          width: `${value}%`,
-                          height: "100%",
-                          borderRadius: 20,
-                          background:
-                            "linear-gradient(90deg, #ffd27a 0%, #f5a623 45%, #c97d00 100%)",
-                        }}
-                      />
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </div>
-          </div>
+    <div>
+      <div style={{ fontSize: 28, fontWeight: 900 }}>
+        {visitedVenues}
+      </div>
+      <div style={{ opacity: 0.7 }}>Locali</div>
+    </div>
 
-          <div
-            style={{
-              display: "flex",
-              flexDirection: isMobile ? "row" : "column",
-              gap: isMobile ? 14 : 20,
-            }}
-          >
-            <div
-              style={{
-                ...cardStyle,
-                padding: isMobile ? 18 : 28,
-                flex: 1,
-              }}
-            >
-              <div
-                style={{
-                  opacity: 0.7,
-                  marginBottom: 10,
-                  fontSize: isMobile ? 12 : 18,
-                  fontWeight: 600,
-                }}
-              >
-                {t("home.score.topCity")}
-              </div>
+    <div>
+      <div style={{ fontSize: 28, fontWeight: 900, color: "#f5b942" }}>
+        {streak}
+      </div>
+      <div style={{ opacity: 0.7 }}>Streak</div>
+    </div>
 
-              <div
-                style={{
-                  fontSize: isMobile ? 22 : 34,
-                  fontWeight: 900,
-                }}
-              >
-                Milano
-              </div>
-            </div>
-
-            <div
-              style={{
-                ...cardStyle,
-                padding: isMobile ? 18 : 28,
-                flex: 1,
-              }}
-            >
-              <div
-                style={{
-                  opacity: 0.7,
-                  marginBottom: 10,
-                  fontSize: isMobile ? 12 : 18,
-                  fontWeight: 600,
-                }}
-              >
-                {t("home.score.cocktailOfMoment")}
-              </div>
-
-              <div
-                style={{
-                  fontSize: isMobile ? 20 : 32,
-                  fontWeight: 900,
-                  lineHeight: 1.1,
-                }}
-              >
-                Daiquiri
-              </div>
-            </div>
-          </div>
-        </div>
+    <div>
+      <div style={{ fontSize: 28, fontWeight: 900 }}>
+        #{rankPosition}
+      </div>
+      <div style={{ opacity: 0.7 }}>Rank</div>
+    </div>
+  </div>
+</div>
 
         {/* EVENTS + STORIES */}
         <div
