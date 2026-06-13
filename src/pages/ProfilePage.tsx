@@ -1602,29 +1602,6 @@ const ruoloAttuale =
           : "Utente"}
       </strong>
     </div>
-
-    {!ruoloAttuale && (
-      <>
-        <div
-          className="edit-profile-readonly-card"
-          onClick={() => navigate("/registrazione-proprietario")}
-          style={{ cursor: "pointer" }}
-        >
-          <span>Diventa Proprietario</span>
-          <strong>Attiva</strong>
-        </div>
-
-        <div
-          className="edit-profile-readonly-card"
-          onClick={() => navigate("/registrazione-bartender")}
-          style={{ cursor: "pointer" }}
-        >
-          <span>Diventa Bartender</span>
-          <strong>Attiva</strong>
-        </div>
-      </>
-    )}
-
   </div>
 </div>
                 {readonlyEntries.length > 0 && (
