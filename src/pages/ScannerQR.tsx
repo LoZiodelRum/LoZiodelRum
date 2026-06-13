@@ -50,7 +50,10 @@ export default function ScannerQR() {
         background:
           "radial-gradient(circle at top,#071326 0%,#020817 45%,#01040d 100%)",
         color: "white",
-        padding: "16px",
+        paddingTop: "10px",
+paddingLeft: "16px",
+paddingRight: "16px",
+paddingBottom: "16px",
       }}
     >
       <div
