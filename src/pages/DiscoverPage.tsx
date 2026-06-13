@@ -263,7 +263,7 @@ export default function DiscoverPage() {
         background:
           "radial-gradient(circle at top, #071326 0%, #020817 45%, #01040d 100%)",
         color: "#eef6ff",
-        padding: "44px 24px 40px",
+        padding: "10px 24px 40px",
         overflowX: "hidden",
       }}
     >
@@ -436,7 +436,7 @@ export default function DiscoverPage() {
           }
 
           .discover-page-root {
-            padding: 41px 14px 40px !important;
+            padding: 10px 14px 40px !important;
           }
 
           .discover-card {
