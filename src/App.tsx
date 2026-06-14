@@ -4,6 +4,7 @@ import MainLayout from "./layouts/MainLayout";
 import RuntimeErrorBoundary from "./components/RuntimeErrorBoundary";
 import ScannerQR from "./pages/ScannerQR";
 import ControlCenter from "./pages/ControlCenter";
+import LocaliDashboard from "./pages/LocaliDashboard";
 // Scroll automatico top pagina
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -383,6 +384,14 @@ export default function App() {
   element={
     <ProtectedRoute>
       <ControlCenter />
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/locali-dashboard"
+  element={
+    <ProtectedRoute>
+      <LocaliDashboard />
     </ProtectedRoute>
   }
 />

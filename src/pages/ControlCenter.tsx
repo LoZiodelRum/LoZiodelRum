@@ -1,4 +1,6 @@
+import { useNavigate } from "react-router-dom";
 export default function ControlCenter() {
+  const navigate = useNavigate();
   return (
     <div
       style={{
@@ -35,10 +37,33 @@ export default function ControlCenter() {
           gap: 10,
         }}
       >
-        <div style={cardStyle}>🏢 Locali</div>
-        <div style={cardStyle}>👤 Proprietari</div>
-        <div style={cardStyle}>📅 Eventi</div>
-        <div style={cardStyle}>🚨 Anomalie</div>
+        <div
+  style={cardStyle}
+  onClick={() => navigate("/locali-dashboard")}
+>
+  🏢 Locali
+</div>
+
+<div
+  style={cardStyle}
+  onClick={() => navigate("/proprietari-dashboard")}
+>
+  👤 Proprietari
+</div>
+
+<div
+  style={cardStyle}
+  onClick={() => navigate("/eventi-dashboard")}
+>
+  📅 Eventi
+</div>
+
+<div
+  style={cardStyle}
+  onClick={() => navigate("/anomalie-dashboard")}
+>
+  🚨 Anomalie
+</div>
       </div>
     </div>
   );
