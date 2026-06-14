@@ -2136,14 +2136,26 @@ export default function AdminPanel() {
             <button aria-label="Chiudi menu" onClick={() => setLeftOpen(false)} style={{ background: "none", border: "none", color: "#f59e0b", fontSize: 22, cursor: "pointer" }}>✕</button>
           </div>
           <div style={{ padding: 18 }}>
-            <div style={{ marginBottom: 16 }}>{Sidebar("Locali", locali, "Locali", "nome")}</div>
-            {Sidebar("Utenti", utenti, "profili", "username")}
-            {Sidebar("Bartender", bartender, "profili", "username")}
-            {Sidebar("Proprietari", proprietari, "profili", "username")}
+            <div
+  style={{
+    marginBottom: 20,
+    color: "#f59e0b",
+    fontWeight: 700,
+    fontSize: 14,
+    textTransform: "uppercase",
+    letterSpacing: 1,
+  }}
+>
+  CONTROL CENTER
+</div>
+            <div style={{ marginBottom: 16 }}>{Sidebar("🏢 Locali", locali, "Locali", "nome")}</div>
+            {Sidebar("👥 Utenti", utenti, "profili", "username")}
+            {Sidebar("🍸 Bartender", bartender, "profili", "username")}
+            {Sidebar("👤 Proprietari", proprietari, "profili", "username")}
             {Sidebar("Cocktail", cocktail, "cocktail", "nome")}
             {Sidebar("Distillati", distillati, "distillati", "nome")}
             {Sidebar("Vini", vini, wineTableName, "nome")}
-            {Sidebar("Articoli", articoli, "articoli", "titolo")}
+            {Sidebar("📰 Magazine", articoli, "articoli", "titolo")}
           </div>
         </div>
 

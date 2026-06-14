@@ -684,14 +684,25 @@ if (isCreating) {
               ✕
             </button>
 
-            {Sidebar("Locali", locali, "Locali", "nome")}
-            {Sidebar("Utenti", utenti, "Profili", "username")}
-            {Sidebar("Bartender", utenti.filter((u) => u.ruolo === "bartender"), "Profili", "username")}
-            {Sidebar("Proprietari", utenti.filter((u) => u.ruolo === "proprietario"), "Profili", "username")}
-            {Sidebar("Cocktail", cocktail, "Cocktail", "nome")}
-            {Sidebar("Distillati", distillati, "Distillati", "nome")}
-            {Sidebar("Vini", vini, "Vini", "nome")}
-            {Sidebar("Articoli", articoli, "Articoli", "titolo")}
+            {Sidebar("🏢 Locali", locali, "Locali", "nome")}
+
+{Sidebar(
+  "👤 Proprietari",
+  utenti.filter((u) => u.ruolo === "proprietario"),
+  "Profili",
+  "username"
+)}
+
+{Sidebar(
+  "🍸 Bartender",
+  utenti.filter((u) => u.ruolo === "bartender"),
+  "Profili",
+  "username"
+)}
+
+{Sidebar("👥 Utenti", utenti, "Profili", "username")}
+
+{Sidebar("📰 Magazine", articoli, "Articoli", "titolo")}
           </div>
         </>
       )}

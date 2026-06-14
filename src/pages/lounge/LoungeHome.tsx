@@ -7,8 +7,7 @@ import { useUser } from "../../context/UserContext";
 export default function LoungeHome() {
   const navigate = useNavigate();
   const { t } = useTranslation("lounge");
-  const { user } = useUser() as any;
-
+  const { user, role } = useUser() as any;
 const avatarUrl =
   user?.user_metadata?.foto_profilo ||
   user?.user_metadata?.avatar_url ||
@@ -20,7 +19,9 @@ const firstName =
   user?.user_metadata?.username ||
   user?.email?.split("@")[0] ||
   "Utente";
-
+const showBartenderDashboard = role === "bartender";
+const showOwnerDashboard = role === "owner";
+const showAdminDashboard = role === "admin";
   const isMobile = window.innerWidth < 980;
 const level = 0;
 const xp = 0;
@@ -119,7 +120,71 @@ const rankPosition = 0;
     >
       DrinkWise
     </h1>
+{showAdminDashboard && (
+  <div
+    onClick={() => navigate("/admin")}
+    style={{
+      marginTop: 12,
+      marginBottom: 12,
+      padding: "12px 14px",
+      borderRadius: 18,
+      background: "rgba(245,185,66,0.12)",
+      border: "1px solid rgba(245,185,66,0.4)",
+      cursor: "pointer",
+    }}
+  >
+    <div style={{ fontSize: 20, fontWeight: 800 }}>
+      ⚙️ Control Center
+    </div>
+    <div style={{ opacity: 0.8, marginTop: 4 }}>
+      Gestione completa della piattaforma
+    </div>
+  </div>
+)}
 
+{showOwnerDashboard && (
+  <div
+    onClick={() => navigate("/proprietario")}
+    style={{
+      marginTop: 20,
+      marginBottom: 20,
+      padding: "18px",
+      borderRadius: 18,
+      background: "rgba(245,185,66,0.12)",
+      border: "1px solid rgba(245,185,66,0.4)",
+      cursor: "pointer",
+    }}
+  >
+    <div style={{ fontSize: 20, fontWeight: 800 }}>
+      🏢 Dashboard Proprietario
+    </div>
+    <div style={{ opacity: 0.8, marginTop: 4 }}>
+      Gestisci il tuo locale
+    </div>
+  </div>
+)}
+
+{showBartenderDashboard && (
+  <div
+    onClick={() => navigate("/bartender")}
+    style={{
+      marginTop: 20,
+      marginBottom: 20,
+      padding: "18px",
+      borderRadius: 18,
+      background: "rgba(245,185,66,0.12)",
+      border: "1px solid rgba(245,185,66,0.4)",
+      cursor: "pointer",
+    }}
+  >
+    <div style={{ fontSize: 20, fontWeight: 800 }}>
+      🍸 Dashboard Bartender
+    </div>
+    <div style={{ opacity: 0.8, marginTop: 4 }}>
+      Gestisci il tuo profilo professionale
+    </div>
+  </div>
+)}
     <div
       style={{
         marginTop: 14,
