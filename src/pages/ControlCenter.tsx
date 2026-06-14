@@ -46,7 +46,7 @@ export default function ControlCenter() {
 
 <div
   style={cardStyle}
-  onClick={() => navigate("/proprietari-dashboard")}
+  onClick={() => navigate("/proprietario")}
 >
   👤 Proprietari
 </div>

@@ -5,6 +5,7 @@ import RuntimeErrorBoundary from "./components/RuntimeErrorBoundary";
 import ScannerQR from "./pages/ScannerQR";
 import ControlCenter from "./pages/ControlCenter";
 import LocaliDashboard from "./pages/LocaliDashboard";
+import LocaliElenco from "./pages/LocaliElenco";
 // Scroll automatico top pagina
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -58,7 +59,7 @@ import AdminPanel from "./pages/AdminPanel";
 import Bancone from "./pages/Bancone";
 import VenueDetail from "./pages/VenueDetail";
 import Venues from "./pages/Venues";
-import OwnerDashboard from "./pages/ProprietarioDashboard";
+import ProprietarioDashboard from "./pages/ProprietarioDashboard";
 
 // BARETTO
 import Baretto from "./pages/Baretto";
@@ -365,7 +366,7 @@ export default function App() {
               path="/proprietario"
               element={
                 <ProtectedRoute>
-                  <OwnerDashboard />
+                  <ProprietarioDashboard />
                 </ProtectedRoute>
               }
             />
@@ -392,6 +393,14 @@ export default function App() {
   element={
     <ProtectedRoute>
       <LocaliDashboard />
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/locali-elenco"
+  element={
+    <ProtectedRoute>
+      <LocaliElenco />
     </ProtectedRoute>
   }
 />
