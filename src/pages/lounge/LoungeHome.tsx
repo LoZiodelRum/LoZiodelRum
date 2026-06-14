@@ -122,7 +122,7 @@ const rankPosition = 0;
     </h1>
 {showAdminDashboard && (
   <div
-    onClick={() => navigate("/admin")}
+    onClick={() => navigate("/control-center")}
     style={{
       marginTop: 12,
       marginBottom: 12,

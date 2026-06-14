@@ -3,6 +3,7 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import MainLayout from "./layouts/MainLayout";
 import RuntimeErrorBoundary from "./components/RuntimeErrorBoundary";
 import ScannerQR from "./pages/ScannerQR";
+import ControlCenter from "./pages/ControlCenter";
 // Scroll automatico top pagina
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -377,7 +378,14 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
-
+<Route
+  path="/control-center"
+  element={
+    <ProtectedRoute>
+      <ControlCenter />
+    </ProtectedRoute>
+  }
+/>
             {/* DETTAGLIO LOCALE */}
             <Route
               path="/venue/:id"
