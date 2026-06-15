@@ -1,3 +1,4 @@
+import { useNavigate } from "react-router-dom";
 import {
   Home,
   QrCode,
@@ -19,6 +20,7 @@ import {
 } from "lucide-react";
 
 export default function ProprietarioDashboard() {
+  const navigate = useNavigate();
   const cardStyle: React.CSSProperties = {
     background: "#1c1c1e",
     borderRadius: 20,
@@ -250,7 +252,14 @@ export default function ProprietarioDashboard() {
         </div>
 
         {/* QR */}
-        <div style={{ ...cardStyle, marginBottom: 14 }}>
+        <div
+  onClick={() => navigate("/proprietario/qr")}
+  style={{
+    ...cardStyle,
+    marginBottom: 14,
+    cursor: "pointer",
+  }}
+>
           <div style={sectionTitle}>Gestione QR</div>
 
           <div
