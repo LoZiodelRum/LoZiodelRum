@@ -1,3 +1,4 @@
+import { supabase } from "../lib/supabaseClient";
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { X, Target } from "lucide-react";
@@ -24,13 +25,36 @@ export default function ScannerQR() {
             qrbox: { width: 260, height: 260 },
             aspectRatio: 1,
           },
-          (decodedText) => {
-  console.log("QR LETTO:", decodedText);
+          async (decodedText) => {
+  try {
+    console.log("QR LETTO:", decodedText);
 
-  setScanResult({
-    success: true,
-    message: "Check-in effettuato",
-  });
+    const { data: locale } = await supabase
+      .from("Locali")
+      .select("id,nome,venue_qr_id")
+      .eq("venue_qr_id", decodedText)
+      .single();
+
+    if (!locale) {
+      setScanResult({
+        success: false,
+        message: "QR non valido",
+      });
+      return;
+    }
+
+    setScanResult({
+      success: true,
+      message: `Check-in effettuato presso ${locale.nome}`,
+    });
+  } catch (error) {
+    console.error(error);
+
+    setScanResult({
+      success: false,
+      message: "QR non valido",
+    });
+  }
 },
           () => {}
         );

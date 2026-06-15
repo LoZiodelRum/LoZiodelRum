@@ -6,7 +6,7 @@ import ScannerQR from "./pages/ScannerQR";
 import ControlCenter from "./pages/ControlCenter";
 import LocaliDashboard from "./pages/LocaliDashboard";
 import LocaliElenco from "./pages/LocaliElenco";
-import GestioneQR from "./pages/GestioneQR";
+
 // Scroll automatico top pagina
 function ScrollToTop() {
   const { pathname } = useLocation();
@@ -94,10 +94,7 @@ export default function App() {
           <Route path="/" element={<Auth />} />
           <Route path="/login" element={<Auth />} />
           <Route path="/register" element={<Auth />} />
-<Route
-  path="/proprietario/qr"
-  element={<GestioneQR />}
-/>
+
           {/* PAGINE CON NAVBAR */}
           <Route element={<MainLayout />}>
 
