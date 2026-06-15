@@ -1,9 +1,13 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { X, Target } from "lucide-react";
 import { Html5Qrcode } from "html5-qrcode";
 
 export default function ScannerQR() {
+  const [scanResult, setScanResult] = useState<{
+  success: boolean;
+  message: string;
+} | null>(null);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -21,8 +25,13 @@ export default function ScannerQR() {
             aspectRatio: 1,
           },
           (decodedText) => {
-            console.log("QR LETTO:", decodedText);
-          },
+  console.log("QR LETTO:", decodedText);
+
+  setScanResult({
+    success: true,
+    message: "Check-in effettuato",
+  });
+},
           () => {}
         );
 
@@ -126,7 +135,23 @@ paddingBottom: "16px",
         >
           Inquadra il QR code del locale
         </div>
-
+{scanResult && (
+  <div
+    style={{
+      background: scanResult.success
+        ? "#00d84a"
+        : "#ff3b30",
+      color: "#fff",
+      padding: "14px",
+      borderRadius: "14px",
+      textAlign: "center",
+      fontWeight: 700,
+      marginBottom: 20,
+    }}
+  >
+    {scanResult.message}
+  </div>
+)}
         <div
           style={{
             background: "#050b16",
