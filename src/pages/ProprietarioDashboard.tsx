@@ -144,79 +144,135 @@ setLocale(locale);
         }}
       >
         {/* HERO */}
-        <div
-          style={{
-            background:
-              "linear-gradient(135deg,#d97706 0%,#f59e0b 45%,#fbbf24 100%)",
-            borderRadius: 28,
-            padding: 22,
-            marginBottom: 18,
-          }}
-        >
-          <div
-            style={{
-              fontSize: 13,
-              opacity: 0.9,
-            }}
-          >
-            Locale
-          </div>
+<div
+  style={{
+    background:
+      "linear-gradient(135deg,#d97706 0%,#f59e0b 45%,#fbbf24 100%)",
+    borderRadius: 28,
+    padding: "16px 22px",
+    marginBottom: 18,
+    display: "flex",
+    alignItems: "center",
+    gap: 120,
+    minHeight: 180,
+  }}
+>
+  {/* QR */}
+  <div
+    style={{
+      display: "flex",
+      flexDirection: "column",
+      alignItems: "center",
+      flexShrink: 0,
+    }}
+  >
+    {venueQrId && (
+  <div
+    style={{
+      background: "#ffffff",
+      padding: 4,
+      borderRadius: 10,
+    }}
+  >
+    <QRCode
+      value={venueQrId}
+      size={100}
+      bgColor="#ffffff"
+      fgColor="#000000"
+    />
+  </div>
+)}
 
-          <div
-            style={{
-              fontSize: 26,
-              fontWeight: 800,
-              marginTop: 4,
-            }}
-          >
-          {locale?.nome || "Nome Locale"}
-          </div>
+    <button
+      onClick={() => {
+        const canvas = document.querySelector("canvas");
+        if (!canvas) return;
 
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              gap: 6,
-              marginTop: 8,
-              fontSize: 14,
-            }}
-          >
-            <MapPin size={14} />
-            {locale?.citta || "Città"}
-          </div>
+        const link = document.createElement("a");
+        link.download = `${locale?.nome || "drinkwise"}-qr.png`;
+        link.href = canvas.toDataURL("image/png");
+        link.click();
+      }}
+      style={{
+        marginTop: 10,
+        padding: "7px 14px",
+        borderRadius: 10,
+        border: "none",
+        background: "#c97d2a",
+        color: "#fff",
+        fontWeight: 700,
+        cursor: "pointer",
+        fontSize: 13,
+      }}
+    >
+      Scarica
+    </button>
+  </div>
 
-          <div
-            style={{
-              display: "flex",
-              gap: 10,
-              marginTop: 20,
-            }}
-          >
-            <div
-              style={{
-                background: "rgba(255,255,255,0.18)",
-                padding: "8px 12px",
-                borderRadius: 14,
-                fontSize: 13,
-                fontWeight: 600,
-              }}
-            >
-              Piano Base
-            </div>
+  {/* INFO LOCALE */}
+  <div
+    style={{
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+    }}
+  >
+    <div
+      style={{
+        fontSize: 36,
+        fontWeight: 800,
+        lineHeight: 1.1,
+      }}
+    >
+      {locale?.nome || "Nome Locale"}
+    </div>
 
-            <div
-              style={{
-                background: "rgba(255,255,255,0.18)",
-                padding: "8px 12px",
-                borderRadius: 14,
-                fontSize: 13,
-                fontWeight: 600,
-              }}
-            >
-              Attivo
-            </div>
-          </div>
-        </div>
+    <div
+      style={{
+        display: "flex",
+        alignItems: "center",
+        gap: 8,
+        marginTop: 12,
+        fontSize: 18,
+      }}
+    >
+      <MapPin size={18} />
+      {locale?.citta || "Città"}
+    </div>
+
+    <div
+      style={{
+        display: "flex",
+        gap: 10,
+        marginTop: 16,
+      }}
+    >
+      <div
+        style={{
+          background: "rgba(255,255,255,0.18)",
+          padding: "8px 14px",
+          borderRadius: 14,
+          fontSize: 13,
+          fontWeight: 600,
+        }}
+      >
+        Piano Base
+      </div>
+
+      <div
+        style={{
+          background: "rgba(255,255,255,0.18)",
+          padding: "8px 14px",
+          borderRadius: 14,
+          fontSize: 13,
+          fontWeight: 600,
+        }}
+      >
+        Attivo
+      </div>
+    </div>
+  </div>
+</div>
 
         {/* KPI */}
         <div
@@ -291,7 +347,36 @@ setLocale(locale);
   }}
 >
           <div style={sectionTitle}>Gestione QR</div>
+<div
+  style={{
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    marginTop: 20,
+    marginBottom: 20,
+  }}
+>
+  {venueQrId && (
+    <>
+      <QRCode
+        value={venueQrId}
+        size={180}
+        bgColor="#ffffff"
+        fgColor="#000000"
+      />
 
+      <div
+        style={{
+          marginTop: 12,
+          fontSize: 14,
+          color: "#9a9a9a",
+        }}
+      >
+        {venueQrId}
+      </div>
+    </>
+  )}
+</div>
          <div
   onClick={() => navigate("/gestione-qr")}
   style={{
