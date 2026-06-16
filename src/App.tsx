@@ -3,6 +3,7 @@ import { Routes, Route, useLocation } from "react-router-dom";
 import MainLayout from "./layouts/MainLayout";
 import RuntimeErrorBoundary from "./components/RuntimeErrorBoundary";
 import ScannerQR from "./pages/ScannerQR";
+import GestioneQR from "./pages/GestioneQR";
 import ControlCenter from "./pages/ControlCenter";
 import LocaliDashboard from "./pages/LocaliDashboard";
 import LocaliElenco from "./pages/LocaliElenco";
@@ -272,6 +273,14 @@ export default function App() {
   element={
     <ProtectedRoute>
       <ScannerQR />
+    </ProtectedRoute>
+  }
+/>
+<Route
+  path="/proprietario/qr"
+  element={
+    <ProtectedRoute>
+      <GestioneQR />
     </ProtectedRoute>
   }
 />

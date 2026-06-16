@@ -1,4 +1,7 @@
 import { useNavigate } from "react-router-dom";
+import QRCode from "react-qr-code";
+import { useEffect, useState } from "react";
+import { supabase } from "../lib/supabaseClient";
 import {
   Home,
   QrCode,
@@ -20,6 +23,33 @@ import {
 } from "lucide-react";
 
 export default function ProprietarioDashboard() {
+  const [venueQrId, setVenueQrId] = useState("");
+  const [locale, setLocale] = useState<any>(null);
+  useEffect(() => {
+  async function loadVenueQr() {
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+
+    if (!user) return;
+
+    const { data: locale } = await supabase
+      .from("Locali")
+      .select("*")
+      .eq("proprietario_id", user.id)
+      .single();
+console.log("USER ID:", user.id);
+console.log("LOCALE TROVATO:", locale);
+
+setLocale(locale);
+
+    if (locale?.venue_qr_id) {
+      setVenueQrId(locale.venue_qr_id);
+    }
+  }
+
+  loadVenueQr();
+}, []);
   const navigate = useNavigate();
   const cardStyle: React.CSSProperties = {
     background: "#1c1c1e",
@@ -139,7 +169,7 @@ export default function ProprietarioDashboard() {
               marginTop: 4,
             }}
           >
-            Nome Locale
+          {locale?.nome || "Nome Locale"}
           </div>
 
           <div
@@ -152,7 +182,7 @@ export default function ProprietarioDashboard() {
             }}
           >
             <MapPin size={14} />
-            Città
+            {locale?.citta || "Città"}
           </div>
 
           <div
@@ -262,13 +292,15 @@ export default function ProprietarioDashboard() {
 >
           <div style={sectionTitle}>Gestione QR</div>
 
-          <div
-            style={{
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
-          >
+         <div
+  onClick={() => navigate("/gestione-qr")}
+  style={{
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-between",
+    cursor: "pointer",
+  }}
+>
             <div>
               <div
                 style={{

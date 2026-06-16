@@ -20,8 +20,11 @@ const firstName =
   user?.email?.split("@")[0] ||
   "Utente";
 const showBartenderDashboard = role === "bartender";
-const showOwnerDashboard = role === "owner";
+const showOwnerDashboard = role === "proprietario";
 const showAdminDashboard = role === "admin";
+
+console.log("ROLE ATTUALE:", role);
+
   const isMobile = window.innerWidth < 980;
 const level = 0;
 const xp = 0;
