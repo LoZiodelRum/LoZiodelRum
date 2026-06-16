@@ -149,12 +149,12 @@ setLocale(locale);
     background:
       "linear-gradient(135deg,#d97706 0%,#f59e0b 45%,#fbbf24 100%)",
     borderRadius: 28,
-    padding: "16px 22px",
+    padding: "14px 16px",
     marginBottom: 18,
     display: "flex",
     alignItems: "center",
-    gap: 120,
-    minHeight: 180,
+    gap: 18,
+    minHeight: 140,
   }}
 >
   {/* QR */}
@@ -170,8 +170,8 @@ setLocale(locale);
   <div
     style={{
       background: "#ffffff",
-      padding: 4,
-      borderRadius: 10,
+      padding: 3,
+      borderRadius: 8,
     }}
   >
     <QRCode
@@ -219,7 +219,10 @@ setLocale(locale);
   >
     <div
       style={{
-        fontSize: 36,
+        fontSize: 28,
+        maxWidth: 180,
+overflow: "hidden",
+textOverflow: "ellipsis",
         fontWeight: 800,
         lineHeight: 1.1,
       }}
@@ -233,7 +236,7 @@ setLocale(locale);
         alignItems: "center",
         gap: 8,
         marginTop: 12,
-        fontSize: 18,
+        fontSize: 15,
       }}
     >
       <MapPin size={18} />
@@ -250,9 +253,9 @@ setLocale(locale);
       <div
         style={{
           background: "rgba(255,255,255,0.18)",
-          padding: "8px 14px",
+          padding: "6px 10px",
           borderRadius: 14,
-          fontSize: 13,
+          fontSize: 12,
           fontWeight: 600,
         }}
       >
@@ -360,20 +363,10 @@ setLocale(locale);
     <>
       <QRCode
         value={venueQrId}
-        size={180}
+        size={140}
         bgColor="#ffffff"
         fgColor="#000000"
       />
-
-      <div
-        style={{
-          marginTop: 12,
-          fontSize: 14,
-          color: "#9a9a9a",
-        }}
-      >
-        {venueQrId}
-      </div>
     </>
   )}
 </div>
@@ -423,7 +416,7 @@ setLocale(locale);
           >
             <div
               style={{
-                fontSize: 36,
+                fontSize: 28,
                 fontWeight: 800,
               }}
             >
@@ -471,7 +464,7 @@ setLocale(locale);
               style={{
                 background: "#111",
                 borderRadius: 16,
-                padding: 12,
+                padding: 8,
                 textAlign: "center",
               }}
             >
@@ -483,7 +476,7 @@ setLocale(locale);
               style={{
                 background: "#111",
                 borderRadius: 16,
-                padding: 12,
+                padding: 8,
                 textAlign: "center",
               }}
             >
@@ -495,7 +488,7 @@ setLocale(locale);
               style={{
                 background: "#111",
                 borderRadius: 16,
-                padding: 12,
+                padding: 8,
                 textAlign: "center",
               }}
             >
