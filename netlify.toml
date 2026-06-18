@@ -44,8 +44,13 @@
   for = "/manifest.json"
   [headers.values]
     Cache-Control = "no-cache, no-store, must-revalidate"
+[[redirects]]
+  from = "/api/admin-save-locale"
+  to = "/.netlify/functions/admin-save-locale"
+  status = 200
 
 [[redirects]]
   from = "/*"
   to = "/index.html"
   status = 200
+
