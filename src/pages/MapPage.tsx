@@ -623,38 +623,6 @@ export default function MapPage() {
             color: #ffffff;
           }
 
-          .map-range-chip {
-  border-radius: 999px;
-  border: 1px solid rgba(245, 166, 35, 0.44);
-  color: #f5a623;
-  background: rgba(245, 166, 35, 0.12);
-  font-size: 11px;
-  font-weight: 700;
-  padding: 6px 10px;
-  cursor: pointer;
-  transition: all .2s ease;
-}
-
-.map-range-chip:hover {
-  background: rgba(245, 166, 35, 0.22);
-}
-
-.map-range-chip.active {
-  background: #f5a623;
-  color: #081120;
-}
-
-          .map-status-label {
-            margin: 0 4px 10px;
-            font-size: 12px;
-            color: rgba(205, 221, 243, 0.82);
-          }
-
-          .map-venues-list {
-            display: grid;
-            gap: 9px;
-          }
-
           .map-skeleton-card {
             background: rgba(12, 18, 34, 0.88);
             border: 1px solid rgba(255, 255, 255, 0.08);
@@ -957,39 +925,15 @@ export default function MapPage() {
 
           <section className="map-nearby-section">
             <div className="map-nearby-header">
-             <div
+      <h2
+  className="map-nearby-title"
   style={{
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "space-between",
-    width: "100%",
-    gap: 8,
-    flexWrap: "wrap",
+    fontSize: "24px",
+    margin: 0,
   }}
 >
-  <h2
-    className="map-nearby-title"
-    style={{
-      fontSize: "24px",
-      margin: 0,
-    }}
-  >
-    Locali vicini
-  </h2>
-
-  <div
-    style={{
-      display: "flex",
-      gap: 6,
-      flexWrap: "wrap",
-    }}
-  >
-    <button className="map-range-chip">5 km</button>
-    <button className="map-range-chip">10 km</button>
-    <button className="map-range-chip">20 km</button>
-    <button className="map-range-chip">50 km</button>
-  </div>
-</div>
+  Locali vicini
+</h2>
             </div>
 
             {statusMessage && <p className="map-status-label">{statusMessage}</p>}
