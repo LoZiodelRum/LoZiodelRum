@@ -236,10 +236,14 @@ function MapCenterUpdater({
   zoom: number;
 }) {
   const map = useMap();
+  const [initialized, setInitialized] = useState(false);
 
   useEffect(() => {
-    map.setView([lat, lng], zoom, { animate: true, duration: 0.5 });
-  }, [lat, lng, zoom, map]);
+    if (initialized) return;
+
+    map.setView([lat, lng], zoom);
+    setInitialized(true);
+  }, [lat, lng, zoom, map, initialized]);
 
   return null;
 }
