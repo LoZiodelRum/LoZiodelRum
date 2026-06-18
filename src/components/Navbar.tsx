@@ -340,15 +340,6 @@ if (isMobile) {
 >
   Locali
 </Link>
-
-<Link to="/drink" style={linkStyle("/drink")}>
-  Drink
-</Link>
-
-<Link to="/vini" style={linkStyle("/vini")}>
-  Vini
-</Link>
-
 <Link to="/magazine" style={linkStyle("/magazine")}>
   Magazine
 </Link>
