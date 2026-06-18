@@ -49,6 +49,10 @@ export default function LoungeBottomNavigation() {
     },
   ];
 
+  const qrActive =
+    location.pathname === "/scanner" ||
+    location.pathname.startsWith("/scanner/");
+
   return (
     <>
       <style>{`
@@ -74,7 +78,6 @@ export default function LoungeBottomNavigation() {
           justify-content:space-between;
           padding:0 18px;
           pointer-events:auto;
-          position:relative;
         }
 
         .dw-side{
@@ -105,30 +108,20 @@ export default function LoungeBottomNavigation() {
         }
 
         .dw-qr{
-          position:absolute;
-          left:50%;
-          top:-20px;
-          transform:translateX(-50%);
-          width:68px;
-          height:68px;
-          border-radius:40%;
-          border:4px solid #081120;
-          background:linear-gradient(
-            135deg,
-            #f5b942,
-            #ffd978
-          );
+          background:none;
+          border:none;
+          color:rgba(255,255,255,.7);
           display:flex;
+          flex-direction:column;
           align-items:center;
           justify-content:center;
+          gap:4px;
           cursor:pointer;
-          box-shadow:
-            0 0 0 8px rgba(245,185,66,.08),
-            0 0 30px rgba(245,185,66,.35);
+          min-width:60px;
         }
 
-        .dw-qr svg{
-          color:#081120;
+        .dw-qr-active{
+          color:#52f7eb;
         }
 
         @media (max-width:768px){
@@ -180,10 +173,15 @@ export default function LoungeBottomNavigation() {
           </div>
 
           <button
-            className="dw-qr"
+            className={`dw-qr ${
+              qrActive ? "dw-qr-active" : ""
+            }`}
             onClick={() => navigate("/scanner")}
           >
-            <QrCode size={34} />
+            <QrCode size={22} />
+            <span className="dw-label">
+              QR
+            </span>
           </button>
 
           <div className="dw-side">
