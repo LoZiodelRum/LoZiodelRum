@@ -24,7 +24,6 @@ import Home from "./pages/Home";
 import Auth from "./pages/Auth";
 import ProtectedRoute from "./pages/ProtectedRoute";
 import MapPage from "./pages/MapPage";
-import Progetto from "./pages/Progetto";
 
 // DRINK
 import Drink from "./pages/Drink";
@@ -109,7 +108,6 @@ export default function App() {
                 </ProtectedRoute>
               }
             />
-<Route path="/progetto" element={<Progetto />} />
             {/* DISCOVER */}
             <Route
               path="/discover"
