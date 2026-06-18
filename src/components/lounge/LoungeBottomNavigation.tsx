@@ -36,7 +36,7 @@ export default function LoungeBottomNavigation() {
 
   const rightItems: NavItem[] = [
     {
-      label: "Il Baretto",
+      label: "Baretto",
       to: "/baretto",
       icon: MessageCircle,
       match: "/baretto",
